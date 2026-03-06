@@ -6,25 +6,14 @@ require 'pangea/resource_registry'
 
 module Pangea::Resources
   module GoogleSecretManagerSecret
-    def google_secret_manager_secret(name, attributes = {})
-      attrs = Google::Types::SecretManagerSecretAttributes.new(attributes)
-      resource(:google_secret_manager_secret, name) do
-        secret_id attrs.secret_id
-        project attrs.project if attrs.project
-        replication attrs.replication
-        labels attrs.labels if attrs.labels.any?
-        expire_time attrs.expire_time if attrs.expire_time
-        ttl attrs.ttl if attrs.ttl
-        rotation attrs.rotation if attrs.rotation
-        topics attrs.topics if attrs.topics
-      end
-      ResourceReference.new(
-        type: 'google_secret_manager_secret',
-        name: name,
-        resource_attributes: attrs.to_h,
-        outputs: { id: "${google_secret_manager_secret.#{name}.id}", name: "${google_secret_manager_secret.#{name}.name}" }
-      )
-    end
+    include Pangea::Resources::ResourceBuilder
+
+    define_resource :google_secret_manager_secret,
+      attributes_class: Google::Types::SecretManagerSecretAttributes,
+      outputs: { id: :id, name: :name },
+      map: [:secret_id, :replication],
+      map_present: [:project, :expire_time, :ttl, :rotation, :topics],
+      labels: :labels
   end
   module Google
     include GoogleSecretManagerSecret

@@ -1,13 +1,11 @@
 # frozen_string_literal: true
-require 'dry-struct'
 require 'pangea/resources/types'
 
 module Pangea
   module Resources
     module Google
       module Types
-        class RedisInstanceAttributes < Dry::Struct
-          transform_keys(&:to_sym)
+        class RedisInstanceAttributes < Pangea::Resources::BaseAttributes
           attribute :name, Dry::Types['strict.string']
           attribute :project, Dry::Types['strict.string'].optional.default(nil)
           attribute :region, Dry::Types['strict.string']

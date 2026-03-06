@@ -6,26 +6,14 @@ require 'pangea/resource_registry'
 
 module Pangea::Resources
   module GoogleSqlDatabaseInstance
-    def google_sql_database_instance(name, attributes = {})
-      attrs = Google::Types::SqlDatabaseInstanceAttributes.new(attributes)
-      resource(:google_sql_database_instance, name) do
-        name attrs.name
-        project attrs.project if attrs.project
-        region attrs.region
-        database_version attrs.database_version
-        settings attrs.settings
-        deletion_protection attrs.deletion_protection if !attrs.deletion_protection.nil?
-        root_password attrs.root_password if attrs.root_password
-        master_instance_name attrs.master_instance_name if attrs.master_instance_name
-        replica_configuration attrs.replica_configuration if attrs.replica_configuration
-      end
-      ResourceReference.new(
-        type: 'google_sql_database_instance',
-        name: name,
-        resource_attributes: attrs.to_h,
-        outputs: { id: "${google_sql_database_instance.#{name}.id}", connection_name: "${google_sql_database_instance.#{name}.connection_name}", self_link: "${google_sql_database_instance.#{name}.self_link}", ip_address: "${google_sql_database_instance.#{name}.ip_address}" }
-      )
-    end
+    include Pangea::Resources::ResourceBuilder
+
+    define_resource :google_sql_database_instance,
+      attributes_class: Google::Types::SqlDatabaseInstanceAttributes,
+      outputs: { id: :id, connection_name: :connection_name, self_link: :self_link, ip_address: :ip_address },
+      map: [:name, :region, :database_version, :settings],
+      map_present: [:project, :root_password, :master_instance_name, :replica_configuration],
+      map_bool: [:deletion_protection]
   end
   module Google
     include GoogleSqlDatabaseInstance

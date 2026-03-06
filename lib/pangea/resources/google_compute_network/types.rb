@@ -1,13 +1,11 @@
 # frozen_string_literal: true
-require 'dry-struct'
 require 'pangea/resources/types'
 
 module Pangea
   module Resources
     module Google
       module Types
-        class ComputeNetworkAttributes < Dry::Struct
-          transform_keys(&:to_sym)
+        class ComputeNetworkAttributes < Pangea::Resources::BaseAttributes
           attribute :name, Dry::Types['strict.string']
           attribute :project, Dry::Types['strict.string'].optional.default(nil)
           attribute :auto_create_subnetworks, Dry::Types['strict.bool'].optional.default(nil)

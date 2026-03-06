@@ -6,32 +6,14 @@ require 'pangea/resource_registry'
 
 module Pangea::Resources
   module GoogleComputeFirewall
-    def google_compute_firewall(name, attributes = {})
-      attrs = Google::Types::ComputeFirewallAttributes.new(attributes)
-      resource(:google_compute_firewall, name) do
-        name attrs.name
-        project attrs.project if attrs.project
-        network attrs.network
-        description attrs.description if attrs.description
-        direction attrs.direction if attrs.direction
-        priority attrs.priority if attrs.priority
-        allow attrs.allow if attrs.allow
-        deny attrs.deny if attrs.deny
-        source_ranges attrs.source_ranges if attrs.source_ranges
-        destination_ranges attrs.destination_ranges if attrs.destination_ranges
-        source_tags attrs.source_tags if attrs.source_tags
-        target_tags attrs.target_tags if attrs.target_tags
-        source_service_accounts attrs.source_service_accounts if attrs.source_service_accounts
-        target_service_accounts attrs.target_service_accounts if attrs.target_service_accounts
-        disabled attrs.disabled if !attrs.disabled.nil?
-      end
-      ResourceReference.new(
-        type: 'google_compute_firewall',
-        name: name,
-        resource_attributes: attrs.to_h,
-        outputs: { id: "${google_compute_firewall.#{name}.id}", self_link: "${google_compute_firewall.#{name}.self_link}" }
-      )
-    end
+    include Pangea::Resources::ResourceBuilder
+
+    define_resource :google_compute_firewall,
+      attributes_class: Google::Types::ComputeFirewallAttributes,
+      outputs: { id: :id, self_link: :self_link },
+      map: [:name, :network],
+      map_present: [:project, :description, :direction, :priority, :allow, :deny, :source_ranges, :destination_ranges, :source_tags, :target_tags, :source_service_accounts, :target_service_accounts],
+      map_bool: [:disabled]
   end
   module Google
     include GoogleComputeFirewall

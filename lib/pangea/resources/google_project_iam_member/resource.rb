@@ -6,21 +6,13 @@ require 'pangea/resource_registry'
 
 module Pangea::Resources
   module GoogleProjectIamMember
-    def google_project_iam_member(name, attributes = {})
-      attrs = Google::Types::ProjectIamMemberAttributes.new(attributes)
-      resource(:google_project_iam_member, name) do
-        project attrs.project
-        role attrs.role
-        member attrs.member
-        condition attrs.condition if attrs.condition
-      end
-      ResourceReference.new(
-        type: 'google_project_iam_member',
-        name: name,
-        resource_attributes: attrs.to_h,
-        outputs: { id: "${google_project_iam_member.#{name}.id}" }
-      )
-    end
+    include Pangea::Resources::ResourceBuilder
+
+    define_resource :google_project_iam_member,
+      attributes_class: Google::Types::ProjectIamMemberAttributes,
+      outputs: { id: :id },
+      map: [:project, :role, :member],
+      map_present: [:condition]
   end
   module Google
     include GoogleProjectIamMember

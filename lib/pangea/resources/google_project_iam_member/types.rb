@@ -1,13 +1,11 @@
 # frozen_string_literal: true
-require 'dry-struct'
 require 'pangea/resources/types'
 
 module Pangea
   module Resources
     module Google
       module Types
-        class ProjectIamMemberAttributes < Dry::Struct
-          transform_keys(&:to_sym)
+        class ProjectIamMemberAttributes < Pangea::Resources::BaseAttributes
           attribute :project, Dry::Types['strict.string']
           attribute :role, Dry::Types['strict.string']
           attribute :member, Dry::Types['strict.string']

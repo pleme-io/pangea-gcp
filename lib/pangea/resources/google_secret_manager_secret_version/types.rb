@@ -1,13 +1,11 @@
 # frozen_string_literal: true
-require 'dry-struct'
 require 'pangea/resources/types'
 
 module Pangea
   module Resources
     module Google
       module Types
-        class SecretManagerSecretVersionAttributes < Dry::Struct
-          transform_keys(&:to_sym)
+        class SecretManagerSecretVersionAttributes < Pangea::Resources::BaseAttributes
           attribute :secret, Dry::Types['strict.string']
           attribute :secret_data, Dry::Types['strict.string']
           attribute :enabled, Dry::Types['strict.bool'].optional.default(nil)

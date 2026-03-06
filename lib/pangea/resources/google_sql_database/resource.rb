@@ -6,22 +6,13 @@ require 'pangea/resource_registry'
 
 module Pangea::Resources
   module GoogleSqlDatabase
-    def google_sql_database(name, attributes = {})
-      attrs = Google::Types::SqlDatabaseAttributes.new(attributes)
-      resource(:google_sql_database, name) do
-        name attrs.name
-        project attrs.project if attrs.project
-        instance attrs.instance
-        charset attrs.charset if attrs.charset
-        collation attrs.collation if attrs.collation
-      end
-      ResourceReference.new(
-        type: 'google_sql_database',
-        name: name,
-        resource_attributes: attrs.to_h,
-        outputs: { id: "${google_sql_database.#{name}.id}", self_link: "${google_sql_database.#{name}.self_link}" }
-      )
-    end
+    include Pangea::Resources::ResourceBuilder
+
+    define_resource :google_sql_database,
+      attributes_class: Google::Types::SqlDatabaseAttributes,
+      outputs: { id: :id, self_link: :self_link },
+      map: [:name, :instance],
+      map_present: [:project, :charset, :collation]
   end
   module Google
     include GoogleSqlDatabase

@@ -6,24 +6,15 @@ require 'pangea/resource_registry'
 
 module Pangea::Resources
   module GoogleProject
-    def google_project(name, attributes = {})
-      attrs = Google::Types::ProjectAttributes.new(attributes)
-      resource(:google_project, name) do
-        name attrs.name
-        project_id attrs.project_id
-        org_id attrs.org_id if attrs.org_id
-        billing_account attrs.billing_account if attrs.billing_account
-        folder_id attrs.folder_id if attrs.folder_id
-        auto_create_network attrs.auto_create_network if !attrs.auto_create_network.nil?
-        labels attrs.labels if attrs.labels.any?
-      end
-      ResourceReference.new(
-        type: 'google_project',
-        name: name,
-        resource_attributes: attrs.to_h,
-        outputs: { id: "${google_project.#{name}.id}", number: "${google_project.#{name}.number}" }
-      )
-    end
+    include Pangea::Resources::ResourceBuilder
+
+    define_resource :google_project,
+      attributes_class: Google::Types::ProjectAttributes,
+      outputs: { id: :id, number: :number },
+      map: [:name, :project_id],
+      map_present: [:org_id, :billing_account, :folder_id],
+      map_bool: [:auto_create_network],
+      labels: :labels
   end
   module Google
     include GoogleProject

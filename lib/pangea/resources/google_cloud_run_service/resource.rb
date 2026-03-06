@@ -6,24 +6,14 @@ require 'pangea/resource_registry'
 
 module Pangea::Resources
   module GoogleCloudRunService
-    def google_cloud_run_service(name, attributes = {})
-      attrs = Google::Types::CloudRunServiceAttributes.new(attributes)
-      resource(:google_cloud_run_service, name) do
-        name attrs.name
-        project attrs.project if attrs.project
-        location attrs.location
-        template attrs.template
-        traffic attrs.traffic if attrs.traffic
-        metadata attrs.metadata if attrs.metadata
-        autogenerate_revision_name attrs.autogenerate_revision_name if !attrs.autogenerate_revision_name.nil?
-      end
-      ResourceReference.new(
-        type: 'google_cloud_run_service',
-        name: name,
-        resource_attributes: attrs.to_h,
-        outputs: { id: "${google_cloud_run_service.#{name}.id}", status: "${google_cloud_run_service.#{name}.status}" }
-      )
-    end
+    include Pangea::Resources::ResourceBuilder
+
+    define_resource :google_cloud_run_service,
+      attributes_class: Google::Types::CloudRunServiceAttributes,
+      outputs: { id: :id, status: :status },
+      map: [:name, :location, :template],
+      map_present: [:project, :traffic, :metadata],
+      map_bool: [:autogenerate_revision_name]
   end
   module Google
     include GoogleCloudRunService

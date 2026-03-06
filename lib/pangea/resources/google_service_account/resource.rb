@@ -6,22 +6,14 @@ require 'pangea/resource_registry'
 
 module Pangea::Resources
   module GoogleServiceAccount
-    def google_service_account(name, attributes = {})
-      attrs = Google::Types::ServiceAccountAttributes.new(attributes)
-      resource(:google_service_account, name) do
-        account_id attrs.account_id
-        project attrs.project if attrs.project
-        display_name attrs.display_name if attrs.display_name
-        description attrs.description if attrs.description
-        disabled attrs.disabled if !attrs.disabled.nil?
-      end
-      ResourceReference.new(
-        type: 'google_service_account',
-        name: name,
-        resource_attributes: attrs.to_h,
-        outputs: { id: "${google_service_account.#{name}.id}", email: "${google_service_account.#{name}.email}", unique_id: "${google_service_account.#{name}.unique_id}" }
-      )
-    end
+    include Pangea::Resources::ResourceBuilder
+
+    define_resource :google_service_account,
+      attributes_class: Google::Types::ServiceAccountAttributes,
+      outputs: { id: :id, email: :email, unique_id: :unique_id },
+      map: [:account_id],
+      map_present: [:project, :display_name, :description],
+      map_bool: [:disabled]
   end
   module Google
     include GoogleServiceAccount

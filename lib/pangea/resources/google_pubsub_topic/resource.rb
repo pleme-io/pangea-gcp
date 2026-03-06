@@ -6,24 +6,14 @@ require 'pangea/resource_registry'
 
 module Pangea::Resources
   module GooglePubsubTopic
-    def google_pubsub_topic(name, attributes = {})
-      attrs = Google::Types::PubsubTopicAttributes.new(attributes)
-      resource(:google_pubsub_topic, name) do
-        name attrs.name
-        project attrs.project if attrs.project
-        labels attrs.labels if attrs.labels.any?
-        kms_key_name attrs.kms_key_name if attrs.kms_key_name
-        message_retention_duration attrs.message_retention_duration if attrs.message_retention_duration
-        message_storage_policy attrs.message_storage_policy if attrs.message_storage_policy
-        schema_settings attrs.schema_settings if attrs.schema_settings
-      end
-      ResourceReference.new(
-        type: 'google_pubsub_topic',
-        name: name,
-        resource_attributes: attrs.to_h,
-        outputs: { id: "${google_pubsub_topic.#{name}.id}" }
-      )
-    end
+    include Pangea::Resources::ResourceBuilder
+
+    define_resource :google_pubsub_topic,
+      attributes_class: Google::Types::PubsubTopicAttributes,
+      outputs: { id: :id },
+      map: [:name],
+      map_present: [:project, :kms_key_name, :message_retention_duration, :message_storage_policy, :schema_settings],
+      labels: :labels
   end
   module Google
     include GooglePubsubTopic

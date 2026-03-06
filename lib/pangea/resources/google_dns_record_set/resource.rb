@@ -6,24 +6,13 @@ require 'pangea/resource_registry'
 
 module Pangea::Resources
   module GoogleDnsRecordSet
-    def google_dns_record_set(name, attributes = {})
-      attrs = Google::Types::DnsRecordSetAttributes.new(attributes)
-      resource(:google_dns_record_set, name) do
-        name attrs.name
-        project attrs.project if attrs.project
-        managed_zone attrs.managed_zone
-        type attrs.type
-        ttl attrs.ttl if attrs.ttl
-        rrdatas attrs.rrdatas if attrs.rrdatas
-        routing_policy attrs.routing_policy if attrs.routing_policy
-      end
-      ResourceReference.new(
-        type: 'google_dns_record_set',
-        name: name,
-        resource_attributes: attrs.to_h,
-        outputs: { id: "${google_dns_record_set.#{name}.id}" }
-      )
-    end
+    include Pangea::Resources::ResourceBuilder
+
+    define_resource :google_dns_record_set,
+      attributes_class: Google::Types::DnsRecordSetAttributes,
+      outputs: { id: :id },
+      map: [:name, :managed_zone, :type],
+      map_present: [:project, :ttl, :rrdatas, :routing_policy]
   end
   module Google
     include GoogleDnsRecordSet
