@@ -4,6 +4,8 @@
 require 'pangea-core'
 require 'terraform-synthesizer'
 
+module Pangea; module Resources; module Google; module Types; end; end; end; end
+
 # Google resources
 require_relative 'pangea/resources/google_access_context_manager_access_level/resource'
 require_relative 'pangea/resources/google_access_context_manager_access_level_condition/resource'
