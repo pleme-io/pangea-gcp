@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityBackendAuthenticationConf
 
         expect(ref.id).to eq("${google_network_security_backend_authentication_config.test.id}")
         expect(ref.create_time).to eq("${google_network_security_backend_authentication_config.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_security_backend_authentication_config.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_security_backend_authentication_config.test.effective_labels}")
         expect(ref.project).to eq("${google_network_security_backend_authentication_config.test.project}")
         expect(ref.terraform_labels).to eq("${google_network_security_backend_authentication_config.test.terraform_labels}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityBackendAuthenticationConf
 
         config = validate_resource_structure(result, 'google_network_security_backend_authentication_config', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityBackendAuthenticationConf
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ client_certificate: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', trust_config: 'test-value', well_known_roots: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ client_certificate: 'test-value', deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', project: 'test-value', trust_config: 'test-value', well_known_roots: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,9 +75,11 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityBackendAuthenticationConf
 
         config = validate_resource_structure(result, 'google_network_security_backend_authentication_config', 'full')
         expect(config).to have_key('client_certificate')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
         expect(config).to have_key('trust_config')
         expect(config).to have_key('well_known_roots')
       end
@@ -98,6 +102,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityBackendAuthenticationConf
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_security_backend_authentication_config', 'minimal')
         expect(config).not_to have_key('client_certificate')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_backend_authentication_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_backend_authentication_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_backend_authentication_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_backend_authentication_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -149,6 +170,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityBackendAuthenticationConf
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_security_backend_authentication_config', 'minimal')
         expect(config).not_to have_key('location')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_backend_authentication_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_backend_authentication_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_backend_authentication_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_backend_authentication_config', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes trust_config when provided' do
         synth = create_synthesizer
@@ -228,7 +266,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityBackendAuthenticationConf
     resource_type: :google_network_security_backend_authentication_config,
     method: :google_network_security_backend_authentication_config,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :project, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :project, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -39,11 +39,13 @@ RSpec.describe Pangea::Resources::GoogleNetappVolumeReplication do
 
         expect(ref.id).to eq("${google_netapp_volume_replication.test.id}")
         expect(ref.create_time).to eq("${google_netapp_volume_replication.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_netapp_volume_replication.test.deletion_policy}")
         expect(ref.destination_volume).to eq("${google_netapp_volume_replication.test.destination_volume}")
         expect(ref.effective_labels).to eq("${google_netapp_volume_replication.test.effective_labels}")
         expect(ref.healthy).to eq("${google_netapp_volume_replication.test.healthy}")
         expect(ref.hybrid_peering_details).to eq("${google_netapp_volume_replication.test.hybrid_peering_details}")
         expect(ref.hybrid_replication_type).to eq("${google_netapp_volume_replication.test.hybrid_replication_type}")
+        expect(ref.hybrid_replication_user_commands).to eq("${google_netapp_volume_replication.test.hybrid_replication_user_commands}")
         expect(ref.mirror_state).to eq("${google_netapp_volume_replication.test.mirror_state}")
         expect(ref.project).to eq("${google_netapp_volume_replication.test.project}")
         expect(ref.role).to eq("${google_netapp_volume_replication.test.role}")
@@ -64,11 +66,13 @@ RSpec.describe Pangea::Resources::GoogleNetappVolumeReplication do
 
         config = validate_resource_structure(result, 'google_netapp_volume_replication', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('destination_volume')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('healthy')
         expect(config).not_to have_key('hybrid_peering_details')
         expect(config).not_to have_key('hybrid_replication_type')
+        expect(config).not_to have_key('hybrid_replication_user_commands')
         expect(config).not_to have_key('mirror_state')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('role')
@@ -81,7 +85,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolumeReplication do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ delete_destination_volume: true, description: 'test-value', destination_volume_parameters: [{ 'key1' => 'val1' }], force_stopping: true, labels: { 'key1' => 'val1' }, replication_enabled: true, wait_for_mirror: true }) }
+      let(:all_attrs) { required_attrs.merge({ delete_destination_volume: true, deletion_policy: 'test-value', description: 'test-value', destination_volume_parameters: { 'key1' => 'val1' }, force_stopping: true, labels: { 'key1' => 'val1' }, project: 'test-value', replication_enabled: true, wait_for_mirror: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -91,10 +95,12 @@ RSpec.describe Pangea::Resources::GoogleNetappVolumeReplication do
 
         config = validate_resource_structure(result, 'google_netapp_volume_replication', 'full')
         expect(config).to have_key('delete_destination_volume')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('destination_volume_parameters')
         expect(config).to have_key('force_stopping')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('replication_enabled')
         expect(config).to have_key('wait_for_mirror')
       end
@@ -118,6 +124,23 @@ RSpec.describe Pangea::Resources::GoogleNetappVolumeReplication do
         config = validate_resource_structure(result, 'google_netapp_volume_replication', 'minimal')
         expect(config).not_to have_key('delete_destination_volume')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume_replication('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume_replication', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume_replication('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume_replication', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -138,7 +161,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolumeReplication do
       it 'includes destination_volume_parameters when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_netapp_volume_replication('opt', required_attrs.merge(destination_volume_parameters: [{ 'key1' => 'val1' }]))
+        synth.google_netapp_volume_replication('opt', required_attrs.merge(destination_volume_parameters: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_volume_replication', 'opt')
         expect(config).to have_key('destination_volume_parameters')
@@ -185,6 +208,23 @@ RSpec.describe Pangea::Resources::GoogleNetappVolumeReplication do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_volume_replication', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume_replication('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume_replication', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume_replication('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume_replication', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes replication_enabled when provided' do
         synth = create_synthesizer
@@ -314,7 +354,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolumeReplication do
     resource_type: :google_netapp_volume_replication,
     method: :google_netapp_volume_replication,
     required_attrs: { location: 'test-value', name: 'test-value', replication_schedule: 'test-value', volume_name: 'test-value' },
-    expected_outputs: [:id, :create_time, :destination_volume, :effective_labels, :healthy, :hybrid_peering_details, :hybrid_replication_type, :mirror_state, :project, :role, :source_volume, :state, :state_details, :terraform_labels, :transfer_stats],
+    expected_outputs: [:id, :create_time, :deletion_policy, :destination_volume, :effective_labels, :healthy, :hybrid_peering_details, :hybrid_replication_type, :hybrid_replication_user_commands, :mirror_state, :project, :role, :source_volume, :state, :state_details, :terraform_labels, :transfer_stats],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:delete_destination_volume, :force_stopping, :replication_enabled, :wait_for_mirror]

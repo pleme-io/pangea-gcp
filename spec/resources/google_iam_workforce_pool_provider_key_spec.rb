@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProviderKey do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { key_data: [{ 'key1' => 'val1' }], key_id: 'test-value', location: 'test-value', provider_id: 'test-value', use: 'test-value', workforce_pool_id: 'test-value' } }
+  let(:required_attrs) { { key_data: { 'key1' => 'val1' }, key_id: 'test-value', location: 'test-value', provider_id: 'test-value', use: 'test-value', workforce_pool_id: 'test-value' } }
 
   describe ':google_iam_workforce_pool_provider_key' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProviderKey do
         ref = synth.google_iam_workforce_pool_provider_key('test', required_attrs)
 
         expect(ref.id).to eq("${google_iam_workforce_pool_provider_key.test.id}")
+        expect(ref.deletion_policy).to eq("${google_iam_workforce_pool_provider_key.test.deletion_policy}")
         expect(ref.expire_time).to eq("${google_iam_workforce_pool_provider_key.test.expire_time}")
         expect(ref.name).to eq("${google_iam_workforce_pool_provider_key.test.name}")
         expect(ref.state).to eq("${google_iam_workforce_pool_provider_key.test.state}")
@@ -52,9 +53,44 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProviderKey do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_iam_workforce_pool_provider_key', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('expire_time')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('state')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_provider_key('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_provider_key', 'full')
+        expect(config).to have_key('deletion_policy')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_provider_key('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_provider_key', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_provider_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_provider_key', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -66,7 +102,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProviderKey do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_iam_workforce_pool_provider_key', 'typed')
-        expect(config['key_data']).to be_a(Array)
+        expect(config['key_data']).to be_a(Hash)
         expect(config['key_id']).to be_a(String)
         expect(config['location']).to be_a(String)
         expect(config['provider_id']).to be_a(String)
@@ -104,8 +140,8 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProviderKey do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_iam_workforce_pool_provider_key,
     method: :google_iam_workforce_pool_provider_key,
-    required_attrs: { key_data: [{ 'key1' => 'val1' }], key_id: 'test-value', location: 'test-value', provider_id: 'test-value', use: 'test-value', workforce_pool_id: 'test-value' },
-    expected_outputs: [:id, :expire_time, :name, :state],
+    required_attrs: { key_data: { 'key1' => 'val1' }, key_id: 'test-value', location: 'test-value', provider_id: 'test-value', use: 'test-value', workforce_pool_id: 'test-value' },
+    expected_outputs: [:id, :deletion_policy, :expire_time, :name, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleDatastreamStream do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { destination_config: [{ 'key1' => 'val1' }], display_name: 'test-value', location: 'test-value', source_config: [{ 'key1' => 'val1' }], stream_id: 'test-value' } }
+  let(:required_attrs) { { destination_config: { 'key1' => 'val1' }, display_name: 'test-value', location: 'test-value', source_config: { 'key1' => 'val1' }, stream_id: 'test-value' } }
 
   describe ':google_datastream_stream' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamStream do
         ref = synth.google_datastream_stream('test', required_attrs)
 
         expect(ref.id).to eq("${google_datastream_stream.test.id}")
+        expect(ref.deletion_policy).to eq("${google_datastream_stream.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_datastream_stream.test.effective_labels}")
         expect(ref.name).to eq("${google_datastream_stream.test.name}")
         expect(ref.project).to eq("${google_datastream_stream.test.project}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamStream do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_datastream_stream', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamStream do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ backfill_all: [{ 'key1' => 'val1' }], backfill_none: [{ 'key1' => 'val1' }], create_without_validation: true, customer_managed_encryption_key: 'test-value', desired_state: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ backfill_all: { 'key1' => 'val1' }, backfill_none: { 'key1' => 'val1' }, create_without_validation: true, customer_managed_encryption_key: 'test-value', deletion_policy: 'test-value', desired_state: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', rule_sets: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,8 +78,11 @@ RSpec.describe Pangea::Resources::GoogleDatastreamStream do
         expect(config).to have_key('backfill_none')
         expect(config).to have_key('create_without_validation')
         expect(config).to have_key('customer_managed_encryption_key')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('desired_state')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
+        expect(config).to have_key('rule_sets')
       end
     end
 
@@ -85,7 +90,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamStream do
       it 'includes backfill_all when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_datastream_stream('opt', required_attrs.merge(backfill_all: [{ 'key1' => 'val1' }]))
+        synth.google_datastream_stream('opt', required_attrs.merge(backfill_all: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_datastream_stream', 'opt')
         expect(config).to have_key('backfill_all')
@@ -102,7 +107,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamStream do
       it 'includes backfill_none when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_datastream_stream('opt', required_attrs.merge(backfill_none: [{ 'key1' => 'val1' }]))
+        synth.google_datastream_stream('opt', required_attrs.merge(backfill_none: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_datastream_stream', 'opt')
         expect(config).to have_key('backfill_none')
@@ -150,6 +155,23 @@ RSpec.describe Pangea::Resources::GoogleDatastreamStream do
         config = validate_resource_structure(result, 'google_datastream_stream', 'minimal')
         expect(config).not_to have_key('customer_managed_encryption_key')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_stream('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_stream', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_stream('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_stream', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes desired_state when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -184,6 +206,40 @@ RSpec.describe Pangea::Resources::GoogleDatastreamStream do
         config = validate_resource_structure(result, 'google_datastream_stream', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_stream('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_stream', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_stream('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_stream', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes rule_sets when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_stream('opt', required_attrs.merge(rule_sets: [{ 'key1' => 'val1' }]))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_stream', 'opt')
+        expect(config).to have_key('rule_sets')
+      end
+
+      it 'omits rule_sets when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_stream('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_stream', 'minimal')
+        expect(config).not_to have_key('rule_sets')
+      end
     end
 
     context 'boolean fields' do
@@ -208,10 +264,10 @@ RSpec.describe Pangea::Resources::GoogleDatastreamStream do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_datastream_stream', 'typed')
-        expect(config['destination_config']).to be_a(Array)
+        expect(config['destination_config']).to be_a(Hash)
         expect(config['display_name']).to be_a(String)
         expect(config['location']).to be_a(String)
-        expect(config['source_config']).to be_a(Array)
+        expect(config['source_config']).to be_a(Hash)
         expect(config['stream_id']).to be_a(String)
       end
     end
@@ -245,8 +301,8 @@ RSpec.describe Pangea::Resources::GoogleDatastreamStream do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_datastream_stream,
     method: :google_datastream_stream,
-    required_attrs: { destination_config: [{ 'key1' => 'val1' }], display_name: 'test-value', location: 'test-value', source_config: [{ 'key1' => 'val1' }], stream_id: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :name, :project, :state, :terraform_labels],
+    required_attrs: { destination_config: { 'key1' => 'val1' }, display_name: 'test-value', location: 'test-value', source_config: { 'key1' => 'val1' }, stream_id: 'test-value' },
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :name, :project, :state, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:create_without_validation]

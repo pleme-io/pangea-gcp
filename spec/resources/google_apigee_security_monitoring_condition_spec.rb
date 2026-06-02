@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityMonitoringCondition do
 
         expect(ref.id).to eq("${google_apigee_security_monitoring_condition.test.id}")
         expect(ref.create_time).to eq("${google_apigee_security_monitoring_condition.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_apigee_security_monitoring_condition.test.deletion_policy}")
         expect(ref.name).to eq("${google_apigee_security_monitoring_condition.test.name}")
         expect(ref.total_deployed_resources).to eq("${google_apigee_security_monitoring_condition.test.total_deployed_resources}")
         expect(ref.total_monitored_resources).to eq("${google_apigee_security_monitoring_condition.test.total_monitored_resources}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityMonitoringCondition do
 
         config = validate_resource_structure(result, 'google_apigee_security_monitoring_condition', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('total_deployed_resources')
         expect(config).not_to have_key('total_monitored_resources')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityMonitoringCondition do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ include_all_resources: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', include_all_resources: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,15 +74,33 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityMonitoringCondition do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_security_monitoring_condition', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('include_all_resources')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_security_monitoring_condition('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_security_monitoring_condition', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_security_monitoring_condition('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_security_monitoring_condition', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes include_all_resources when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_security_monitoring_condition('opt', required_attrs.merge(include_all_resources: [{ 'key1' => 'val1' }]))
+        synth.google_apigee_security_monitoring_condition('opt', required_attrs.merge(include_all_resources: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_security_monitoring_condition', 'opt')
         expect(config).to have_key('include_all_resources')
@@ -141,7 +161,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityMonitoringCondition do
     resource_type: :google_apigee_security_monitoring_condition,
     method: :google_apigee_security_monitoring_condition,
     required_attrs: { condition_id: 'test-value', org_id: 'test-value', profile: 'test-value', scope: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :total_deployed_resources, :total_monitored_resources, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :total_deployed_resources, :total_monitored_resources, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

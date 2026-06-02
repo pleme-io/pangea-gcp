@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleEventarcEnrollment do
 
         expect(ref.id).to eq("${google_eventarc_enrollment.test.id}")
         expect(ref.create_time).to eq("${google_eventarc_enrollment.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_eventarc_enrollment.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_eventarc_enrollment.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_eventarc_enrollment.test.effective_labels}")
         expect(ref.etag).to eq("${google_eventarc_enrollment.test.etag}")
@@ -59,6 +60,7 @@ RSpec.describe Pangea::Resources::GoogleEventarcEnrollment do
 
         config = validate_resource_structure(result, 'google_eventarc_enrollment', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleEventarcEnrollment do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, display_name: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, deletion_policy: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -81,8 +83,10 @@ RSpec.describe Pangea::Resources::GoogleEventarcEnrollment do
 
         config = validate_resource_structure(result, 'google_eventarc_enrollment', 'full')
         expect(config).to have_key('annotations')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
@@ -103,6 +107,23 @@ RSpec.describe Pangea::Resources::GoogleEventarcEnrollment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_eventarc_enrollment', 'minimal')
         expect(config).not_to have_key('annotations')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_enrollment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_enrollment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_enrollment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_enrollment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes display_name when provided' do
         synth = create_synthesizer
@@ -137,6 +158,23 @@ RSpec.describe Pangea::Resources::GoogleEventarcEnrollment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_eventarc_enrollment', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_enrollment('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_enrollment', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_enrollment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_enrollment', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -186,7 +224,7 @@ RSpec.describe Pangea::Resources::GoogleEventarcEnrollment do
     resource_type: :google_eventarc_enrollment,
     method: :google_eventarc_enrollment,
     required_attrs: { cel_match: 'test-value', destination: 'test-value', enrollment_id: 'test-value', location: 'test-value', message_bus: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_annotations, :effective_labels, :etag, :name, :project, :terraform_labels, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_annotations, :effective_labels, :etag, :name, :project, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

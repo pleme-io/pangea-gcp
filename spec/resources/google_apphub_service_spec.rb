@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleApphubService do
 
         expect(ref.id).to eq("${google_apphub_service.test.id}")
         expect(ref.create_time).to eq("${google_apphub_service.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_apphub_service.test.deletion_policy}")
         expect(ref.name).to eq("${google_apphub_service.test.name}")
         expect(ref.project).to eq("${google_apphub_service.test.project}")
         expect(ref.service_properties).to eq("${google_apphub_service.test.service_properties}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleApphubService do
 
         config = validate_resource_structure(result, 'google_apphub_service', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('service_properties')
@@ -69,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleApphubService do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ attributes: [{ 'key1' => 'val1' }], description: 'test-value', display_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ attributes: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -79,8 +81,10 @@ RSpec.describe Pangea::Resources::GoogleApphubService do
 
         config = validate_resource_structure(result, 'google_apphub_service', 'full')
         expect(config).to have_key('attributes')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('project')
       end
     end
 
@@ -88,7 +92,7 @@ RSpec.describe Pangea::Resources::GoogleApphubService do
       it 'includes attributes when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apphub_service('opt', required_attrs.merge(attributes: [{ 'key1' => 'val1' }]))
+        synth.google_apphub_service('opt', required_attrs.merge(attributes: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apphub_service', 'opt')
         expect(config).to have_key('attributes')
@@ -101,6 +105,23 @@ RSpec.describe Pangea::Resources::GoogleApphubService do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apphub_service', 'minimal')
         expect(config).not_to have_key('attributes')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apphub_service('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apphub_service', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apphub_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apphub_service', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -135,6 +156,23 @@ RSpec.describe Pangea::Resources::GoogleApphubService do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apphub_service', 'minimal')
         expect(config).not_to have_key('display_name')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apphub_service('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apphub_service', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apphub_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apphub_service', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -183,7 +221,7 @@ RSpec.describe Pangea::Resources::GoogleApphubService do
     resource_type: :google_apphub_service,
     method: :google_apphub_service,
     required_attrs: { application_id: 'test-value', discovered_service: 'test-value', location: 'test-value', service_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :project, :service_properties, :service_reference, :state, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :project, :service_properties, :service_reference, :state, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

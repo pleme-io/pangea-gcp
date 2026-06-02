@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleContainerAnalysisNote do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { attestation_authority: [{ 'key1' => 'val1' }], name: 'test-value' } }
+  let(:required_attrs) { { attestation_authority: { 'key1' => 'val1' }, name: 'test-value' } }
 
   describe ':google_container_analysis_note' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAnalysisNote do
 
         expect(ref.id).to eq("${google_container_analysis_note.test.id}")
         expect(ref.create_time).to eq("${google_container_analysis_note.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_container_analysis_note.test.deletion_policy}")
         expect(ref.kind).to eq("${google_container_analysis_note.test.kind}")
         expect(ref.project).to eq("${google_container_analysis_note.test.project}")
         expect(ref.update_time).to eq("${google_container_analysis_note.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAnalysisNote do
 
         config = validate_resource_structure(result, 'google_container_analysis_note', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('kind')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAnalysisNote do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ expiration_time: 'test-value', long_description: 'test-value', related_note_names: ['test-value'], related_url: [{ 'key1' => 'val1' }], short_description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', expiration_time: 'test-value', long_description: 'test-value', project: 'test-value', related_note_names: ['test-value'], related_url: [{ 'key1' => 'val1' }], short_description: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,8 +72,10 @@ RSpec.describe Pangea::Resources::GoogleContainerAnalysisNote do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_container_analysis_note', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('expiration_time')
         expect(config).to have_key('long_description')
+        expect(config).to have_key('project')
         expect(config).to have_key('related_note_names')
         expect(config).to have_key('related_url')
         expect(config).to have_key('short_description')
@@ -79,6 +83,23 @@ RSpec.describe Pangea::Resources::GoogleContainerAnalysisNote do
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_analysis_note('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_analysis_note', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_analysis_note('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_analysis_note', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes expiration_time when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -112,6 +133,23 @@ RSpec.describe Pangea::Resources::GoogleContainerAnalysisNote do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_analysis_note', 'minimal')
         expect(config).not_to have_key('long_description')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_analysis_note('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_analysis_note', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_analysis_note('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_analysis_note', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes related_note_names when provided' do
         synth = create_synthesizer
@@ -174,7 +212,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAnalysisNote do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_container_analysis_note', 'typed')
-        expect(config['attestation_authority']).to be_a(Array)
+        expect(config['attestation_authority']).to be_a(Hash)
         expect(config['name']).to be_a(String)
       end
     end
@@ -208,8 +246,8 @@ RSpec.describe Pangea::Resources::GoogleContainerAnalysisNote do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_container_analysis_note,
     method: :google_container_analysis_note,
-    required_attrs: { attestation_authority: [{ 'key1' => 'val1' }], name: 'test-value' },
-    expected_outputs: [:id, :create_time, :kind, :project, :update_time],
+    required_attrs: { attestation_authority: { 'key1' => 'val1' }, name: 'test-value' },
+    expected_outputs: [:id, :create_time, :deletion_policy, :kind, :project, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

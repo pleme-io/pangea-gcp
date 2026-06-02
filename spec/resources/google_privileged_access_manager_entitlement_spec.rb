@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GooglePrivilegedAccessManagerEntitlement do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { eligible_users: [{ 'key1' => 'val1' }], entitlement_id: 'test-value', location: 'test-value', max_request_duration: 'test-value', parent: 'test-value', privileged_access: [{ 'key1' => 'val1' }], requester_justification_config: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { eligible_users: [{ 'key1' => 'val1' }], entitlement_id: 'test-value', location: 'test-value', max_request_duration: 'test-value', parent: 'test-value', privileged_access: { 'key1' => 'val1' }, requester_justification_config: { 'key1' => 'val1' } } }
 
   describe ':google_privileged_access_manager_entitlement' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GooglePrivilegedAccessManagerEntitlement do
 
         expect(ref.id).to eq("${google_privileged_access_manager_entitlement.test.id}")
         expect(ref.create_time).to eq("${google_privileged_access_manager_entitlement.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_privileged_access_manager_entitlement.test.deletion_policy}")
         expect(ref.etag).to eq("${google_privileged_access_manager_entitlement.test.etag}")
         expect(ref.name).to eq("${google_privileged_access_manager_entitlement.test.name}")
         expect(ref.state).to eq("${google_privileged_access_manager_entitlement.test.state}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GooglePrivilegedAccessManagerEntitlement do
 
         config = validate_resource_structure(result, 'google_privileged_access_manager_entitlement', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('state')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GooglePrivilegedAccessManagerEntitlement do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ additional_notification_targets: [{ 'key1' => 'val1' }], approval_workflow: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ additional_notification_targets: { 'key1' => 'val1' }, approval_workflow: { 'key1' => 'val1' }, deletion_policy: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,6 +76,7 @@ RSpec.describe Pangea::Resources::GooglePrivilegedAccessManagerEntitlement do
         config = validate_resource_structure(result, 'google_privileged_access_manager_entitlement', 'full')
         expect(config).to have_key('additional_notification_targets')
         expect(config).to have_key('approval_workflow')
+        expect(config).to have_key('deletion_policy')
       end
     end
 
@@ -81,7 +84,7 @@ RSpec.describe Pangea::Resources::GooglePrivilegedAccessManagerEntitlement do
       it 'includes additional_notification_targets when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_privileged_access_manager_entitlement('opt', required_attrs.merge(additional_notification_targets: [{ 'key1' => 'val1' }]))
+        synth.google_privileged_access_manager_entitlement('opt', required_attrs.merge(additional_notification_targets: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_privileged_access_manager_entitlement', 'opt')
         expect(config).to have_key('additional_notification_targets')
@@ -98,7 +101,7 @@ RSpec.describe Pangea::Resources::GooglePrivilegedAccessManagerEntitlement do
       it 'includes approval_workflow when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_privileged_access_manager_entitlement('opt', required_attrs.merge(approval_workflow: [{ 'key1' => 'val1' }]))
+        synth.google_privileged_access_manager_entitlement('opt', required_attrs.merge(approval_workflow: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_privileged_access_manager_entitlement', 'opt')
         expect(config).to have_key('approval_workflow')
@@ -111,6 +114,23 @@ RSpec.describe Pangea::Resources::GooglePrivilegedAccessManagerEntitlement do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_privileged_access_manager_entitlement', 'minimal')
         expect(config).not_to have_key('approval_workflow')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privileged_access_manager_entitlement('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privileged_access_manager_entitlement', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privileged_access_manager_entitlement('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privileged_access_manager_entitlement', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -127,8 +147,8 @@ RSpec.describe Pangea::Resources::GooglePrivilegedAccessManagerEntitlement do
         expect(config['location']).to be_a(String)
         expect(config['max_request_duration']).to be_a(String)
         expect(config['parent']).to be_a(String)
-        expect(config['privileged_access']).to be_a(Array)
-        expect(config['requester_justification_config']).to be_a(Array)
+        expect(config['privileged_access']).to be_a(Hash)
+        expect(config['requester_justification_config']).to be_a(Hash)
       end
     end
 
@@ -161,8 +181,8 @@ RSpec.describe Pangea::Resources::GooglePrivilegedAccessManagerEntitlement do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_privileged_access_manager_entitlement,
     method: :google_privileged_access_manager_entitlement,
-    required_attrs: { eligible_users: [{ 'key1' => 'val1' }], entitlement_id: 'test-value', location: 'test-value', max_request_duration: 'test-value', parent: 'test-value', privileged_access: [{ 'key1' => 'val1' }], requester_justification_config: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :etag, :name, :state, :update_time],
+    required_attrs: { eligible_users: [{ 'key1' => 'val1' }], entitlement_id: 'test-value', location: 'test-value', max_request_duration: 'test-value', parent: 'test-value', privileged_access: { 'key1' => 'val1' }, requester_justification_config: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :create_time, :deletion_policy, :etag, :name, :state, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

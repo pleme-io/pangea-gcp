@@ -65,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryJob do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ copy: [{ 'key1' => 'val1' }], extract: [{ 'key1' => 'val1' }], job_timeout_ms: 'test-value', labels: { 'key1' => 'val1' }, load: [{ 'key1' => 'val1' }], location: 'test-value', query: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ copy: { 'key1' => 'val1' }, extract: { 'key1' => 'val1' }, job_timeout_ms: 'test-value', labels: { 'key1' => 'val1' }, load: { 'key1' => 'val1' }, location: 'test-value', project: 'test-value', query: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -80,6 +80,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryJob do
         expect(config).to have_key('labels')
         expect(config).to have_key('load')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
         expect(config).to have_key('query')
       end
     end
@@ -88,7 +89,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryJob do
       it 'includes copy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_job('opt', required_attrs.merge(copy: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_job('opt', required_attrs.merge(copy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_job', 'opt')
         expect(config).to have_key('copy')
@@ -105,7 +106,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryJob do
       it 'includes extract when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_job('opt', required_attrs.merge(extract: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_job('opt', required_attrs.merge(extract: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_job', 'opt')
         expect(config).to have_key('extract')
@@ -156,7 +157,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryJob do
       it 'includes load when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_job('opt', required_attrs.merge(load: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_job('opt', required_attrs.merge(load: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_job', 'opt')
         expect(config).to have_key('load')
@@ -187,10 +188,27 @@ RSpec.describe Pangea::Resources::GoogleBigqueryJob do
         config = validate_resource_structure(result, 'google_bigquery_job', 'minimal')
         expect(config).not_to have_key('location')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_job('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_job', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_job', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes query when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_job('opt', required_attrs.merge(query: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_job('opt', required_attrs.merge(query: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_job', 'opt')
         expect(config).to have_key('query')

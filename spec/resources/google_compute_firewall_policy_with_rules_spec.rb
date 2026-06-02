@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewallPolicyWithRules do
 
         expect(ref.id).to eq("${google_compute_firewall_policy_with_rules.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_firewall_policy_with_rules.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_firewall_policy_with_rules.test.deletion_policy}")
         expect(ref.fingerprint).to eq("${google_compute_firewall_policy_with_rules.test.fingerprint}")
         expect(ref.policy_id).to eq("${google_compute_firewall_policy_with_rules.test.policy_id}")
         expect(ref.predefined_rules).to eq("${google_compute_firewall_policy_with_rules.test.predefined_rules}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewallPolicyWithRules do
 
         config = validate_resource_structure(result, 'google_compute_firewall_policy_with_rules', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('fingerprint')
         expect(config).not_to have_key('policy_id')
         expect(config).not_to have_key('predefined_rules')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewallPolicyWithRules do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,11 +78,29 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewallPolicyWithRules do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_firewall_policy_with_rules', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_firewall_policy_with_rules('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_firewall_policy_with_rules', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_firewall_policy_with_rules('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_firewall_policy_with_rules', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -144,7 +164,7 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewallPolicyWithRules do
     resource_type: :google_compute_firewall_policy_with_rules,
     method: :google_compute_firewall_policy_with_rules,
     required_attrs: { parent: 'test-value', rule: [{ 'key1' => 'val1' }], short_name: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :fingerprint, :policy_id, :predefined_rules, :rule_tuple_count, :self_link, :self_link_with_id],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :fingerprint, :policy_id, :predefined_rules, :rule_tuple_count, :self_link, :self_link_with_id],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

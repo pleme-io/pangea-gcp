@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
 
         expect(ref.id).to eq("${google_cloudbuild_trigger.test.id}")
         expect(ref.create_time).to eq("${google_cloudbuild_trigger.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_cloudbuild_trigger.test.deletion_policy}")
         expect(ref.name).to eq("${google_cloudbuild_trigger.test.name}")
         expect(ref.project).to eq("${google_cloudbuild_trigger.test.project}")
         expect(ref.trigger_id).to eq("${google_cloudbuild_trigger.test.trigger_id}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
 
         config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('trigger_id')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ approval_config: [{ 'key1' => 'val1' }], bitbucket_server_trigger_config: [{ 'key1' => 'val1' }], build: [{ 'key1' => 'val1' }], description: 'test-value', disabled: true, filename: 'test-value', filter: 'test-value', git_file_source: [{ 'key1' => 'val1' }], github: [{ 'key1' => 'val1' }], ignored_files: ['test-value'], include_build_logs: 'test-value', included_files: ['test-value'], location: 'test-value', pubsub_config: [{ 'key1' => 'val1' }], repository_event_config: [{ 'key1' => 'val1' }], service_account: 'test-value', source_to_build: [{ 'key1' => 'val1' }], substitutions: { 'key1' => 'val1' }, tags: ['test-value'], trigger_template: [{ 'key1' => 'val1' }], webhook_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ approval_config: { 'key1' => 'val1' }, bitbucket_server_trigger_config: { 'key1' => 'val1' }, build: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', developer_connect_event_config: { 'key1' => 'val1' }, disabled: true, filename: 'test-value', filter: 'test-value', git_file_source: { 'key1' => 'val1' }, github: { 'key1' => 'val1' }, ignored_files: ['test-value'], include_build_logs: 'test-value', included_files: ['test-value'], location: 'test-value', name: 'test-value', project: 'test-value', pubsub_config: { 'key1' => 'val1' }, repository_event_config: { 'key1' => 'val1' }, service_account: 'test-value', source_to_build: { 'key1' => 'val1' }, substitutions: { 'key1' => 'val1' }, tags: ['test-value'], trigger_template: { 'key1' => 'val1' }, webhook_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,7 +75,9 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
         expect(config).to have_key('approval_config')
         expect(config).to have_key('bitbucket_server_trigger_config')
         expect(config).to have_key('build')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('developer_connect_event_config')
         expect(config).to have_key('disabled')
         expect(config).to have_key('filename')
         expect(config).to have_key('filter')
@@ -83,6 +87,8 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
         expect(config).to have_key('include_build_logs')
         expect(config).to have_key('included_files')
         expect(config).to have_key('location')
+        expect(config).to have_key('name')
+        expect(config).to have_key('project')
         expect(config).to have_key('pubsub_config')
         expect(config).to have_key('repository_event_config')
         expect(config).to have_key('service_account')
@@ -98,7 +104,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
       it 'includes approval_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudbuild_trigger('opt', required_attrs.merge(approval_config: [{ 'key1' => 'val1' }]))
+        synth.google_cloudbuild_trigger('opt', required_attrs.merge(approval_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'opt')
         expect(config).to have_key('approval_config')
@@ -115,7 +121,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
       it 'includes bitbucket_server_trigger_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudbuild_trigger('opt', required_attrs.merge(bitbucket_server_trigger_config: [{ 'key1' => 'val1' }]))
+        synth.google_cloudbuild_trigger('opt', required_attrs.merge(bitbucket_server_trigger_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'opt')
         expect(config).to have_key('bitbucket_server_trigger_config')
@@ -132,7 +138,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
       it 'includes build when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudbuild_trigger('opt', required_attrs.merge(build: [{ 'key1' => 'val1' }]))
+        synth.google_cloudbuild_trigger('opt', required_attrs.merge(build: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'opt')
         expect(config).to have_key('build')
@@ -145,6 +151,23 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'minimal')
         expect(config).not_to have_key('build')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_trigger('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_trigger('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -162,6 +185,23 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes developer_connect_event_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_trigger('opt', required_attrs.merge(developer_connect_event_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'opt')
+        expect(config).to have_key('developer_connect_event_config')
+      end
+
+      it 'omits developer_connect_event_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_trigger('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'minimal')
+        expect(config).not_to have_key('developer_connect_event_config')
       end
       it 'includes disabled when provided' do
         synth = create_synthesizer
@@ -217,7 +257,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
       it 'includes git_file_source when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudbuild_trigger('opt', required_attrs.merge(git_file_source: [{ 'key1' => 'val1' }]))
+        synth.google_cloudbuild_trigger('opt', required_attrs.merge(git_file_source: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'opt')
         expect(config).to have_key('git_file_source')
@@ -234,7 +274,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
       it 'includes github when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudbuild_trigger('opt', required_attrs.merge(github: [{ 'key1' => 'val1' }]))
+        synth.google_cloudbuild_trigger('opt', required_attrs.merge(github: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'opt')
         expect(config).to have_key('github')
@@ -316,10 +356,44 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
         config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'minimal')
         expect(config).not_to have_key('location')
       end
+      it 'includes name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_trigger('opt', required_attrs.merge(name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'opt')
+        expect(config).to have_key('name')
+      end
+
+      it 'omits name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_trigger('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'minimal')
+        expect(config).not_to have_key('name')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_trigger('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_trigger('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes pubsub_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudbuild_trigger('opt', required_attrs.merge(pubsub_config: [{ 'key1' => 'val1' }]))
+        synth.google_cloudbuild_trigger('opt', required_attrs.merge(pubsub_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'opt')
         expect(config).to have_key('pubsub_config')
@@ -336,7 +410,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
       it 'includes repository_event_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudbuild_trigger('opt', required_attrs.merge(repository_event_config: [{ 'key1' => 'val1' }]))
+        synth.google_cloudbuild_trigger('opt', required_attrs.merge(repository_event_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'opt')
         expect(config).to have_key('repository_event_config')
@@ -370,7 +444,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
       it 'includes source_to_build when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudbuild_trigger('opt', required_attrs.merge(source_to_build: [{ 'key1' => 'val1' }]))
+        synth.google_cloudbuild_trigger('opt', required_attrs.merge(source_to_build: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'opt')
         expect(config).to have_key('source_to_build')
@@ -421,7 +495,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
       it 'includes trigger_template when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudbuild_trigger('opt', required_attrs.merge(trigger_template: [{ 'key1' => 'val1' }]))
+        synth.google_cloudbuild_trigger('opt', required_attrs.merge(trigger_template: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'opt')
         expect(config).to have_key('trigger_template')
@@ -438,7 +512,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
       it 'includes webhook_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudbuild_trigger('opt', required_attrs.merge(webhook_config: [{ 'key1' => 'val1' }]))
+        synth.google_cloudbuild_trigger('opt', required_attrs.merge(webhook_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_trigger', 'opt')
         expect(config).to have_key('webhook_config')
@@ -509,7 +583,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildTrigger do
     resource_type: :google_cloudbuild_trigger,
     method: :google_cloudbuild_trigger,
     required_attrs: {},
-    expected_outputs: [:id, :create_time, :name, :project, :trigger_id],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :project, :trigger_id],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disabled]

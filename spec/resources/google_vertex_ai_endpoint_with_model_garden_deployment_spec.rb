@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpointWithModelGardenDeploymen
         ref = synth.google_vertex_ai_endpoint_with_model_garden_deployment('test', required_attrs)
 
         expect(ref.id).to eq("${google_vertex_ai_endpoint_with_model_garden_deployment.test.id}")
+        expect(ref.deletion_policy).to eq("${google_vertex_ai_endpoint_with_model_garden_deployment.test.deletion_policy}")
         expect(ref.deployed_model_display_name).to eq("${google_vertex_ai_endpoint_with_model_garden_deployment.test.deployed_model_display_name}")
         expect(ref.deployed_model_id).to eq("${google_vertex_ai_endpoint_with_model_garden_deployment.test.deployed_model_id}")
         expect(ref.endpoint).to eq("${google_vertex_ai_endpoint_with_model_garden_deployment.test.endpoint}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpointWithModelGardenDeploymen
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vertex_ai_endpoint_with_model_garden_deployment', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('deployed_model_display_name')
         expect(config).not_to have_key('deployed_model_id')
         expect(config).not_to have_key('endpoint')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpointWithModelGardenDeploymen
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deploy_config: [{ 'key1' => 'val1' }], endpoint_config: [{ 'key1' => 'val1' }], hugging_face_model_id: 'test-value', model_config: [{ 'key1' => 'val1' }], publisher_model_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', deploy_config: { 'key1' => 'val1' }, endpoint_config: { 'key1' => 'val1' }, hugging_face_model_id: 'test-value', model_config: { 'key1' => 'val1' }, project: 'test-value', publisher_model_name: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,19 +72,38 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpointWithModelGardenDeploymen
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vertex_ai_endpoint_with_model_garden_deployment', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deploy_config')
         expect(config).to have_key('endpoint_config')
         expect(config).to have_key('hugging_face_model_id')
         expect(config).to have_key('model_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('publisher_model_name')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_endpoint_with_model_garden_deployment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_endpoint_with_model_garden_deployment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_endpoint_with_model_garden_deployment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_endpoint_with_model_garden_deployment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deploy_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_endpoint_with_model_garden_deployment('opt', required_attrs.merge(deploy_config: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_endpoint_with_model_garden_deployment('opt', required_attrs.merge(deploy_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_endpoint_with_model_garden_deployment', 'opt')
         expect(config).to have_key('deploy_config')
@@ -99,7 +120,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpointWithModelGardenDeploymen
       it 'includes endpoint_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_endpoint_with_model_garden_deployment('opt', required_attrs.merge(endpoint_config: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_endpoint_with_model_garden_deployment('opt', required_attrs.merge(endpoint_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_endpoint_with_model_garden_deployment', 'opt')
         expect(config).to have_key('endpoint_config')
@@ -133,7 +154,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpointWithModelGardenDeploymen
       it 'includes model_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_endpoint_with_model_garden_deployment('opt', required_attrs.merge(model_config: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_endpoint_with_model_garden_deployment('opt', required_attrs.merge(model_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_endpoint_with_model_garden_deployment', 'opt')
         expect(config).to have_key('model_config')
@@ -146,6 +167,23 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpointWithModelGardenDeploymen
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_endpoint_with_model_garden_deployment', 'minimal')
         expect(config).not_to have_key('model_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_endpoint_with_model_garden_deployment('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_endpoint_with_model_garden_deployment', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_endpoint_with_model_garden_deployment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_endpoint_with_model_garden_deployment', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes publisher_model_name when provided' do
         synth = create_synthesizer
@@ -208,7 +246,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpointWithModelGardenDeploymen
     resource_type: :google_vertex_ai_endpoint_with_model_garden_deployment,
     method: :google_vertex_ai_endpoint_with_model_garden_deployment,
     required_attrs: { location: 'test-value' },
-    expected_outputs: [:id, :deployed_model_display_name, :deployed_model_id, :endpoint, :project],
+    expected_outputs: [:id, :deletion_policy, :deployed_model_display_name, :deployed_model_id, :endpoint, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

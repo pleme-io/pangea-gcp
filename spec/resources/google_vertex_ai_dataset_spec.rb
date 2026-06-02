@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiDataset do
 
         expect(ref.id).to eq("${google_vertex_ai_dataset.test.id}")
         expect(ref.create_time).to eq("${google_vertex_ai_dataset.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_vertex_ai_dataset.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_vertex_ai_dataset.test.effective_labels}")
         expect(ref.name).to eq("${google_vertex_ai_dataset.test.name}")
         expect(ref.project).to eq("${google_vertex_ai_dataset.test.project}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiDataset do
 
         config = validate_resource_structure(result, 'google_vertex_ai_dataset', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiDataset do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ encryption_spec: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', encryption_spec: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,16 +78,36 @@ RSpec.describe Pangea::Resources::GoogleVertexAiDataset do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vertex_ai_dataset', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('encryption_spec')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_dataset('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_dataset', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_dataset', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes encryption_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_dataset('opt', required_attrs.merge(encryption_spec: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_dataset('opt', required_attrs.merge(encryption_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_dataset', 'opt')
         expect(config).to have_key('encryption_spec')
@@ -115,6 +137,40 @@ RSpec.describe Pangea::Resources::GoogleVertexAiDataset do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_dataset', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_dataset('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_dataset', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_dataset', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_dataset('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_dataset', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_dataset', 'minimal')
+        expect(config).not_to have_key('region')
       end
     end
 
@@ -161,7 +217,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiDataset do
     resource_type: :google_vertex_ai_dataset,
     method: :google_vertex_ai_dataset,
     required_attrs: { display_name: 'test-value', metadata_schema_uri: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :name, :project, :region, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :name, :project, :region, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

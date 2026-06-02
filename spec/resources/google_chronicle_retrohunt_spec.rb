@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleChronicleRetrohunt do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { instance: 'test-value', location: 'test-value', process_interval: [{ 'key1' => 'val1' }], rule: 'test-value' } }
+  let(:required_attrs) { { instance: 'test-value', location: 'test-value', process_interval: { 'key1' => 'val1' }, rule: 'test-value' } }
 
   describe ':google_chronicle_retrohunt' do
     context 'with required attributes only' do
@@ -64,6 +64,58 @@ RSpec.describe Pangea::Resources::GoogleChronicleRetrohunt do
       end
     end
 
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ project: 'test-value', retrohunt: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_retrohunt('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_chronicle_retrohunt', 'full')
+        expect(config).to have_key('project')
+        expect(config).to have_key('retrohunt')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_retrohunt('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_retrohunt', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_retrohunt('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_retrohunt', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes retrohunt when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_retrohunt('opt', required_attrs.merge(retrohunt: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_retrohunt', 'opt')
+        expect(config).to have_key('retrohunt')
+      end
+
+      it 'omits retrohunt when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_retrohunt('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_retrohunt', 'minimal')
+        expect(config).not_to have_key('retrohunt')
+      end
+    end
+
     context 'attribute types' do
       it 'validates expected attribute types' do
         synth = create_synthesizer
@@ -74,7 +126,7 @@ RSpec.describe Pangea::Resources::GoogleChronicleRetrohunt do
         config = validate_resource_structure(result, 'google_chronicle_retrohunt', 'typed')
         expect(config['instance']).to be_a(String)
         expect(config['location']).to be_a(String)
-        expect(config['process_interval']).to be_a(Array)
+        expect(config['process_interval']).to be_a(Hash)
         expect(config['rule']).to be_a(String)
       end
     end
@@ -108,7 +160,7 @@ RSpec.describe Pangea::Resources::GoogleChronicleRetrohunt do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_chronicle_retrohunt,
     method: :google_chronicle_retrohunt,
-    required_attrs: { instance: 'test-value', location: 'test-value', process_interval: [{ 'key1' => 'val1' }], rule: 'test-value' },
+    required_attrs: { instance: 'test-value', location: 'test-value', process_interval: { 'key1' => 'val1' }, rule: 'test-value' },
     expected_outputs: [:id, :execution_interval, :name, :progress_percentage, :project, :retrohunt, :state],
     sensitive_fields: [],
     immutable_fields: [],

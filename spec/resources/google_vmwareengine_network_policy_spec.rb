@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineNetworkPolicy do
 
         expect(ref.id).to eq("${google_vmwareengine_network_policy.test.id}")
         expect(ref.create_time).to eq("${google_vmwareengine_network_policy.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_vmwareengine_network_policy.test.deletion_policy}")
         expect(ref.project).to eq("${google_vmwareengine_network_policy.test.project}")
         expect(ref.uid).to eq("${google_vmwareengine_network_policy.test.uid}")
         expect(ref.update_time).to eq("${google_vmwareengine_network_policy.test.update_time}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineNetworkPolicy do
 
         config = validate_resource_structure(result, 'google_vmwareengine_network_policy', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('uid')
         expect(config).not_to have_key('update_time')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineNetworkPolicy do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', external_ip: [{ 'key1' => 'val1' }], internet_access: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', external_ip: { 'key1' => 'val1' }, internet_access: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,13 +74,32 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineNetworkPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vmwareengine_network_policy', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('external_ip')
         expect(config).to have_key('internet_access')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_network_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_network_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_network_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_network_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -99,7 +120,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineNetworkPolicy do
       it 'includes external_ip when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vmwareengine_network_policy('opt', required_attrs.merge(external_ip: [{ 'key1' => 'val1' }]))
+        synth.google_vmwareengine_network_policy('opt', required_attrs.merge(external_ip: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vmwareengine_network_policy', 'opt')
         expect(config).to have_key('external_ip')
@@ -116,7 +137,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineNetworkPolicy do
       it 'includes internet_access when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vmwareengine_network_policy('opt', required_attrs.merge(internet_access: [{ 'key1' => 'val1' }]))
+        synth.google_vmwareengine_network_policy('opt', required_attrs.merge(internet_access: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vmwareengine_network_policy', 'opt')
         expect(config).to have_key('internet_access')
@@ -129,6 +150,23 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineNetworkPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vmwareengine_network_policy', 'minimal')
         expect(config).not_to have_key('internet_access')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_network_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_network_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_network_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_network_policy', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -177,7 +215,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineNetworkPolicy do
     resource_type: :google_vmwareengine_network_policy,
     method: :google_vmwareengine_network_policy,
     required_attrs: { edge_services_cidr: 'test-value', location: 'test-value', name: 'test-value', vmware_engine_network: 'test-value' },
-    expected_outputs: [:id, :create_time, :project, :uid, :update_time, :vmware_engine_network_canonical],
+    expected_outputs: [:id, :create_time, :deletion_policy, :project, :uid, :update_time, :vmware_engine_network_canonical],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

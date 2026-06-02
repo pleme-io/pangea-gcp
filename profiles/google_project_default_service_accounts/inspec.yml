@@ -1,0 +1,8 @@
+name: google_project_default_service_accounts
+title: Manages a google_project_default_service_accounts resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

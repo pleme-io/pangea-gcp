@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleDiscoveryEngineCmekConfig do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { kms_key: 'test-value', location: 'test-value' } }
+  let(:required_attrs) { { cmek_config_id: 'test-value', kms_key: 'test-value', location: 'test-value' } }
 
   describe ':google_discovery_engine_cmek_config' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineCmekConfig do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_discovery_engine_cmek_config', 'test')
-        validate_required_attributes(config, [:kms_key, :location])
+        validate_required_attributes(config, [:cmek_config_id, :kms_key, :location])
       end
 
       it 'returns a ResourceReference' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineCmekConfig do
         ref = synth.google_discovery_engine_cmek_config('test', required_attrs)
 
         expect(ref.id).to eq("${google_discovery_engine_cmek_config.test.id}")
+        expect(ref.deletion_policy).to eq("${google_discovery_engine_cmek_config.test.deletion_policy}")
         expect(ref.is_default).to eq("${google_discovery_engine_cmek_config.test.is_default}")
         expect(ref.kms_key_version).to eq("${google_discovery_engine_cmek_config.test.kms_key_version}")
         expect(ref.last_rotation_timestamp_micros).to eq("${google_discovery_engine_cmek_config.test.last_rotation_timestamp_micros}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineCmekConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_discovery_engine_cmek_config', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('is_default')
         expect(config).not_to have_key('kms_key_version')
         expect(config).not_to have_key('last_rotation_timestamp_micros')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineCmekConfig do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ cmek_config_id: 'test-value', set_default: true, single_region_keys: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value', set_default: true, single_region_keys: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,29 +78,47 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineCmekConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_discovery_engine_cmek_config', 'full')
-        expect(config).to have_key('cmek_config_id')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
         expect(config).to have_key('set_default')
         expect(config).to have_key('single_region_keys')
       end
     end
 
     context 'optional attributes' do
-      it 'includes cmek_config_id when provided' do
+      it 'includes deletion_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_discovery_engine_cmek_config('opt', required_attrs.merge(cmek_config_id: 'test-value'))
+        synth.google_discovery_engine_cmek_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_discovery_engine_cmek_config', 'opt')
-        expect(config).to have_key('cmek_config_id')
+        expect(config).to have_key('deletion_policy')
       end
 
-      it 'omits cmek_config_id when not provided' do
+      it 'omits deletion_policy when not provided' do
         synth = create_synthesizer
         synth.extend(described_class)
         synth.google_discovery_engine_cmek_config('minimal', required_attrs)
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_discovery_engine_cmek_config', 'minimal')
-        expect(config).not_to have_key('cmek_config_id')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_cmek_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_cmek_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_cmek_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_cmek_config', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes set_default when provided' do
         synth = create_synthesizer
@@ -158,6 +178,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineCmekConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_discovery_engine_cmek_config', 'typed')
+        expect(config['cmek_config_id']).to be_a(String)
         expect(config['kms_key']).to be_a(String)
         expect(config['location']).to be_a(String)
       end
@@ -192,8 +213,8 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineCmekConfig do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_discovery_engine_cmek_config,
     method: :google_discovery_engine_cmek_config,
-    required_attrs: { kms_key: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :is_default, :kms_key_version, :last_rotation_timestamp_micros, :name, :notebooklm_state, :project, :state],
+    required_attrs: { cmek_config_id: 'test-value', kms_key: 'test-value', location: 'test-value' },
+    expected_outputs: [:id, :deletion_policy, :is_default, :kms_key_version, :last_rotation_timestamp_micros, :name, :notebooklm_state, :project, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:set_default]

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleNetworkSecurityAuthzPolicy do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { action: 'test-value', location: 'test-value', name: 'test-value', target: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { action: 'test-value', location: 'test-value', name: 'test-value', target: { 'key1' => 'val1' } } }
 
   describe ':google_network_security_authz_policy' do
     context 'with required attributes only' do
@@ -39,7 +39,9 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityAuthzPolicy do
 
         expect(ref.id).to eq("${google_network_security_authz_policy.test.id}")
         expect(ref.create_time).to eq("${google_network_security_authz_policy.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_security_authz_policy.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_security_authz_policy.test.effective_labels}")
+        expect(ref.policy_profile).to eq("${google_network_security_authz_policy.test.policy_profile}")
         expect(ref.project).to eq("${google_network_security_authz_policy.test.project}")
         expect(ref.terraform_labels).to eq("${google_network_security_authz_policy.test.terraform_labels}")
         expect(ref.update_time).to eq("${google_network_security_authz_policy.test.update_time}")
@@ -55,7 +57,9 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityAuthzPolicy do
 
         config = validate_resource_structure(result, 'google_network_security_authz_policy', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
+        expect(config).not_to have_key('policy_profile')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
         expect(config).not_to have_key('update_time')
@@ -63,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityAuthzPolicy do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ custom_provider: [{ 'key1' => 'val1' }], description: 'test-value', http_rules: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ custom_provider: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', http_rules: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, policy_profile: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,9 +77,12 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityAuthzPolicy do
 
         config = validate_resource_structure(result, 'google_network_security_authz_policy', 'full')
         expect(config).to have_key('custom_provider')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('http_rules')
         expect(config).to have_key('labels')
+        expect(config).to have_key('policy_profile')
+        expect(config).to have_key('project')
       end
     end
 
@@ -83,7 +90,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityAuthzPolicy do
       it 'includes custom_provider when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_network_security_authz_policy('opt', required_attrs.merge(custom_provider: [{ 'key1' => 'val1' }]))
+        synth.google_network_security_authz_policy('opt', required_attrs.merge(custom_provider: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_security_authz_policy', 'opt')
         expect(config).to have_key('custom_provider')
@@ -96,6 +103,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityAuthzPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_security_authz_policy', 'minimal')
         expect(config).not_to have_key('custom_provider')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_authz_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_authz_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_authz_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_authz_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -148,6 +172,40 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityAuthzPolicy do
         config = validate_resource_structure(result, 'google_network_security_authz_policy', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes policy_profile when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_authz_policy('opt', required_attrs.merge(policy_profile: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_authz_policy', 'opt')
+        expect(config).to have_key('policy_profile')
+      end
+
+      it 'omits policy_profile when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_authz_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_authz_policy', 'minimal')
+        expect(config).not_to have_key('policy_profile')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_authz_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_authz_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_authz_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_authz_policy', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -161,7 +219,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityAuthzPolicy do
         expect(config['action']).to be_a(String)
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
-        expect(config['target']).to be_a(Array)
+        expect(config['target']).to be_a(Hash)
       end
     end
 
@@ -194,8 +252,8 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityAuthzPolicy do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_network_security_authz_policy,
     method: :google_network_security_authz_policy,
-    required_attrs: { action: 'test-value', location: 'test-value', name: 'test-value', target: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :effective_labels, :project, :terraform_labels, :update_time],
+    required_attrs: { action: 'test-value', location: 'test-value', name: 'test-value', target: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :policy_profile, :project, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

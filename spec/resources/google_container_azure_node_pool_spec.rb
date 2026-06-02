@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleContainerAzureNodePool do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { autoscaling: [{ 'key1' => 'val1' }], cluster: 'test-value', config: [{ 'key1' => 'val1' }], location: 'test-value', max_pods_constraint: [{ 'key1' => 'val1' }], name: 'test-value', subnet_id: 'test-value', version: 'test-value' } }
+  let(:required_attrs) { { autoscaling: { 'key1' => 'val1' }, cluster: 'test-value', config: { 'key1' => 'val1' }, location: 'test-value', max_pods_constraint: { 'key1' => 'val1' }, name: 'test-value', subnet_id: 'test-value', version: 'test-value' } }
 
   describe ':google_container_azure_node_pool' do
     context 'with required attributes only' do
@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAzureNodePool do
         expect(ref.id).to eq("${google_container_azure_node_pool.test.id}")
         expect(ref.azure_availability_zone).to eq("${google_container_azure_node_pool.test.azure_availability_zone}")
         expect(ref.create_time).to eq("${google_container_azure_node_pool.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_container_azure_node_pool.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_container_azure_node_pool.test.effective_annotations}")
         expect(ref.etag).to eq("${google_container_azure_node_pool.test.etag}")
         expect(ref.project).to eq("${google_container_azure_node_pool.test.project}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAzureNodePool do
         config = validate_resource_structure(result, 'google_container_azure_node_pool', 'test')
         expect(config).not_to have_key('azure_availability_zone')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('project')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAzureNodePool do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, management: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, azure_availability_zone: 'test-value', deletion_policy: 'test-value', management: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -81,7 +83,10 @@ RSpec.describe Pangea::Resources::GoogleContainerAzureNodePool do
 
         config = validate_resource_structure(result, 'google_container_azure_node_pool', 'full')
         expect(config).to have_key('annotations')
+        expect(config).to have_key('azure_availability_zone')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('management')
+        expect(config).to have_key('project')
       end
     end
 
@@ -103,10 +108,44 @@ RSpec.describe Pangea::Resources::GoogleContainerAzureNodePool do
         config = validate_resource_structure(result, 'google_container_azure_node_pool', 'minimal')
         expect(config).not_to have_key('annotations')
       end
+      it 'includes azure_availability_zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_azure_node_pool('opt', required_attrs.merge(azure_availability_zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_azure_node_pool', 'opt')
+        expect(config).to have_key('azure_availability_zone')
+      end
+
+      it 'omits azure_availability_zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_azure_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_azure_node_pool', 'minimal')
+        expect(config).not_to have_key('azure_availability_zone')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_azure_node_pool('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_azure_node_pool', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_azure_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_azure_node_pool', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes management when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_azure_node_pool('opt', required_attrs.merge(management: [{ 'key1' => 'val1' }]))
+        synth.google_container_azure_node_pool('opt', required_attrs.merge(management: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_azure_node_pool', 'opt')
         expect(config).to have_key('management')
@@ -120,6 +159,23 @@ RSpec.describe Pangea::Resources::GoogleContainerAzureNodePool do
         config = validate_resource_structure(result, 'google_container_azure_node_pool', 'minimal')
         expect(config).not_to have_key('management')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_azure_node_pool('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_azure_node_pool', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_azure_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_azure_node_pool', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -130,11 +186,11 @@ RSpec.describe Pangea::Resources::GoogleContainerAzureNodePool do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_container_azure_node_pool', 'typed')
-        expect(config['autoscaling']).to be_a(Array)
+        expect(config['autoscaling']).to be_a(Hash)
         expect(config['cluster']).to be_a(String)
-        expect(config['config']).to be_a(Array)
+        expect(config['config']).to be_a(Hash)
         expect(config['location']).to be_a(String)
-        expect(config['max_pods_constraint']).to be_a(Array)
+        expect(config['max_pods_constraint']).to be_a(Hash)
         expect(config['name']).to be_a(String)
         expect(config['subnet_id']).to be_a(String)
         expect(config['version']).to be_a(String)
@@ -170,8 +226,8 @@ RSpec.describe Pangea::Resources::GoogleContainerAzureNodePool do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_container_azure_node_pool,
     method: :google_container_azure_node_pool,
-    required_attrs: { autoscaling: [{ 'key1' => 'val1' }], cluster: 'test-value', config: [{ 'key1' => 'val1' }], location: 'test-value', max_pods_constraint: [{ 'key1' => 'val1' }], name: 'test-value', subnet_id: 'test-value', version: 'test-value' },
-    expected_outputs: [:id, :azure_availability_zone, :create_time, :effective_annotations, :etag, :project, :reconciling, :state, :uid, :update_time],
+    required_attrs: { autoscaling: { 'key1' => 'val1' }, cluster: 'test-value', config: { 'key1' => 'val1' }, location: 'test-value', max_pods_constraint: { 'key1' => 'val1' }, name: 'test-value', subnet_id: 'test-value', version: 'test-value' },
+    expected_outputs: [:id, :azure_availability_zone, :create_time, :deletion_policy, :effective_annotations, :etag, :project, :reconciling, :state, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

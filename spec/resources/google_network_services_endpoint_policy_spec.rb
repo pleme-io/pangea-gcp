@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleNetworkServicesEndpointPolicy do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { endpoint_matcher: [{ 'key1' => 'val1' }], name: 'test-value', type: 'test-value' } }
+  let(:required_attrs) { { endpoint_matcher: { 'key1' => 'val1' }, name: 'test-value', type: 'test-value' } }
 
   describe ':google_network_services_endpoint_policy' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEndpointPolicy do
 
         expect(ref.id).to eq("${google_network_services_endpoint_policy.test.id}")
         expect(ref.create_time).to eq("${google_network_services_endpoint_policy.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_services_endpoint_policy.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_services_endpoint_policy.test.effective_labels}")
         expect(ref.project).to eq("${google_network_services_endpoint_policy.test.project}")
         expect(ref.terraform_labels).to eq("${google_network_services_endpoint_policy.test.terraform_labels}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEndpointPolicy do
 
         config = validate_resource_structure(result, 'google_network_services_endpoint_policy', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEndpointPolicy do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ authorization_policy: 'test-value', client_tls_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, server_tls_policy: 'test-value', traffic_port_selector: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ authorization_policy: 'test-value', client_tls_policy: 'test-value', deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', server_tls_policy: 'test-value', traffic_port_selector: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,8 +76,10 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEndpointPolicy do
         config = validate_resource_structure(result, 'google_network_services_endpoint_policy', 'full')
         expect(config).to have_key('authorization_policy')
         expect(config).to have_key('client_tls_policy')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('server_tls_policy')
         expect(config).to have_key('traffic_port_selector')
       end
@@ -116,6 +120,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEndpointPolicy do
         config = validate_resource_structure(result, 'google_network_services_endpoint_policy', 'minimal')
         expect(config).not_to have_key('client_tls_policy')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_endpoint_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_endpoint_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_endpoint_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_endpoint_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -150,6 +171,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEndpointPolicy do
         config = validate_resource_structure(result, 'google_network_services_endpoint_policy', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_endpoint_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_endpoint_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_endpoint_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_endpoint_policy', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes server_tls_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -170,7 +208,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEndpointPolicy do
       it 'includes traffic_port_selector when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_network_services_endpoint_policy('opt', required_attrs.merge(traffic_port_selector: [{ 'key1' => 'val1' }]))
+        synth.google_network_services_endpoint_policy('opt', required_attrs.merge(traffic_port_selector: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_endpoint_policy', 'opt')
         expect(config).to have_key('traffic_port_selector')
@@ -194,7 +232,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEndpointPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_services_endpoint_policy', 'typed')
-        expect(config['endpoint_matcher']).to be_a(Array)
+        expect(config['endpoint_matcher']).to be_a(Hash)
         expect(config['name']).to be_a(String)
         expect(config['type']).to be_a(String)
       end
@@ -229,8 +267,8 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEndpointPolicy do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_network_services_endpoint_policy,
     method: :google_network_services_endpoint_policy,
-    required_attrs: { endpoint_matcher: [{ 'key1' => 'val1' }], name: 'test-value', type: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :project, :terraform_labels, :update_time],
+    required_attrs: { endpoint_matcher: { 'key1' => 'val1' }, name: 'test-value', type: 'test-value' },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :project, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

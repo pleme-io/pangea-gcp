@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabase do
         expect(ref.id).to eq("${google_sql_database.test.id}")
         expect(ref.charset).to eq("${google_sql_database.test.charset}")
         expect(ref.collation).to eq("${google_sql_database.test.collation}")
+        expect(ref.deletion_policy).to eq("${google_sql_database.test.deletion_policy}")
         expect(ref.project).to eq("${google_sql_database.test.project}")
         expect(ref.self_link).to eq("${google_sql_database.test.self_link}")
       end
@@ -55,13 +56,14 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabase do
         config = validate_resource_structure(result, 'google_sql_database', 'test')
         expect(config).not_to have_key('charset')
         expect(config).not_to have_key('collation')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ charset: 'test-value', collation: 'test-value', deletion_policy: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,11 +72,48 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabase do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_sql_database', 'full')
+        expect(config).to have_key('charset')
+        expect(config).to have_key('collation')
         expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes charset when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database('opt', required_attrs.merge(charset: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database', 'opt')
+        expect(config).to have_key('charset')
+      end
+
+      it 'omits charset when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database', 'minimal')
+        expect(config).not_to have_key('charset')
+      end
+      it 'includes collation when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database('opt', required_attrs.merge(collation: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database', 'opt')
+        expect(config).to have_key('collation')
+      end
+
+      it 'omits collation when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database', 'minimal')
+        expect(config).not_to have_key('collation')
+      end
       it 'includes deletion_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -91,6 +130,23 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabase do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_sql_database', 'minimal')
         expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -137,7 +193,7 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabase do
     resource_type: :google_sql_database,
     method: :google_sql_database,
     required_attrs: { instance: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :charset, :collation, :project, :self_link],
+    expected_outputs: [:id, :charset, :collation, :deletion_policy, :project, :self_link],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

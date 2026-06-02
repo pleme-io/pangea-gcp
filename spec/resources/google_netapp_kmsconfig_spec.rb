@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleNetappKmsconfig do
         ref = synth.google_netapp_kmsconfig('test', required_attrs)
 
         expect(ref.id).to eq("${google_netapp_kmsconfig.test.id}")
+        expect(ref.deletion_policy).to eq("${google_netapp_kmsconfig.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_netapp_kmsconfig.test.effective_labels}")
         expect(ref.instructions).to eq("${google_netapp_kmsconfig.test.instructions}")
         expect(ref.project).to eq("${google_netapp_kmsconfig.test.project}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleNetappKmsconfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_netapp_kmsconfig', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('instructions')
         expect(config).not_to have_key('project')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleNetappKmsconfig do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,12 +74,31 @@ RSpec.describe Pangea::Resources::GoogleNetappKmsconfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_netapp_kmsconfig', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_kmsconfig('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_kmsconfig', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_kmsconfig('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_kmsconfig', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -111,6 +132,23 @@ RSpec.describe Pangea::Resources::GoogleNetappKmsconfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_kmsconfig', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_kmsconfig('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_kmsconfig', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_kmsconfig('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_kmsconfig', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -158,7 +196,7 @@ RSpec.describe Pangea::Resources::GoogleNetappKmsconfig do
     resource_type: :google_netapp_kmsconfig,
     method: :google_netapp_kmsconfig,
     required_attrs: { crypto_key_name: 'test-value', location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :instructions, :project, :service_account, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :instructions, :project, :service_account, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

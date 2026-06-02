@@ -59,7 +59,7 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformConfig do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ autodelete_anonymous_users: true, blocking_functions: [{ 'key1' => 'val1' }], client: [{ 'key1' => 'val1' }], mfa: [{ 'key1' => 'val1' }], monitoring: [{ 'key1' => 'val1' }], multi_tenant: [{ 'key1' => 'val1' }], quota: [{ 'key1' => 'val1' }], sign_in: [{ 'key1' => 'val1' }], sms_region_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ authorized_domains: ['test-value'], autodelete_anonymous_users: true, blocking_functions: { 'key1' => 'val1' }, client: { 'key1' => 'val1' }, mfa: { 'key1' => 'val1' }, monitoring: { 'key1' => 'val1' }, multi_tenant: { 'key1' => 'val1' }, project: 'test-value', quota: { 'key1' => 'val1' }, sign_in: { 'key1' => 'val1' }, sms_region_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,12 +68,14 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_identity_platform_config', 'full')
+        expect(config).to have_key('authorized_domains')
         expect(config).to have_key('autodelete_anonymous_users')
         expect(config).to have_key('blocking_functions')
         expect(config).to have_key('client')
         expect(config).to have_key('mfa')
         expect(config).to have_key('monitoring')
         expect(config).to have_key('multi_tenant')
+        expect(config).to have_key('project')
         expect(config).to have_key('quota')
         expect(config).to have_key('sign_in')
         expect(config).to have_key('sms_region_config')
@@ -81,6 +83,23 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformConfig do
     end
 
     context 'optional attributes' do
+      it 'includes authorized_domains when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_identity_platform_config('opt', required_attrs.merge(authorized_domains: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_identity_platform_config', 'opt')
+        expect(config).to have_key('authorized_domains')
+      end
+
+      it 'omits authorized_domains when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_identity_platform_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_identity_platform_config', 'minimal')
+        expect(config).not_to have_key('authorized_domains')
+      end
       it 'includes autodelete_anonymous_users when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -101,7 +120,7 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformConfig do
       it 'includes blocking_functions when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_identity_platform_config('opt', required_attrs.merge(blocking_functions: [{ 'key1' => 'val1' }]))
+        synth.google_identity_platform_config('opt', required_attrs.merge(blocking_functions: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_identity_platform_config', 'opt')
         expect(config).to have_key('blocking_functions')
@@ -118,7 +137,7 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformConfig do
       it 'includes client when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_identity_platform_config('opt', required_attrs.merge(client: [{ 'key1' => 'val1' }]))
+        synth.google_identity_platform_config('opt', required_attrs.merge(client: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_identity_platform_config', 'opt')
         expect(config).to have_key('client')
@@ -135,7 +154,7 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformConfig do
       it 'includes mfa when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_identity_platform_config('opt', required_attrs.merge(mfa: [{ 'key1' => 'val1' }]))
+        synth.google_identity_platform_config('opt', required_attrs.merge(mfa: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_identity_platform_config', 'opt')
         expect(config).to have_key('mfa')
@@ -152,7 +171,7 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformConfig do
       it 'includes monitoring when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_identity_platform_config('opt', required_attrs.merge(monitoring: [{ 'key1' => 'val1' }]))
+        synth.google_identity_platform_config('opt', required_attrs.merge(monitoring: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_identity_platform_config', 'opt')
         expect(config).to have_key('monitoring')
@@ -169,7 +188,7 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformConfig do
       it 'includes multi_tenant when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_identity_platform_config('opt', required_attrs.merge(multi_tenant: [{ 'key1' => 'val1' }]))
+        synth.google_identity_platform_config('opt', required_attrs.merge(multi_tenant: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_identity_platform_config', 'opt')
         expect(config).to have_key('multi_tenant')
@@ -183,10 +202,27 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformConfig do
         config = validate_resource_structure(result, 'google_identity_platform_config', 'minimal')
         expect(config).not_to have_key('multi_tenant')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_identity_platform_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_identity_platform_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_identity_platform_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_identity_platform_config', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes quota when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_identity_platform_config('opt', required_attrs.merge(quota: [{ 'key1' => 'val1' }]))
+        synth.google_identity_platform_config('opt', required_attrs.merge(quota: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_identity_platform_config', 'opt')
         expect(config).to have_key('quota')
@@ -203,7 +239,7 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformConfig do
       it 'includes sign_in when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_identity_platform_config('opt', required_attrs.merge(sign_in: [{ 'key1' => 'val1' }]))
+        synth.google_identity_platform_config('opt', required_attrs.merge(sign_in: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_identity_platform_config', 'opt')
         expect(config).to have_key('sign_in')
@@ -220,7 +256,7 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformConfig do
       it 'includes sms_region_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_identity_platform_config('opt', required_attrs.merge(sms_region_config: [{ 'key1' => 'val1' }]))
+        synth.google_identity_platform_config('opt', required_attrs.merge(sms_region_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_identity_platform_config', 'opt')
         expect(config).to have_key('sms_region_config')

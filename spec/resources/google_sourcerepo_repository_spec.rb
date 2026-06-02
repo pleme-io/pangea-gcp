@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleSourcerepoRepository do
         ref = synth.google_sourcerepo_repository('test', required_attrs)
 
         expect(ref.id).to eq("${google_sourcerepo_repository.test.id}")
+        expect(ref.deletion_policy).to eq("${google_sourcerepo_repository.test.deletion_policy}")
         expect(ref.project).to eq("${google_sourcerepo_repository.test.project}")
         expect(ref.size).to eq("${google_sourcerepo_repository.test.size}")
         expect(ref.url).to eq("${google_sourcerepo_repository.test.url}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleSourcerepoRepository do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_sourcerepo_repository', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('size')
         expect(config).not_to have_key('url')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleSourcerepoRepository do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ create_ignore_already_exists: true, pubsub_configs: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ create_ignore_already_exists: true, deletion_policy: 'test-value', project: 'test-value', pubsub_configs: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,6 +71,8 @@ RSpec.describe Pangea::Resources::GoogleSourcerepoRepository do
 
         config = validate_resource_structure(result, 'google_sourcerepo_repository', 'full')
         expect(config).to have_key('create_ignore_already_exists')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
         expect(config).to have_key('pubsub_configs')
       end
     end
@@ -90,6 +94,40 @@ RSpec.describe Pangea::Resources::GoogleSourcerepoRepository do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_sourcerepo_repository', 'minimal')
         expect(config).not_to have_key('create_ignore_already_exists')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sourcerepo_repository('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sourcerepo_repository', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sourcerepo_repository('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sourcerepo_repository', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sourcerepo_repository('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sourcerepo_repository', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sourcerepo_repository('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sourcerepo_repository', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes pubsub_configs when provided' do
         synth = create_synthesizer
@@ -166,7 +204,7 @@ RSpec.describe Pangea::Resources::GoogleSourcerepoRepository do
     resource_type: :google_sourcerepo_repository,
     method: :google_sourcerepo_repository,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :project, :size, :url],
+    expected_outputs: [:id, :deletion_policy, :project, :size, :url],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:create_ignore_already_exists]

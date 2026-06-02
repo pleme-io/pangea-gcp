@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComputeAttachedDisk do
         ref = synth.google_compute_attached_disk('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_attached_disk.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_attached_disk.test.deletion_policy}")
         expect(ref.device_name).to eq("${google_compute_attached_disk.test.device_name}")
         expect(ref.project).to eq("${google_compute_attached_disk.test.project}")
         expect(ref.zone).to eq("${google_compute_attached_disk.test.zone}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleComputeAttachedDisk do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_attached_disk', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('device_name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('zone')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleComputeAttachedDisk do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ interface: 'test-value', mode: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', device_name: 'test-value', interface: 'test-value', mode: 'test-value', project: 'test-value', zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,12 +70,50 @@ RSpec.describe Pangea::Resources::GoogleComputeAttachedDisk do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_attached_disk', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('device_name')
         expect(config).to have_key('interface')
         expect(config).to have_key('mode')
+        expect(config).to have_key('project')
+        expect(config).to have_key('zone')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_attached_disk('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_attached_disk', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_attached_disk('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_attached_disk', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes device_name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_attached_disk('opt', required_attrs.merge(device_name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_attached_disk', 'opt')
+        expect(config).to have_key('device_name')
+      end
+
+      it 'omits device_name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_attached_disk('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_attached_disk', 'minimal')
+        expect(config).not_to have_key('device_name')
+      end
       it 'includes interface when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -107,6 +147,40 @@ RSpec.describe Pangea::Resources::GoogleComputeAttachedDisk do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_attached_disk', 'minimal')
         expect(config).not_to have_key('mode')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_attached_disk('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_attached_disk', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_attached_disk('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_attached_disk', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_attached_disk('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_attached_disk', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_attached_disk('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_attached_disk', 'minimal')
+        expect(config).not_to have_key('zone')
       end
     end
 
@@ -153,7 +227,7 @@ RSpec.describe Pangea::Resources::GoogleComputeAttachedDisk do
     resource_type: :google_compute_attached_disk,
     method: :google_compute_attached_disk,
     required_attrs: { disk: 'test-value', instance: 'test-value' },
-    expected_outputs: [:id, :device_name, :project, :zone],
+    expected_outputs: [:id, :deletion_policy, :device_name, :project, :zone],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

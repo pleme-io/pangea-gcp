@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterPeer do
         ref = synth.google_compute_router_peer('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_router_peer.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_router_peer.test.deletion_policy}")
         expect(ref.enable_ipv4).to eq("${google_compute_router_peer.test.enable_ipv4}")
         expect(ref.ip_address).to eq("${google_compute_router_peer.test.ip_address}")
         expect(ref.ipv4_nexthop_address).to eq("${google_compute_router_peer.test.ipv4_nexthop_address}")
@@ -61,6 +62,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterPeer do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_router_peer', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('enable_ipv4')
         expect(config).not_to have_key('ip_address')
         expect(config).not_to have_key('ipv4_nexthop_address')
@@ -77,7 +79,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterPeer do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ advertise_mode: 'test-value', advertised_groups: ['test-value'], advertised_ip_ranges: [{ 'key1' => 'val1' }], advertised_route_priority: 3.14, bfd: [{ 'key1' => 'val1' }], custom_learned_ip_ranges: [{ 'key1' => 'val1' }], custom_learned_route_priority: 3.14, enable: true, enable_ipv6: true, export_policies: ['test-value'], import_policies: ['test-value'], md5_authentication_key: [{ 'key1' => 'val1' }], router_appliance_instance: 'test-value', zero_advertised_route_priority: true, zero_custom_learned_route_priority: true }) }
+      let(:all_attrs) { required_attrs.merge({ advertise_mode: 'test-value', advertised_groups: ['test-value'], advertised_ip_ranges: [{ 'key1' => 'val1' }], advertised_route_priority: 3.14, bfd: { 'key1' => 'val1' }, custom_learned_ip_ranges: [{ 'key1' => 'val1' }], custom_learned_route_priority: 3.14, deletion_policy: 'test-value', enable: true, enable_ipv4: true, enable_ipv6: true, export_policies: ['test-value'], import_policies: ['test-value'], ip_address: 'test-value', ipv4_nexthop_address: 'test-value', ipv6_nexthop_address: 'test-value', md5_authentication_key: { 'key1' => 'val1' }, peer_ip_address: 'test-value', peer_ipv4_nexthop_address: 'test-value', peer_ipv6_nexthop_address: 'test-value', project: 'test-value', region: 'test-value', router_appliance_instance: 'test-value', zero_advertised_route_priority: true, zero_custom_learned_route_priority: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -93,11 +95,21 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterPeer do
         expect(config).to have_key('bfd')
         expect(config).to have_key('custom_learned_ip_ranges')
         expect(config).to have_key('custom_learned_route_priority')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('enable')
+        expect(config).to have_key('enable_ipv4')
         expect(config).to have_key('enable_ipv6')
         expect(config).to have_key('export_policies')
         expect(config).to have_key('import_policies')
+        expect(config).to have_key('ip_address')
+        expect(config).to have_key('ipv4_nexthop_address')
+        expect(config).to have_key('ipv6_nexthop_address')
         expect(config).to have_key('md5_authentication_key')
+        expect(config).to have_key('peer_ip_address')
+        expect(config).to have_key('peer_ipv4_nexthop_address')
+        expect(config).to have_key('peer_ipv6_nexthop_address')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('router_appliance_instance')
         expect(config).to have_key('zero_advertised_route_priority')
         expect(config).to have_key('zero_custom_learned_route_priority')
@@ -176,7 +188,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterPeer do
       it 'includes bfd when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_router_peer('opt', required_attrs.merge(bfd: [{ 'key1' => 'val1' }]))
+        synth.google_compute_router_peer('opt', required_attrs.merge(bfd: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_router_peer', 'opt')
         expect(config).to have_key('bfd')
@@ -224,6 +236,23 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterPeer do
         config = validate_resource_structure(result, 'google_compute_router_peer', 'minimal')
         expect(config).not_to have_key('custom_learned_route_priority')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes enable when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -240,6 +269,23 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterPeer do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_router_peer', 'minimal')
         expect(config).not_to have_key('enable')
+      end
+      it 'includes enable_ipv4 when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('opt', required_attrs.merge(enable_ipv4: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'opt')
+        expect(config).to have_key('enable_ipv4')
+      end
+
+      it 'omits enable_ipv4 when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'minimal')
+        expect(config).not_to have_key('enable_ipv4')
       end
       it 'includes enable_ipv6 when provided' do
         synth = create_synthesizer
@@ -292,10 +338,61 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterPeer do
         config = validate_resource_structure(result, 'google_compute_router_peer', 'minimal')
         expect(config).not_to have_key('import_policies')
       end
+      it 'includes ip_address when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('opt', required_attrs.merge(ip_address: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'opt')
+        expect(config).to have_key('ip_address')
+      end
+
+      it 'omits ip_address when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'minimal')
+        expect(config).not_to have_key('ip_address')
+      end
+      it 'includes ipv4_nexthop_address when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('opt', required_attrs.merge(ipv4_nexthop_address: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'opt')
+        expect(config).to have_key('ipv4_nexthop_address')
+      end
+
+      it 'omits ipv4_nexthop_address when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'minimal')
+        expect(config).not_to have_key('ipv4_nexthop_address')
+      end
+      it 'includes ipv6_nexthop_address when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('opt', required_attrs.merge(ipv6_nexthop_address: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'opt')
+        expect(config).to have_key('ipv6_nexthop_address')
+      end
+
+      it 'omits ipv6_nexthop_address when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'minimal')
+        expect(config).not_to have_key('ipv6_nexthop_address')
+      end
       it 'includes md5_authentication_key when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_router_peer('opt', required_attrs.merge(md5_authentication_key: [{ 'key1' => 'val1' }]))
+        synth.google_compute_router_peer('opt', required_attrs.merge(md5_authentication_key: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_router_peer', 'opt')
         expect(config).to have_key('md5_authentication_key')
@@ -308,6 +405,91 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterPeer do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_router_peer', 'minimal')
         expect(config).not_to have_key('md5_authentication_key')
+      end
+      it 'includes peer_ip_address when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('opt', required_attrs.merge(peer_ip_address: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'opt')
+        expect(config).to have_key('peer_ip_address')
+      end
+
+      it 'omits peer_ip_address when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'minimal')
+        expect(config).not_to have_key('peer_ip_address')
+      end
+      it 'includes peer_ipv4_nexthop_address when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('opt', required_attrs.merge(peer_ipv4_nexthop_address: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'opt')
+        expect(config).to have_key('peer_ipv4_nexthop_address')
+      end
+
+      it 'omits peer_ipv4_nexthop_address when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'minimal')
+        expect(config).not_to have_key('peer_ipv4_nexthop_address')
+      end
+      it 'includes peer_ipv6_nexthop_address when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('opt', required_attrs.merge(peer_ipv6_nexthop_address: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'opt')
+        expect(config).to have_key('peer_ipv6_nexthop_address')
+      end
+
+      it 'omits peer_ipv6_nexthop_address when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'minimal')
+        expect(config).not_to have_key('peer_ipv6_nexthop_address')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_peer('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_peer', 'minimal')
+        expect(config).not_to have_key('region')
       end
       it 'includes router_appliance_instance when provided' do
         synth = create_synthesizer
@@ -372,6 +554,17 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterPeer do
           result = normalize_synthesis(synth.synthesis)
           config = validate_resource_structure(result, 'google_compute_router_peer', "bool_#{val}")
           expect(config['enable']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts enable_ipv4=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(enable_ipv4: val)
+          synth.google_compute_router_peer("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_router_peer', "bool_#{val}")
+          expect(config['enable_ipv4']).to eq(val)
         end
       end
       [true, false].each do |val|
@@ -454,8 +647,8 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterPeer do
     resource_type: :google_compute_router_peer,
     method: :google_compute_router_peer,
     required_attrs: { interface: 'test-value', name: 'test-value', peer_asn: 3.14, router: 'test-value' },
-    expected_outputs: [:id, :enable_ipv4, :ip_address, :ipv4_nexthop_address, :ipv6_nexthop_address, :is_advertised_route_priority_set, :is_custom_learned_priority_set, :management_type, :peer_ip_address, :peer_ipv4_nexthop_address, :peer_ipv6_nexthop_address, :project, :region],
+    expected_outputs: [:id, :deletion_policy, :enable_ipv4, :ip_address, :ipv4_nexthop_address, :ipv6_nexthop_address, :is_advertised_route_priority_set, :is_custom_learned_priority_set, :management_type, :peer_ip_address, :peer_ipv4_nexthop_address, :peer_ipv6_nexthop_address, :project, :region],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:enable, :enable_ipv6, :zero_advertised_route_priority, :zero_custom_learned_route_priority]
+    boolean_fields: [:enable, :enable_ipv4, :enable_ipv6, :zero_advertised_route_priority, :zero_custom_learned_route_priority]
 end

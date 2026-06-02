@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeInstance do
 
         expect(ref.id).to eq("${google_apigee_instance.test.id}")
         expect(ref.consumer_accept_list).to eq("${google_apigee_instance.test.consumer_accept_list}")
+        expect(ref.deletion_policy).to eq("${google_apigee_instance.test.deletion_policy}")
         expect(ref.host).to eq("${google_apigee_instance.test.host}")
         expect(ref.peering_cidr_range).to eq("${google_apigee_instance.test.peering_cidr_range}")
         expect(ref.port).to eq("${google_apigee_instance.test.port}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeInstance do
 
         config = validate_resource_structure(result, 'google_apigee_instance', 'test')
         expect(config).not_to have_key('consumer_accept_list')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('host')
         expect(config).not_to have_key('peering_cidr_range')
         expect(config).not_to have_key('port')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ access_logging_config: [{ 'key1' => 'val1' }], description: 'test-value', disk_encryption_key_name: 'test-value', display_name: 'test-value', ip_range: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ access_logging_config: { 'key1' => 'val1' }, consumer_accept_list: ['test-value'], deletion_policy: 'test-value', description: 'test-value', disk_encryption_key_name: 'test-value', display_name: 'test-value', ip_range: 'test-value', peering_cidr_range: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,10 +75,13 @@ RSpec.describe Pangea::Resources::GoogleApigeeInstance do
 
         config = validate_resource_structure(result, 'google_apigee_instance', 'full')
         expect(config).to have_key('access_logging_config')
+        expect(config).to have_key('consumer_accept_list')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('disk_encryption_key_name')
         expect(config).to have_key('display_name')
         expect(config).to have_key('ip_range')
+        expect(config).to have_key('peering_cidr_range')
       end
     end
 
@@ -84,7 +89,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeInstance do
       it 'includes access_logging_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_instance('opt', required_attrs.merge(access_logging_config: [{ 'key1' => 'val1' }]))
+        synth.google_apigee_instance('opt', required_attrs.merge(access_logging_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_instance', 'opt')
         expect(config).to have_key('access_logging_config')
@@ -97,6 +102,40 @@ RSpec.describe Pangea::Resources::GoogleApigeeInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_instance', 'minimal')
         expect(config).not_to have_key('access_logging_config')
+      end
+      it 'includes consumer_accept_list when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_instance('opt', required_attrs.merge(consumer_accept_list: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_instance', 'opt')
+        expect(config).to have_key('consumer_accept_list')
+      end
+
+      it 'omits consumer_accept_list when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_instance', 'minimal')
+        expect(config).not_to have_key('consumer_accept_list')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -166,6 +205,23 @@ RSpec.describe Pangea::Resources::GoogleApigeeInstance do
         config = validate_resource_structure(result, 'google_apigee_instance', 'minimal')
         expect(config).not_to have_key('ip_range')
       end
+      it 'includes peering_cidr_range when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_instance('opt', required_attrs.merge(peering_cidr_range: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_instance', 'opt')
+        expect(config).to have_key('peering_cidr_range')
+      end
+
+      it 'omits peering_cidr_range when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_instance', 'minimal')
+        expect(config).not_to have_key('peering_cidr_range')
+      end
     end
 
     context 'attribute types' do
@@ -212,7 +268,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeInstance do
     resource_type: :google_apigee_instance,
     method: :google_apigee_instance,
     required_attrs: { location: 'test-value', name: 'test-value', org_id: 'test-value' },
-    expected_outputs: [:id, :consumer_accept_list, :host, :peering_cidr_range, :port, :service_attachment],
+    expected_outputs: [:id, :consumer_accept_list, :deletion_policy, :host, :peering_cidr_range, :port, :service_attachment],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

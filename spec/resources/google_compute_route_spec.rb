@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRoute do
         expect(ref.id).to eq("${google_compute_route.test.id}")
         expect(ref.as_paths).to eq("${google_compute_route.test.as_paths}")
         expect(ref.creation_timestamp).to eq("${google_compute_route.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_route.test.deletion_policy}")
         expect(ref.next_hop_hub).to eq("${google_compute_route.test.next_hop_hub}")
         expect(ref.next_hop_instance_zone).to eq("${google_compute_route.test.next_hop_instance_zone}")
         expect(ref.next_hop_inter_region_cost).to eq("${google_compute_route.test.next_hop_inter_region_cost}")
@@ -66,6 +67,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRoute do
         config = validate_resource_structure(result, 'google_compute_route', 'test')
         expect(config).not_to have_key('as_paths')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('next_hop_hub')
         expect(config).not_to have_key('next_hop_instance_zone')
         expect(config).not_to have_key('next_hop_inter_region_cost')
@@ -83,7 +85,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRoute do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', next_hop_gateway: 'test-value', next_hop_ilb: 'test-value', next_hop_instance: 'test-value', next_hop_vpn_tunnel: 'test-value', params: [{ 'key1' => 'val1' }], priority: 3.14, tags: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', next_hop_gateway: 'test-value', next_hop_ilb: 'test-value', next_hop_instance: 'test-value', next_hop_instance_zone: 'test-value', next_hop_ip: 'test-value', next_hop_vpn_tunnel: 'test-value', params: { 'key1' => 'val1' }, priority: 3.14, project: 'test-value', tags: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -92,18 +94,39 @@ RSpec.describe Pangea::Resources::GoogleComputeRoute do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_route', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('next_hop_gateway')
         expect(config).to have_key('next_hop_ilb')
         expect(config).to have_key('next_hop_instance')
+        expect(config).to have_key('next_hop_instance_zone')
+        expect(config).to have_key('next_hop_ip')
         expect(config).to have_key('next_hop_vpn_tunnel')
         expect(config).to have_key('params')
         expect(config).to have_key('priority')
+        expect(config).to have_key('project')
         expect(config).to have_key('tags')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_route('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_route', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_route('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_route', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -172,6 +195,40 @@ RSpec.describe Pangea::Resources::GoogleComputeRoute do
         config = validate_resource_structure(result, 'google_compute_route', 'minimal')
         expect(config).not_to have_key('next_hop_instance')
       end
+      it 'includes next_hop_instance_zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_route('opt', required_attrs.merge(next_hop_instance_zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_route', 'opt')
+        expect(config).to have_key('next_hop_instance_zone')
+      end
+
+      it 'omits next_hop_instance_zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_route('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_route', 'minimal')
+        expect(config).not_to have_key('next_hop_instance_zone')
+      end
+      it 'includes next_hop_ip when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_route('opt', required_attrs.merge(next_hop_ip: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_route', 'opt')
+        expect(config).to have_key('next_hop_ip')
+      end
+
+      it 'omits next_hop_ip when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_route('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_route', 'minimal')
+        expect(config).not_to have_key('next_hop_ip')
+      end
       it 'includes next_hop_vpn_tunnel when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -192,7 +249,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRoute do
       it 'includes params when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_route('opt', required_attrs.merge(params: [{ 'key1' => 'val1' }]))
+        synth.google_compute_route('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_route', 'opt')
         expect(config).to have_key('params')
@@ -222,6 +279,23 @@ RSpec.describe Pangea::Resources::GoogleComputeRoute do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_route', 'minimal')
         expect(config).not_to have_key('priority')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_route('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_route', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_route('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_route', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes tags when provided' do
         synth = create_synthesizer
@@ -286,7 +360,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRoute do
     resource_type: :google_compute_route,
     method: :google_compute_route,
     required_attrs: { dest_range: 'test-value', name: 'test-value', network: 'test-value' },
-    expected_outputs: [:id, :as_paths, :creation_timestamp, :next_hop_hub, :next_hop_instance_zone, :next_hop_inter_region_cost, :next_hop_ip, :next_hop_med, :next_hop_network, :next_hop_origin, :next_hop_peering, :project, :route_status, :route_type, :self_link, :warnings],
+    expected_outputs: [:id, :as_paths, :creation_timestamp, :deletion_policy, :next_hop_hub, :next_hop_instance_zone, :next_hop_inter_region_cost, :next_hop_ip, :next_hop_med, :next_hop_network, :next_hop_origin, :next_hop_peering, :project, :route_status, :route_type, :self_link, :warnings],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

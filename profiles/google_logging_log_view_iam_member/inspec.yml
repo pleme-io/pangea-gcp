@@ -1,0 +1,8 @@
+name: google_logging_log_view_iam_member
+title: Manages a google_logging_log_view_iam_member resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

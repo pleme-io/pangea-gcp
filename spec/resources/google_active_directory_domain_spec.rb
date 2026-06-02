@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleActiveDirectoryDomain do
         ref = synth.google_active_directory_domain('test', required_attrs)
 
         expect(ref.id).to eq("${google_active_directory_domain.test.id}")
+        expect(ref.deletion_policy).to eq("${google_active_directory_domain.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_active_directory_domain.test.effective_labels}")
         expect(ref.fqdn).to eq("${google_active_directory_domain.test.fqdn}")
         expect(ref.name).to eq("${google_active_directory_domain.test.name}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleActiveDirectoryDomain do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_active_directory_domain', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('fqdn')
         expect(config).not_to have_key('name')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleActiveDirectoryDomain do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ admin: 'test-value', authorized_networks: ['test-value'], deletion_protection: true, labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ admin: 'test-value', authorized_networks: ['test-value'], deletion_policy: 'test-value', deletion_protection: true, labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,8 +76,10 @@ RSpec.describe Pangea::Resources::GoogleActiveDirectoryDomain do
         config = validate_resource_structure(result, 'google_active_directory_domain', 'full')
         expect(config).to have_key('admin')
         expect(config).to have_key('authorized_networks')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
@@ -114,6 +118,23 @@ RSpec.describe Pangea::Resources::GoogleActiveDirectoryDomain do
         config = validate_resource_structure(result, 'google_active_directory_domain', 'minimal')
         expect(config).not_to have_key('authorized_networks')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_active_directory_domain('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_active_directory_domain', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_active_directory_domain('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_active_directory_domain', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -147,6 +168,23 @@ RSpec.describe Pangea::Resources::GoogleActiveDirectoryDomain do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_active_directory_domain', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_active_directory_domain('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_active_directory_domain', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_active_directory_domain('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_active_directory_domain', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -208,7 +246,7 @@ RSpec.describe Pangea::Resources::GoogleActiveDirectoryDomain do
     resource_type: :google_active_directory_domain,
     method: :google_active_directory_domain,
     required_attrs: { domain_name: 'test-value', locations: ['test-value'], reserved_ip_range: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :fqdn, :name, :project, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :fqdn, :name, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection]

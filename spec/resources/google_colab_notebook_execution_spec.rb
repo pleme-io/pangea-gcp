@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleColabNotebookExecution do
         ref = synth.google_colab_notebook_execution('test', required_attrs)
 
         expect(ref.id).to eq("${google_colab_notebook_execution.test.id}")
+        expect(ref.deletion_policy).to eq("${google_colab_notebook_execution.test.deletion_policy}")
         expect(ref.notebook_execution_job_id).to eq("${google_colab_notebook_execution.test.notebook_execution_job_id}")
         expect(ref.project).to eq("${google_colab_notebook_execution.test.project}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleColabNotebookExecution do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_colab_notebook_execution', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('notebook_execution_job_id')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ dataform_repository_source: [{ 'key1' => 'val1' }], direct_notebook_source: [{ 'key1' => 'val1' }], execution_timeout: 'test-value', execution_user: 'test-value', gcs_notebook_source: [{ 'key1' => 'val1' }], notebook_runtime_template_resource_name: 'test-value', service_account: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ custom_environment_spec: { 'key1' => 'val1' }, dataform_repository_source: { 'key1' => 'val1' }, deletion_policy: 'test-value', direct_notebook_source: { 'key1' => 'val1' }, execution_timeout: 'test-value', execution_user: 'test-value', gcs_notebook_source: { 'key1' => 'val1' }, notebook_execution_job_id: 'test-value', notebook_runtime_template_resource_name: 'test-value', project: 'test-value', service_account: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,21 +68,42 @@ RSpec.describe Pangea::Resources::GoogleColabNotebookExecution do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_colab_notebook_execution', 'full')
+        expect(config).to have_key('custom_environment_spec')
         expect(config).to have_key('dataform_repository_source')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('direct_notebook_source')
         expect(config).to have_key('execution_timeout')
         expect(config).to have_key('execution_user')
         expect(config).to have_key('gcs_notebook_source')
+        expect(config).to have_key('notebook_execution_job_id')
         expect(config).to have_key('notebook_runtime_template_resource_name')
+        expect(config).to have_key('project')
         expect(config).to have_key('service_account')
       end
     end
 
     context 'optional attributes' do
+      it 'includes custom_environment_spec when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_notebook_execution('opt', required_attrs.merge(custom_environment_spec: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_notebook_execution', 'opt')
+        expect(config).to have_key('custom_environment_spec')
+      end
+
+      it 'omits custom_environment_spec when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_notebook_execution('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_notebook_execution', 'minimal')
+        expect(config).not_to have_key('custom_environment_spec')
+      end
       it 'includes dataform_repository_source when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_colab_notebook_execution('opt', required_attrs.merge(dataform_repository_source: [{ 'key1' => 'val1' }]))
+        synth.google_colab_notebook_execution('opt', required_attrs.merge(dataform_repository_source: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_notebook_execution', 'opt')
         expect(config).to have_key('dataform_repository_source')
@@ -94,10 +117,27 @@ RSpec.describe Pangea::Resources::GoogleColabNotebookExecution do
         config = validate_resource_structure(result, 'google_colab_notebook_execution', 'minimal')
         expect(config).not_to have_key('dataform_repository_source')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_notebook_execution('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_notebook_execution', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_notebook_execution('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_notebook_execution', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes direct_notebook_source when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_colab_notebook_execution('opt', required_attrs.merge(direct_notebook_source: [{ 'key1' => 'val1' }]))
+        synth.google_colab_notebook_execution('opt', required_attrs.merge(direct_notebook_source: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_notebook_execution', 'opt')
         expect(config).to have_key('direct_notebook_source')
@@ -148,7 +188,7 @@ RSpec.describe Pangea::Resources::GoogleColabNotebookExecution do
       it 'includes gcs_notebook_source when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_colab_notebook_execution('opt', required_attrs.merge(gcs_notebook_source: [{ 'key1' => 'val1' }]))
+        synth.google_colab_notebook_execution('opt', required_attrs.merge(gcs_notebook_source: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_notebook_execution', 'opt')
         expect(config).to have_key('gcs_notebook_source')
@@ -161,6 +201,23 @@ RSpec.describe Pangea::Resources::GoogleColabNotebookExecution do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_notebook_execution', 'minimal')
         expect(config).not_to have_key('gcs_notebook_source')
+      end
+      it 'includes notebook_execution_job_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_notebook_execution('opt', required_attrs.merge(notebook_execution_job_id: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_notebook_execution', 'opt')
+        expect(config).to have_key('notebook_execution_job_id')
+      end
+
+      it 'omits notebook_execution_job_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_notebook_execution('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_notebook_execution', 'minimal')
+        expect(config).not_to have_key('notebook_execution_job_id')
       end
       it 'includes notebook_runtime_template_resource_name when provided' do
         synth = create_synthesizer
@@ -178,6 +235,23 @@ RSpec.describe Pangea::Resources::GoogleColabNotebookExecution do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_notebook_execution', 'minimal')
         expect(config).not_to have_key('notebook_runtime_template_resource_name')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_notebook_execution('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_notebook_execution', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_notebook_execution('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_notebook_execution', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes service_account when provided' do
         synth = create_synthesizer
@@ -242,7 +316,7 @@ RSpec.describe Pangea::Resources::GoogleColabNotebookExecution do
     resource_type: :google_colab_notebook_execution,
     method: :google_colab_notebook_execution,
     required_attrs: { display_name: 'test-value', gcs_output_uri: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :notebook_execution_job_id, :project],
+    expected_outputs: [:id, :deletion_policy, :notebook_execution_job_id, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

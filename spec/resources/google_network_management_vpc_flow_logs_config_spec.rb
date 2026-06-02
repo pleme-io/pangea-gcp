@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementVpcFlowLogsConfig do
         expect(ref.id).to eq("${google_network_management_vpc_flow_logs_config.test.id}")
         expect(ref.aggregation_interval).to eq("${google_network_management_vpc_flow_logs_config.test.aggregation_interval}")
         expect(ref.create_time).to eq("${google_network_management_vpc_flow_logs_config.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_management_vpc_flow_logs_config.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_management_vpc_flow_logs_config.test.effective_labels}")
         expect(ref.flow_sampling).to eq("${google_network_management_vpc_flow_logs_config.test.flow_sampling}")
         expect(ref.metadata).to eq("${google_network_management_vpc_flow_logs_config.test.metadata}")
@@ -62,6 +63,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementVpcFlowLogsConfig do
         config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'test')
         expect(config).not_to have_key('aggregation_interval')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('flow_sampling')
         expect(config).not_to have_key('metadata')
@@ -75,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementVpcFlowLogsConfig do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', filter_expr: 'test-value', interconnect_attachment: 'test-value', labels: { 'key1' => 'val1' }, metadata_fields: ['test-value'], vpn_tunnel: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ aggregation_interval: 'test-value', deletion_policy: 'test-value', description: 'test-value', filter_expr: 'test-value', flow_sampling: 3.14, interconnect_attachment: 'test-value', labels: { 'key1' => 'val1' }, metadata: 'test-value', metadata_fields: ['test-value'], network: 'test-value', project: 'test-value', state: 'test-value', subnet: 'test-value', vpn_tunnel: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -84,16 +86,58 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementVpcFlowLogsConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'full')
+        expect(config).to have_key('aggregation_interval')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('filter_expr')
+        expect(config).to have_key('flow_sampling')
         expect(config).to have_key('interconnect_attachment')
         expect(config).to have_key('labels')
+        expect(config).to have_key('metadata')
         expect(config).to have_key('metadata_fields')
+        expect(config).to have_key('network')
+        expect(config).to have_key('project')
+        expect(config).to have_key('state')
+        expect(config).to have_key('subnet')
         expect(config).to have_key('vpn_tunnel')
       end
     end
 
     context 'optional attributes' do
+      it 'includes aggregation_interval when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('opt', required_attrs.merge(aggregation_interval: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'opt')
+        expect(config).to have_key('aggregation_interval')
+      end
+
+      it 'omits aggregation_interval when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'minimal')
+        expect(config).not_to have_key('aggregation_interval')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -127,6 +171,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementVpcFlowLogsConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'minimal')
         expect(config).not_to have_key('filter_expr')
+      end
+      it 'includes flow_sampling when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('opt', required_attrs.merge(flow_sampling: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'opt')
+        expect(config).to have_key('flow_sampling')
+      end
+
+      it 'omits flow_sampling when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'minimal')
+        expect(config).not_to have_key('flow_sampling')
       end
       it 'includes interconnect_attachment when provided' do
         synth = create_synthesizer
@@ -162,6 +223,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementVpcFlowLogsConfig do
         config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes metadata when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('opt', required_attrs.merge(metadata: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'opt')
+        expect(config).to have_key('metadata')
+      end
+
+      it 'omits metadata when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'minimal')
+        expect(config).not_to have_key('metadata')
+      end
       it 'includes metadata_fields when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -178,6 +256,74 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementVpcFlowLogsConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'minimal')
         expect(config).not_to have_key('metadata_fields')
+      end
+      it 'includes network when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('opt', required_attrs.merge(network: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'opt')
+        expect(config).to have_key('network')
+      end
+
+      it 'omits network when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'minimal')
+        expect(config).not_to have_key('network')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes state when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('opt', required_attrs.merge(state: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'opt')
+        expect(config).to have_key('state')
+      end
+
+      it 'omits state when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'minimal')
+        expect(config).not_to have_key('state')
+      end
+      it 'includes subnet when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('opt', required_attrs.merge(subnet: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'opt')
+        expect(config).to have_key('subnet')
+      end
+
+      it 'omits subnet when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_vpc_flow_logs_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_vpc_flow_logs_config', 'minimal')
+        expect(config).not_to have_key('subnet')
       end
       it 'includes vpn_tunnel when provided' do
         synth = create_synthesizer
@@ -241,7 +387,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementVpcFlowLogsConfig do
     resource_type: :google_network_management_vpc_flow_logs_config,
     method: :google_network_management_vpc_flow_logs_config,
     required_attrs: { location: 'test-value', vpc_flow_logs_config_id: 'test-value' },
-    expected_outputs: [:id, :aggregation_interval, :create_time, :effective_labels, :flow_sampling, :metadata, :name, :project, :state, :target_resource_state, :terraform_labels, :update_time],
+    expected_outputs: [:id, :aggregation_interval, :create_time, :deletion_policy, :effective_labels, :flow_sampling, :metadata, :name, :project, :state, :target_resource_state, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

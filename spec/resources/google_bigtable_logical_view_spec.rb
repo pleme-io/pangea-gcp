@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableLogicalView do
         ref = synth.google_bigtable_logical_view('test', required_attrs)
 
         expect(ref.id).to eq("${google_bigtable_logical_view.test.id}")
+        expect(ref.deletion_policy).to eq("${google_bigtable_logical_view.test.deletion_policy}")
         expect(ref.name).to eq("${google_bigtable_logical_view.test.name}")
         expect(ref.project).to eq("${google_bigtable_logical_view.test.project}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleBigtableLogicalView do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigtable_logical_view', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deletion_protection: true, instance: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', deletion_protection: true, instance: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,12 +68,31 @@ RSpec.describe Pangea::Resources::GoogleBigtableLogicalView do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigtable_logical_view', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
         expect(config).to have_key('instance')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_logical_view('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_logical_view', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_logical_view('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_logical_view', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -105,6 +126,23 @@ RSpec.describe Pangea::Resources::GoogleBigtableLogicalView do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigtable_logical_view', 'minimal')
         expect(config).not_to have_key('instance')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_logical_view('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_logical_view', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_logical_view('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_logical_view', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -165,7 +203,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableLogicalView do
     resource_type: :google_bigtable_logical_view,
     method: :google_bigtable_logical_view,
     required_attrs: { logical_view_id: 'test-value', query: 'test-value' },
-    expected_outputs: [:id, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection]

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleOracleDatabaseAutonomousDatabase do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { autonomous_database_id: 'test-value', database: 'test-value', location: 'test-value', properties: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { autonomous_database_id: 'test-value', location: 'test-value' } }
 
   describe ':google_oracle_database_autonomous_database' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseAutonomousDatabase do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'test')
-        validate_required_attributes(config, [:autonomous_database_id, :database, :location, :properties])
+        validate_required_attributes(config, [:autonomous_database_id, :location])
       end
 
       it 'returns a ResourceReference' do
@@ -39,10 +39,16 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseAutonomousDatabase do
 
         expect(ref.id).to eq("${google_oracle_database_autonomous_database.test.id}")
         expect(ref.create_time).to eq("${google_oracle_database_autonomous_database.test.create_time}")
+        expect(ref.database).to eq("${google_oracle_database_autonomous_database.test.database}")
+        expect(ref.deletion_policy).to eq("${google_oracle_database_autonomous_database.test.deletion_policy}")
+        expect(ref.disaster_recovery_supported_locations).to eq("${google_oracle_database_autonomous_database.test.disaster_recovery_supported_locations}")
         expect(ref.display_name).to eq("${google_oracle_database_autonomous_database.test.display_name}")
         expect(ref.effective_labels).to eq("${google_oracle_database_autonomous_database.test.effective_labels}")
         expect(ref.entitlement_id).to eq("${google_oracle_database_autonomous_database.test.entitlement_id}")
         expect(ref.name).to eq("${google_oracle_database_autonomous_database.test.name}")
+        expect(ref.odb_network).to eq("${google_oracle_database_autonomous_database.test.odb_network}")
+        expect(ref.odb_subnet).to eq("${google_oracle_database_autonomous_database.test.odb_subnet}")
+        expect(ref.peer_autonomous_databases).to eq("${google_oracle_database_autonomous_database.test.peer_autonomous_databases}")
         expect(ref.project).to eq("${google_oracle_database_autonomous_database.test.project}")
         expect(ref.terraform_labels).to eq("${google_oracle_database_autonomous_database.test.terraform_labels}")
       end
@@ -57,17 +63,23 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseAutonomousDatabase do
 
         config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('database')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('disaster_recovery_supported_locations')
         expect(config).not_to have_key('display_name')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('entitlement_id')
         expect(config).not_to have_key('name')
+        expect(config).not_to have_key('odb_network')
+        expect(config).not_to have_key('odb_subnet')
+        expect(config).not_to have_key('peer_autonomous_databases')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ admin_password: 'test-value', cidr: 'test-value', deletion_protection: true, labels: { 'key1' => 'val1' }, network: 'test-value', odb_network: 'test-value', odb_subnet: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ admin_password: 'test-value', cidr: 'test-value', database: 'test-value', deletion_policy: 'test-value', deletion_protection: true, display_name: 'test-value', labels: { 'key1' => 'val1' }, network: 'test-value', odb_network: 'test-value', odb_subnet: 'test-value', project: 'test-value', properties: { 'key1' => 'val1' }, source_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,11 +90,17 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseAutonomousDatabase do
         config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'full')
         expect(config).to have_key('admin_password')
         expect(config).to have_key('cidr')
+        expect(config).to have_key('database')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
+        expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
         expect(config).to have_key('network')
         expect(config).to have_key('odb_network')
         expect(config).to have_key('odb_subnet')
+        expect(config).to have_key('project')
+        expect(config).to have_key('properties')
+        expect(config).to have_key('source_config')
       end
     end
 
@@ -121,6 +139,40 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseAutonomousDatabase do
         config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'minimal')
         expect(config).not_to have_key('cidr')
       end
+      it 'includes database when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_autonomous_database('opt', required_attrs.merge(database: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'opt')
+        expect(config).to have_key('database')
+      end
+
+      it 'omits database when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_autonomous_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'minimal')
+        expect(config).not_to have_key('database')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_autonomous_database('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_autonomous_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -137,6 +189,23 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseAutonomousDatabase do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'minimal')
         expect(config).not_to have_key('deletion_protection')
+      end
+      it 'includes display_name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_autonomous_database('opt', required_attrs.merge(display_name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'opt')
+        expect(config).to have_key('display_name')
+      end
+
+      it 'omits display_name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_autonomous_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'minimal')
+        expect(config).not_to have_key('display_name')
       end
       it 'includes labels when provided' do
         synth = create_synthesizer
@@ -206,6 +275,57 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseAutonomousDatabase do
         config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'minimal')
         expect(config).not_to have_key('odb_subnet')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_autonomous_database('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_autonomous_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes properties when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_autonomous_database('opt', required_attrs.merge(properties: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'opt')
+        expect(config).to have_key('properties')
+      end
+
+      it 'omits properties when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_autonomous_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'minimal')
+        expect(config).not_to have_key('properties')
+      end
+      it 'includes source_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_autonomous_database('opt', required_attrs.merge(source_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'opt')
+        expect(config).to have_key('source_config')
+      end
+
+      it 'omits source_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_autonomous_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'minimal')
+        expect(config).not_to have_key('source_config')
+      end
     end
 
     context 'boolean fields' do
@@ -231,9 +351,7 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseAutonomousDatabase do
 
         config = validate_resource_structure(result, 'google_oracle_database_autonomous_database', 'typed')
         expect(config['autonomous_database_id']).to be_a(String)
-        expect(config['database']).to be_a(String)
         expect(config['location']).to be_a(String)
-        expect(config['properties']).to be_a(Array)
       end
     end
 
@@ -266,8 +384,8 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseAutonomousDatabase do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_oracle_database_autonomous_database,
     method: :google_oracle_database_autonomous_database,
-    required_attrs: { autonomous_database_id: 'test-value', database: 'test-value', location: 'test-value', properties: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :display_name, :effective_labels, :entitlement_id, :name, :project, :terraform_labels],
+    required_attrs: { autonomous_database_id: 'test-value', location: 'test-value' },
+    expected_outputs: [:id, :create_time, :database, :deletion_policy, :disaster_recovery_supported_locations, :display_name, :effective_labels, :entitlement_id, :name, :odb_network, :odb_subnet, :peer_autonomous_databases, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection]

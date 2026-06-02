@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableTable do
 
         expect(ref.id).to eq("${google_bigtable_table.test.id}")
         expect(ref.change_stream_retention).to eq("${google_bigtable_table.test.change_stream_retention}")
+        expect(ref.deletion_policy).to eq("${google_bigtable_table.test.deletion_policy}")
         expect(ref.deletion_protection).to eq("${google_bigtable_table.test.deletion_protection}")
         expect(ref.project).to eq("${google_bigtable_table.test.project}")
       end
@@ -53,13 +54,14 @@ RSpec.describe Pangea::Resources::GoogleBigtableTable do
 
         config = validate_resource_structure(result, 'google_bigtable_table', 'test')
         expect(config).not_to have_key('change_stream_retention')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('deletion_protection')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ automated_backup_policy: [{ 'key1' => 'val1' }], column_family: [{ 'key1' => 'val1' }], row_key_schema: 'test-value', split_keys: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ automated_backup_policy: { 'key1' => 'val1' }, change_stream_retention: 'test-value', column_family: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', deletion_protection: 'test-value', project: 'test-value', row_key_schema: 'test-value', split_keys: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,7 +71,11 @@ RSpec.describe Pangea::Resources::GoogleBigtableTable do
 
         config = validate_resource_structure(result, 'google_bigtable_table', 'full')
         expect(config).to have_key('automated_backup_policy')
+        expect(config).to have_key('change_stream_retention')
         expect(config).to have_key('column_family')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('deletion_protection')
+        expect(config).to have_key('project')
         expect(config).to have_key('row_key_schema')
         expect(config).to have_key('split_keys')
       end
@@ -79,7 +85,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableTable do
       it 'includes automated_backup_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigtable_table('opt', required_attrs.merge(automated_backup_policy: [{ 'key1' => 'val1' }]))
+        synth.google_bigtable_table('opt', required_attrs.merge(automated_backup_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigtable_table', 'opt')
         expect(config).to have_key('automated_backup_policy')
@@ -92,6 +98,23 @@ RSpec.describe Pangea::Resources::GoogleBigtableTable do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigtable_table', 'minimal')
         expect(config).not_to have_key('automated_backup_policy')
+      end
+      it 'includes change_stream_retention when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_table('opt', required_attrs.merge(change_stream_retention: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_table', 'opt')
+        expect(config).to have_key('change_stream_retention')
+      end
+
+      it 'omits change_stream_retention when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_table('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_table', 'minimal')
+        expect(config).not_to have_key('change_stream_retention')
       end
       it 'includes column_family when provided' do
         synth = create_synthesizer
@@ -109,6 +132,57 @@ RSpec.describe Pangea::Resources::GoogleBigtableTable do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigtable_table', 'minimal')
         expect(config).not_to have_key('column_family')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_table('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_table', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_table('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_table', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes deletion_protection when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_table('opt', required_attrs.merge(deletion_protection: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_table', 'opt')
+        expect(config).to have_key('deletion_protection')
+      end
+
+      it 'omits deletion_protection when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_table('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_table', 'minimal')
+        expect(config).not_to have_key('deletion_protection')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_table('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_table', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_table('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_table', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes row_key_schema when provided' do
         synth = create_synthesizer
@@ -189,7 +263,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableTable do
     resource_type: :google_bigtable_table,
     method: :google_bigtable_table,
     required_attrs: { instance_name: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :change_stream_retention, :deletion_protection, :project],
+    expected_outputs: [:id, :change_stream_retention, :deletion_policy, :deletion_protection, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

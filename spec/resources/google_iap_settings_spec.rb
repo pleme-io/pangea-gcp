@@ -38,11 +38,24 @@ RSpec.describe Pangea::Resources::GoogleIapSettings do
         ref = synth.google_iap_settings('test', required_attrs)
 
         expect(ref.id).to eq("${google_iap_settings.test.id}")
+        expect(ref.deletion_policy).to eq("${google_iap_settings.test.deletion_policy}")
+      end
+    end
+
+    context 'computed-only attributes' do
+      it 'excludes computed-only attributes from the resource block' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iap_settings('test', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_iap_settings', 'test')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ access_settings: [{ 'key1' => 'val1' }], application_settings: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ access_settings: { 'key1' => 'val1' }, application_settings: { 'key1' => 'val1' }, deletion_policy: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -53,6 +66,7 @@ RSpec.describe Pangea::Resources::GoogleIapSettings do
         config = validate_resource_structure(result, 'google_iap_settings', 'full')
         expect(config).to have_key('access_settings')
         expect(config).to have_key('application_settings')
+        expect(config).to have_key('deletion_policy')
       end
     end
 
@@ -60,7 +74,7 @@ RSpec.describe Pangea::Resources::GoogleIapSettings do
       it 'includes access_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_iap_settings('opt', required_attrs.merge(access_settings: [{ 'key1' => 'val1' }]))
+        synth.google_iap_settings('opt', required_attrs.merge(access_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iap_settings', 'opt')
         expect(config).to have_key('access_settings')
@@ -77,7 +91,7 @@ RSpec.describe Pangea::Resources::GoogleIapSettings do
       it 'includes application_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_iap_settings('opt', required_attrs.merge(application_settings: [{ 'key1' => 'val1' }]))
+        synth.google_iap_settings('opt', required_attrs.merge(application_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iap_settings', 'opt')
         expect(config).to have_key('application_settings')
@@ -90,6 +104,23 @@ RSpec.describe Pangea::Resources::GoogleIapSettings do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iap_settings', 'minimal')
         expect(config).not_to have_key('application_settings')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iap_settings('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iap_settings', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iap_settings('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iap_settings', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -135,7 +166,7 @@ RSpec.describe Pangea::Resources::GoogleIapSettings do
     resource_type: :google_iap_settings,
     method: :google_iap_settings,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id],
+    expected_outputs: [:id, :deletion_policy],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

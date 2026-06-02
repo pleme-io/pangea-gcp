@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleEssentialContactsContact do
         ref = synth.google_essential_contacts_contact('test', required_attrs)
 
         expect(ref.id).to eq("${google_essential_contacts_contact.test.id}")
+        expect(ref.deletion_policy).to eq("${google_essential_contacts_contact.test.deletion_policy}")
         expect(ref.name).to eq("${google_essential_contacts_contact.test.name}")
       end
     end
@@ -50,7 +51,42 @@ RSpec.describe Pangea::Resources::GoogleEssentialContactsContact do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_essential_contacts_contact', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_essential_contacts_contact('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_essential_contacts_contact', 'full')
+        expect(config).to have_key('deletion_policy')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_essential_contacts_contact('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_essential_contacts_contact', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_essential_contacts_contact('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_essential_contacts_contact', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -99,7 +135,7 @@ RSpec.describe Pangea::Resources::GoogleEssentialContactsContact do
     resource_type: :google_essential_contacts_contact,
     method: :google_essential_contacts_contact,
     required_attrs: { email: 'test-value', language_tag: 'test-value', notification_category_subscriptions: ['test-value'], parent: 'test-value' },
-    expected_outputs: [:id, :name],
+    expected_outputs: [:id, :deletion_policy, :name],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

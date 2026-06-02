@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringMetricDescriptor do
         ref = synth.google_monitoring_metric_descriptor('test', required_attrs)
 
         expect(ref.id).to eq("${google_monitoring_metric_descriptor.test.id}")
+        expect(ref.deletion_policy).to eq("${google_monitoring_metric_descriptor.test.deletion_policy}")
         expect(ref.monitored_resource_types).to eq("${google_monitoring_metric_descriptor.test.monitored_resource_types}")
         expect(ref.name).to eq("${google_monitoring_metric_descriptor.test.name}")
         expect(ref.project).to eq("${google_monitoring_metric_descriptor.test.project}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringMetricDescriptor do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_monitoring_metric_descriptor', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('monitored_resource_types')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringMetricDescriptor do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', display_name: 'test-value', labels: [{ 'key1' => 'val1' }], launch_stage: 'test-value', metadata: [{ 'key1' => 'val1' }], unit: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', labels: [{ 'key1' => 'val1' }], launch_stage: 'test-value', metadata: { 'key1' => 'val1' }, project: 'test-value', unit: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,16 +70,35 @@ RSpec.describe Pangea::Resources::GoogleMonitoringMetricDescriptor do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_monitoring_metric_descriptor', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
         expect(config).to have_key('launch_stage')
         expect(config).to have_key('metadata')
+        expect(config).to have_key('project')
         expect(config).to have_key('unit')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_metric_descriptor('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_metric_descriptor', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_metric_descriptor('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_metric_descriptor', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -149,7 +170,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringMetricDescriptor do
       it 'includes metadata when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_monitoring_metric_descriptor('opt', required_attrs.merge(metadata: [{ 'key1' => 'val1' }]))
+        synth.google_monitoring_metric_descriptor('opt', required_attrs.merge(metadata: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_monitoring_metric_descriptor', 'opt')
         expect(config).to have_key('metadata')
@@ -162,6 +183,23 @@ RSpec.describe Pangea::Resources::GoogleMonitoringMetricDescriptor do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_monitoring_metric_descriptor', 'minimal')
         expect(config).not_to have_key('metadata')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_metric_descriptor('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_metric_descriptor', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_metric_descriptor('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_metric_descriptor', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes unit when provided' do
         synth = create_synthesizer
@@ -226,7 +264,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringMetricDescriptor do
     resource_type: :google_monitoring_metric_descriptor,
     method: :google_monitoring_metric_descriptor,
     required_attrs: { metric_kind: 'test-value', type: 'test-value', value_type: 'test-value' },
-    expected_outputs: [:id, :monitored_resource_types, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :monitored_resource_types, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

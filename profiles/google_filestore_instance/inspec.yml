@@ -1,0 +1,8 @@
+name: google_filestore_instance
+title: Manages a google_filestore_instance resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

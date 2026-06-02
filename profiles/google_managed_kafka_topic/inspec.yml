@@ -1,0 +1,8 @@
+name: google_managed_kafka_topic
+title: Manages a google_managed_kafka_topic resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

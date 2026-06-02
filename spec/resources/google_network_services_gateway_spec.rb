@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleNetworkServicesGateway do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { name: 'test-value', ports: [3.14], type: 'test-value' } }
+  let(:required_attrs) { { name: 'test-value', type: 'test-value' } }
 
   describe ':google_network_services_gateway' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesGateway do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_network_services_gateway', 'test')
-        validate_required_attributes(config, [:name, :ports, :type])
+        validate_required_attributes(config, [:name, :type])
       end
 
       it 'returns a ResourceReference' do
@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesGateway do
         expect(ref.id).to eq("${google_network_services_gateway.test.id}")
         expect(ref.addresses).to eq("${google_network_services_gateway.test.addresses}")
         expect(ref.create_time).to eq("${google_network_services_gateway.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_services_gateway.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_services_gateway.test.effective_labels}")
         expect(ref.project).to eq("${google_network_services_gateway.test.project}")
         expect(ref.self_link).to eq("${google_network_services_gateway.test.self_link}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesGateway do
         config = validate_resource_structure(result, 'google_network_services_gateway', 'test')
         expect(config).not_to have_key('addresses')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesGateway do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ certificate_urls: ['test-value'], delete_swg_autogen_router_on_destroy: true, description: 'test-value', envoy_headers: 'test-value', gateway_security_policy: 'test-value', ip_version: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', network: 'test-value', routing_mode: 'test-value', scope: 'test-value', server_tls_policy: 'test-value', subnetwork: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ addresses: ['test-value'], all_ports: true, certificate_urls: ['test-value'], delete_swg_autogen_router_on_destroy: true, deletion_policy: 'test-value', description: 'test-value', envoy_headers: 'test-value', gateway_security_policy: 'test-value', ip_version: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', network: 'test-value', ports: [3.14], project: 'test-value', routing_mode: 'test-value', scope: 'test-value', server_tls_policy: 'test-value', subnetwork: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,8 +78,11 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesGateway do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_services_gateway', 'full')
+        expect(config).to have_key('addresses')
+        expect(config).to have_key('all_ports')
         expect(config).to have_key('certificate_urls')
         expect(config).to have_key('delete_swg_autogen_router_on_destroy')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('envoy_headers')
         expect(config).to have_key('gateway_security_policy')
@@ -85,6 +90,8 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesGateway do
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
         expect(config).to have_key('network')
+        expect(config).to have_key('ports')
+        expect(config).to have_key('project')
         expect(config).to have_key('routing_mode')
         expect(config).to have_key('scope')
         expect(config).to have_key('server_tls_policy')
@@ -93,6 +100,40 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesGateway do
     end
 
     context 'optional attributes' do
+      it 'includes addresses when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_gateway('opt', required_attrs.merge(addresses: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_gateway', 'opt')
+        expect(config).to have_key('addresses')
+      end
+
+      it 'omits addresses when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_gateway', 'minimal')
+        expect(config).not_to have_key('addresses')
+      end
+      it 'includes all_ports when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_gateway('opt', required_attrs.merge(all_ports: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_gateway', 'opt')
+        expect(config).to have_key('all_ports')
+      end
+
+      it 'omits all_ports when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_gateway', 'minimal')
+        expect(config).not_to have_key('all_ports')
+      end
       it 'includes certificate_urls when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -126,6 +167,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesGateway do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_gateway', 'minimal')
         expect(config).not_to have_key('delete_swg_autogen_router_on_destroy')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_gateway('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_gateway', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_gateway', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -246,6 +304,40 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesGateway do
         config = validate_resource_structure(result, 'google_network_services_gateway', 'minimal')
         expect(config).not_to have_key('network')
       end
+      it 'includes ports when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_gateway('opt', required_attrs.merge(ports: [3.14]))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_gateway', 'opt')
+        expect(config).to have_key('ports')
+      end
+
+      it 'omits ports when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_gateway', 'minimal')
+        expect(config).not_to have_key('ports')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_gateway('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_gateway', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_gateway', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes routing_mode when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -318,6 +410,17 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesGateway do
 
     context 'boolean fields' do
       [true, false].each do |val|
+        it "accepts all_ports=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(all_ports: val)
+          synth.google_network_services_gateway("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_network_services_gateway', "bool_#{val}")
+          expect(config['all_ports']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
         it "accepts delete_swg_autogen_router_on_destroy=#{val}" do
           synth = create_synthesizer
           synth.extend(described_class)
@@ -339,7 +442,6 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesGateway do
 
         config = validate_resource_structure(result, 'google_network_services_gateway', 'typed')
         expect(config['name']).to be_a(String)
-        expect(config['ports']).to be_a(Array)
         expect(config['type']).to be_a(String)
       end
     end
@@ -373,9 +475,9 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesGateway do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_network_services_gateway,
     method: :google_network_services_gateway,
-    required_attrs: { name: 'test-value', ports: [3.14], type: 'test-value' },
-    expected_outputs: [:id, :addresses, :create_time, :effective_labels, :project, :self_link, :terraform_labels, :update_time],
+    required_attrs: { name: 'test-value', type: 'test-value' },
+    expected_outputs: [:id, :addresses, :create_time, :deletion_policy, :effective_labels, :project, :self_link, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:delete_swg_autogen_router_on_destroy]
+    boolean_fields: [:all_ports, :delete_swg_autogen_router_on_destroy]
 end

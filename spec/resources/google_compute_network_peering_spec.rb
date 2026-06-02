@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkPeering do
         ref = synth.google_compute_network_peering('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_network_peering.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_network_peering.test.deletion_policy}")
         expect(ref.state).to eq("${google_compute_network_peering.test.state}")
         expect(ref.state_details).to eq("${google_compute_network_peering.test.state_details}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkPeering do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_network_peering', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('state_details')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ export_custom_routes: true, export_subnet_routes_with_public_ip: true, import_custom_routes: true, import_subnet_routes_with_public_ip: true, stack_type: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', export_custom_routes: true, export_subnet_routes_with_public_ip: true, import_custom_routes: true, import_subnet_routes_with_public_ip: true, stack_type: 'test-value', update_strategy: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,15 +68,34 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkPeering do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_network_peering', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('export_custom_routes')
         expect(config).to have_key('export_subnet_routes_with_public_ip')
         expect(config).to have_key('import_custom_routes')
         expect(config).to have_key('import_subnet_routes_with_public_ip')
         expect(config).to have_key('stack_type')
+        expect(config).to have_key('update_strategy')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_peering('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_peering', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_peering('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_peering', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes export_custom_routes when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -159,6 +180,23 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkPeering do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_network_peering', 'minimal')
         expect(config).not_to have_key('stack_type')
+      end
+      it 'includes update_strategy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_peering('opt', required_attrs.merge(update_strategy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_peering', 'opt')
+        expect(config).to have_key('update_strategy')
+      end
+
+      it 'omits update_strategy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_peering('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_peering', 'minimal')
+        expect(config).not_to have_key('update_strategy')
       end
     end
 
@@ -253,7 +291,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkPeering do
     resource_type: :google_compute_network_peering,
     method: :google_compute_network_peering,
     required_attrs: { name: 'test-value', network: 'test-value', peer_network: 'test-value' },
-    expected_outputs: [:id, :state, :state_details],
+    expected_outputs: [:id, :deletion_policy, :state, :state_details],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:export_custom_routes, :export_subnet_routes_with_public_ip, :import_custom_routes, :import_subnet_routes_with_public_ip]

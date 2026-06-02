@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataflowJob do
 
         expect(ref.id).to eq("${google_dataflow_job.test.id}")
         expect(ref.additional_experiments).to eq("${google_dataflow_job.test.additional_experiments}")
+        expect(ref.deletion_policy).to eq("${google_dataflow_job.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_dataflow_job.test.effective_labels}")
         expect(ref.job_id).to eq("${google_dataflow_job.test.job_id}")
         expect(ref.project).to eq("${google_dataflow_job.test.project}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleDataflowJob do
 
         config = validate_resource_structure(result, 'google_dataflow_job', 'test')
         expect(config).not_to have_key('additional_experiments')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('job_id')
         expect(config).not_to have_key('project')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleDataflowJob do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ enable_streaming_engine: true, ip_configuration: 'test-value', kms_key_name: 'test-value', labels: { 'key1' => 'val1' }, machine_type: 'test-value', max_workers: 3.14, network: 'test-value', on_delete: 'test-value', parameters: { 'key1' => 'val1' }, region: 'test-value', service_account_email: 'test-value', skip_wait_on_job_termination: true, subnetwork: 'test-value', transform_name_mapping: { 'key1' => 'val1' }, zone: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ additional_experiments: ['test-value'], deletion_policy: 'test-value', enable_streaming_engine: true, ip_configuration: 'test-value', kms_key_name: 'test-value', labels: { 'key1' => 'val1' }, machine_type: 'test-value', max_workers: 3.14, network: 'test-value', on_delete: 'test-value', parameters: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value', service_account_email: 'test-value', skip_wait_on_job_termination: true, subnetwork: 'test-value', transform_name_mapping: { 'key1' => 'val1' }, zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,6 +78,8 @@ RSpec.describe Pangea::Resources::GoogleDataflowJob do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dataflow_job', 'full')
+        expect(config).to have_key('additional_experiments')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('enable_streaming_engine')
         expect(config).to have_key('ip_configuration')
         expect(config).to have_key('kms_key_name')
@@ -85,6 +89,7 @@ RSpec.describe Pangea::Resources::GoogleDataflowJob do
         expect(config).to have_key('network')
         expect(config).to have_key('on_delete')
         expect(config).to have_key('parameters')
+        expect(config).to have_key('project')
         expect(config).to have_key('region')
         expect(config).to have_key('service_account_email')
         expect(config).to have_key('skip_wait_on_job_termination')
@@ -95,6 +100,40 @@ RSpec.describe Pangea::Resources::GoogleDataflowJob do
     end
 
     context 'optional attributes' do
+      it 'includes additional_experiments when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataflow_job('opt', required_attrs.merge(additional_experiments: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataflow_job', 'opt')
+        expect(config).to have_key('additional_experiments')
+      end
+
+      it 'omits additional_experiments when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataflow_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataflow_job', 'minimal')
+        expect(config).not_to have_key('additional_experiments')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataflow_job('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataflow_job', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataflow_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataflow_job', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes enable_streaming_engine when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -247,6 +286,23 @@ RSpec.describe Pangea::Resources::GoogleDataflowJob do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataflow_job', 'minimal')
         expect(config).not_to have_key('parameters')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataflow_job('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataflow_job', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataflow_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataflow_job', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes region when provided' do
         synth = create_synthesizer
@@ -421,7 +477,7 @@ RSpec.describe Pangea::Resources::GoogleDataflowJob do
     resource_type: :google_dataflow_job,
     method: :google_dataflow_job,
     required_attrs: { name: 'test-value', temp_gcs_location: 'test-value', template_gcs_path: 'test-value' },
-    expected_outputs: [:id, :additional_experiments, :effective_labels, :job_id, :project, :state, :terraform_labels, :type],
+    expected_outputs: [:id, :additional_experiments, :deletion_policy, :effective_labels, :job_id, :project, :state, :terraform_labels, :type],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:enable_streaming_engine, :skip_wait_on_job_termination]

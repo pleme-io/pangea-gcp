@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectGitRepositoryLink do
         expect(ref.id).to eq("${google_developer_connect_git_repository_link.test.id}")
         expect(ref.create_time).to eq("${google_developer_connect_git_repository_link.test.create_time}")
         expect(ref.delete_time).to eq("${google_developer_connect_git_repository_link.test.delete_time}")
+        expect(ref.deletion_policy).to eq("${google_developer_connect_git_repository_link.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_developer_connect_git_repository_link.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_developer_connect_git_repository_link.test.effective_labels}")
         expect(ref.name).to eq("${google_developer_connect_git_repository_link.test.name}")
@@ -61,6 +62,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectGitRepositoryLink do
         config = validate_resource_structure(result, 'google_developer_connect_git_repository_link', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('delete_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectGitRepositoryLink do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, etag: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, deletion_policy: 'test-value', etag: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -83,8 +85,10 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectGitRepositoryLink do
 
         config = validate_resource_structure(result, 'google_developer_connect_git_repository_link', 'full')
         expect(config).to have_key('annotations')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('etag')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
@@ -105,6 +109,23 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectGitRepositoryLink do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_git_repository_link', 'minimal')
         expect(config).not_to have_key('annotations')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_git_repository_link('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_git_repository_link', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_git_repository_link('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_git_repository_link', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes etag when provided' do
         synth = create_synthesizer
@@ -139,6 +160,23 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectGitRepositoryLink do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_git_repository_link', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_git_repository_link('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_git_repository_link', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_git_repository_link('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_git_repository_link', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -187,7 +225,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectGitRepositoryLink do
     resource_type: :google_developer_connect_git_repository_link,
     method: :google_developer_connect_git_repository_link,
     required_attrs: { clone_uri: 'test-value', git_repository_link_id: 'test-value', location: 'test-value', parent_connection: 'test-value' },
-    expected_outputs: [:id, :create_time, :delete_time, :effective_annotations, :effective_labels, :name, :project, :reconciling, :terraform_labels, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :delete_time, :deletion_policy, :effective_annotations, :effective_labels, :name, :project, :reconciling, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

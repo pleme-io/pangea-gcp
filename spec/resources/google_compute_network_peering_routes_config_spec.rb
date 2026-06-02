@@ -58,6 +58,76 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkPeeringRoutesConfig do
       end
     end
 
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ export_subnet_routes_with_public_ip: true, import_subnet_routes_with_public_ip: true, project: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_peering_routes_config('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_compute_network_peering_routes_config', 'full')
+        expect(config).to have_key('export_subnet_routes_with_public_ip')
+        expect(config).to have_key('import_subnet_routes_with_public_ip')
+        expect(config).to have_key('project')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes export_subnet_routes_with_public_ip when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_peering_routes_config('opt', required_attrs.merge(export_subnet_routes_with_public_ip: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_peering_routes_config', 'opt')
+        expect(config).to have_key('export_subnet_routes_with_public_ip')
+      end
+
+      it 'omits export_subnet_routes_with_public_ip when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_peering_routes_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_peering_routes_config', 'minimal')
+        expect(config).not_to have_key('export_subnet_routes_with_public_ip')
+      end
+      it 'includes import_subnet_routes_with_public_ip when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_peering_routes_config('opt', required_attrs.merge(import_subnet_routes_with_public_ip: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_peering_routes_config', 'opt')
+        expect(config).to have_key('import_subnet_routes_with_public_ip')
+      end
+
+      it 'omits import_subnet_routes_with_public_ip when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_peering_routes_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_peering_routes_config', 'minimal')
+        expect(config).not_to have_key('import_subnet_routes_with_public_ip')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_peering_routes_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_peering_routes_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_peering_routes_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_peering_routes_config', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+    end
+
     context 'boolean fields' do
       [true, false].each do |val|
         it "accepts export_custom_routes=#{val}" do
@@ -79,6 +149,28 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkPeeringRoutesConfig do
           result = normalize_synthesis(synth.synthesis)
           config = validate_resource_structure(result, 'google_compute_network_peering_routes_config', "bool_#{val}")
           expect(config['import_custom_routes']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts export_subnet_routes_with_public_ip=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(export_subnet_routes_with_public_ip: val)
+          synth.google_compute_network_peering_routes_config("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_network_peering_routes_config', "bool_#{val}")
+          expect(config['export_subnet_routes_with_public_ip']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts import_subnet_routes_with_public_ip=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(import_subnet_routes_with_public_ip: val)
+          synth.google_compute_network_peering_routes_config("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_network_peering_routes_config', "bool_#{val}")
+          expect(config['import_subnet_routes_with_public_ip']).to eq(val)
         end
       end
     end
@@ -131,5 +223,5 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkPeeringRoutesConfig do
     expected_outputs: [:id, :export_subnet_routes_with_public_ip, :import_subnet_routes_with_public_ip, :project],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:export_custom_routes, :import_custom_routes]
+    boolean_fields: [:export_custom_routes, :import_custom_routes, :export_subnet_routes_with_public_ip, :import_subnet_routes_with_public_ip]
 end

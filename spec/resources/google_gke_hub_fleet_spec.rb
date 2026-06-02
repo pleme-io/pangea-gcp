@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFleet do
         expect(ref.id).to eq("${google_gke_hub_fleet.test.id}")
         expect(ref.create_time).to eq("${google_gke_hub_fleet.test.create_time}")
         expect(ref.delete_time).to eq("${google_gke_hub_fleet.test.delete_time}")
+        expect(ref.deletion_policy).to eq("${google_gke_hub_fleet.test.deletion_policy}")
         expect(ref.project).to eq("${google_gke_hub_fleet.test.project}")
         expect(ref.state).to eq("${google_gke_hub_fleet.test.state}")
         expect(ref.uid).to eq("${google_gke_hub_fleet.test.uid}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFleet do
         config = validate_resource_structure(result, 'google_gke_hub_fleet', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('delete_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('uid')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFleet do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ default_cluster_config: [{ 'key1' => 'val1' }], display_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ default_cluster_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', display_name: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -75,7 +77,9 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFleet do
 
         config = validate_resource_structure(result, 'google_gke_hub_fleet', 'full')
         expect(config).to have_key('default_cluster_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('project')
       end
     end
 
@@ -83,7 +87,7 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFleet do
       it 'includes default_cluster_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gke_hub_fleet('opt', required_attrs.merge(default_cluster_config: [{ 'key1' => 'val1' }]))
+        synth.google_gke_hub_fleet('opt', required_attrs.merge(default_cluster_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gke_hub_fleet', 'opt')
         expect(config).to have_key('default_cluster_config')
@@ -96,6 +100,23 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFleet do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gke_hub_fleet', 'minimal')
         expect(config).not_to have_key('default_cluster_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gke_hub_fleet('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gke_hub_fleet', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gke_hub_fleet('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gke_hub_fleet', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes display_name when provided' do
         synth = create_synthesizer
@@ -113,6 +134,23 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFleet do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gke_hub_fleet', 'minimal')
         expect(config).not_to have_key('display_name')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gke_hub_fleet('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gke_hub_fleet', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gke_hub_fleet('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gke_hub_fleet', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -157,7 +195,7 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFleet do
     resource_type: :google_gke_hub_fleet,
     method: :google_gke_hub_fleet,
     required_attrs: {},
-    expected_outputs: [:id, :create_time, :delete_time, :project, :state, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :delete_time, :deletion_policy, :project, :state, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

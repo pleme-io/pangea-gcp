@@ -42,6 +42,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbInstance do
         expect(ref.availability_type).to eq("${google_alloydb_instance.test.availability_type}")
         expect(ref.create_time).to eq("${google_alloydb_instance.test.create_time}")
         expect(ref.database_flags).to eq("${google_alloydb_instance.test.database_flags}")
+        expect(ref.deletion_policy).to eq("${google_alloydb_instance.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_alloydb_instance.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_alloydb_instance.test.effective_labels}")
         expect(ref.ip_address).to eq("${google_alloydb_instance.test.ip_address}")
@@ -68,6 +69,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbInstance do
         expect(config).not_to have_key('availability_type')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('database_flags')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('ip_address')
@@ -83,7 +85,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, client_connection_config: [{ 'key1' => 'val1' }], display_name: 'test-value', gce_zone: 'test-value', labels: { 'key1' => 'val1' }, machine_config: [{ 'key1' => 'val1' }], network_config: [{ 'key1' => 'val1' }], psc_instance_config: [{ 'key1' => 'val1' }], query_insights_config: [{ 'key1' => 'val1' }], read_pool_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ activation_policy: 'test-value', annotations: { 'key1' => 'val1' }, availability_type: 'test-value', client_connection_config: { 'key1' => 'val1' }, connection_pool_config: { 'key1' => 'val1' }, database_flags: { 'key1' => 'val1' }, deletion_policy: 'test-value', display_name: 'test-value', gce_zone: 'test-value', labels: { 'key1' => 'val1' }, machine_config: { 'key1' => 'val1' }, network_config: { 'key1' => 'val1' }, psc_instance_config: { 'key1' => 'val1' }, query_insights_config: { 'key1' => 'val1' }, read_pool_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -92,8 +94,13 @@ RSpec.describe Pangea::Resources::GoogleAlloydbInstance do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_alloydb_instance', 'full')
+        expect(config).to have_key('activation_policy')
         expect(config).to have_key('annotations')
+        expect(config).to have_key('availability_type')
         expect(config).to have_key('client_connection_config')
+        expect(config).to have_key('connection_pool_config')
+        expect(config).to have_key('database_flags')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('gce_zone')
         expect(config).to have_key('labels')
@@ -106,6 +113,23 @@ RSpec.describe Pangea::Resources::GoogleAlloydbInstance do
     end
 
     context 'optional attributes' do
+      it 'includes activation_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_instance('opt', required_attrs.merge(activation_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_instance', 'opt')
+        expect(config).to have_key('activation_policy')
+      end
+
+      it 'omits activation_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_instance', 'minimal')
+        expect(config).not_to have_key('activation_policy')
+      end
       it 'includes annotations when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -123,10 +147,27 @@ RSpec.describe Pangea::Resources::GoogleAlloydbInstance do
         config = validate_resource_structure(result, 'google_alloydb_instance', 'minimal')
         expect(config).not_to have_key('annotations')
       end
+      it 'includes availability_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_instance('opt', required_attrs.merge(availability_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_instance', 'opt')
+        expect(config).to have_key('availability_type')
+      end
+
+      it 'omits availability_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_instance', 'minimal')
+        expect(config).not_to have_key('availability_type')
+      end
       it 'includes client_connection_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_instance('opt', required_attrs.merge(client_connection_config: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_instance('opt', required_attrs.merge(client_connection_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_instance', 'opt')
         expect(config).to have_key('client_connection_config')
@@ -139,6 +180,57 @@ RSpec.describe Pangea::Resources::GoogleAlloydbInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_instance', 'minimal')
         expect(config).not_to have_key('client_connection_config')
+      end
+      it 'includes connection_pool_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_instance('opt', required_attrs.merge(connection_pool_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_instance', 'opt')
+        expect(config).to have_key('connection_pool_config')
+      end
+
+      it 'omits connection_pool_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_instance', 'minimal')
+        expect(config).not_to have_key('connection_pool_config')
+      end
+      it 'includes database_flags when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_instance('opt', required_attrs.merge(database_flags: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_instance', 'opt')
+        expect(config).to have_key('database_flags')
+      end
+
+      it 'omits database_flags when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_instance', 'minimal')
+        expect(config).not_to have_key('database_flags')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes display_name when provided' do
         synth = create_synthesizer
@@ -194,7 +286,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbInstance do
       it 'includes machine_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_instance('opt', required_attrs.merge(machine_config: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_instance('opt', required_attrs.merge(machine_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_instance', 'opt')
         expect(config).to have_key('machine_config')
@@ -211,7 +303,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbInstance do
       it 'includes network_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_instance('opt', required_attrs.merge(network_config: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_instance('opt', required_attrs.merge(network_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_instance', 'opt')
         expect(config).to have_key('network_config')
@@ -228,7 +320,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbInstance do
       it 'includes psc_instance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_instance('opt', required_attrs.merge(psc_instance_config: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_instance('opt', required_attrs.merge(psc_instance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_instance', 'opt')
         expect(config).to have_key('psc_instance_config')
@@ -245,7 +337,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbInstance do
       it 'includes query_insights_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_instance('opt', required_attrs.merge(query_insights_config: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_instance('opt', required_attrs.merge(query_insights_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_instance', 'opt')
         expect(config).to have_key('query_insights_config')
@@ -262,7 +354,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbInstance do
       it 'includes read_pool_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_instance('opt', required_attrs.merge(read_pool_config: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_instance('opt', required_attrs.merge(read_pool_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_instance', 'opt')
         expect(config).to have_key('read_pool_config')
@@ -322,7 +414,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbInstance do
     resource_type: :google_alloydb_instance,
     method: :google_alloydb_instance,
     required_attrs: { cluster: 'test-value', instance_id: 'test-value', instance_type: 'test-value' },
-    expected_outputs: [:id, :activation_policy, :availability_type, :create_time, :database_flags, :effective_annotations, :effective_labels, :ip_address, :name, :outbound_public_ip_addresses, :public_ip_address, :reconciling, :state, :terraform_labels, :uid, :update_time],
+    expected_outputs: [:id, :activation_policy, :availability_type, :create_time, :database_flags, :deletion_policy, :effective_annotations, :effective_labels, :ip_address, :name, :outbound_public_ip_addresses, :public_ip_address, :reconciling, :state, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

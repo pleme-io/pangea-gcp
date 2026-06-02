@@ -1,0 +1,8 @@
+name: google_storage_transfer_agent_pool
+title: Manages a google_storage_transfer_agent_pool resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

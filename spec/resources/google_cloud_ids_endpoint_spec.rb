@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleCloudIdsEndpoint do
 
         expect(ref.id).to eq("${google_cloud_ids_endpoint.test.id}")
         expect(ref.create_time).to eq("${google_cloud_ids_endpoint.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_cloud_ids_endpoint.test.deletion_policy}")
         expect(ref.endpoint_forwarding_rule).to eq("${google_cloud_ids_endpoint.test.endpoint_forwarding_rule}")
         expect(ref.endpoint_ip).to eq("${google_cloud_ids_endpoint.test.endpoint_ip}")
         expect(ref.project).to eq("${google_cloud_ids_endpoint.test.project}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleCloudIdsEndpoint do
 
         config = validate_resource_structure(result, 'google_cloud_ids_endpoint', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('endpoint_forwarding_rule')
         expect(config).not_to have_key('endpoint_ip')
         expect(config).not_to have_key('project')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleCloudIdsEndpoint do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', threat_exceptions: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', project: 'test-value', threat_exceptions: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,12 +74,31 @@ RSpec.describe Pangea::Resources::GoogleCloudIdsEndpoint do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_cloud_ids_endpoint', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('project')
         expect(config).to have_key('threat_exceptions')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_ids_endpoint('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_ids_endpoint', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_ids_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_ids_endpoint', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -94,6 +115,23 @@ RSpec.describe Pangea::Resources::GoogleCloudIdsEndpoint do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_ids_endpoint', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_ids_endpoint('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_ids_endpoint', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_ids_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_ids_endpoint', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes threat_exceptions when provided' do
         synth = create_synthesizer
@@ -159,7 +197,7 @@ RSpec.describe Pangea::Resources::GoogleCloudIdsEndpoint do
     resource_type: :google_cloud_ids_endpoint,
     method: :google_cloud_ids_endpoint,
     required_attrs: { location: 'test-value', name: 'test-value', network: 'test-value', severity: 'test-value' },
-    expected_outputs: [:id, :create_time, :endpoint_forwarding_rule, :endpoint_ip, :project, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :endpoint_forwarding_rule, :endpoint_ip, :project, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

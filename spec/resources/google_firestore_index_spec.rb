@@ -38,9 +38,11 @@ RSpec.describe Pangea::Resources::GoogleFirestoreIndex do
         ref = synth.google_firestore_index('test', required_attrs)
 
         expect(ref.id).to eq("${google_firestore_index.test.id}")
+        expect(ref.deletion_policy).to eq("${google_firestore_index.test.deletion_policy}")
         expect(ref.density).to eq("${google_firestore_index.test.density}")
         expect(ref.name).to eq("${google_firestore_index.test.name}")
         expect(ref.project).to eq("${google_firestore_index.test.project}")
+        expect(ref.unique).to eq("${google_firestore_index.test.unique}")
       end
     end
 
@@ -52,14 +54,16 @@ RSpec.describe Pangea::Resources::GoogleFirestoreIndex do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_firestore_index', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('density')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
+        expect(config).not_to have_key('unique')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ api_scope: 'test-value', database: 'test-value', multikey: true, query_scope: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ api_scope: 'test-value', database: 'test-value', deletion_policy: 'test-value', density: 'test-value', multikey: true, project: 'test-value', query_scope: 'test-value', skip_wait: true, unique: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,8 +74,13 @@ RSpec.describe Pangea::Resources::GoogleFirestoreIndex do
         config = validate_resource_structure(result, 'google_firestore_index', 'full')
         expect(config).to have_key('api_scope')
         expect(config).to have_key('database')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('density')
         expect(config).to have_key('multikey')
+        expect(config).to have_key('project')
         expect(config).to have_key('query_scope')
+        expect(config).to have_key('skip_wait')
+        expect(config).to have_key('unique')
       end
     end
 
@@ -110,6 +119,40 @@ RSpec.describe Pangea::Resources::GoogleFirestoreIndex do
         config = validate_resource_structure(result, 'google_firestore_index', 'minimal')
         expect(config).not_to have_key('database')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_index('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_index', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_index('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_index', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes density when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_index('opt', required_attrs.merge(density: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_index', 'opt')
+        expect(config).to have_key('density')
+      end
+
+      it 'omits density when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_index('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_index', 'minimal')
+        expect(config).not_to have_key('density')
+      end
       it 'includes multikey when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -126,6 +169,23 @@ RSpec.describe Pangea::Resources::GoogleFirestoreIndex do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_firestore_index', 'minimal')
         expect(config).not_to have_key('multikey')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_index('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_index', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_index('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_index', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes query_scope when provided' do
         synth = create_synthesizer
@@ -144,6 +204,40 @@ RSpec.describe Pangea::Resources::GoogleFirestoreIndex do
         config = validate_resource_structure(result, 'google_firestore_index', 'minimal')
         expect(config).not_to have_key('query_scope')
       end
+      it 'includes skip_wait when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_index('opt', required_attrs.merge(skip_wait: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_index', 'opt')
+        expect(config).to have_key('skip_wait')
+      end
+
+      it 'omits skip_wait when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_index('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_index', 'minimal')
+        expect(config).not_to have_key('skip_wait')
+      end
+      it 'includes unique when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_index('opt', required_attrs.merge(unique: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_index', 'opt')
+        expect(config).to have_key('unique')
+      end
+
+      it 'omits unique when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_index('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_index', 'minimal')
+        expect(config).not_to have_key('unique')
+      end
     end
 
     context 'boolean fields' do
@@ -156,6 +250,28 @@ RSpec.describe Pangea::Resources::GoogleFirestoreIndex do
           result = normalize_synthesis(synth.synthesis)
           config = validate_resource_structure(result, 'google_firestore_index', "bool_#{val}")
           expect(config['multikey']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts skip_wait=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(skip_wait: val)
+          synth.google_firestore_index("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_firestore_index', "bool_#{val}")
+          expect(config['skip_wait']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts unique=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(unique: val)
+          synth.google_firestore_index("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_firestore_index', "bool_#{val}")
+          expect(config['unique']).to eq(val)
         end
       end
     end
@@ -203,8 +319,8 @@ RSpec.describe Pangea::Resources::GoogleFirestoreIndex do
     resource_type: :google_firestore_index,
     method: :google_firestore_index,
     required_attrs: { collection: 'test-value', fields: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :density, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :density, :name, :project, :unique],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:multikey]
+    boolean_fields: [:multikey, :skip_wait, :unique]
 end

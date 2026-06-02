@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNodeGroup do
 
         expect(ref.id).to eq("${google_compute_node_group.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_node_group.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_node_group.test.deletion_policy}")
         expect(ref.project).to eq("${google_compute_node_group.test.project}")
         expect(ref.self_link).to eq("${google_compute_node_group.test.self_link}")
         expect(ref.size).to eq("${google_compute_node_group.test.size}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNodeGroup do
 
         config = validate_resource_structure(result, 'google_compute_node_group', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
         expect(config).not_to have_key('size')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNodeGroup do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ autoscaling_policy: [{ 'key1' => 'val1' }], description: 'test-value', initial_size: 3.14, maintenance_policy: 'test-value', maintenance_window: [{ 'key1' => 'val1' }], share_settings: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ autoscaling_policy: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', initial_size: 3.14, maintenance_policy: 'test-value', maintenance_window: { 'key1' => 'val1' }, project: 'test-value', share_settings: { 'key1' => 'val1' }, zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,11 +75,14 @@ RSpec.describe Pangea::Resources::GoogleComputeNodeGroup do
 
         config = validate_resource_structure(result, 'google_compute_node_group', 'full')
         expect(config).to have_key('autoscaling_policy')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('initial_size')
         expect(config).to have_key('maintenance_policy')
         expect(config).to have_key('maintenance_window')
+        expect(config).to have_key('project')
         expect(config).to have_key('share_settings')
+        expect(config).to have_key('zone')
       end
     end
 
@@ -85,7 +90,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNodeGroup do
       it 'includes autoscaling_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_node_group('opt', required_attrs.merge(autoscaling_policy: [{ 'key1' => 'val1' }]))
+        synth.google_compute_node_group('opt', required_attrs.merge(autoscaling_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_node_group', 'opt')
         expect(config).to have_key('autoscaling_policy')
@@ -98,6 +103,23 @@ RSpec.describe Pangea::Resources::GoogleComputeNodeGroup do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_node_group', 'minimal')
         expect(config).not_to have_key('autoscaling_policy')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_node_group('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_node_group', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_node_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_node_group', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -153,7 +175,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNodeGroup do
       it 'includes maintenance_window when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_node_group('opt', required_attrs.merge(maintenance_window: [{ 'key1' => 'val1' }]))
+        synth.google_compute_node_group('opt', required_attrs.merge(maintenance_window: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_node_group', 'opt')
         expect(config).to have_key('maintenance_window')
@@ -167,10 +189,27 @@ RSpec.describe Pangea::Resources::GoogleComputeNodeGroup do
         config = validate_resource_structure(result, 'google_compute_node_group', 'minimal')
         expect(config).not_to have_key('maintenance_window')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_node_group('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_node_group', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_node_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_node_group', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes share_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_node_group('opt', required_attrs.merge(share_settings: [{ 'key1' => 'val1' }]))
+        synth.google_compute_node_group('opt', required_attrs.merge(share_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_node_group', 'opt')
         expect(config).to have_key('share_settings')
@@ -183,6 +222,23 @@ RSpec.describe Pangea::Resources::GoogleComputeNodeGroup do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_node_group', 'minimal')
         expect(config).not_to have_key('share_settings')
+      end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_node_group('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_node_group', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_node_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_node_group', 'minimal')
+        expect(config).not_to have_key('zone')
       end
     end
 
@@ -229,7 +285,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNodeGroup do
     resource_type: :google_compute_node_group,
     method: :google_compute_node_group,
     required_attrs: { name: 'test-value', node_template: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :project, :self_link, :size, :zone],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :project, :self_link, :size, :zone],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

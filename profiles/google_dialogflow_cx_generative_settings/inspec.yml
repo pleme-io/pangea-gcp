@@ -1,0 +1,8 @@
+name: google_dialogflow_cx_generative_settings
+title: Manages a google_dialogflow_cx_generative_settings resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

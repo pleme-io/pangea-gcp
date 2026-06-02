@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleNetworkSecurityFirewallEndpoint do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { billing_project_id: 'test-value', location: 'test-value', name: 'test-value', parent: 'test-value' } }
+  let(:required_attrs) { { location: 'test-value', name: 'test-value', parent: 'test-value' } }
 
   describe ':google_network_security_firewall_endpoint' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityFirewallEndpoint do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_network_security_firewall_endpoint', 'test')
-        validate_required_attributes(config, [:billing_project_id, :location, :name, :parent])
+        validate_required_attributes(config, [:location, :name, :parent])
       end
 
       it 'returns a ResourceReference' do
@@ -39,7 +39,9 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityFirewallEndpoint do
 
         expect(ref.id).to eq("${google_network_security_firewall_endpoint.test.id}")
         expect(ref.associated_networks).to eq("${google_network_security_firewall_endpoint.test.associated_networks}")
+        expect(ref.billing_project_id).to eq("${google_network_security_firewall_endpoint.test.billing_project_id}")
         expect(ref.create_time).to eq("${google_network_security_firewall_endpoint.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_security_firewall_endpoint.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_security_firewall_endpoint.test.effective_labels}")
         expect(ref.reconciling).to eq("${google_network_security_firewall_endpoint.test.reconciling}")
         expect(ref.self_link).to eq("${google_network_security_firewall_endpoint.test.self_link}")
@@ -58,7 +60,9 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityFirewallEndpoint do
 
         config = validate_resource_structure(result, 'google_network_security_firewall_endpoint', 'test')
         expect(config).not_to have_key('associated_networks')
+        expect(config).not_to have_key('billing_project_id')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('reconciling')
         expect(config).not_to have_key('self_link')
@@ -69,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityFirewallEndpoint do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ billing_project_id: 'test-value', deletion_policy: 'test-value', endpoint_settings: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,11 +82,65 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityFirewallEndpoint do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_security_firewall_endpoint', 'full')
+        expect(config).to have_key('billing_project_id')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('endpoint_settings')
         expect(config).to have_key('labels')
       end
     end
 
     context 'optional attributes' do
+      it 'includes billing_project_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_firewall_endpoint('opt', required_attrs.merge(billing_project_id: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_firewall_endpoint', 'opt')
+        expect(config).to have_key('billing_project_id')
+      end
+
+      it 'omits billing_project_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_firewall_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_firewall_endpoint', 'minimal')
+        expect(config).not_to have_key('billing_project_id')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_firewall_endpoint('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_firewall_endpoint', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_firewall_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_firewall_endpoint', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes endpoint_settings when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_firewall_endpoint('opt', required_attrs.merge(endpoint_settings: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_firewall_endpoint', 'opt')
+        expect(config).to have_key('endpoint_settings')
+      end
+
+      it 'omits endpoint_settings when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_firewall_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_firewall_endpoint', 'minimal')
+        expect(config).not_to have_key('endpoint_settings')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -110,7 +168,6 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityFirewallEndpoint do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_security_firewall_endpoint', 'typed')
-        expect(config['billing_project_id']).to be_a(String)
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
         expect(config['parent']).to be_a(String)
@@ -146,8 +203,8 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityFirewallEndpoint do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_network_security_firewall_endpoint,
     method: :google_network_security_firewall_endpoint,
-    required_attrs: { billing_project_id: 'test-value', location: 'test-value', name: 'test-value', parent: 'test-value' },
-    expected_outputs: [:id, :associated_networks, :create_time, :effective_labels, :reconciling, :self_link, :state, :terraform_labels, :update_time],
+    required_attrs: { location: 'test-value', name: 'test-value', parent: 'test-value' },
+    expected_outputs: [:id, :associated_networks, :billing_project_id, :create_time, :deletion_policy, :effective_labels, :reconciling, :self_link, :state, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

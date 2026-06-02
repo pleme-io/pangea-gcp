@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerDatabase do
 
         expect(ref.id).to eq("${google_spanner_database.test.id}")
         expect(ref.database_dialect).to eq("${google_spanner_database.test.database_dialect}")
+        expect(ref.deletion_policy).to eq("${google_spanner_database.test.deletion_policy}")
         expect(ref.project).to eq("${google_spanner_database.test.project}")
         expect(ref.state).to eq("${google_spanner_database.test.state}")
         expect(ref.version_retention_period).to eq("${google_spanner_database.test.version_retention_period}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerDatabase do
 
         config = validate_resource_structure(result, 'google_spanner_database', 'test')
         expect(config).not_to have_key('database_dialect')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('version_retention_period')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerDatabase do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ ddl: ['test-value'], default_time_zone: 'test-value', deletion_protection: true, enable_drop_protection: true, encryption_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ database_dialect: 'test-value', ddl: ['test-value'], default_time_zone: 'test-value', deletion_policy: 'test-value', deletion_protection: true, enable_drop_protection: true, encryption_config: { 'key1' => 'val1' }, project: 'test-value', version_retention_period: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,15 +72,36 @@ RSpec.describe Pangea::Resources::GoogleSpannerDatabase do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_spanner_database', 'full')
+        expect(config).to have_key('database_dialect')
         expect(config).to have_key('ddl')
         expect(config).to have_key('default_time_zone')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
         expect(config).to have_key('enable_drop_protection')
         expect(config).to have_key('encryption_config')
+        expect(config).to have_key('project')
+        expect(config).to have_key('version_retention_period')
       end
     end
 
     context 'optional attributes' do
+      it 'includes database_dialect when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_database('opt', required_attrs.merge(database_dialect: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_database', 'opt')
+        expect(config).to have_key('database_dialect')
+      end
+
+      it 'omits database_dialect when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_database', 'minimal')
+        expect(config).not_to have_key('database_dialect')
+      end
       it 'includes ddl when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -112,6 +135,23 @@ RSpec.describe Pangea::Resources::GoogleSpannerDatabase do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_spanner_database', 'minimal')
         expect(config).not_to have_key('default_time_zone')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_database('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_database', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_database', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
@@ -150,7 +190,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerDatabase do
       it 'includes encryption_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_spanner_database('opt', required_attrs.merge(encryption_config: [{ 'key1' => 'val1' }]))
+        synth.google_spanner_database('opt', required_attrs.merge(encryption_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_spanner_database', 'opt')
         expect(config).to have_key('encryption_config')
@@ -163,6 +203,40 @@ RSpec.describe Pangea::Resources::GoogleSpannerDatabase do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_spanner_database', 'minimal')
         expect(config).not_to have_key('encryption_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_database('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_database', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_database', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes version_retention_period when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_database('opt', required_attrs.merge(version_retention_period: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_database', 'opt')
+        expect(config).to have_key('version_retention_period')
+      end
+
+      it 'omits version_retention_period when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_database', 'minimal')
+        expect(config).not_to have_key('version_retention_period')
       end
     end
 
@@ -234,7 +308,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerDatabase do
     resource_type: :google_spanner_database,
     method: :google_spanner_database,
     required_attrs: { instance: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :database_dialect, :project, :state, :version_retention_period],
+    expected_outputs: [:id, :database_dialect, :deletion_policy, :project, :state, :version_retention_period],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection, :enable_drop_protection]

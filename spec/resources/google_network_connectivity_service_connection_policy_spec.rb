@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityServiceConnectionPoli
 
         expect(ref.id).to eq("${google_network_connectivity_service_connection_policy.test.id}")
         expect(ref.create_time).to eq("${google_network_connectivity_service_connection_policy.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_connectivity_service_connection_policy.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_connectivity_service_connection_policy.test.effective_labels}")
         expect(ref.etag).to eq("${google_network_connectivity_service_connection_policy.test.etag}")
         expect(ref.infrastructure).to eq("${google_network_connectivity_service_connection_policy.test.infrastructure}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityServiceConnectionPoli
 
         config = validate_resource_structure(result, 'google_network_connectivity_service_connection_policy', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('infrastructure')
@@ -69,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityServiceConnectionPoli
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', labels: { 'key1' => 'val1' }, psc_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', psc_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,13 +80,32 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityServiceConnectionPoli
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_connectivity_service_connection_policy', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('psc_config')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_service_connection_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_service_connection_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_service_connection_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_service_connection_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -119,10 +140,27 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityServiceConnectionPoli
         config = validate_resource_structure(result, 'google_network_connectivity_service_connection_policy', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_service_connection_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_service_connection_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_service_connection_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_service_connection_policy', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes psc_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_network_connectivity_service_connection_policy('opt', required_attrs.merge(psc_config: [{ 'key1' => 'val1' }]))
+        synth.google_network_connectivity_service_connection_policy('opt', required_attrs.merge(psc_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_connectivity_service_connection_policy', 'opt')
         expect(config).to have_key('psc_config')
@@ -183,7 +221,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityServiceConnectionPoli
     resource_type: :google_network_connectivity_service_connection_policy,
     method: :google_network_connectivity_service_connection_policy,
     required_attrs: { location: 'test-value', name: 'test-value', network: 'test-value', service_class: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :etag, :infrastructure, :project, :psc_connections, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :etag, :infrastructure, :project, :psc_connections, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

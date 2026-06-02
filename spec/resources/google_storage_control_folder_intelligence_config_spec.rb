@@ -61,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleStorageControlFolderIntelligenceConfig d
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ filter: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ edition_config: 'test-value', filter: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,15 +70,33 @@ RSpec.describe Pangea::Resources::GoogleStorageControlFolderIntelligenceConfig d
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_storage_control_folder_intelligence_config', 'full')
+        expect(config).to have_key('edition_config')
         expect(config).to have_key('filter')
       end
     end
 
     context 'optional attributes' do
+      it 'includes edition_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_control_folder_intelligence_config('opt', required_attrs.merge(edition_config: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_control_folder_intelligence_config', 'opt')
+        expect(config).to have_key('edition_config')
+      end
+
+      it 'omits edition_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_control_folder_intelligence_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_control_folder_intelligence_config', 'minimal')
+        expect(config).not_to have_key('edition_config')
+      end
       it 'includes filter when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_control_folder_intelligence_config('opt', required_attrs.merge(filter: [{ 'key1' => 'val1' }]))
+        synth.google_storage_control_folder_intelligence_config('opt', required_attrs.merge(filter: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_control_folder_intelligence_config', 'opt')
         expect(config).to have_key('filter')

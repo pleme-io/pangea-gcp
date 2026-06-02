@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeTargetServer do
         ref = synth.google_apigee_target_server('test', required_attrs)
 
         expect(ref.id).to eq("${google_apigee_target_server.test.id}")
+        expect(ref.deletion_policy).to eq("${google_apigee_target_server.test.deletion_policy}")
         expect(ref.protocol).to eq("${google_apigee_target_server.test.protocol}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleApigeeTargetServer do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_target_server', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('protocol')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', is_enabled: true, s_sl_info: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', is_enabled: true, protocol: 'test-value', s_sl_info: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,13 +66,32 @@ RSpec.describe Pangea::Resources::GoogleApigeeTargetServer do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_target_server', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('is_enabled')
+        expect(config).to have_key('protocol')
         expect(config).to have_key('s_sl_info')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_target_server('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_target_server', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_target_server('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_target_server', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -105,10 +126,27 @@ RSpec.describe Pangea::Resources::GoogleApigeeTargetServer do
         config = validate_resource_structure(result, 'google_apigee_target_server', 'minimal')
         expect(config).not_to have_key('is_enabled')
       end
+      it 'includes protocol when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_target_server('opt', required_attrs.merge(protocol: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_target_server', 'opt')
+        expect(config).to have_key('protocol')
+      end
+
+      it 'omits protocol when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_target_server('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_target_server', 'minimal')
+        expect(config).not_to have_key('protocol')
+      end
       it 'includes s_sl_info when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_target_server('opt', required_attrs.merge(s_sl_info: [{ 'key1' => 'val1' }]))
+        synth.google_apigee_target_server('opt', required_attrs.merge(s_sl_info: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_target_server', 'opt')
         expect(config).to have_key('s_sl_info')
@@ -183,7 +221,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeTargetServer do
     resource_type: :google_apigee_target_server,
     method: :google_apigee_target_server,
     required_attrs: { env_id: 'test-value', host: 'test-value', name: 'test-value', port: 3.14 },
-    expected_outputs: [:id, :protocol],
+    expected_outputs: [:id, :deletion_policy, :protocol],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:is_enabled]

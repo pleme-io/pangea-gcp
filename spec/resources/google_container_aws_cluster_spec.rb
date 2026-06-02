@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleContainerAwsCluster do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { authorization: [{ 'key1' => 'val1' }], aws_region: 'test-value', control_plane: [{ 'key1' => 'val1' }], fleet: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', networking: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { authorization: { 'key1' => 'val1' }, aws_region: 'test-value', control_plane: { 'key1' => 'val1' }, fleet: { 'key1' => 'val1' }, location: 'test-value', name: 'test-value', networking: { 'key1' => 'val1' } } }
 
   describe ':google_container_aws_cluster' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAwsCluster do
 
         expect(ref.id).to eq("${google_container_aws_cluster.test.id}")
         expect(ref.create_time).to eq("${google_container_aws_cluster.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_container_aws_cluster.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_container_aws_cluster.test.effective_annotations}")
         expect(ref.endpoint).to eq("${google_container_aws_cluster.test.endpoint}")
         expect(ref.etag).to eq("${google_container_aws_cluster.test.etag}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAwsCluster do
 
         config = validate_resource_structure(result, 'google_container_aws_cluster', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('endpoint')
         expect(config).not_to have_key('etag')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAwsCluster do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, binary_authorization: [{ 'key1' => 'val1' }], description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, binary_authorization: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -84,7 +86,9 @@ RSpec.describe Pangea::Resources::GoogleContainerAwsCluster do
         config = validate_resource_structure(result, 'google_container_aws_cluster', 'full')
         expect(config).to have_key('annotations')
         expect(config).to have_key('binary_authorization')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('project')
       end
     end
 
@@ -109,7 +113,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAwsCluster do
       it 'includes binary_authorization when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_aws_cluster('opt', required_attrs.merge(binary_authorization: [{ 'key1' => 'val1' }]))
+        synth.google_container_aws_cluster('opt', required_attrs.merge(binary_authorization: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_aws_cluster', 'opt')
         expect(config).to have_key('binary_authorization')
@@ -122,6 +126,23 @@ RSpec.describe Pangea::Resources::GoogleContainerAwsCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_aws_cluster', 'minimal')
         expect(config).not_to have_key('binary_authorization')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_aws_cluster('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_aws_cluster', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_aws_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_aws_cluster', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -140,6 +161,23 @@ RSpec.describe Pangea::Resources::GoogleContainerAwsCluster do
         config = validate_resource_structure(result, 'google_container_aws_cluster', 'minimal')
         expect(config).not_to have_key('description')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_aws_cluster('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_aws_cluster', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_aws_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_aws_cluster', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -150,13 +188,13 @@ RSpec.describe Pangea::Resources::GoogleContainerAwsCluster do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_container_aws_cluster', 'typed')
-        expect(config['authorization']).to be_a(Array)
+        expect(config['authorization']).to be_a(Hash)
         expect(config['aws_region']).to be_a(String)
-        expect(config['control_plane']).to be_a(Array)
-        expect(config['fleet']).to be_a(Array)
+        expect(config['control_plane']).to be_a(Hash)
+        expect(config['fleet']).to be_a(Hash)
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
-        expect(config['networking']).to be_a(Array)
+        expect(config['networking']).to be_a(Hash)
       end
     end
 
@@ -189,8 +227,8 @@ RSpec.describe Pangea::Resources::GoogleContainerAwsCluster do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_container_aws_cluster,
     method: :google_container_aws_cluster,
-    required_attrs: { authorization: [{ 'key1' => 'val1' }], aws_region: 'test-value', control_plane: [{ 'key1' => 'val1' }], fleet: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', networking: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :effective_annotations, :endpoint, :etag, :project, :reconciling, :state, :uid, :update_time, :workload_identity_config],
+    required_attrs: { authorization: { 'key1' => 'val1' }, aws_region: 'test-value', control_plane: { 'key1' => 'val1' }, fleet: { 'key1' => 'val1' }, location: 'test-value', name: 'test-value', networking: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_annotations, :endpoint, :etag, :project, :reconciling, :state, :uid, :update_time, :workload_identity_config],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

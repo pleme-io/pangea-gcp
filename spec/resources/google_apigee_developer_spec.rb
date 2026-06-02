@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeDeveloper do
 
         expect(ref.id).to eq("${google_apigee_developer.test.id}")
         expect(ref.created_at).to eq("${google_apigee_developer.test.created_at}")
+        expect(ref.deletion_policy).to eq("${google_apigee_developer.test.deletion_policy}")
         expect(ref.last_modified_at).to eq("${google_apigee_developer.test.last_modified_at}")
         expect(ref.organizatio_name).to eq("${google_apigee_developer.test.organizatio_name}")
         expect(ref.status).to eq("${google_apigee_developer.test.status}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeDeveloper do
 
         config = validate_resource_structure(result, 'google_apigee_developer', 'test')
         expect(config).not_to have_key('created_at')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('last_modified_at')
         expect(config).not_to have_key('organizatio_name')
         expect(config).not_to have_key('status')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeDeveloper do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ attributes: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ attributes: [{ 'key1' => 'val1' }], deletion_policy: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,6 +73,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeDeveloper do
 
         config = validate_resource_structure(result, 'google_apigee_developer', 'full')
         expect(config).to have_key('attributes')
+        expect(config).to have_key('deletion_policy')
       end
     end
 
@@ -91,6 +94,23 @@ RSpec.describe Pangea::Resources::GoogleApigeeDeveloper do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_developer', 'minimal')
         expect(config).not_to have_key('attributes')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_developer('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_developer', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_developer('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_developer', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -140,7 +160,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeDeveloper do
     resource_type: :google_apigee_developer,
     method: :google_apigee_developer,
     required_attrs: { email: 'test-value', first_name: 'test-value', last_name: 'test-value', org_id: 'test-value', user_name: 'test-value' },
-    expected_outputs: [:id, :created_at, :last_modified_at, :organizatio_name, :status],
+    expected_outputs: [:id, :created_at, :deletion_policy, :last_modified_at, :organizatio_name, :status],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

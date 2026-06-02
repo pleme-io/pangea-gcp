@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleComputeReservation do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { name: 'test-value', specific_reservation: [{ 'key1' => 'val1' }], zone: 'test-value' } }
+  let(:required_attrs) { { name: 'test-value', specific_reservation: { 'key1' => 'val1' }, zone: 'test-value' } }
 
   describe ':google_compute_reservation' do
     context 'with required attributes only' do
@@ -38,10 +38,17 @@ RSpec.describe Pangea::Resources::GoogleComputeReservation do
         ref = synth.google_compute_reservation('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_reservation.test.id}")
+        expect(ref.block_names).to eq("${google_compute_reservation.test.block_names}")
         expect(ref.commitment).to eq("${google_compute_reservation.test.commitment}")
         expect(ref.creation_timestamp).to eq("${google_compute_reservation.test.creation_timestamp}")
         expect(ref.delete_at_time).to eq("${google_compute_reservation.test.delete_at_time}")
+        expect(ref.deletion_policy).to eq("${google_compute_reservation.test.deletion_policy}")
+        expect(ref.kind).to eq("${google_compute_reservation.test.kind}")
+        expect(ref.linked_commitments).to eq("${google_compute_reservation.test.linked_commitments}")
         expect(ref.project).to eq("${google_compute_reservation.test.project}")
+        expect(ref.reservation_block_count).to eq("${google_compute_reservation.test.reservation_block_count}")
+        expect(ref.resource_status).to eq("${google_compute_reservation.test.resource_status}")
+        expect(ref.satisfies_pzs).to eq("${google_compute_reservation.test.satisfies_pzs}")
         expect(ref.self_link).to eq("${google_compute_reservation.test.self_link}")
         expect(ref.status).to eq("${google_compute_reservation.test.status}")
       end
@@ -55,17 +62,24 @@ RSpec.describe Pangea::Resources::GoogleComputeReservation do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_reservation', 'test')
+        expect(config).not_to have_key('block_names')
         expect(config).not_to have_key('commitment')
         expect(config).not_to have_key('creation_timestamp')
         expect(config).not_to have_key('delete_at_time')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('kind')
+        expect(config).not_to have_key('linked_commitments')
         expect(config).not_to have_key('project')
+        expect(config).not_to have_key('reservation_block_count')
+        expect(config).not_to have_key('resource_status')
+        expect(config).not_to have_key('satisfies_pzs')
         expect(config).not_to have_key('self_link')
         expect(config).not_to have_key('status')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ delete_after_duration: [{ 'key1' => 'val1' }], description: 'test-value', reservation_sharing_policy: [{ 'key1' => 'val1' }], share_settings: [{ 'key1' => 'val1' }], specific_reservation_required: true }) }
+      let(:all_attrs) { required_attrs.merge({ delete_after_duration: { 'key1' => 'val1' }, delete_at_time: 'test-value', deletion_policy: 'test-value', description: 'test-value', project: 'test-value', reservation_sharing_policy: { 'key1' => 'val1' }, share_settings: { 'key1' => 'val1' }, specific_reservation_required: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -75,7 +89,10 @@ RSpec.describe Pangea::Resources::GoogleComputeReservation do
 
         config = validate_resource_structure(result, 'google_compute_reservation', 'full')
         expect(config).to have_key('delete_after_duration')
+        expect(config).to have_key('delete_at_time')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('project')
         expect(config).to have_key('reservation_sharing_policy')
         expect(config).to have_key('share_settings')
         expect(config).to have_key('specific_reservation_required')
@@ -86,7 +103,7 @@ RSpec.describe Pangea::Resources::GoogleComputeReservation do
       it 'includes delete_after_duration when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_reservation('opt', required_attrs.merge(delete_after_duration: [{ 'key1' => 'val1' }]))
+        synth.google_compute_reservation('opt', required_attrs.merge(delete_after_duration: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_reservation', 'opt')
         expect(config).to have_key('delete_after_duration')
@@ -99,6 +116,40 @@ RSpec.describe Pangea::Resources::GoogleComputeReservation do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_reservation', 'minimal')
         expect(config).not_to have_key('delete_after_duration')
+      end
+      it 'includes delete_at_time when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_reservation('opt', required_attrs.merge(delete_at_time: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_reservation', 'opt')
+        expect(config).to have_key('delete_at_time')
+      end
+
+      it 'omits delete_at_time when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_reservation('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_reservation', 'minimal')
+        expect(config).not_to have_key('delete_at_time')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_reservation('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_reservation', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_reservation('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_reservation', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -117,10 +168,27 @@ RSpec.describe Pangea::Resources::GoogleComputeReservation do
         config = validate_resource_structure(result, 'google_compute_reservation', 'minimal')
         expect(config).not_to have_key('description')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_reservation('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_reservation', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_reservation('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_reservation', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes reservation_sharing_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_reservation('opt', required_attrs.merge(reservation_sharing_policy: [{ 'key1' => 'val1' }]))
+        synth.google_compute_reservation('opt', required_attrs.merge(reservation_sharing_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_reservation', 'opt')
         expect(config).to have_key('reservation_sharing_policy')
@@ -137,7 +205,7 @@ RSpec.describe Pangea::Resources::GoogleComputeReservation do
       it 'includes share_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_reservation('opt', required_attrs.merge(share_settings: [{ 'key1' => 'val1' }]))
+        synth.google_compute_reservation('opt', required_attrs.merge(share_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_reservation', 'opt')
         expect(config).to have_key('share_settings')
@@ -193,7 +261,7 @@ RSpec.describe Pangea::Resources::GoogleComputeReservation do
 
         config = validate_resource_structure(result, 'google_compute_reservation', 'typed')
         expect(config['name']).to be_a(String)
-        expect(config['specific_reservation']).to be_a(Array)
+        expect(config['specific_reservation']).to be_a(Hash)
         expect(config['zone']).to be_a(String)
       end
     end
@@ -227,8 +295,8 @@ RSpec.describe Pangea::Resources::GoogleComputeReservation do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_compute_reservation,
     method: :google_compute_reservation,
-    required_attrs: { name: 'test-value', specific_reservation: [{ 'key1' => 'val1' }], zone: 'test-value' },
-    expected_outputs: [:id, :commitment, :creation_timestamp, :delete_at_time, :project, :self_link, :status],
+    required_attrs: { name: 'test-value', specific_reservation: { 'key1' => 'val1' }, zone: 'test-value' },
+    expected_outputs: [:id, :block_names, :commitment, :creation_timestamp, :delete_at_time, :deletion_policy, :kind, :linked_commitments, :project, :reservation_block_count, :resource_status, :satisfies_pzs, :self_link, :status],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:specific_reservation_required]

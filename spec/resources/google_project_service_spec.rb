@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleProjectService do
         ref = synth.google_project_service('test', required_attrs)
 
         expect(ref.id).to eq("${google_project_service.test.id}")
+        expect(ref.deletion_policy).to eq("${google_project_service.test.deletion_policy}")
         expect(ref.project).to eq("${google_project_service.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleProjectService do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_project_service', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ disable_dependent_services: true, disable_on_destroy: true }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', disable_dependent_services: true, disable_on_destroy: true, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,12 +66,31 @@ RSpec.describe Pangea::Resources::GoogleProjectService do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_project_service', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('disable_dependent_services')
         expect(config).to have_key('disable_on_destroy')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_project_service('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_project_service', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_project_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_project_service', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes disable_dependent_services when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -103,6 +124,23 @@ RSpec.describe Pangea::Resources::GoogleProjectService do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_project_service', 'minimal')
         expect(config).not_to have_key('disable_on_destroy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_project_service('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_project_service', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_project_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_project_service', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -173,7 +211,7 @@ RSpec.describe Pangea::Resources::GoogleProjectService do
     resource_type: :google_project_service,
     method: :google_project_service,
     required_attrs: { service: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disable_dependent_services, :disable_on_destroy]

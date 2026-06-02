@@ -41,6 +41,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnect do
         expect(ref.available_features).to eq("${google_compute_interconnect.test.available_features}")
         expect(ref.circuit_infos).to eq("${google_compute_interconnect.test.circuit_infos}")
         expect(ref.creation_timestamp).to eq("${google_compute_interconnect.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_interconnect.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_compute_interconnect.test.effective_labels}")
         expect(ref.expected_outages).to eq("${google_compute_interconnect.test.expected_outages}")
         expect(ref.google_ip_address).to eq("${google_compute_interconnect.test.google_ip_address}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnect do
         expect(ref.satisfies_pzs).to eq("${google_compute_interconnect.test.satisfies_pzs}")
         expect(ref.state).to eq("${google_compute_interconnect.test.state}")
         expect(ref.terraform_labels).to eq("${google_compute_interconnect.test.terraform_labels}")
+        expect(ref.wire_groups).to eq("${google_compute_interconnect.test.wire_groups}")
       end
     end
 
@@ -69,6 +71,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnect do
         expect(config).not_to have_key('available_features')
         expect(config).not_to have_key('circuit_infos')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('expected_outages')
         expect(config).not_to have_key('google_ip_address')
@@ -83,11 +86,12 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnect do
         expect(config).not_to have_key('satisfies_pzs')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('terraform_labels')
+        expect(config).not_to have_key('wire_groups')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ admin_enabled: true, customer_name: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, macsec: [{ 'key1' => 'val1' }], macsec_enabled: true, noc_contact_email: 'test-value', remote_location: 'test-value', requested_features: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ admin_enabled: true, customer_name: 'test-value', deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, macsec: { 'key1' => 'val1' }, macsec_enabled: true, noc_contact_email: 'test-value', params: { 'key1' => 'val1' }, project: 'test-value', remote_location: 'test-value', requested_features: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -98,11 +102,14 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnect do
         config = validate_resource_structure(result, 'google_compute_interconnect', 'full')
         expect(config).to have_key('admin_enabled')
         expect(config).to have_key('customer_name')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
         expect(config).to have_key('macsec')
         expect(config).to have_key('macsec_enabled')
         expect(config).to have_key('noc_contact_email')
+        expect(config).to have_key('params')
+        expect(config).to have_key('project')
         expect(config).to have_key('remote_location')
         expect(config).to have_key('requested_features')
       end
@@ -143,6 +150,23 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnect do
         config = validate_resource_structure(result, 'google_compute_interconnect', 'minimal')
         expect(config).not_to have_key('customer_name')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -180,7 +204,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnect do
       it 'includes macsec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_interconnect('opt', required_attrs.merge(macsec: [{ 'key1' => 'val1' }]))
+        synth.google_compute_interconnect('opt', required_attrs.merge(macsec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_interconnect', 'opt')
         expect(config).to have_key('macsec')
@@ -227,6 +251,40 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnect do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_interconnect', 'minimal')
         expect(config).not_to have_key('noc_contact_email')
+      end
+      it 'includes params when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect', 'opt')
+        expect(config).to have_key('params')
+      end
+
+      it 'omits params when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect', 'minimal')
+        expect(config).not_to have_key('params')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes remote_location when provided' do
         synth = create_synthesizer
@@ -335,7 +393,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnect do
     resource_type: :google_compute_interconnect,
     method: :google_compute_interconnect,
     required_attrs: { interconnect_type: 'test-value', link_type: 'test-value', location: 'test-value', name: 'test-value', requested_link_count: 3.14 },
-    expected_outputs: [:id, :available_features, :circuit_infos, :creation_timestamp, :effective_labels, :expected_outages, :google_ip_address, :google_reference_id, :interconnect_attachments, :interconnect_groups, :label_fingerprint, :operational_status, :peer_ip_address, :project, :provisioned_link_count, :satisfies_pzs, :state, :terraform_labels],
+    expected_outputs: [:id, :available_features, :circuit_infos, :creation_timestamp, :deletion_policy, :effective_labels, :expected_outages, :google_ip_address, :google_reference_id, :interconnect_attachments, :interconnect_groups, :label_fingerprint, :operational_status, :peer_ip_address, :project, :provisioned_link_count, :satisfies_pzs, :state, :terraform_labels, :wire_groups],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:admin_enabled, :macsec_enabled]

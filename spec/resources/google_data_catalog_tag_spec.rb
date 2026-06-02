@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogTag do
         ref = synth.google_data_catalog_tag('test', required_attrs)
 
         expect(ref.id).to eq("${google_data_catalog_tag.test.id}")
+        expect(ref.deletion_policy).to eq("${google_data_catalog_tag.test.deletion_policy}")
         expect(ref.name).to eq("${google_data_catalog_tag.test.name}")
         expect(ref.template_displayname).to eq("${google_data_catalog_tag.test.template_displayname}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogTag do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_data_catalog_tag', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('template_displayname')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ column: 'test-value', parent: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ column: 'test-value', deletion_policy: 'test-value', parent: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,6 +69,7 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogTag do
 
         config = validate_resource_structure(result, 'google_data_catalog_tag', 'full')
         expect(config).to have_key('column')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('parent')
       end
     end
@@ -88,6 +91,23 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogTag do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_catalog_tag', 'minimal')
         expect(config).not_to have_key('column')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_catalog_tag('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_catalog_tag', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_catalog_tag('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_catalog_tag', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes parent when provided' do
         synth = create_synthesizer
@@ -151,7 +171,7 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogTag do
     resource_type: :google_data_catalog_tag,
     method: :google_data_catalog_tag,
     required_attrs: { fields: [{ 'key1' => 'val1' }], template: 'test-value' },
-    expected_outputs: [:id, :name, :template_displayname],
+    expected_outputs: [:id, :deletion_policy, :name, :template_displayname],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

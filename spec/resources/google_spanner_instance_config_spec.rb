@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstanceConfig do
         expect(ref.id).to eq("${google_spanner_instance_config.test.id}")
         expect(ref.base_config).to eq("${google_spanner_instance_config.test.base_config}")
         expect(ref.config_type).to eq("${google_spanner_instance_config.test.config_type}")
+        expect(ref.deletion_policy).to eq("${google_spanner_instance_config.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_spanner_instance_config.test.effective_labels}")
         expect(ref.name).to eq("${google_spanner_instance_config.test.name}")
         expect(ref.project).to eq("${google_spanner_instance_config.test.project}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstanceConfig do
         config = validate_resource_structure(result, 'google_spanner_instance_config', 'test')
         expect(config).not_to have_key('base_config')
         expect(config).not_to have_key('config_type')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstanceConfig do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ base_config: 'test-value', deletion_policy: 'test-value', labels: { 'key1' => 'val1' }, name: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,11 +76,49 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstanceConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_spanner_instance_config', 'full')
+        expect(config).to have_key('base_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('labels')
+        expect(config).to have_key('name')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes base_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance_config('opt', required_attrs.merge(base_config: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance_config', 'opt')
+        expect(config).to have_key('base_config')
+      end
+
+      it 'omits base_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance_config', 'minimal')
+        expect(config).not_to have_key('base_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -95,6 +135,40 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstanceConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_spanner_instance_config', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance_config('opt', required_attrs.merge(name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance_config', 'opt')
+        expect(config).to have_key('name')
+      end
+
+      it 'omits name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance_config', 'minimal')
+        expect(config).not_to have_key('name')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance_config', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -141,7 +215,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstanceConfig do
     resource_type: :google_spanner_instance_config,
     method: :google_spanner_instance_config,
     required_attrs: { display_name: 'test-value', replicas: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :base_config, :config_type, :effective_labels, :name, :project, :terraform_labels],
+    expected_outputs: [:id, :base_config, :config_type, :deletion_policy, :effective_labels, :name, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

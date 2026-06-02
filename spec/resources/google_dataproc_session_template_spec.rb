@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocSessionTemplate do
         expect(ref.id).to eq("${google_dataproc_session_template.test.id}")
         expect(ref.create_time).to eq("${google_dataproc_session_template.test.create_time}")
         expect(ref.creator).to eq("${google_dataproc_session_template.test.creator}")
+        expect(ref.deletion_policy).to eq("${google_dataproc_session_template.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_dataproc_session_template.test.effective_labels}")
         expect(ref.project).to eq("${google_dataproc_session_template.test.project}")
         expect(ref.terraform_labels).to eq("${google_dataproc_session_template.test.terraform_labels}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocSessionTemplate do
         config = validate_resource_structure(result, 'google_dataproc_session_template', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('creator')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocSessionTemplate do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ environment_config: [{ 'key1' => 'val1' }], jupyter_session: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, location: 'test-value', runtime_config: [{ 'key1' => 'val1' }], spark_connect_session: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', environment_config: { 'key1' => 'val1' }, jupyter_session: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, location: 'test-value', project: 'test-value', runtime_config: { 'key1' => 'val1' }, spark_connect_session: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,20 +78,39 @@ RSpec.describe Pangea::Resources::GoogleDataprocSessionTemplate do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dataproc_session_template', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('environment_config')
         expect(config).to have_key('jupyter_session')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
         expect(config).to have_key('runtime_config')
         expect(config).to have_key('spark_connect_session')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_session_template('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_session_template', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_session_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_session_template', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes environment_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_session_template('opt', required_attrs.merge(environment_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_session_template('opt', required_attrs.merge(environment_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_session_template', 'opt')
         expect(config).to have_key('environment_config')
@@ -106,7 +127,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocSessionTemplate do
       it 'includes jupyter_session when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_session_template('opt', required_attrs.merge(jupyter_session: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_session_template('opt', required_attrs.merge(jupyter_session: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_session_template', 'opt')
         expect(config).to have_key('jupyter_session')
@@ -154,10 +175,27 @@ RSpec.describe Pangea::Resources::GoogleDataprocSessionTemplate do
         config = validate_resource_structure(result, 'google_dataproc_session_template', 'minimal')
         expect(config).not_to have_key('location')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_session_template('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_session_template', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_session_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_session_template', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes runtime_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_session_template('opt', required_attrs.merge(runtime_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_session_template('opt', required_attrs.merge(runtime_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_session_template', 'opt')
         expect(config).to have_key('runtime_config')
@@ -174,7 +212,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocSessionTemplate do
       it 'includes spark_connect_session when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_session_template('opt', required_attrs.merge(spark_connect_session: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_session_template('opt', required_attrs.merge(spark_connect_session: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_session_template', 'opt')
         expect(config).to have_key('spark_connect_session')
@@ -232,7 +270,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocSessionTemplate do
     resource_type: :google_dataproc_session_template,
     method: :google_dataproc_session_template,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :create_time, :creator, :effective_labels, :project, :terraform_labels, :update_time, :uuid],
+    expected_outputs: [:id, :create_time, :creator, :deletion_policy, :effective_labels, :project, :terraform_labels, :update_time, :uuid],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

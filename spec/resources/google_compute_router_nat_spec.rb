@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterNat do
 
         expect(ref.id).to eq("${google_compute_router_nat.test.id}")
         expect(ref.auto_network_tier).to eq("${google_compute_router_nat.test.auto_network_tier}")
+        expect(ref.deletion_policy).to eq("${google_compute_router_nat.test.deletion_policy}")
         expect(ref.drain_nat_ips).to eq("${google_compute_router_nat.test.drain_nat_ips}")
         expect(ref.enable_dynamic_port_allocation).to eq("${google_compute_router_nat.test.enable_dynamic_port_allocation}")
         expect(ref.enable_endpoint_independent_mapping).to eq("${google_compute_router_nat.test.enable_endpoint_independent_mapping}")
@@ -59,6 +60,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterNat do
 
         config = validate_resource_structure(result, 'google_compute_router_nat', 'test')
         expect(config).not_to have_key('auto_network_tier')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('drain_nat_ips')
         expect(config).not_to have_key('enable_dynamic_port_allocation')
         expect(config).not_to have_key('enable_endpoint_independent_mapping')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterNat do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ icmp_idle_timeout_sec: 3.14, initial_nat_ips: ['test-value'], log_config: [{ 'key1' => 'val1' }], max_ports_per_vm: 3.14, nat64_subnetwork: [{ 'key1' => 'val1' }], nat_ip_allocate_option: 'test-value', rules: [{ 'key1' => 'val1' }], source_subnetwork_ip_ranges_to_nat64: 'test-value', subnetwork: [{ 'key1' => 'val1' }], tcp_established_idle_timeout_sec: 3.14, tcp_time_wait_timeout_sec: 3.14, tcp_transitory_idle_timeout_sec: 3.14, type: 'test-value', udp_idle_timeout_sec: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ auto_network_tier: 'test-value', deletion_policy: 'test-value', drain_nat_ips: ['test-value'], enable_dynamic_port_allocation: true, enable_endpoint_independent_mapping: true, endpoint_types: ['test-value'], icmp_idle_timeout_sec: 3.14, initial_nat_ips: ['test-value'], log_config: { 'key1' => 'val1' }, max_ports_per_vm: 3.14, min_ports_per_vm: 3.14, nat64_subnetwork: [{ 'key1' => 'val1' }], nat_ip_allocate_option: 'test-value', nat_ips: ['test-value'], project: 'test-value', region: 'test-value', rules: [{ 'key1' => 'val1' }], source_subnetwork_ip_ranges_to_nat64: 'test-value', subnetwork: [{ 'key1' => 'val1' }], tcp_established_idle_timeout_sec: 3.14, tcp_time_wait_timeout_sec: 3.14, tcp_transitory_idle_timeout_sec: 3.14, type: 'test-value', udp_idle_timeout_sec: 3.14 }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -80,12 +82,22 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterNat do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_router_nat', 'full')
+        expect(config).to have_key('auto_network_tier')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('drain_nat_ips')
+        expect(config).to have_key('enable_dynamic_port_allocation')
+        expect(config).to have_key('enable_endpoint_independent_mapping')
+        expect(config).to have_key('endpoint_types')
         expect(config).to have_key('icmp_idle_timeout_sec')
         expect(config).to have_key('initial_nat_ips')
         expect(config).to have_key('log_config')
         expect(config).to have_key('max_ports_per_vm')
+        expect(config).to have_key('min_ports_per_vm')
         expect(config).to have_key('nat64_subnetwork')
         expect(config).to have_key('nat_ip_allocate_option')
+        expect(config).to have_key('nat_ips')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('rules')
         expect(config).to have_key('source_subnetwork_ip_ranges_to_nat64')
         expect(config).to have_key('subnetwork')
@@ -98,6 +110,108 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterNat do
     end
 
     context 'optional attributes' do
+      it 'includes auto_network_tier when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('opt', required_attrs.merge(auto_network_tier: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'opt')
+        expect(config).to have_key('auto_network_tier')
+      end
+
+      it 'omits auto_network_tier when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'minimal')
+        expect(config).not_to have_key('auto_network_tier')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes drain_nat_ips when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('opt', required_attrs.merge(drain_nat_ips: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'opt')
+        expect(config).to have_key('drain_nat_ips')
+      end
+
+      it 'omits drain_nat_ips when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'minimal')
+        expect(config).not_to have_key('drain_nat_ips')
+      end
+      it 'includes enable_dynamic_port_allocation when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('opt', required_attrs.merge(enable_dynamic_port_allocation: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'opt')
+        expect(config).to have_key('enable_dynamic_port_allocation')
+      end
+
+      it 'omits enable_dynamic_port_allocation when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'minimal')
+        expect(config).not_to have_key('enable_dynamic_port_allocation')
+      end
+      it 'includes enable_endpoint_independent_mapping when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('opt', required_attrs.merge(enable_endpoint_independent_mapping: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'opt')
+        expect(config).to have_key('enable_endpoint_independent_mapping')
+      end
+
+      it 'omits enable_endpoint_independent_mapping when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'minimal')
+        expect(config).not_to have_key('enable_endpoint_independent_mapping')
+      end
+      it 'includes endpoint_types when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('opt', required_attrs.merge(endpoint_types: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'opt')
+        expect(config).to have_key('endpoint_types')
+      end
+
+      it 'omits endpoint_types when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'minimal')
+        expect(config).not_to have_key('endpoint_types')
+      end
       it 'includes icmp_idle_timeout_sec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -135,7 +249,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterNat do
       it 'includes log_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_router_nat('opt', required_attrs.merge(log_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_router_nat('opt', required_attrs.merge(log_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_router_nat', 'opt')
         expect(config).to have_key('log_config')
@@ -165,6 +279,23 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterNat do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_router_nat', 'minimal')
         expect(config).not_to have_key('max_ports_per_vm')
+      end
+      it 'includes min_ports_per_vm when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('opt', required_attrs.merge(min_ports_per_vm: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'opt')
+        expect(config).to have_key('min_ports_per_vm')
+      end
+
+      it 'omits min_ports_per_vm when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'minimal')
+        expect(config).not_to have_key('min_ports_per_vm')
       end
       it 'includes nat64_subnetwork when provided' do
         synth = create_synthesizer
@@ -199,6 +330,57 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterNat do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_router_nat', 'minimal')
         expect(config).not_to have_key('nat_ip_allocate_option')
+      end
+      it 'includes nat_ips when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('opt', required_attrs.merge(nat_ips: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'opt')
+        expect(config).to have_key('nat_ips')
+      end
+
+      it 'omits nat_ips when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'minimal')
+        expect(config).not_to have_key('nat_ips')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_nat('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_nat', 'minimal')
+        expect(config).not_to have_key('region')
       end
       it 'includes rules when provided' do
         synth = create_synthesizer
@@ -338,6 +520,31 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterNat do
       end
     end
 
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts enable_dynamic_port_allocation=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(enable_dynamic_port_allocation: val)
+          synth.google_compute_router_nat("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_router_nat', "bool_#{val}")
+          expect(config['enable_dynamic_port_allocation']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts enable_endpoint_independent_mapping=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(enable_endpoint_independent_mapping: val)
+          synth.google_compute_router_nat("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_router_nat', "bool_#{val}")
+          expect(config['enable_endpoint_independent_mapping']).to eq(val)
+        end
+      end
+    end
+
     context 'attribute types' do
       it 'validates expected attribute types' do
         synth = create_synthesizer
@@ -382,8 +589,8 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterNat do
     resource_type: :google_compute_router_nat,
     method: :google_compute_router_nat,
     required_attrs: { name: 'test-value', router: 'test-value', source_subnetwork_ip_ranges_to_nat: 'test-value' },
-    expected_outputs: [:id, :auto_network_tier, :drain_nat_ips, :enable_dynamic_port_allocation, :enable_endpoint_independent_mapping, :endpoint_types, :min_ports_per_vm, :nat_ips, :project, :region],
+    expected_outputs: [:id, :auto_network_tier, :deletion_policy, :drain_nat_ips, :enable_dynamic_port_allocation, :enable_endpoint_independent_mapping, :endpoint_types, :min_ports_per_vm, :nat_ips, :project, :region],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:enable_dynamic_port_allocation, :enable_endpoint_independent_mapping]
 end

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleVmwareenginePrivateCloud do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { location: 'test-value', management_cluster: [{ 'key1' => 'val1' }], name: 'test-value', network_config: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { location: 'test-value', management_cluster: { 'key1' => 'val1' }, name: 'test-value', network_config: { 'key1' => 'val1' } } }
 
   describe ':google_vmwareengine_private_cloud' do
     context 'with required attributes only' do
@@ -38,11 +38,16 @@ RSpec.describe Pangea::Resources::GoogleVmwareenginePrivateCloud do
         ref = synth.google_vmwareengine_private_cloud('test', required_attrs)
 
         expect(ref.id).to eq("${google_vmwareengine_private_cloud.test.id}")
+        expect(ref.create_time).to eq("${google_vmwareengine_private_cloud.test.create_time}")
+        expect(ref.delete_time).to eq("${google_vmwareengine_private_cloud.test.delete_time}")
+        expect(ref.deletion_policy).to eq("${google_vmwareengine_private_cloud.test.deletion_policy}")
+        expect(ref.expire_time).to eq("${google_vmwareengine_private_cloud.test.expire_time}")
         expect(ref.hcx).to eq("${google_vmwareengine_private_cloud.test.hcx}")
         expect(ref.nsx).to eq("${google_vmwareengine_private_cloud.test.nsx}")
         expect(ref.project).to eq("${google_vmwareengine_private_cloud.test.project}")
         expect(ref.state).to eq("${google_vmwareengine_private_cloud.test.state}")
         expect(ref.uid).to eq("${google_vmwareengine_private_cloud.test.uid}")
+        expect(ref.update_time).to eq("${google_vmwareengine_private_cloud.test.update_time}")
         expect(ref.vcenter).to eq("${google_vmwareengine_private_cloud.test.vcenter}")
       end
     end
@@ -55,17 +60,22 @@ RSpec.describe Pangea::Resources::GoogleVmwareenginePrivateCloud do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vmwareengine_private_cloud', 'test')
+        expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('delete_time')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('expire_time')
         expect(config).not_to have_key('hcx')
         expect(config).not_to have_key('nsx')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('uid')
+        expect(config).not_to have_key('update_time')
         expect(config).not_to have_key('vcenter')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deletion_delay_hours: 3.14, description: 'test-value', send_deletion_delay_hours_if_zero: true, type: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_delay_hours: 3.14, deletion_policy: 'test-value', description: 'test-value', project: 'test-value', send_deletion_delay_hours_if_zero: true, type: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -75,7 +85,9 @@ RSpec.describe Pangea::Resources::GoogleVmwareenginePrivateCloud do
 
         config = validate_resource_structure(result, 'google_vmwareengine_private_cloud', 'full')
         expect(config).to have_key('deletion_delay_hours')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('project')
         expect(config).to have_key('send_deletion_delay_hours_if_zero')
         expect(config).to have_key('type')
       end
@@ -99,6 +111,23 @@ RSpec.describe Pangea::Resources::GoogleVmwareenginePrivateCloud do
         config = validate_resource_structure(result, 'google_vmwareengine_private_cloud', 'minimal')
         expect(config).not_to have_key('deletion_delay_hours')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_private_cloud('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_private_cloud', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_private_cloud('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_private_cloud', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -115,6 +144,23 @@ RSpec.describe Pangea::Resources::GoogleVmwareenginePrivateCloud do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vmwareengine_private_cloud', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_private_cloud('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_private_cloud', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_private_cloud('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_private_cloud', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes send_deletion_delay_hours_if_zero when provided' do
         synth = create_synthesizer
@@ -175,9 +221,9 @@ RSpec.describe Pangea::Resources::GoogleVmwareenginePrivateCloud do
 
         config = validate_resource_structure(result, 'google_vmwareengine_private_cloud', 'typed')
         expect(config['location']).to be_a(String)
-        expect(config['management_cluster']).to be_a(Array)
+        expect(config['management_cluster']).to be_a(Hash)
         expect(config['name']).to be_a(String)
-        expect(config['network_config']).to be_a(Array)
+        expect(config['network_config']).to be_a(Hash)
       end
     end
 
@@ -210,8 +256,8 @@ RSpec.describe Pangea::Resources::GoogleVmwareenginePrivateCloud do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_vmwareengine_private_cloud,
     method: :google_vmwareengine_private_cloud,
-    required_attrs: { location: 'test-value', management_cluster: [{ 'key1' => 'val1' }], name: 'test-value', network_config: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :hcx, :nsx, :project, :state, :uid, :vcenter],
+    required_attrs: { location: 'test-value', management_cluster: { 'key1' => 'val1' }, name: 'test-value', network_config: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :create_time, :delete_time, :deletion_policy, :expire_time, :hcx, :nsx, :project, :state, :uid, :update_time, :vcenter],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:send_deletion_delay_hours_if_zero]

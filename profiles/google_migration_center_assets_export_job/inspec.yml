@@ -1,0 +1,8 @@
+name: google_migration_center_assets_export_job
+title: Manages a google_migration_center_assets_export_job resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

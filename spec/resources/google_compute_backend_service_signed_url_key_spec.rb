@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendServiceSignedUrlKey do
         ref = synth.google_compute_backend_service_signed_url_key('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_backend_service_signed_url_key.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_backend_service_signed_url_key.test.deletion_policy}")
         expect(ref.project).to eq("${google_compute_backend_service_signed_url_key.test.project}")
       end
     end
@@ -50,6 +51,59 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendServiceSignedUrlKey do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_backend_service_signed_url_key', 'test')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('project')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service_signed_url_key('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_compute_backend_service_signed_url_key', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service_signed_url_key('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service_signed_url_key', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service_signed_url_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service_signed_url_key', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service_signed_url_key('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service_signed_url_key', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service_signed_url_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service_signed_url_key', 'minimal')
         expect(config).not_to have_key('project')
       end
     end
@@ -105,7 +159,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendServiceSignedUrlKey do
     resource_type: :google_compute_backend_service_signed_url_key,
     method: :google_compute_backend_service_signed_url_key,
     required_attrs: { backend_service: 'test-value', key_value: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [:key_value],
     immutable_fields: [],
     boolean_fields: []

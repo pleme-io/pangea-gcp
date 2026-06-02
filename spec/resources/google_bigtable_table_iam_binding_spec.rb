@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleBigtableTableIamBinding do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { members: ['test-value'], role: 'test-value', table: 'test-value' } }
+  let(:required_attrs) { { instance_name: 'test-value', members: ['test-value'], role: 'test-value', table: 'test-value' } }
 
   describe ':google_bigtable_table_iam_binding' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableTableIamBinding do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_bigtable_table_iam_binding', 'test')
-        validate_required_attributes(config, [:members, :role, :table])
+        validate_required_attributes(config, [:instance_name, :members, :role, :table])
       end
 
       it 'returns a ResourceReference' do
@@ -39,8 +39,6 @@ RSpec.describe Pangea::Resources::GoogleBigtableTableIamBinding do
 
         expect(ref.id).to eq("${google_bigtable_table_iam_binding.test.id}")
         expect(ref.etag).to eq("${google_bigtable_table_iam_binding.test.etag}")
-        expect(ref.instance).to eq("${google_bigtable_table_iam_binding.test.instance}")
-        expect(ref.instance_name).to eq("${google_bigtable_table_iam_binding.test.instance_name}")
         expect(ref.project).to eq("${google_bigtable_table_iam_binding.test.project}")
       end
     end
@@ -54,14 +52,12 @@ RSpec.describe Pangea::Resources::GoogleBigtableTableIamBinding do
 
         config = validate_resource_structure(result, 'google_bigtable_table_iam_binding', 'test')
         expect(config).not_to have_key('etag')
-        expect(config).not_to have_key('instance')
-        expect(config).not_to have_key('instance_name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ condition: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ condition: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,6 +67,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableTableIamBinding do
 
         config = validate_resource_structure(result, 'google_bigtable_table_iam_binding', 'full')
         expect(config).to have_key('condition')
+        expect(config).to have_key('project')
       end
     end
 
@@ -78,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableTableIamBinding do
       it 'includes condition when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigtable_table_iam_binding('opt', required_attrs.merge(condition: [{ 'key1' => 'val1' }]))
+        synth.google_bigtable_table_iam_binding('opt', required_attrs.merge(condition: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigtable_table_iam_binding', 'opt')
         expect(config).to have_key('condition')
@@ -92,6 +89,23 @@ RSpec.describe Pangea::Resources::GoogleBigtableTableIamBinding do
         config = validate_resource_structure(result, 'google_bigtable_table_iam_binding', 'minimal')
         expect(config).not_to have_key('condition')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_table_iam_binding('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_table_iam_binding', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_table_iam_binding('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_table_iam_binding', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -102,6 +116,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableTableIamBinding do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigtable_table_iam_binding', 'typed')
+        expect(config['instance_name']).to be_a(String)
         expect(config['members']).to be_a(Array)
         expect(config['role']).to be_a(String)
         expect(config['table']).to be_a(String)
@@ -137,8 +152,8 @@ RSpec.describe Pangea::Resources::GoogleBigtableTableIamBinding do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_bigtable_table_iam_binding,
     method: :google_bigtable_table_iam_binding,
-    required_attrs: { members: ['test-value'], role: 'test-value', table: 'test-value' },
-    expected_outputs: [:id, :etag, :instance, :instance_name, :project],
+    required_attrs: { instance_name: 'test-value', members: ['test-value'], role: 'test-value', table: 'test-value' },
+    expected_outputs: [:id, :etag, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

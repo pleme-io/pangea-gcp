@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeAppGroup do
         expect(ref.id).to eq("${google_apigee_app_group.test.id}")
         expect(ref.app_group_id).to eq("${google_apigee_app_group.test.app_group_id}")
         expect(ref.created_at).to eq("${google_apigee_app_group.test.created_at}")
+        expect(ref.deletion_policy).to eq("${google_apigee_app_group.test.deletion_policy}")
         expect(ref.last_modified_at).to eq("${google_apigee_app_group.test.last_modified_at}")
         expect(ref.organization).to eq("${google_apigee_app_group.test.organization}")
       end
@@ -55,13 +56,14 @@ RSpec.describe Pangea::Resources::GoogleApigeeAppGroup do
         config = validate_resource_structure(result, 'google_apigee_app_group', 'test')
         expect(config).not_to have_key('app_group_id')
         expect(config).not_to have_key('created_at')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('last_modified_at')
         expect(config).not_to have_key('organization')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ attributes: [{ 'key1' => 'val1' }], channel_id: 'test-value', channel_uri: 'test-value', display_name: 'test-value', status: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ attributes: [{ 'key1' => 'val1' }], channel_id: 'test-value', channel_uri: 'test-value', deletion_policy: 'test-value', display_name: 'test-value', status: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,6 +75,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeAppGroup do
         expect(config).to have_key('attributes')
         expect(config).to have_key('channel_id')
         expect(config).to have_key('channel_uri')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('status')
       end
@@ -129,6 +132,23 @@ RSpec.describe Pangea::Resources::GoogleApigeeAppGroup do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_app_group', 'minimal')
         expect(config).not_to have_key('channel_uri')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_app_group('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_app_group', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_app_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_app_group', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes display_name when provided' do
         synth = create_synthesizer
@@ -209,7 +229,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeAppGroup do
     resource_type: :google_apigee_app_group,
     method: :google_apigee_app_group,
     required_attrs: { name: 'test-value', org_id: 'test-value' },
-    expected_outputs: [:id, :app_group_id, :created_at, :last_modified_at, :organization],
+    expected_outputs: [:id, :app_group_id, :created_at, :deletion_policy, :last_modified_at, :organization],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

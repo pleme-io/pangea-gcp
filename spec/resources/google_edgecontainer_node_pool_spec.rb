@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerNodePool do
 
         expect(ref.id).to eq("${google_edgecontainer_node_pool.test.id}")
         expect(ref.create_time).to eq("${google_edgecontainer_node_pool.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_edgecontainer_node_pool.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_edgecontainer_node_pool.test.effective_labels}")
         expect(ref.machine_filter).to eq("${google_edgecontainer_node_pool.test.machine_filter}")
         expect(ref.node_version).to eq("${google_edgecontainer_node_pool.test.node_version}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerNodePool do
 
         config = validate_resource_structure(result, 'google_edgecontainer_node_pool', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('machine_filter')
         expect(config).not_to have_key('node_version')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerNodePool do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ labels: { 'key1' => 'val1' }, local_disk_encryption: [{ 'key1' => 'val1' }], node_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', labels: { 'key1' => 'val1' }, local_disk_encryption: { 'key1' => 'val1' }, machine_filter: 'test-value', node_config: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,13 +78,33 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerNodePool do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_edgecontainer_node_pool', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('labels')
         expect(config).to have_key('local_disk_encryption')
+        expect(config).to have_key('machine_filter')
         expect(config).to have_key('node_config')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_node_pool('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_node_pool', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_node_pool', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -103,7 +125,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerNodePool do
       it 'includes local_disk_encryption when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_edgecontainer_node_pool('opt', required_attrs.merge(local_disk_encryption: [{ 'key1' => 'val1' }]))
+        synth.google_edgecontainer_node_pool('opt', required_attrs.merge(local_disk_encryption: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_edgecontainer_node_pool', 'opt')
         expect(config).to have_key('local_disk_encryption')
@@ -117,10 +139,27 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerNodePool do
         config = validate_resource_structure(result, 'google_edgecontainer_node_pool', 'minimal')
         expect(config).not_to have_key('local_disk_encryption')
       end
+      it 'includes machine_filter when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_node_pool('opt', required_attrs.merge(machine_filter: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_node_pool', 'opt')
+        expect(config).to have_key('machine_filter')
+      end
+
+      it 'omits machine_filter when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_node_pool', 'minimal')
+        expect(config).not_to have_key('machine_filter')
+      end
       it 'includes node_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_edgecontainer_node_pool('opt', required_attrs.merge(node_config: [{ 'key1' => 'val1' }]))
+        synth.google_edgecontainer_node_pool('opt', required_attrs.merge(node_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_edgecontainer_node_pool', 'opt')
         expect(config).to have_key('node_config')
@@ -133,6 +172,23 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerNodePool do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_edgecontainer_node_pool', 'minimal')
         expect(config).not_to have_key('node_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_node_pool('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_node_pool', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_node_pool', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -182,7 +238,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerNodePool do
     resource_type: :google_edgecontainer_node_pool,
     method: :google_edgecontainer_node_pool,
     required_attrs: { cluster: 'test-value', location: 'test-value', name: 'test-value', node_count: 3.14, node_location: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :machine_filter, :node_version, :project, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :machine_filter, :node_version, :project, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

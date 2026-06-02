@@ -38,6 +38,8 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPool do
         ref = synth.google_iam_workload_identity_pool('test', required_attrs)
 
         expect(ref.id).to eq("${google_iam_workload_identity_pool.test.id}")
+        expect(ref.deletion_policy).to eq("${google_iam_workload_identity_pool.test.deletion_policy}")
+        expect(ref.mode).to eq("${google_iam_workload_identity_pool.test.mode}")
         expect(ref.name).to eq("${google_iam_workload_identity_pool.test.name}")
         expect(ref.project).to eq("${google_iam_workload_identity_pool.test.project}")
         expect(ref.state).to eq("${google_iam_workload_identity_pool.test.state}")
@@ -52,6 +54,8 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPool do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'test')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('mode')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
@@ -59,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPool do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', disabled: true, display_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ attestation_rules: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', description: 'test-value', disabled: true, display_name: 'test-value', inline_certificate_issuance_config: { 'key1' => 'val1' }, inline_trust_config: { 'key1' => 'val1' }, mode: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,13 +72,53 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPool do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'full')
+        expect(config).to have_key('attestation_rules')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('disabled')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('inline_certificate_issuance_config')
+        expect(config).to have_key('inline_trust_config')
+        expect(config).to have_key('mode')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes attestation_rules when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool('opt', required_attrs.merge(attestation_rules: [{ 'key1' => 'val1' }]))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'opt')
+        expect(config).to have_key('attestation_rules')
+      end
+
+      it 'omits attestation_rules when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'minimal')
+        expect(config).not_to have_key('attestation_rules')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -125,6 +169,74 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPool do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'minimal')
         expect(config).not_to have_key('display_name')
+      end
+      it 'includes inline_certificate_issuance_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool('opt', required_attrs.merge(inline_certificate_issuance_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'opt')
+        expect(config).to have_key('inline_certificate_issuance_config')
+      end
+
+      it 'omits inline_certificate_issuance_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'minimal')
+        expect(config).not_to have_key('inline_certificate_issuance_config')
+      end
+      it 'includes inline_trust_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool('opt', required_attrs.merge(inline_trust_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'opt')
+        expect(config).to have_key('inline_trust_config')
+      end
+
+      it 'omits inline_trust_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'minimal')
+        expect(config).not_to have_key('inline_trust_config')
+      end
+      it 'includes mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool('opt', required_attrs.merge(mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'opt')
+        expect(config).to have_key('mode')
+      end
+
+      it 'omits mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'minimal')
+        expect(config).not_to have_key('mode')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -184,7 +296,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPool do
     resource_type: :google_iam_workload_identity_pool,
     method: :google_iam_workload_identity_pool,
     required_attrs: { workload_identity_pool_id: 'test-value' },
-    expected_outputs: [:id, :name, :project, :state],
+    expected_outputs: [:id, :deletion_policy, :mode, :name, :project, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disabled]

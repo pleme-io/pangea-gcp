@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleKmsCryptoKeyVersion do
         expect(ref.id).to eq("${google_kms_crypto_key_version.test.id}")
         expect(ref.algorithm).to eq("${google_kms_crypto_key_version.test.algorithm}")
         expect(ref.attestation).to eq("${google_kms_crypto_key_version.test.attestation}")
+        expect(ref.deletion_policy).to eq("${google_kms_crypto_key_version.test.deletion_policy}")
         expect(ref.generate_time).to eq("${google_kms_crypto_key_version.test.generate_time}")
         expect(ref.name).to eq("${google_kms_crypto_key_version.test.name}")
         expect(ref.protection_level).to eq("${google_kms_crypto_key_version.test.protection_level}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleKmsCryptoKeyVersion do
         config = validate_resource_structure(result, 'google_kms_crypto_key_version', 'test')
         expect(config).not_to have_key('algorithm')
         expect(config).not_to have_key('attestation')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('generate_time')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('protection_level')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleKmsCryptoKeyVersion do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ external_protection_level_options: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', external_protection_level_options: { 'key1' => 'val1' }, state: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,15 +76,34 @@ RSpec.describe Pangea::Resources::GoogleKmsCryptoKeyVersion do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_kms_crypto_key_version', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('external_protection_level_options')
+        expect(config).to have_key('state')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_crypto_key_version('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_crypto_key_version', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_crypto_key_version('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_crypto_key_version', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes external_protection_level_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_kms_crypto_key_version('opt', required_attrs.merge(external_protection_level_options: [{ 'key1' => 'val1' }]))
+        synth.google_kms_crypto_key_version('opt', required_attrs.merge(external_protection_level_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_kms_crypto_key_version', 'opt')
         expect(config).to have_key('external_protection_level_options')
@@ -95,6 +116,23 @@ RSpec.describe Pangea::Resources::GoogleKmsCryptoKeyVersion do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_kms_crypto_key_version', 'minimal')
         expect(config).not_to have_key('external_protection_level_options')
+      end
+      it 'includes state when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_crypto_key_version('opt', required_attrs.merge(state: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_crypto_key_version', 'opt')
+        expect(config).to have_key('state')
+      end
+
+      it 'omits state when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_crypto_key_version('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_crypto_key_version', 'minimal')
+        expect(config).not_to have_key('state')
       end
     end
 
@@ -140,7 +178,7 @@ RSpec.describe Pangea::Resources::GoogleKmsCryptoKeyVersion do
     resource_type: :google_kms_crypto_key_version,
     method: :google_kms_crypto_key_version,
     required_attrs: { crypto_key: 'test-value' },
-    expected_outputs: [:id, :algorithm, :attestation, :generate_time, :name, :protection_level, :state],
+    expected_outputs: [:id, :algorithm, :attestation, :deletion_policy, :generate_time, :name, :protection_level, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

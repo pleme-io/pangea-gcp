@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleOrgPolicyCustomConstraint do
         ref = synth.google_org_policy_custom_constraint('test', required_attrs)
 
         expect(ref.id).to eq("${google_org_policy_custom_constraint.test.id}")
+        expect(ref.deletion_policy).to eq("${google_org_policy_custom_constraint.test.deletion_policy}")
         expect(ref.update_time).to eq("${google_org_policy_custom_constraint.test.update_time}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleOrgPolicyCustomConstraint do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_org_policy_custom_constraint', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('update_time')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', display_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,12 +66,30 @@ RSpec.describe Pangea::Resources::GoogleOrgPolicyCustomConstraint do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_org_policy_custom_constraint', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_org_policy_custom_constraint('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_org_policy_custom_constraint', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_org_policy_custom_constraint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_org_policy_custom_constraint', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -153,7 +173,7 @@ RSpec.describe Pangea::Resources::GoogleOrgPolicyCustomConstraint do
     resource_type: :google_org_policy_custom_constraint,
     method: :google_org_policy_custom_constraint,
     required_attrs: { action_type: 'test-value', condition: 'test-value', method_types: ['test-value'], name: 'test-value', parent: 'test-value', resource_types: ['test-value'] },
-    expected_outputs: [:id, :update_time],
+    expected_outputs: [:id, :deletion_policy, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

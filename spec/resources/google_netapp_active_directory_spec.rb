@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNetappActiveDirectory do
 
         expect(ref.id).to eq("${google_netapp_active_directory.test.id}")
         expect(ref.create_time).to eq("${google_netapp_active_directory.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_netapp_active_directory.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_netapp_active_directory.test.effective_labels}")
         expect(ref.organizational_unit).to eq("${google_netapp_active_directory.test.organizational_unit}")
         expect(ref.project).to eq("${google_netapp_active_directory.test.project}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleNetappActiveDirectory do
 
         config = validate_resource_structure(result, 'google_netapp_active_directory', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('organizational_unit')
         expect(config).not_to have_key('project')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleNetappActiveDirectory do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ administrators: ['test-value'], aes_encryption: true, backup_operators: ['test-value'], description: 'test-value', encrypt_dc_connections: true, kdc_hostname: 'test-value', kdc_ip: 'test-value', labels: { 'key1' => 'val1' }, ldap_signing: true, nfs_users_with_ldap: true, security_operators: ['test-value'], site: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ administrators: ['test-value'], aes_encryption: true, backup_operators: ['test-value'], deletion_policy: 'test-value', description: 'test-value', encrypt_dc_connections: true, kdc_hostname: 'test-value', kdc_ip: 'test-value', labels: { 'key1' => 'val1' }, ldap_signing: true, nfs_users_with_ldap: true, organizational_unit: 'test-value', project: 'test-value', security_operators: ['test-value'], site: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -79,6 +81,7 @@ RSpec.describe Pangea::Resources::GoogleNetappActiveDirectory do
         expect(config).to have_key('administrators')
         expect(config).to have_key('aes_encryption')
         expect(config).to have_key('backup_operators')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('encrypt_dc_connections')
         expect(config).to have_key('kdc_hostname')
@@ -86,6 +89,8 @@ RSpec.describe Pangea::Resources::GoogleNetappActiveDirectory do
         expect(config).to have_key('labels')
         expect(config).to have_key('ldap_signing')
         expect(config).to have_key('nfs_users_with_ldap')
+        expect(config).to have_key('organizational_unit')
+        expect(config).to have_key('project')
         expect(config).to have_key('security_operators')
         expect(config).to have_key('site')
       end
@@ -142,6 +147,23 @@ RSpec.describe Pangea::Resources::GoogleNetappActiveDirectory do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_active_directory', 'minimal')
         expect(config).not_to have_key('backup_operators')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_active_directory('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_active_directory', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_active_directory('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_active_directory', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -261,6 +283,40 @@ RSpec.describe Pangea::Resources::GoogleNetappActiveDirectory do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_active_directory', 'minimal')
         expect(config).not_to have_key('nfs_users_with_ldap')
+      end
+      it 'includes organizational_unit when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_active_directory('opt', required_attrs.merge(organizational_unit: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_active_directory', 'opt')
+        expect(config).to have_key('organizational_unit')
+      end
+
+      it 'omits organizational_unit when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_active_directory('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_active_directory', 'minimal')
+        expect(config).not_to have_key('organizational_unit')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_active_directory('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_active_directory', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_active_directory('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_active_directory', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes security_operators when provided' do
         synth = create_synthesizer
@@ -400,7 +456,7 @@ RSpec.describe Pangea::Resources::GoogleNetappActiveDirectory do
     resource_type: :google_netapp_active_directory,
     method: :google_netapp_active_directory,
     required_attrs: { dns: 'test-value', domain: 'test-value', location: 'test-value', name: 'test-value', net_bios_prefix: 'test-value', password: 'test-value', username: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :organizational_unit, :project, :state, :state_details, :terraform_labels],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :organizational_unit, :project, :state, :state_details, :terraform_labels],
     sensitive_fields: [:password],
     immutable_fields: [],
     boolean_fields: [:aes_encryption, :encrypt_dc_connections, :ldap_signing, :nfs_users_with_ldap]

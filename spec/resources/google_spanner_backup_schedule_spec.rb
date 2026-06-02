@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerBackupSchedule do
         ref = synth.google_spanner_backup_schedule('test', required_attrs)
 
         expect(ref.id).to eq("${google_spanner_backup_schedule.test.id}")
+        expect(ref.deletion_policy).to eq("${google_spanner_backup_schedule.test.deletion_policy}")
         expect(ref.project).to eq("${google_spanner_backup_schedule.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleSpannerBackupSchedule do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_spanner_backup_schedule', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ encryption_config: [{ 'key1' => 'val1' }], full_backup_spec: [{ 'key1' => 'val1' }], incremental_backup_spec: [{ 'key1' => 'val1' }], name: 'test-value', spec: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', encryption_config: { 'key1' => 'val1' }, full_backup_spec: { 'key1' => 'val1' }, incremental_backup_spec: { 'key1' => 'val1' }, name: 'test-value', project: 'test-value', spec: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,19 +66,38 @@ RSpec.describe Pangea::Resources::GoogleSpannerBackupSchedule do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_spanner_backup_schedule', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('encryption_config')
         expect(config).to have_key('full_backup_spec')
         expect(config).to have_key('incremental_backup_spec')
         expect(config).to have_key('name')
+        expect(config).to have_key('project')
         expect(config).to have_key('spec')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_backup_schedule('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_backup_schedule', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_backup_schedule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_backup_schedule', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes encryption_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_spanner_backup_schedule('opt', required_attrs.merge(encryption_config: [{ 'key1' => 'val1' }]))
+        synth.google_spanner_backup_schedule('opt', required_attrs.merge(encryption_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_spanner_backup_schedule', 'opt')
         expect(config).to have_key('encryption_config')
@@ -93,7 +114,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerBackupSchedule do
       it 'includes full_backup_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_spanner_backup_schedule('opt', required_attrs.merge(full_backup_spec: [{ 'key1' => 'val1' }]))
+        synth.google_spanner_backup_schedule('opt', required_attrs.merge(full_backup_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_spanner_backup_schedule', 'opt')
         expect(config).to have_key('full_backup_spec')
@@ -110,7 +131,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerBackupSchedule do
       it 'includes incremental_backup_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_spanner_backup_schedule('opt', required_attrs.merge(incremental_backup_spec: [{ 'key1' => 'val1' }]))
+        synth.google_spanner_backup_schedule('opt', required_attrs.merge(incremental_backup_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_spanner_backup_schedule', 'opt')
         expect(config).to have_key('incremental_backup_spec')
@@ -141,10 +162,27 @@ RSpec.describe Pangea::Resources::GoogleSpannerBackupSchedule do
         config = validate_resource_structure(result, 'google_spanner_backup_schedule', 'minimal')
         expect(config).not_to have_key('name')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_backup_schedule('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_backup_schedule', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_backup_schedule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_backup_schedule', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_spanner_backup_schedule('opt', required_attrs.merge(spec: [{ 'key1' => 'val1' }]))
+        synth.google_spanner_backup_schedule('opt', required_attrs.merge(spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_spanner_backup_schedule', 'opt')
         expect(config).to have_key('spec')
@@ -204,7 +242,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerBackupSchedule do
     resource_type: :google_spanner_backup_schedule,
     method: :google_spanner_backup_schedule,
     required_attrs: { database: 'test-value', instance: 'test-value', retention_duration: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

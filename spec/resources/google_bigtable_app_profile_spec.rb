@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableAppProfile do
         ref = synth.google_bigtable_app_profile('test', required_attrs)
 
         expect(ref.id).to eq("${google_bigtable_app_profile.test.id}")
+        expect(ref.deletion_policy).to eq("${google_bigtable_app_profile.test.deletion_policy}")
         expect(ref.name).to eq("${google_bigtable_app_profile.test.name}")
         expect(ref.project).to eq("${google_bigtable_app_profile.test.project}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleBigtableAppProfile do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigtable_app_profile', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ data_boost_isolation_read_only: [{ 'key1' => 'val1' }], description: 'test-value', ignore_warnings: true, instance: 'test-value', multi_cluster_routing_cluster_ids: ['test-value'], multi_cluster_routing_use_any: true, row_affinity: true, single_cluster_routing: [{ 'key1' => 'val1' }], standard_isolation: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ data_boost_isolation_read_only: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', ignore_warnings: true, instance: 'test-value', multi_cluster_routing_cluster_ids: ['test-value'], multi_cluster_routing_use_any: true, project: 'test-value', row_affinity: true, single_cluster_routing: { 'key1' => 'val1' }, standard_isolation: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,11 +69,13 @@ RSpec.describe Pangea::Resources::GoogleBigtableAppProfile do
 
         config = validate_resource_structure(result, 'google_bigtable_app_profile', 'full')
         expect(config).to have_key('data_boost_isolation_read_only')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('ignore_warnings')
         expect(config).to have_key('instance')
         expect(config).to have_key('multi_cluster_routing_cluster_ids')
         expect(config).to have_key('multi_cluster_routing_use_any')
+        expect(config).to have_key('project')
         expect(config).to have_key('row_affinity')
         expect(config).to have_key('single_cluster_routing')
         expect(config).to have_key('standard_isolation')
@@ -82,7 +86,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableAppProfile do
       it 'includes data_boost_isolation_read_only when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigtable_app_profile('opt', required_attrs.merge(data_boost_isolation_read_only: [{ 'key1' => 'val1' }]))
+        synth.google_bigtable_app_profile('opt', required_attrs.merge(data_boost_isolation_read_only: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigtable_app_profile', 'opt')
         expect(config).to have_key('data_boost_isolation_read_only')
@@ -95,6 +99,23 @@ RSpec.describe Pangea::Resources::GoogleBigtableAppProfile do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigtable_app_profile', 'minimal')
         expect(config).not_to have_key('data_boost_isolation_read_only')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_app_profile('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_app_profile', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_app_profile('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_app_profile', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -181,6 +202,23 @@ RSpec.describe Pangea::Resources::GoogleBigtableAppProfile do
         config = validate_resource_structure(result, 'google_bigtable_app_profile', 'minimal')
         expect(config).not_to have_key('multi_cluster_routing_use_any')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_app_profile('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_app_profile', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_app_profile('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_app_profile', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes row_affinity when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -201,7 +239,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableAppProfile do
       it 'includes single_cluster_routing when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigtable_app_profile('opt', required_attrs.merge(single_cluster_routing: [{ 'key1' => 'val1' }]))
+        synth.google_bigtable_app_profile('opt', required_attrs.merge(single_cluster_routing: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigtable_app_profile', 'opt')
         expect(config).to have_key('single_cluster_routing')
@@ -218,7 +256,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableAppProfile do
       it 'includes standard_isolation when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigtable_app_profile('opt', required_attrs.merge(standard_isolation: [{ 'key1' => 'val1' }]))
+        synth.google_bigtable_app_profile('opt', required_attrs.merge(standard_isolation: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigtable_app_profile', 'opt')
         expect(config).to have_key('standard_isolation')
@@ -312,7 +350,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableAppProfile do
     resource_type: :google_bigtable_app_profile,
     method: :google_bigtable_app_profile,
     required_attrs: { app_profile_id: 'test-value' },
-    expected_outputs: [:id, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:ignore_warnings, :multi_cluster_routing_use_any, :row_affinity]

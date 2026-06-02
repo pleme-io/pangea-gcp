@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityTlsInspectionPolicy do
 
         expect(ref.id).to eq("${google_network_security_tls_inspection_policy.test.id}")
         expect(ref.create_time).to eq("${google_network_security_tls_inspection_policy.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_security_tls_inspection_policy.test.deletion_policy}")
         expect(ref.project).to eq("${google_network_security_tls_inspection_policy.test.project}")
         expect(ref.update_time).to eq("${google_network_security_tls_inspection_policy.test.update_time}")
       end
@@ -53,13 +54,14 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityTlsInspectionPolicy do
 
         config = validate_resource_structure(result, 'google_network_security_tls_inspection_policy', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('update_time')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ custom_tls_features: ['test-value'], description: 'test-value', exclude_public_ca_set: true, location: 'test-value', min_tls_version: 'test-value', tls_feature_profile: 'test-value', trust_config: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ custom_tls_features: ['test-value'], deletion_policy: 'test-value', description: 'test-value', exclude_public_ca_set: true, location: 'test-value', min_tls_version: 'test-value', project: 'test-value', tls_feature_profile: 'test-value', trust_config: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,10 +71,12 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityTlsInspectionPolicy do
 
         config = validate_resource_structure(result, 'google_network_security_tls_inspection_policy', 'full')
         expect(config).to have_key('custom_tls_features')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('exclude_public_ca_set')
         expect(config).to have_key('location')
         expect(config).to have_key('min_tls_version')
+        expect(config).to have_key('project')
         expect(config).to have_key('tls_feature_profile')
         expect(config).to have_key('trust_config')
       end
@@ -95,6 +99,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityTlsInspectionPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_security_tls_inspection_policy', 'minimal')
         expect(config).not_to have_key('custom_tls_features')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_tls_inspection_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_tls_inspection_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_tls_inspection_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_tls_inspection_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -163,6 +184,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityTlsInspectionPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_security_tls_inspection_policy', 'minimal')
         expect(config).not_to have_key('min_tls_version')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_tls_inspection_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_tls_inspection_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_tls_inspection_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_tls_inspection_policy', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes tls_feature_profile when provided' do
         synth = create_synthesizer
@@ -257,7 +295,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityTlsInspectionPolicy do
     resource_type: :google_network_security_tls_inspection_policy,
     method: :google_network_security_tls_inspection_policy,
     required_attrs: { ca_pool: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :create_time, :project, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :project, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:exclude_public_ca_set]

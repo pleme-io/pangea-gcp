@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleMlEngineModel do
         ref = synth.google_ml_engine_model('test', required_attrs)
 
         expect(ref.id).to eq("${google_ml_engine_model.test.id}")
+        expect(ref.deletion_policy).to eq("${google_ml_engine_model.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_ml_engine_model.test.effective_labels}")
         expect(ref.project).to eq("${google_ml_engine_model.test.project}")
         expect(ref.terraform_labels).to eq("${google_ml_engine_model.test.terraform_labels}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleMlEngineModel do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_ml_engine_model', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleMlEngineModel do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ default_version: [{ 'key1' => 'val1' }], description: 'test-value', labels: { 'key1' => 'val1' }, online_prediction_console_logging: true, online_prediction_logging: true, regions: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ default_version: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, online_prediction_console_logging: true, online_prediction_logging: true, project: 'test-value', regions: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,10 +71,12 @@ RSpec.describe Pangea::Resources::GoogleMlEngineModel do
 
         config = validate_resource_structure(result, 'google_ml_engine_model', 'full')
         expect(config).to have_key('default_version')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
         expect(config).to have_key('online_prediction_console_logging')
         expect(config).to have_key('online_prediction_logging')
+        expect(config).to have_key('project')
         expect(config).to have_key('regions')
       end
     end
@@ -81,7 +85,7 @@ RSpec.describe Pangea::Resources::GoogleMlEngineModel do
       it 'includes default_version when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_ml_engine_model('opt', required_attrs.merge(default_version: [{ 'key1' => 'val1' }]))
+        synth.google_ml_engine_model('opt', required_attrs.merge(default_version: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_ml_engine_model', 'opt')
         expect(config).to have_key('default_version')
@@ -94,6 +98,23 @@ RSpec.describe Pangea::Resources::GoogleMlEngineModel do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_ml_engine_model', 'minimal')
         expect(config).not_to have_key('default_version')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_ml_engine_model('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_ml_engine_model', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_ml_engine_model('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_ml_engine_model', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -162,6 +183,23 @@ RSpec.describe Pangea::Resources::GoogleMlEngineModel do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_ml_engine_model', 'minimal')
         expect(config).not_to have_key('online_prediction_logging')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_ml_engine_model('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_ml_engine_model', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_ml_engine_model('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_ml_engine_model', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes regions when provided' do
         synth = create_synthesizer
@@ -249,7 +287,7 @@ RSpec.describe Pangea::Resources::GoogleMlEngineModel do
     resource_type: :google_ml_engine_model,
     method: :google_ml_engine_model,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :project, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:online_prediction_console_logging, :online_prediction_logging]

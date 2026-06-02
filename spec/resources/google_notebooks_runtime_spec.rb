@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksRuntime do
         ref = synth.google_notebooks_runtime('test', required_attrs)
 
         expect(ref.id).to eq("${google_notebooks_runtime.test.id}")
+        expect(ref.deletion_policy).to eq("${google_notebooks_runtime.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_notebooks_runtime.test.effective_labels}")
         expect(ref.health_state).to eq("${google_notebooks_runtime.test.health_state}")
         expect(ref.metrics).to eq("${google_notebooks_runtime.test.metrics}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksRuntime do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_notebooks_runtime', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('health_state')
         expect(config).not_to have_key('metrics')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksRuntime do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ access_config: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, software_config: [{ 'key1' => 'val1' }], virtual_machine: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ access_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', software_config: { 'key1' => 'val1' }, virtual_machine: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -75,7 +77,9 @@ RSpec.describe Pangea::Resources::GoogleNotebooksRuntime do
 
         config = validate_resource_structure(result, 'google_notebooks_runtime', 'full')
         expect(config).to have_key('access_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('software_config')
         expect(config).to have_key('virtual_machine')
       end
@@ -85,7 +89,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksRuntime do
       it 'includes access_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_notebooks_runtime('opt', required_attrs.merge(access_config: [{ 'key1' => 'val1' }]))
+        synth.google_notebooks_runtime('opt', required_attrs.merge(access_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_notebooks_runtime', 'opt')
         expect(config).to have_key('access_config')
@@ -98,6 +102,23 @@ RSpec.describe Pangea::Resources::GoogleNotebooksRuntime do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_notebooks_runtime', 'minimal')
         expect(config).not_to have_key('access_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_runtime('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_runtime', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_runtime('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_runtime', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes labels when provided' do
         synth = create_synthesizer
@@ -116,10 +137,27 @@ RSpec.describe Pangea::Resources::GoogleNotebooksRuntime do
         config = validate_resource_structure(result, 'google_notebooks_runtime', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_runtime('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_runtime', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_runtime('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_runtime', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes software_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_notebooks_runtime('opt', required_attrs.merge(software_config: [{ 'key1' => 'val1' }]))
+        synth.google_notebooks_runtime('opt', required_attrs.merge(software_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_notebooks_runtime', 'opt')
         expect(config).to have_key('software_config')
@@ -136,7 +174,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksRuntime do
       it 'includes virtual_machine when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_notebooks_runtime('opt', required_attrs.merge(virtual_machine: [{ 'key1' => 'val1' }]))
+        synth.google_notebooks_runtime('opt', required_attrs.merge(virtual_machine: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_notebooks_runtime', 'opt')
         expect(config).to have_key('virtual_machine')
@@ -195,7 +233,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksRuntime do
     resource_type: :google_notebooks_runtime,
     method: :google_notebooks_runtime,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :health_state, :metrics, :project, :state, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :health_state, :metrics, :project, :state, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

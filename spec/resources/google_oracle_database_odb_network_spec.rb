@@ -39,8 +39,10 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseOdbNetwork do
 
         expect(ref.id).to eq("${google_oracle_database_odb_network.test.id}")
         expect(ref.create_time).to eq("${google_oracle_database_odb_network.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_oracle_database_odb_network.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_oracle_database_odb_network.test.effective_labels}")
         expect(ref.entitlement_id).to eq("${google_oracle_database_odb_network.test.entitlement_id}")
+        expect(ref.gcp_oracle_zone).to eq("${google_oracle_database_odb_network.test.gcp_oracle_zone}")
         expect(ref.name).to eq("${google_oracle_database_odb_network.test.name}")
         expect(ref.project).to eq("${google_oracle_database_odb_network.test.project}")
         expect(ref.state).to eq("${google_oracle_database_odb_network.test.state}")
@@ -57,8 +59,10 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseOdbNetwork do
 
         config = validate_resource_structure(result, 'google_oracle_database_odb_network', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('entitlement_id')
+        expect(config).not_to have_key('gcp_oracle_zone')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
@@ -67,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseOdbNetwork do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deletion_protection: true, labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', deletion_protection: true, gcp_oracle_zone: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,12 +80,32 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseOdbNetwork do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_oracle_database_odb_network', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
+        expect(config).to have_key('gcp_oracle_zone')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_odb_network('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_odb_network', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_odb_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_odb_network', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -99,6 +123,23 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseOdbNetwork do
         config = validate_resource_structure(result, 'google_oracle_database_odb_network', 'minimal')
         expect(config).not_to have_key('deletion_protection')
       end
+      it 'includes gcp_oracle_zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_odb_network('opt', required_attrs.merge(gcp_oracle_zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_odb_network', 'opt')
+        expect(config).to have_key('gcp_oracle_zone')
+      end
+
+      it 'omits gcp_oracle_zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_odb_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_odb_network', 'minimal')
+        expect(config).not_to have_key('gcp_oracle_zone')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -115,6 +156,23 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseOdbNetwork do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_oracle_database_odb_network', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_odb_network('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_odb_network', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_odb_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_odb_network', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -176,7 +234,7 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseOdbNetwork do
     resource_type: :google_oracle_database_odb_network,
     method: :google_oracle_database_odb_network,
     required_attrs: { location: 'test-value', network: 'test-value', odb_network_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :entitlement_id, :name, :project, :state, :terraform_labels],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :entitlement_id, :gcp_oracle_zone, :name, :project, :state, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection]

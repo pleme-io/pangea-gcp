@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachment do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { name: 'test-value', router: 'test-value' } }
+  let(:required_attrs) { { name: 'test-value' } }
 
   describe ':google_compute_interconnect_attachment' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachment do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'test')
-        validate_required_attributes(config, [:name, :router])
+        validate_required_attributes(config, [:name])
       end
 
       it 'returns a ResourceReference' do
@@ -45,6 +45,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachment do
         expect(ref.creation_timestamp).to eq("${google_compute_interconnect_attachment.test.creation_timestamp}")
         expect(ref.customer_router_ip_address).to eq("${google_compute_interconnect_attachment.test.customer_router_ip_address}")
         expect(ref.customer_router_ipv6_address).to eq("${google_compute_interconnect_attachment.test.customer_router_ipv6_address}")
+        expect(ref.deletion_policy).to eq("${google_compute_interconnect_attachment.test.deletion_policy}")
         expect(ref.edge_availability_domain).to eq("${google_compute_interconnect_attachment.test.edge_availability_domain}")
         expect(ref.effective_labels).to eq("${google_compute_interconnect_attachment.test.effective_labels}")
         expect(ref.google_reference_id).to eq("${google_compute_interconnect_attachment.test.google_reference_id}")
@@ -79,6 +80,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachment do
         expect(config).not_to have_key('creation_timestamp')
         expect(config).not_to have_key('customer_router_ip_address')
         expect(config).not_to have_key('customer_router_ipv6_address')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('edge_availability_domain')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('google_reference_id')
@@ -99,7 +101,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachment do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ admin_enabled: true, candidate_subnets: ['test-value'], description: 'test-value', encryption: 'test-value', interconnect: 'test-value', ipsec_internal_addresses: ['test-value'], labels: { 'key1' => 'val1' }, subnet_length: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ admin_enabled: true, bandwidth: 'test-value', candidate_cloud_router_ip_address: 'test-value', candidate_cloud_router_ipv6_address: 'test-value', candidate_customer_router_ip_address: 'test-value', candidate_customer_router_ipv6_address: 'test-value', candidate_subnets: ['test-value'], deletion_policy: 'test-value', description: 'test-value', edge_availability_domain: 'test-value', encryption: 'test-value', interconnect: 'test-value', ipsec_internal_addresses: ['test-value'], l2_forwarding: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, mtu: 'test-value', params: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value', router: 'test-value', stack_type: 'test-value', subnet_length: 3.14, type: 'test-value', vlan_tag8021q: 3.14 }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -109,13 +111,29 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachment do
 
         config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'full')
         expect(config).to have_key('admin_enabled')
+        expect(config).to have_key('bandwidth')
+        expect(config).to have_key('candidate_cloud_router_ip_address')
+        expect(config).to have_key('candidate_cloud_router_ipv6_address')
+        expect(config).to have_key('candidate_customer_router_ip_address')
+        expect(config).to have_key('candidate_customer_router_ipv6_address')
         expect(config).to have_key('candidate_subnets')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('edge_availability_domain')
         expect(config).to have_key('encryption')
         expect(config).to have_key('interconnect')
         expect(config).to have_key('ipsec_internal_addresses')
+        expect(config).to have_key('l2_forwarding')
         expect(config).to have_key('labels')
+        expect(config).to have_key('mtu')
+        expect(config).to have_key('params')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
+        expect(config).to have_key('router')
+        expect(config).to have_key('stack_type')
         expect(config).to have_key('subnet_length')
+        expect(config).to have_key('type')
+        expect(config).to have_key('vlan_tag8021q')
       end
     end
 
@@ -137,6 +155,91 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachment do
         config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
         expect(config).not_to have_key('admin_enabled')
       end
+      it 'includes bandwidth when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(bandwidth: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('bandwidth')
+      end
+
+      it 'omits bandwidth when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('bandwidth')
+      end
+      it 'includes candidate_cloud_router_ip_address when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(candidate_cloud_router_ip_address: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('candidate_cloud_router_ip_address')
+      end
+
+      it 'omits candidate_cloud_router_ip_address when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('candidate_cloud_router_ip_address')
+      end
+      it 'includes candidate_cloud_router_ipv6_address when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(candidate_cloud_router_ipv6_address: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('candidate_cloud_router_ipv6_address')
+      end
+
+      it 'omits candidate_cloud_router_ipv6_address when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('candidate_cloud_router_ipv6_address')
+      end
+      it 'includes candidate_customer_router_ip_address when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(candidate_customer_router_ip_address: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('candidate_customer_router_ip_address')
+      end
+
+      it 'omits candidate_customer_router_ip_address when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('candidate_customer_router_ip_address')
+      end
+      it 'includes candidate_customer_router_ipv6_address when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(candidate_customer_router_ipv6_address: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('candidate_customer_router_ipv6_address')
+      end
+
+      it 'omits candidate_customer_router_ipv6_address when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('candidate_customer_router_ipv6_address')
+      end
       it 'includes candidate_subnets when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -154,6 +257,23 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachment do
         config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
         expect(config).not_to have_key('candidate_subnets')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -170,6 +290,23 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes edge_availability_domain when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(edge_availability_domain: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('edge_availability_domain')
+      end
+
+      it 'omits edge_availability_domain when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('edge_availability_domain')
       end
       it 'includes encryption when provided' do
         synth = create_synthesizer
@@ -222,6 +359,23 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachment do
         config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
         expect(config).not_to have_key('ipsec_internal_addresses')
       end
+      it 'includes l2_forwarding when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(l2_forwarding: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('l2_forwarding')
+      end
+
+      it 'omits l2_forwarding when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('l2_forwarding')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -239,6 +393,108 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachment do
         config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes mtu when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(mtu: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('mtu')
+      end
+
+      it 'omits mtu when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('mtu')
+      end
+      it 'includes params when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('params')
+      end
+
+      it 'omits params when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('params')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('region')
+      end
+      it 'includes router when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(router: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('router')
+      end
+
+      it 'omits router when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('router')
+      end
+      it 'includes stack_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(stack_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('stack_type')
+      end
+
+      it 'omits stack_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('stack_type')
+      end
       it 'includes subnet_length when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -255,6 +511,40 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
         expect(config).not_to have_key('subnet_length')
+      end
+      it 'includes type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('type')
+      end
+
+      it 'omits type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('type')
+      end
+      it 'includes vlan_tag8021q when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('opt', required_attrs.merge(vlan_tag8021q: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'opt')
+        expect(config).to have_key('vlan_tag8021q')
+      end
+
+      it 'omits vlan_tag8021q when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'minimal')
+        expect(config).not_to have_key('vlan_tag8021q')
       end
     end
 
@@ -281,7 +571,6 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachment do
 
         config = validate_resource_structure(result, 'google_compute_interconnect_attachment', 'typed')
         expect(config['name']).to be_a(String)
-        expect(config['router']).to be_a(String)
       end
     end
 
@@ -314,8 +603,8 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachment do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_compute_interconnect_attachment,
     method: :google_compute_interconnect_attachment,
-    required_attrs: { name: 'test-value', router: 'test-value' },
-    expected_outputs: [:id, :attachment_group, :bandwidth, :cloud_router_ip_address, :cloud_router_ipv6_address, :creation_timestamp, :customer_router_ip_address, :customer_router_ipv6_address, :edge_availability_domain, :effective_labels, :google_reference_id, :label_fingerprint, :mtu, :pairing_key, :partner_asn, :private_interconnect_info, :project, :region, :self_link, :stack_type, :state, :terraform_labels, :type, :vlan_tag8021q],
+    required_attrs: { name: 'test-value' },
+    expected_outputs: [:id, :attachment_group, :bandwidth, :cloud_router_ip_address, :cloud_router_ipv6_address, :creation_timestamp, :customer_router_ip_address, :customer_router_ipv6_address, :deletion_policy, :edge_availability_domain, :effective_labels, :google_reference_id, :label_fingerprint, :mtu, :pairing_key, :partner_asn, :private_interconnect_info, :project, :region, :self_link, :stack_type, :state, :terraform_labels, :type, :vlan_tag8021q],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:admin_enabled]

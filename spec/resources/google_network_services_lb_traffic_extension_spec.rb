@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleNetworkServicesLbTrafficExtension do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { extension_chains: [{ 'key1' => 'val1' }], forwarding_rules: ['test-value'], location: 'test-value', name: 'test-value' } }
+  let(:required_attrs) { { extension_chains: [{ 'key1' => 'val1' }], forwarding_rules: ['test-value'], load_balancing_scheme: 'test-value', location: 'test-value', name: 'test-value' } }
 
   describe ':google_network_services_lb_traffic_extension' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesLbTrafficExtension do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_network_services_lb_traffic_extension', 'test')
-        validate_required_attributes(config, [:extension_chains, :forwarding_rules, :location, :name])
+        validate_required_attributes(config, [:extension_chains, :forwarding_rules, :load_balancing_scheme, :location, :name])
       end
 
       it 'returns a ResourceReference' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesLbTrafficExtension do
         ref = synth.google_network_services_lb_traffic_extension('test', required_attrs)
 
         expect(ref.id).to eq("${google_network_services_lb_traffic_extension.test.id}")
+        expect(ref.deletion_policy).to eq("${google_network_services_lb_traffic_extension.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_services_lb_traffic_extension.test.effective_labels}")
         expect(ref.project).to eq("${google_network_services_lb_traffic_extension.test.project}")
         expect(ref.terraform_labels).to eq("${google_network_services_lb_traffic_extension.test.terraform_labels}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesLbTrafficExtension do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_services_lb_traffic_extension', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesLbTrafficExtension do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', labels: { 'key1' => 'val1' }, load_balancing_scheme: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,13 +70,31 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesLbTrafficExtension do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_services_lb_traffic_extension', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
-        expect(config).to have_key('load_balancing_scheme')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_lb_traffic_extension('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_lb_traffic_extension', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_lb_traffic_extension('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_lb_traffic_extension', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -109,22 +129,22 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesLbTrafficExtension do
         config = validate_resource_structure(result, 'google_network_services_lb_traffic_extension', 'minimal')
         expect(config).not_to have_key('labels')
       end
-      it 'includes load_balancing_scheme when provided' do
+      it 'includes project when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_network_services_lb_traffic_extension('opt', required_attrs.merge(load_balancing_scheme: 'test-value'))
+        synth.google_network_services_lb_traffic_extension('opt', required_attrs.merge(project: 'test-value'))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_lb_traffic_extension', 'opt')
-        expect(config).to have_key('load_balancing_scheme')
+        expect(config).to have_key('project')
       end
 
-      it 'omits load_balancing_scheme when not provided' do
+      it 'omits project when not provided' do
         synth = create_synthesizer
         synth.extend(described_class)
         synth.google_network_services_lb_traffic_extension('minimal', required_attrs)
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_lb_traffic_extension', 'minimal')
-        expect(config).not_to have_key('load_balancing_scheme')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -138,6 +158,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesLbTrafficExtension do
         config = validate_resource_structure(result, 'google_network_services_lb_traffic_extension', 'typed')
         expect(config['extension_chains']).to be_a(Array)
         expect(config['forwarding_rules']).to be_a(Array)
+        expect(config['load_balancing_scheme']).to be_a(String)
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
       end
@@ -172,8 +193,8 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesLbTrafficExtension do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_network_services_lb_traffic_extension,
     method: :google_network_services_lb_traffic_extension,
-    required_attrs: { extension_chains: [{ 'key1' => 'val1' }], forwarding_rules: ['test-value'], location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :project, :terraform_labels],
+    required_attrs: { extension_chains: [{ 'key1' => 'val1' }], forwarding_rules: ['test-value'], load_balancing_scheme: 'test-value', location: 'test-value', name: 'test-value' },
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

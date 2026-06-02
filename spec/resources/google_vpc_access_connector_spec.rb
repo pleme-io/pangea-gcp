@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleVpcAccessConnector do
 
         expect(ref.id).to eq("${google_vpc_access_connector.test.id}")
         expect(ref.connected_projects).to eq("${google_vpc_access_connector.test.connected_projects}")
+        expect(ref.deletion_policy).to eq("${google_vpc_access_connector.test.deletion_policy}")
         expect(ref.max_instances).to eq("${google_vpc_access_connector.test.max_instances}")
         expect(ref.max_throughput).to eq("${google_vpc_access_connector.test.max_throughput}")
         expect(ref.min_instances).to eq("${google_vpc_access_connector.test.min_instances}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleVpcAccessConnector do
 
         config = validate_resource_structure(result, 'google_vpc_access_connector', 'test')
         expect(config).not_to have_key('connected_projects')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('max_instances')
         expect(config).not_to have_key('max_throughput')
         expect(config).not_to have_key('min_instances')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleVpcAccessConnector do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ ip_cidr_range: 'test-value', machine_type: 'test-value', subnet: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', ip_cidr_range: 'test-value', machine_type: 'test-value', max_instances: 3.14, max_throughput: 3.14, min_instances: 3.14, min_throughput: 3.14, network: 'test-value', project: 'test-value', region: 'test-value', subnet: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -82,13 +84,38 @@ RSpec.describe Pangea::Resources::GoogleVpcAccessConnector do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vpc_access_connector', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('ip_cidr_range')
         expect(config).to have_key('machine_type')
+        expect(config).to have_key('max_instances')
+        expect(config).to have_key('max_throughput')
+        expect(config).to have_key('min_instances')
+        expect(config).to have_key('min_throughput')
+        expect(config).to have_key('network')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('subnet')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes ip_cidr_range when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -123,10 +150,129 @@ RSpec.describe Pangea::Resources::GoogleVpcAccessConnector do
         config = validate_resource_structure(result, 'google_vpc_access_connector', 'minimal')
         expect(config).not_to have_key('machine_type')
       end
+      it 'includes max_instances when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('opt', required_attrs.merge(max_instances: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'opt')
+        expect(config).to have_key('max_instances')
+      end
+
+      it 'omits max_instances when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'minimal')
+        expect(config).not_to have_key('max_instances')
+      end
+      it 'includes max_throughput when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('opt', required_attrs.merge(max_throughput: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'opt')
+        expect(config).to have_key('max_throughput')
+      end
+
+      it 'omits max_throughput when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'minimal')
+        expect(config).not_to have_key('max_throughput')
+      end
+      it 'includes min_instances when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('opt', required_attrs.merge(min_instances: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'opt')
+        expect(config).to have_key('min_instances')
+      end
+
+      it 'omits min_instances when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'minimal')
+        expect(config).not_to have_key('min_instances')
+      end
+      it 'includes min_throughput when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('opt', required_attrs.merge(min_throughput: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'opt')
+        expect(config).to have_key('min_throughput')
+      end
+
+      it 'omits min_throughput when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'minimal')
+        expect(config).not_to have_key('min_throughput')
+      end
+      it 'includes network when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('opt', required_attrs.merge(network: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'opt')
+        expect(config).to have_key('network')
+      end
+
+      it 'omits network when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'minimal')
+        expect(config).not_to have_key('network')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vpc_access_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vpc_access_connector', 'minimal')
+        expect(config).not_to have_key('region')
+      end
       it 'includes subnet when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vpc_access_connector('opt', required_attrs.merge(subnet: [{ 'key1' => 'val1' }]))
+        synth.google_vpc_access_connector('opt', required_attrs.merge(subnet: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vpc_access_connector', 'opt')
         expect(config).to have_key('subnet')
@@ -184,7 +330,7 @@ RSpec.describe Pangea::Resources::GoogleVpcAccessConnector do
     resource_type: :google_vpc_access_connector,
     method: :google_vpc_access_connector,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :connected_projects, :max_instances, :max_throughput, :min_instances, :min_throughput, :network, :project, :region, :self_link, :state],
+    expected_outputs: [:id, :connected_projects, :deletion_policy, :max_instances, :max_throughput, :min_instances, :min_throughput, :network, :project, :region, :self_link, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

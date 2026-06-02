@@ -1,0 +1,8 @@
+name: google_bigtable_schema_bundle
+title: Manages a google_bigtable_schema_bundle resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

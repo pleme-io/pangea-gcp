@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDnsRecordSet do
         ref = synth.google_dns_record_set('test', required_attrs)
 
         expect(ref.id).to eq("${google_dns_record_set.test.id}")
+        expect(ref.deletion_policy).to eq("${google_dns_record_set.test.deletion_policy}")
         expect(ref.project).to eq("${google_dns_record_set.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleDnsRecordSet do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dns_record_set', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ routing_policy: [{ 'key1' => 'val1' }], rrdatas: ['test-value'], ttl: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value', routing_policy: { 'key1' => 'val1' }, rrdatas: ['test-value'], ttl: 3.14 }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,6 +66,8 @@ RSpec.describe Pangea::Resources::GoogleDnsRecordSet do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dns_record_set', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
         expect(config).to have_key('routing_policy')
         expect(config).to have_key('rrdatas')
         expect(config).to have_key('ttl')
@@ -71,10 +75,44 @@ RSpec.describe Pangea::Resources::GoogleDnsRecordSet do
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dns_record_set('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dns_record_set', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dns_record_set('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dns_record_set', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dns_record_set('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dns_record_set', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dns_record_set('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dns_record_set', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes routing_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dns_record_set('opt', required_attrs.merge(routing_policy: [{ 'key1' => 'val1' }]))
+        synth.google_dns_record_set('opt', required_attrs.merge(routing_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dns_record_set', 'opt')
         expect(config).to have_key('routing_policy')
@@ -168,7 +206,7 @@ RSpec.describe Pangea::Resources::GoogleDnsRecordSet do
     resource_type: :google_dns_record_set,
     method: :google_dns_record_set,
     required_attrs: { managed_zone: 'test-value', name: 'test-value', type: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

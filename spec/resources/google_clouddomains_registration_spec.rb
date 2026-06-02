@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleClouddomainsRegistration do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { contact_settings: [{ 'key1' => 'val1' }], domain_name: 'test-value', location: 'test-value', yearly_price: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { contact_settings: { 'key1' => 'val1' }, domain_name: 'test-value', location: 'test-value', yearly_price: { 'key1' => 'val1' } } }
 
   describe ':google_clouddomains_registration' do
     context 'with required attributes only' do
@@ -73,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleClouddomainsRegistration do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ contact_notices: ['test-value'], dns_settings: [{ 'key1' => 'val1' }], domain_notices: ['test-value'], labels: { 'key1' => 'val1' }, management_settings: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ contact_notices: ['test-value'], dns_settings: { 'key1' => 'val1' }, domain_notices: ['test-value'], labels: { 'key1' => 'val1' }, management_settings: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -87,6 +87,7 @@ RSpec.describe Pangea::Resources::GoogleClouddomainsRegistration do
         expect(config).to have_key('domain_notices')
         expect(config).to have_key('labels')
         expect(config).to have_key('management_settings')
+        expect(config).to have_key('project')
       end
     end
 
@@ -111,7 +112,7 @@ RSpec.describe Pangea::Resources::GoogleClouddomainsRegistration do
       it 'includes dns_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_clouddomains_registration('opt', required_attrs.merge(dns_settings: [{ 'key1' => 'val1' }]))
+        synth.google_clouddomains_registration('opt', required_attrs.merge(dns_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_clouddomains_registration', 'opt')
         expect(config).to have_key('dns_settings')
@@ -162,7 +163,7 @@ RSpec.describe Pangea::Resources::GoogleClouddomainsRegistration do
       it 'includes management_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_clouddomains_registration('opt', required_attrs.merge(management_settings: [{ 'key1' => 'val1' }]))
+        synth.google_clouddomains_registration('opt', required_attrs.merge(management_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_clouddomains_registration', 'opt')
         expect(config).to have_key('management_settings')
@@ -176,6 +177,23 @@ RSpec.describe Pangea::Resources::GoogleClouddomainsRegistration do
         config = validate_resource_structure(result, 'google_clouddomains_registration', 'minimal')
         expect(config).not_to have_key('management_settings')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddomains_registration('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddomains_registration', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddomains_registration('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddomains_registration', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -186,10 +204,10 @@ RSpec.describe Pangea::Resources::GoogleClouddomainsRegistration do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_clouddomains_registration', 'typed')
-        expect(config['contact_settings']).to be_a(Array)
+        expect(config['contact_settings']).to be_a(Hash)
         expect(config['domain_name']).to be_a(String)
         expect(config['location']).to be_a(String)
-        expect(config['yearly_price']).to be_a(Array)
+        expect(config['yearly_price']).to be_a(Hash)
       end
     end
 
@@ -222,7 +240,7 @@ RSpec.describe Pangea::Resources::GoogleClouddomainsRegistration do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_clouddomains_registration,
     method: :google_clouddomains_registration,
-    required_attrs: { contact_settings: [{ 'key1' => 'val1' }], domain_name: 'test-value', location: 'test-value', yearly_price: [{ 'key1' => 'val1' }] },
+    required_attrs: { contact_settings: { 'key1' => 'val1' }, domain_name: 'test-value', location: 'test-value', yearly_price: { 'key1' => 'val1' } },
     expected_outputs: [:id, :create_time, :effective_labels, :expire_time, :issues, :name, :project, :register_failure_reason, :state, :supported_privacy, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],

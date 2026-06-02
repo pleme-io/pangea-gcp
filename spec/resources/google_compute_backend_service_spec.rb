@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
 
         expect(ref.id).to eq("${google_compute_backend_service.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_backend_service.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_backend_service.test.deletion_policy}")
         expect(ref.fingerprint).to eq("${google_compute_backend_service.test.fingerprint}")
         expect(ref.generated_id).to eq("${google_compute_backend_service.test.generated_id}")
         expect(ref.port_name).to eq("${google_compute_backend_service.test.port_name}")
@@ -59,6 +60,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
 
         config = validate_resource_structure(result, 'google_compute_backend_service', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('fingerprint')
         expect(config).not_to have_key('generated_id')
         expect(config).not_to have_key('port_name')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ affinity_cookie_ttl_sec: 3.14, backend: [{ 'key1' => 'val1' }], cdn_policy: [{ 'key1' => 'val1' }], circuit_breakers: [{ 'key1' => 'val1' }], compression_mode: 'test-value', connection_draining_timeout_sec: 3.14, consistent_hash: [{ 'key1' => 'val1' }], custom_metrics: [{ 'key1' => 'val1' }], custom_request_headers: ['test-value'], custom_response_headers: ['test-value'], description: 'test-value', edge_security_policy: 'test-value', enable_cdn: true, external_managed_migration_state: 'test-value', external_managed_migration_testing_percentage: 3.14, health_checks: ['test-value'], iap: [{ 'key1' => 'val1' }], ip_address_selection_policy: 'test-value', load_balancing_scheme: 'test-value', locality_lb_policies: [{ 'key1' => 'val1' }], locality_lb_policy: 'test-value', log_config: [{ 'key1' => 'val1' }], max_stream_duration: [{ 'key1' => 'val1' }], outlier_detection: [{ 'key1' => 'val1' }], security_policy: 'test-value', security_settings: [{ 'key1' => 'val1' }], service_lb_policy: 'test-value', strong_session_affinity_cookie: [{ 'key1' => 'val1' }], tls_settings: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ affinity_cookie_ttl_sec: 3.14, backend: [{ 'key1' => 'val1' }], cdn_policy: { 'key1' => 'val1' }, circuit_breakers: { 'key1' => 'val1' }, compression_mode: 'test-value', connection_draining_timeout_sec: 3.14, consistent_hash: { 'key1' => 'val1' }, custom_metrics: [{ 'key1' => 'val1' }], custom_request_headers: ['test-value'], custom_response_headers: ['test-value'], deletion_policy: 'test-value', description: 'test-value', edge_security_policy: 'test-value', enable_cdn: true, external_managed_migration_state: 'test-value', external_managed_migration_testing_percentage: 3.14, health_checks: ['test-value'], iap: { 'key1' => 'val1' }, ip_address_selection_policy: 'test-value', load_balancing_scheme: 'test-value', locality_lb_policies: [{ 'key1' => 'val1' }], locality_lb_policy: 'test-value', log_config: { 'key1' => 'val1' }, max_stream_duration: { 'key1' => 'val1' }, outlier_detection: { 'key1' => 'val1' }, params: { 'key1' => 'val1' }, port_name: 'test-value', project: 'test-value', protocol: 'test-value', security_policy: 'test-value', security_settings: { 'key1' => 'val1' }, service_lb_policy: 'test-value', session_affinity: 'test-value', strong_session_affinity_cookie: { 'key1' => 'val1' }, timeout_sec: 3.14, tls_settings: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -90,6 +92,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
         expect(config).to have_key('custom_metrics')
         expect(config).to have_key('custom_request_headers')
         expect(config).to have_key('custom_response_headers')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('edge_security_policy')
         expect(config).to have_key('enable_cdn')
@@ -104,10 +107,16 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
         expect(config).to have_key('log_config')
         expect(config).to have_key('max_stream_duration')
         expect(config).to have_key('outlier_detection')
+        expect(config).to have_key('params')
+        expect(config).to have_key('port_name')
+        expect(config).to have_key('project')
+        expect(config).to have_key('protocol')
         expect(config).to have_key('security_policy')
         expect(config).to have_key('security_settings')
         expect(config).to have_key('service_lb_policy')
+        expect(config).to have_key('session_affinity')
         expect(config).to have_key('strong_session_affinity_cookie')
+        expect(config).to have_key('timeout_sec')
         expect(config).to have_key('tls_settings')
       end
     end
@@ -150,7 +159,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
       it 'includes cdn_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_backend_service('opt', required_attrs.merge(cdn_policy: [{ 'key1' => 'val1' }]))
+        synth.google_compute_backend_service('opt', required_attrs.merge(cdn_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
         expect(config).to have_key('cdn_policy')
@@ -167,7 +176,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
       it 'includes circuit_breakers when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_backend_service('opt', required_attrs.merge(circuit_breakers: [{ 'key1' => 'val1' }]))
+        synth.google_compute_backend_service('opt', required_attrs.merge(circuit_breakers: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
         expect(config).to have_key('circuit_breakers')
@@ -218,7 +227,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
       it 'includes consistent_hash when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_backend_service('opt', required_attrs.merge(consistent_hash: [{ 'key1' => 'val1' }]))
+        synth.google_compute_backend_service('opt', required_attrs.merge(consistent_hash: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
         expect(config).to have_key('consistent_hash')
@@ -282,6 +291,23 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_backend_service', 'minimal')
         expect(config).not_to have_key('custom_response_headers')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -388,7 +414,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
       it 'includes iap when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_backend_service('opt', required_attrs.merge(iap: [{ 'key1' => 'val1' }]))
+        synth.google_compute_backend_service('opt', required_attrs.merge(iap: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
         expect(config).to have_key('iap')
@@ -473,7 +499,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
       it 'includes log_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_backend_service('opt', required_attrs.merge(log_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_backend_service('opt', required_attrs.merge(log_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
         expect(config).to have_key('log_config')
@@ -490,7 +516,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
       it 'includes max_stream_duration when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_backend_service('opt', required_attrs.merge(max_stream_duration: [{ 'key1' => 'val1' }]))
+        synth.google_compute_backend_service('opt', required_attrs.merge(max_stream_duration: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
         expect(config).to have_key('max_stream_duration')
@@ -507,7 +533,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
       it 'includes outlier_detection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_backend_service('opt', required_attrs.merge(outlier_detection: [{ 'key1' => 'val1' }]))
+        synth.google_compute_backend_service('opt', required_attrs.merge(outlier_detection: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
         expect(config).to have_key('outlier_detection')
@@ -520,6 +546,74 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_backend_service', 'minimal')
         expect(config).not_to have_key('outlier_detection')
+      end
+      it 'includes params when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
+        expect(config).to have_key('params')
+      end
+
+      it 'omits params when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service', 'minimal')
+        expect(config).not_to have_key('params')
+      end
+      it 'includes port_name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service('opt', required_attrs.merge(port_name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
+        expect(config).to have_key('port_name')
+      end
+
+      it 'omits port_name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service', 'minimal')
+        expect(config).not_to have_key('port_name')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes protocol when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service('opt', required_attrs.merge(protocol: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
+        expect(config).to have_key('protocol')
+      end
+
+      it 'omits protocol when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service', 'minimal')
+        expect(config).not_to have_key('protocol')
       end
       it 'includes security_policy when provided' do
         synth = create_synthesizer
@@ -541,7 +635,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
       it 'includes security_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_backend_service('opt', required_attrs.merge(security_settings: [{ 'key1' => 'val1' }]))
+        synth.google_compute_backend_service('opt', required_attrs.merge(security_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
         expect(config).to have_key('security_settings')
@@ -572,10 +666,27 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
         config = validate_resource_structure(result, 'google_compute_backend_service', 'minimal')
         expect(config).not_to have_key('service_lb_policy')
       end
+      it 'includes session_affinity when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service('opt', required_attrs.merge(session_affinity: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
+        expect(config).to have_key('session_affinity')
+      end
+
+      it 'omits session_affinity when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service', 'minimal')
+        expect(config).not_to have_key('session_affinity')
+      end
       it 'includes strong_session_affinity_cookie when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_backend_service('opt', required_attrs.merge(strong_session_affinity_cookie: [{ 'key1' => 'val1' }]))
+        synth.google_compute_backend_service('opt', required_attrs.merge(strong_session_affinity_cookie: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
         expect(config).to have_key('strong_session_affinity_cookie')
@@ -589,10 +700,27 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
         config = validate_resource_structure(result, 'google_compute_backend_service', 'minimal')
         expect(config).not_to have_key('strong_session_affinity_cookie')
       end
+      it 'includes timeout_sec when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service('opt', required_attrs.merge(timeout_sec: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
+        expect(config).to have_key('timeout_sec')
+      end
+
+      it 'omits timeout_sec when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_service', 'minimal')
+        expect(config).not_to have_key('timeout_sec')
+      end
       it 'includes tls_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_backend_service('opt', required_attrs.merge(tls_settings: [{ 'key1' => 'val1' }]))
+        synth.google_compute_backend_service('opt', required_attrs.merge(tls_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_backend_service', 'opt')
         expect(config).to have_key('tls_settings')
@@ -664,7 +792,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendService do
     resource_type: :google_compute_backend_service,
     method: :google_compute_backend_service,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :fingerprint, :generated_id, :port_name, :project, :protocol, :self_link, :session_affinity, :timeout_sec],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :fingerprint, :generated_id, :port_name, :project, :protocol, :self_link, :session_affinity, :timeout_sec],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:enable_cdn]

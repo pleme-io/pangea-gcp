@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowIntent do
 
         expect(ref.id).to eq("${google_dialogflow_intent.test.id}")
         expect(ref.action).to eq("${google_dialogflow_intent.test.action}")
+        expect(ref.deletion_policy).to eq("${google_dialogflow_intent.test.deletion_policy}")
         expect(ref.followup_intent_info).to eq("${google_dialogflow_intent.test.followup_intent_info}")
         expect(ref.is_fallback).to eq("${google_dialogflow_intent.test.is_fallback}")
         expect(ref.ml_disabled).to eq("${google_dialogflow_intent.test.ml_disabled}")
@@ -61,6 +62,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowIntent do
 
         config = validate_resource_structure(result, 'google_dialogflow_intent', 'test')
         expect(config).not_to have_key('action')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('followup_intent_info')
         expect(config).not_to have_key('is_fallback')
         expect(config).not_to have_key('ml_disabled')
@@ -75,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowIntent do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ default_response_platforms: ['test-value'], events: ['test-value'], input_context_names: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ action: 'test-value', default_response_platforms: ['test-value'], deletion_policy: 'test-value', events: ['test-value'], input_context_names: ['test-value'], is_fallback: true, ml_disabled: true, parent_followup_intent_name: 'test-value', priority: 3.14, project: 'test-value', reset_contexts: true, webhook_state: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -84,13 +86,39 @@ RSpec.describe Pangea::Resources::GoogleDialogflowIntent do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_intent', 'full')
+        expect(config).to have_key('action')
         expect(config).to have_key('default_response_platforms')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('events')
         expect(config).to have_key('input_context_names')
+        expect(config).to have_key('is_fallback')
+        expect(config).to have_key('ml_disabled')
+        expect(config).to have_key('parent_followup_intent_name')
+        expect(config).to have_key('priority')
+        expect(config).to have_key('project')
+        expect(config).to have_key('reset_contexts')
+        expect(config).to have_key('webhook_state')
       end
     end
 
     context 'optional attributes' do
+      it 'includes action when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('opt', required_attrs.merge(action: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'opt')
+        expect(config).to have_key('action')
+      end
+
+      it 'omits action when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'minimal')
+        expect(config).not_to have_key('action')
+      end
       it 'includes default_response_platforms when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -107,6 +135,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowIntent do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_intent', 'minimal')
         expect(config).not_to have_key('default_response_platforms')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes events when provided' do
         synth = create_synthesizer
@@ -141,6 +186,161 @@ RSpec.describe Pangea::Resources::GoogleDialogflowIntent do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_intent', 'minimal')
         expect(config).not_to have_key('input_context_names')
+      end
+      it 'includes is_fallback when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('opt', required_attrs.merge(is_fallback: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'opt')
+        expect(config).to have_key('is_fallback')
+      end
+
+      it 'omits is_fallback when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'minimal')
+        expect(config).not_to have_key('is_fallback')
+      end
+      it 'includes ml_disabled when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('opt', required_attrs.merge(ml_disabled: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'opt')
+        expect(config).to have_key('ml_disabled')
+      end
+
+      it 'omits ml_disabled when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'minimal')
+        expect(config).not_to have_key('ml_disabled')
+      end
+      it 'includes parent_followup_intent_name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('opt', required_attrs.merge(parent_followup_intent_name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'opt')
+        expect(config).to have_key('parent_followup_intent_name')
+      end
+
+      it 'omits parent_followup_intent_name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'minimal')
+        expect(config).not_to have_key('parent_followup_intent_name')
+      end
+      it 'includes priority when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('opt', required_attrs.merge(priority: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'opt')
+        expect(config).to have_key('priority')
+      end
+
+      it 'omits priority when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'minimal')
+        expect(config).not_to have_key('priority')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes reset_contexts when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('opt', required_attrs.merge(reset_contexts: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'opt')
+        expect(config).to have_key('reset_contexts')
+      end
+
+      it 'omits reset_contexts when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'minimal')
+        expect(config).not_to have_key('reset_contexts')
+      end
+      it 'includes webhook_state when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('opt', required_attrs.merge(webhook_state: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'opt')
+        expect(config).to have_key('webhook_state')
+      end
+
+      it 'omits webhook_state when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_intent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_intent', 'minimal')
+        expect(config).not_to have_key('webhook_state')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts is_fallback=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(is_fallback: val)
+          synth.google_dialogflow_intent("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_dialogflow_intent', "bool_#{val}")
+          expect(config['is_fallback']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts ml_disabled=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(ml_disabled: val)
+          synth.google_dialogflow_intent("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_dialogflow_intent', "bool_#{val}")
+          expect(config['ml_disabled']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts reset_contexts=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(reset_contexts: val)
+          synth.google_dialogflow_intent("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_dialogflow_intent', "bool_#{val}")
+          expect(config['reset_contexts']).to eq(val)
+        end
       end
     end
 
@@ -186,8 +386,8 @@ RSpec.describe Pangea::Resources::GoogleDialogflowIntent do
     resource_type: :google_dialogflow_intent,
     method: :google_dialogflow_intent,
     required_attrs: { display_name: 'test-value' },
-    expected_outputs: [:id, :action, :followup_intent_info, :is_fallback, :ml_disabled, :name, :parent_followup_intent_name, :priority, :project, :reset_contexts, :root_followup_intent_name, :webhook_state],
+    expected_outputs: [:id, :action, :deletion_policy, :followup_intent_info, :is_fallback, :ml_disabled, :name, :parent_followup_intent_name, :priority, :project, :reset_contexts, :root_followup_intent_name, :webhook_state],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:is_fallback, :ml_disabled, :reset_contexts]
 end

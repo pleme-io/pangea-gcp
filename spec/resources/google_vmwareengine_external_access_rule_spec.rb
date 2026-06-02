@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineExternalAccessRule do
 
         expect(ref.id).to eq("${google_vmwareengine_external_access_rule.test.id}")
         expect(ref.create_time).to eq("${google_vmwareengine_external_access_rule.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_vmwareengine_external_access_rule.test.deletion_policy}")
         expect(ref.state).to eq("${google_vmwareengine_external_access_rule.test.state}")
         expect(ref.uid).to eq("${google_vmwareengine_external_access_rule.test.uid}")
         expect(ref.update_time).to eq("${google_vmwareengine_external_access_rule.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineExternalAccessRule do
 
         config = validate_resource_structure(result, 'google_vmwareengine_external_access_rule', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('uid')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineExternalAccessRule do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,11 +72,29 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineExternalAccessRule do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vmwareengine_external_access_rule', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_external_access_rule('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_external_access_rule', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_external_access_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_external_access_rule', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -144,7 +164,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineExternalAccessRule do
     resource_type: :google_vmwareengine_external_access_rule,
     method: :google_vmwareengine_external_access_rule,
     required_attrs: { action: 'test-value', destination_ip_ranges: [{ 'key1' => 'val1' }], destination_ports: ['test-value'], ip_protocol: 'test-value', name: 'test-value', parent: 'test-value', priority: 3.14, source_ip_ranges: [{ 'key1' => 'val1' }], source_ports: ['test-value'] },
-    expected_outputs: [:id, :create_time, :state, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :state, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

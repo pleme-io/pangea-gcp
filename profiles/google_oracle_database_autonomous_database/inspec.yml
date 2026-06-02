@@ -1,0 +1,8 @@
+name: google_oracle_database_autonomous_database
+title: Manages a google_oracle_database_autonomous_database resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

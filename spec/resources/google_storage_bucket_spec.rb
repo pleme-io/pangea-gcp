@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
         ref = synth.google_storage_bucket('test', required_attrs)
 
         expect(ref.id).to eq("${google_storage_bucket.test.id}")
+        expect(ref.deletion_policy).to eq("${google_storage_bucket.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_storage_bucket.test.effective_labels}")
         expect(ref.project).to eq("${google_storage_bucket.test.project}")
         expect(ref.project_number).to eq("${google_storage_bucket.test.project_number}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_storage_bucket', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('project_number')
@@ -75,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ autoclass: [{ 'key1' => 'val1' }], cors: [{ 'key1' => 'val1' }], custom_placement_config: [{ 'key1' => 'val1' }], default_event_based_hold: true, enable_object_retention: true, encryption: [{ 'key1' => 'val1' }], force_destroy: true, hierarchical_namespace: [{ 'key1' => 'val1' }], ip_filter: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, lifecycle_rule: [{ 'key1' => 'val1' }], logging: [{ 'key1' => 'val1' }], requester_pays: true, retention_policy: [{ 'key1' => 'val1' }], soft_delete_policy: [{ 'key1' => 'val1' }], storage_class: 'test-value', versioning: [{ 'key1' => 'val1' }], website: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ autoclass: { 'key1' => 'val1' }, cors: [{ 'key1' => 'val1' }], custom_placement_config: { 'key1' => 'val1' }, default_event_based_hold: true, deletion_policy: 'test-value', enable_object_retention: true, encryption: { 'key1' => 'val1' }, force_destroy: true, hierarchical_namespace: { 'key1' => 'val1' }, ip_filter: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, lifecycle_rule: [{ 'key1' => 'val1' }], logging: { 'key1' => 'val1' }, project: 'test-value', public_access_prevention: 'test-value', requester_pays: true, retention_policy: { 'key1' => 'val1' }, rpo: 'test-value', soft_delete_policy: { 'key1' => 'val1' }, storage_class: 'test-value', uniform_bucket_level_access: true, versioning: { 'key1' => 'val1' }, website: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -88,6 +90,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
         expect(config).to have_key('cors')
         expect(config).to have_key('custom_placement_config')
         expect(config).to have_key('default_event_based_hold')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('enable_object_retention')
         expect(config).to have_key('encryption')
         expect(config).to have_key('force_destroy')
@@ -96,10 +99,14 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
         expect(config).to have_key('labels')
         expect(config).to have_key('lifecycle_rule')
         expect(config).to have_key('logging')
+        expect(config).to have_key('project')
+        expect(config).to have_key('public_access_prevention')
         expect(config).to have_key('requester_pays')
         expect(config).to have_key('retention_policy')
+        expect(config).to have_key('rpo')
         expect(config).to have_key('soft_delete_policy')
         expect(config).to have_key('storage_class')
+        expect(config).to have_key('uniform_bucket_level_access')
         expect(config).to have_key('versioning')
         expect(config).to have_key('website')
       end
@@ -109,7 +116,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
       it 'includes autoclass when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_bucket('opt', required_attrs.merge(autoclass: [{ 'key1' => 'val1' }]))
+        synth.google_storage_bucket('opt', required_attrs.merge(autoclass: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
         expect(config).to have_key('autoclass')
@@ -143,7 +150,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
       it 'includes custom_placement_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_bucket('opt', required_attrs.merge(custom_placement_config: [{ 'key1' => 'val1' }]))
+        synth.google_storage_bucket('opt', required_attrs.merge(custom_placement_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
         expect(config).to have_key('custom_placement_config')
@@ -174,6 +181,23 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
         config = validate_resource_structure(result, 'google_storage_bucket', 'minimal')
         expect(config).not_to have_key('default_event_based_hold')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes enable_object_retention when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -194,7 +218,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
       it 'includes encryption when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_bucket('opt', required_attrs.merge(encryption: [{ 'key1' => 'val1' }]))
+        synth.google_storage_bucket('opt', required_attrs.merge(encryption: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
         expect(config).to have_key('encryption')
@@ -228,7 +252,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
       it 'includes hierarchical_namespace when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_bucket('opt', required_attrs.merge(hierarchical_namespace: [{ 'key1' => 'val1' }]))
+        synth.google_storage_bucket('opt', required_attrs.merge(hierarchical_namespace: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
         expect(config).to have_key('hierarchical_namespace')
@@ -245,7 +269,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
       it 'includes ip_filter when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_bucket('opt', required_attrs.merge(ip_filter: [{ 'key1' => 'val1' }]))
+        synth.google_storage_bucket('opt', required_attrs.merge(ip_filter: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
         expect(config).to have_key('ip_filter')
@@ -296,7 +320,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
       it 'includes logging when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_bucket('opt', required_attrs.merge(logging: [{ 'key1' => 'val1' }]))
+        synth.google_storage_bucket('opt', required_attrs.merge(logging: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
         expect(config).to have_key('logging')
@@ -309,6 +333,40 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket', 'minimal')
         expect(config).not_to have_key('logging')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes public_access_prevention when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket('opt', required_attrs.merge(public_access_prevention: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
+        expect(config).to have_key('public_access_prevention')
+      end
+
+      it 'omits public_access_prevention when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket', 'minimal')
+        expect(config).not_to have_key('public_access_prevention')
       end
       it 'includes requester_pays when provided' do
         synth = create_synthesizer
@@ -330,7 +388,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
       it 'includes retention_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_bucket('opt', required_attrs.merge(retention_policy: [{ 'key1' => 'val1' }]))
+        synth.google_storage_bucket('opt', required_attrs.merge(retention_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
         expect(config).to have_key('retention_policy')
@@ -344,10 +402,27 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
         config = validate_resource_structure(result, 'google_storage_bucket', 'minimal')
         expect(config).not_to have_key('retention_policy')
       end
+      it 'includes rpo when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket('opt', required_attrs.merge(rpo: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
+        expect(config).to have_key('rpo')
+      end
+
+      it 'omits rpo when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket', 'minimal')
+        expect(config).not_to have_key('rpo')
+      end
       it 'includes soft_delete_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_bucket('opt', required_attrs.merge(soft_delete_policy: [{ 'key1' => 'val1' }]))
+        synth.google_storage_bucket('opt', required_attrs.merge(soft_delete_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
         expect(config).to have_key('soft_delete_policy')
@@ -378,10 +453,27 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
         config = validate_resource_structure(result, 'google_storage_bucket', 'minimal')
         expect(config).not_to have_key('storage_class')
       end
+      it 'includes uniform_bucket_level_access when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket('opt', required_attrs.merge(uniform_bucket_level_access: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
+        expect(config).to have_key('uniform_bucket_level_access')
+      end
+
+      it 'omits uniform_bucket_level_access when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket', 'minimal')
+        expect(config).not_to have_key('uniform_bucket_level_access')
+      end
       it 'includes versioning when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_bucket('opt', required_attrs.merge(versioning: [{ 'key1' => 'val1' }]))
+        synth.google_storage_bucket('opt', required_attrs.merge(versioning: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
         expect(config).to have_key('versioning')
@@ -398,7 +490,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
       it 'includes website when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_bucket('opt', required_attrs.merge(website: [{ 'key1' => 'val1' }]))
+        synth.google_storage_bucket('opt', required_attrs.merge(website: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket', 'opt')
         expect(config).to have_key('website')
@@ -459,6 +551,17 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
           expect(config['requester_pays']).to eq(val)
         end
       end
+      [true, false].each do |val|
+        it "accepts uniform_bucket_level_access=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(uniform_bucket_level_access: val)
+          synth.google_storage_bucket("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_storage_bucket', "bool_#{val}")
+          expect(config['uniform_bucket_level_access']).to eq(val)
+        end
+      end
     end
 
     context 'attribute types' do
@@ -504,8 +607,8 @@ RSpec.describe Pangea::Resources::GoogleStorageBucket do
     resource_type: :google_storage_bucket,
     method: :google_storage_bucket,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :project, :project_number, :public_access_prevention, :rpo, :self_link, :terraform_labels, :time_created, :uniform_bucket_level_access, :updated, :url],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :project, :project_number, :public_access_prevention, :rpo, :self_link, :terraform_labels, :time_created, :uniform_bucket_level_access, :updated, :url],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:default_event_based_hold, :enable_object_retention, :force_destroy, :requester_pays]
+    boolean_fields: [:default_event_based_hold, :enable_object_retention, :force_destroy, :requester_pays, :uniform_bucket_level_access]
 end

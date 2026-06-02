@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeHttpsHealthCheck do
 
         expect(ref.id).to eq("${google_compute_https_health_check.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_https_health_check.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_https_health_check.test.deletion_policy}")
         expect(ref.project).to eq("${google_compute_https_health_check.test.project}")
         expect(ref.self_link).to eq("${google_compute_https_health_check.test.self_link}")
       end
@@ -53,13 +54,14 @@ RSpec.describe Pangea::Resources::GoogleComputeHttpsHealthCheck do
 
         config = validate_resource_structure(result, 'google_compute_https_health_check', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ check_interval_sec: 3.14, description: 'test-value', healthy_threshold: 3.14, host: 'test-value', port: 3.14, request_path: 'test-value', timeout_sec: 3.14, unhealthy_threshold: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ check_interval_sec: 3.14, deletion_policy: 'test-value', description: 'test-value', healthy_threshold: 3.14, host: 'test-value', port: 3.14, project: 'test-value', request_path: 'test-value', timeout_sec: 3.14, unhealthy_threshold: 3.14 }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,10 +71,12 @@ RSpec.describe Pangea::Resources::GoogleComputeHttpsHealthCheck do
 
         config = validate_resource_structure(result, 'google_compute_https_health_check', 'full')
         expect(config).to have_key('check_interval_sec')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('healthy_threshold')
         expect(config).to have_key('host')
         expect(config).to have_key('port')
+        expect(config).to have_key('project')
         expect(config).to have_key('request_path')
         expect(config).to have_key('timeout_sec')
         expect(config).to have_key('unhealthy_threshold')
@@ -96,6 +100,23 @@ RSpec.describe Pangea::Resources::GoogleComputeHttpsHealthCheck do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_https_health_check', 'minimal')
         expect(config).not_to have_key('check_interval_sec')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_https_health_check('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_https_health_check', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_https_health_check('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_https_health_check', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -164,6 +185,23 @@ RSpec.describe Pangea::Resources::GoogleComputeHttpsHealthCheck do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_https_health_check', 'minimal')
         expect(config).not_to have_key('port')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_https_health_check('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_https_health_check', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_https_health_check('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_https_health_check', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes request_path when provided' do
         synth = create_synthesizer
@@ -260,7 +298,7 @@ RSpec.describe Pangea::Resources::GoogleComputeHttpsHealthCheck do
     resource_type: :google_compute_https_health_check,
     method: :google_compute_https_health_check,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :project, :self_link],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :project, :self_link],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

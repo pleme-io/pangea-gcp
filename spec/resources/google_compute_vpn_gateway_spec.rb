@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnGateway do
 
         expect(ref.id).to eq("${google_compute_vpn_gateway.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_vpn_gateway.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_vpn_gateway.test.deletion_policy}")
         expect(ref.gateway_id).to eq("${google_compute_vpn_gateway.test.gateway_id}")
         expect(ref.project).to eq("${google_compute_vpn_gateway.test.project}")
         expect(ref.region).to eq("${google_compute_vpn_gateway.test.region}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnGateway do
 
         config = validate_resource_structure(result, 'google_compute_vpn_gateway', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('gateway_id')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('region')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnGateway do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', params: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,11 +74,32 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnGateway do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_vpn_gateway', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('params')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_gateway('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_gateway', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_gateway', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -93,6 +116,57 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnGateway do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_vpn_gateway', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes params when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_gateway('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_gateway', 'opt')
+        expect(config).to have_key('params')
+      end
+
+      it 'omits params when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_gateway', 'minimal')
+        expect(config).not_to have_key('params')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_gateway('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_gateway', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_gateway', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_gateway('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_gateway', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_gateway', 'minimal')
+        expect(config).not_to have_key('region')
       end
     end
 
@@ -139,7 +213,7 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnGateway do
     resource_type: :google_compute_vpn_gateway,
     method: :google_compute_vpn_gateway,
     required_attrs: { name: 'test-value', network: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :gateway_id, :project, :region, :self_link],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :gateway_id, :project, :region, :self_link],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleStorageManagedFolder do
 
         expect(ref.id).to eq("${google_storage_managed_folder.test.id}")
         expect(ref.create_time).to eq("${google_storage_managed_folder.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_storage_managed_folder.test.deletion_policy}")
         expect(ref.metageneration).to eq("${google_storage_managed_folder.test.metageneration}")
         expect(ref.self_link).to eq("${google_storage_managed_folder.test.self_link}")
         expect(ref.update_time).to eq("${google_storage_managed_folder.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleStorageManagedFolder do
 
         config = validate_resource_structure(result, 'google_storage_managed_folder', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('metageneration')
         expect(config).not_to have_key('self_link')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleStorageManagedFolder do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ force_destroy: true }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', force_destroy: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,11 +72,29 @@ RSpec.describe Pangea::Resources::GoogleStorageManagedFolder do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_storage_managed_folder', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('force_destroy')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_managed_folder('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_managed_folder', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_managed_folder('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_managed_folder', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes force_destroy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -151,7 +171,7 @@ RSpec.describe Pangea::Resources::GoogleStorageManagedFolder do
     resource_type: :google_storage_managed_folder,
     method: :google_storage_managed_folder,
     required_attrs: { bucket: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :create_time, :metageneration, :self_link, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :metageneration, :self_link, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:force_destroy]

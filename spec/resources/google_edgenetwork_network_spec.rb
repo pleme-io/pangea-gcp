@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleEdgenetworkNetwork do
 
         expect(ref.id).to eq("${google_edgenetwork_network.test.id}")
         expect(ref.create_time).to eq("${google_edgenetwork_network.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_edgenetwork_network.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_edgenetwork_network.test.effective_labels}")
         expect(ref.name).to eq("${google_edgenetwork_network.test.name}")
         expect(ref.project).to eq("${google_edgenetwork_network.test.project}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleEdgenetworkNetwork do
 
         config = validate_resource_structure(result, 'google_edgenetwork_network', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleEdgenetworkNetwork do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', labels: { 'key1' => 'val1' }, mtu: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, mtu: 3.14, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,13 +76,32 @@ RSpec.describe Pangea::Resources::GoogleEdgenetworkNetwork do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_edgenetwork_network', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
         expect(config).to have_key('mtu')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgenetwork_network('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgenetwork_network', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgenetwork_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgenetwork_network', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -132,6 +153,23 @@ RSpec.describe Pangea::Resources::GoogleEdgenetworkNetwork do
         config = validate_resource_structure(result, 'google_edgenetwork_network', 'minimal')
         expect(config).not_to have_key('mtu')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgenetwork_network('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgenetwork_network', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgenetwork_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgenetwork_network', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -178,7 +216,7 @@ RSpec.describe Pangea::Resources::GoogleEdgenetworkNetwork do
     resource_type: :google_edgenetwork_network,
     method: :google_edgenetwork_network,
     required_attrs: { location: 'test-value', network_id: 'test-value', zone: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :name, :project, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :name, :project, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

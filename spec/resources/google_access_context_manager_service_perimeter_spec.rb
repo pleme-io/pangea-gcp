@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeter do
 
         expect(ref.id).to eq("${google_access_context_manager_service_perimeter.test.id}")
         expect(ref.create_time).to eq("${google_access_context_manager_service_perimeter.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_access_context_manager_service_perimeter.test.deletion_policy}")
         expect(ref.update_time).to eq("${google_access_context_manager_service_perimeter.test.update_time}")
       end
     end
@@ -52,12 +53,13 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeter do
 
         config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('update_time')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', perimeter_type: 'test-value', spec: [{ 'key1' => 'val1' }], status: [{ 'key1' => 'val1' }], use_explicit_dry_run_spec: true }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', perimeter_type: 'test-value', spec: { 'key1' => 'val1' }, status: { 'key1' => 'val1' }, use_explicit_dry_run_spec: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,6 +68,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeter do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('perimeter_type')
         expect(config).to have_key('spec')
@@ -75,6 +78,23 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeter do
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_service_perimeter('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_service_perimeter('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -112,7 +132,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeter do
       it 'includes spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_access_context_manager_service_perimeter('opt', required_attrs.merge(spec: [{ 'key1' => 'val1' }]))
+        synth.google_access_context_manager_service_perimeter('opt', required_attrs.merge(spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter', 'opt')
         expect(config).to have_key('spec')
@@ -129,7 +149,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeter do
       it 'includes status when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_access_context_manager_service_perimeter('opt', required_attrs.merge(status: [{ 'key1' => 'val1' }]))
+        synth.google_access_context_manager_service_perimeter('opt', required_attrs.merge(status: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter', 'opt')
         expect(config).to have_key('status')
@@ -220,7 +240,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeter do
     resource_type: :google_access_context_manager_service_perimeter,
     method: :google_access_context_manager_service_perimeter,
     required_attrs: { name: 'test-value', parent: 'test-value', title: 'test-value' },
-    expected_outputs: [:id, :create_time, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:use_explicit_dry_run_spec]

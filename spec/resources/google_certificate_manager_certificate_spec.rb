@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificate do
         ref = synth.google_certificate_manager_certificate('test', required_attrs)
 
         expect(ref.id).to eq("${google_certificate_manager_certificate.test.id}")
+        expect(ref.deletion_policy).to eq("${google_certificate_manager_certificate.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_certificate_manager_certificate.test.effective_labels}")
         expect(ref.project).to eq("${google_certificate_manager_certificate.test.project}")
         expect(ref.san_dnsnames).to eq("${google_certificate_manager_certificate.test.san_dnsnames}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificate do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_certificate_manager_certificate', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('san_dnsnames')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificate do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', managed: [{ 'key1' => 'val1' }], scope: 'test-value', self_managed: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', managed: { 'key1' => 'val1' }, project: 'test-value', scope: 'test-value', self_managed: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,16 +72,35 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificate do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_certificate_manager_certificate', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
         expect(config).to have_key('managed')
+        expect(config).to have_key('project')
         expect(config).to have_key('scope')
         expect(config).to have_key('self_managed')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_certificate_manager_certificate('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_certificate_manager_certificate', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_certificate_manager_certificate('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_certificate_manager_certificate', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -134,7 +155,7 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificate do
       it 'includes managed when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_certificate_manager_certificate('opt', required_attrs.merge(managed: [{ 'key1' => 'val1' }]))
+        synth.google_certificate_manager_certificate('opt', required_attrs.merge(managed: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_certificate_manager_certificate', 'opt')
         expect(config).to have_key('managed')
@@ -147,6 +168,23 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificate do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_certificate_manager_certificate', 'minimal')
         expect(config).not_to have_key('managed')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_certificate_manager_certificate('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_certificate_manager_certificate', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_certificate_manager_certificate('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_certificate_manager_certificate', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes scope when provided' do
         synth = create_synthesizer
@@ -168,7 +206,7 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificate do
       it 'includes self_managed when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_certificate_manager_certificate('opt', required_attrs.merge(self_managed: [{ 'key1' => 'val1' }]))
+        synth.google_certificate_manager_certificate('opt', required_attrs.merge(self_managed: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_certificate_manager_certificate', 'opt')
         expect(config).to have_key('self_managed')
@@ -226,7 +264,7 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificate do
     resource_type: :google_certificate_manager_certificate,
     method: :google_certificate_manager_certificate,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :project, :san_dnsnames, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :project, :san_dnsnames, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

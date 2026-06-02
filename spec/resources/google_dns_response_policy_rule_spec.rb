@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDnsResponsePolicyRule do
         ref = synth.google_dns_response_policy_rule('test', required_attrs)
 
         expect(ref.id).to eq("${google_dns_response_policy_rule.test.id}")
+        expect(ref.deletion_policy).to eq("${google_dns_response_policy_rule.test.deletion_policy}")
         expect(ref.project).to eq("${google_dns_response_policy_rule.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleDnsResponsePolicyRule do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dns_response_policy_rule', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ local_data: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', local_data: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,15 +66,34 @@ RSpec.describe Pangea::Resources::GoogleDnsResponsePolicyRule do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dns_response_policy_rule', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('local_data')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dns_response_policy_rule('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dns_response_policy_rule', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dns_response_policy_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dns_response_policy_rule', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes local_data when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dns_response_policy_rule('opt', required_attrs.merge(local_data: [{ 'key1' => 'val1' }]))
+        synth.google_dns_response_policy_rule('opt', required_attrs.merge(local_data: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dns_response_policy_rule', 'opt')
         expect(config).to have_key('local_data')
@@ -85,6 +106,23 @@ RSpec.describe Pangea::Resources::GoogleDnsResponsePolicyRule do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dns_response_policy_rule', 'minimal')
         expect(config).not_to have_key('local_data')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dns_response_policy_rule('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dns_response_policy_rule', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dns_response_policy_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dns_response_policy_rule', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -132,7 +170,7 @@ RSpec.describe Pangea::Resources::GoogleDnsResponsePolicyRule do
     resource_type: :google_dns_response_policy_rule,
     method: :google_dns_response_policy_rule,
     required_attrs: { dns_name: 'test-value', response_policy: 'test-value', rule_name: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

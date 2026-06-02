@@ -41,6 +41,7 @@ RSpec.describe Pangea::Resources::GoogleAssuredWorkloadsWorkload do
         expect(ref.compliance_status).to eq("${google_assured_workloads_workload.test.compliance_status}")
         expect(ref.compliant_but_disallowed_services).to eq("${google_assured_workloads_workload.test.compliant_but_disallowed_services}")
         expect(ref.create_time).to eq("${google_assured_workloads_workload.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_assured_workloads_workload.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_assured_workloads_workload.test.effective_labels}")
         expect(ref.ekm_provisioning_response).to eq("${google_assured_workloads_workload.test.ekm_provisioning_response}")
         expect(ref.kaj_enrollment_state).to eq("${google_assured_workloads_workload.test.kaj_enrollment_state}")
@@ -63,6 +64,7 @@ RSpec.describe Pangea::Resources::GoogleAssuredWorkloadsWorkload do
         expect(config).not_to have_key('compliance_status')
         expect(config).not_to have_key('compliant_but_disallowed_services')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('ekm_provisioning_response')
         expect(config).not_to have_key('kaj_enrollment_state')
@@ -75,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleAssuredWorkloadsWorkload do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ billing_account: 'test-value', enable_sovereign_controls: true, kms_settings: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, partner: 'test-value', partner_permissions: [{ 'key1' => 'val1' }], partner_services_billing_account: 'test-value', provisioned_resources_parent: 'test-value', resource_settings: [{ 'key1' => 'val1' }], workload_options: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ billing_account: 'test-value', deletion_policy: 'test-value', enable_sovereign_controls: true, kms_settings: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, partner: 'test-value', partner_permissions: { 'key1' => 'val1' }, partner_services_billing_account: 'test-value', provisioned_resources_parent: 'test-value', resource_settings: [{ 'key1' => 'val1' }], violation_notifications_enabled: true, workload_options: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -85,6 +87,7 @@ RSpec.describe Pangea::Resources::GoogleAssuredWorkloadsWorkload do
 
         config = validate_resource_structure(result, 'google_assured_workloads_workload', 'full')
         expect(config).to have_key('billing_account')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('enable_sovereign_controls')
         expect(config).to have_key('kms_settings')
         expect(config).to have_key('labels')
@@ -93,6 +96,7 @@ RSpec.describe Pangea::Resources::GoogleAssuredWorkloadsWorkload do
         expect(config).to have_key('partner_services_billing_account')
         expect(config).to have_key('provisioned_resources_parent')
         expect(config).to have_key('resource_settings')
+        expect(config).to have_key('violation_notifications_enabled')
         expect(config).to have_key('workload_options')
       end
     end
@@ -115,6 +119,23 @@ RSpec.describe Pangea::Resources::GoogleAssuredWorkloadsWorkload do
         config = validate_resource_structure(result, 'google_assured_workloads_workload', 'minimal')
         expect(config).not_to have_key('billing_account')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_assured_workloads_workload('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_assured_workloads_workload', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_assured_workloads_workload('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_assured_workloads_workload', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes enable_sovereign_controls when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -135,7 +156,7 @@ RSpec.describe Pangea::Resources::GoogleAssuredWorkloadsWorkload do
       it 'includes kms_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_assured_workloads_workload('opt', required_attrs.merge(kms_settings: [{ 'key1' => 'val1' }]))
+        synth.google_assured_workloads_workload('opt', required_attrs.merge(kms_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_assured_workloads_workload', 'opt')
         expect(config).to have_key('kms_settings')
@@ -186,7 +207,7 @@ RSpec.describe Pangea::Resources::GoogleAssuredWorkloadsWorkload do
       it 'includes partner_permissions when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_assured_workloads_workload('opt', required_attrs.merge(partner_permissions: [{ 'key1' => 'val1' }]))
+        synth.google_assured_workloads_workload('opt', required_attrs.merge(partner_permissions: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_assured_workloads_workload', 'opt')
         expect(config).to have_key('partner_permissions')
@@ -251,10 +272,27 @@ RSpec.describe Pangea::Resources::GoogleAssuredWorkloadsWorkload do
         config = validate_resource_structure(result, 'google_assured_workloads_workload', 'minimal')
         expect(config).not_to have_key('resource_settings')
       end
+      it 'includes violation_notifications_enabled when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_assured_workloads_workload('opt', required_attrs.merge(violation_notifications_enabled: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_assured_workloads_workload', 'opt')
+        expect(config).to have_key('violation_notifications_enabled')
+      end
+
+      it 'omits violation_notifications_enabled when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_assured_workloads_workload('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_assured_workloads_workload', 'minimal')
+        expect(config).not_to have_key('violation_notifications_enabled')
+      end
       it 'includes workload_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_assured_workloads_workload('opt', required_attrs.merge(workload_options: [{ 'key1' => 'val1' }]))
+        synth.google_assured_workloads_workload('opt', required_attrs.merge(workload_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_assured_workloads_workload', 'opt')
         expect(config).to have_key('workload_options')
@@ -280,6 +318,17 @@ RSpec.describe Pangea::Resources::GoogleAssuredWorkloadsWorkload do
           result = normalize_synthesis(synth.synthesis)
           config = validate_resource_structure(result, 'google_assured_workloads_workload', "bool_#{val}")
           expect(config['enable_sovereign_controls']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts violation_notifications_enabled=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(violation_notifications_enabled: val)
+          synth.google_assured_workloads_workload("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_assured_workloads_workload', "bool_#{val}")
+          expect(config['violation_notifications_enabled']).to eq(val)
         end
       end
     end
@@ -329,8 +378,8 @@ RSpec.describe Pangea::Resources::GoogleAssuredWorkloadsWorkload do
     resource_type: :google_assured_workloads_workload,
     method: :google_assured_workloads_workload,
     required_attrs: { compliance_regime: 'test-value', display_name: 'test-value', location: 'test-value', organization: 'test-value' },
-    expected_outputs: [:id, :compliance_status, :compliant_but_disallowed_services, :create_time, :effective_labels, :ekm_provisioning_response, :kaj_enrollment_state, :name, :resources, :saa_enrollment_response, :terraform_labels, :violation_notifications_enabled],
+    expected_outputs: [:id, :compliance_status, :compliant_but_disallowed_services, :create_time, :deletion_policy, :effective_labels, :ekm_provisioning_response, :kaj_enrollment_state, :name, :resources, :saa_enrollment_response, :terraform_labels, :violation_notifications_enabled],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:enable_sovereign_controls]
+    boolean_fields: [:enable_sovereign_controls, :violation_notifications_enabled]
 end

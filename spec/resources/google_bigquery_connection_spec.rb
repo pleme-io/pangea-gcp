@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryConnection do
 
         expect(ref.id).to eq("${google_bigquery_connection.test.id}")
         expect(ref.connection_id).to eq("${google_bigquery_connection.test.connection_id}")
+        expect(ref.deletion_policy).to eq("${google_bigquery_connection.test.deletion_policy}")
         expect(ref.has_credential).to eq("${google_bigquery_connection.test.has_credential}")
         expect(ref.name).to eq("${google_bigquery_connection.test.name}")
         expect(ref.project).to eq("${google_bigquery_connection.test.project}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryConnection do
 
         config = validate_resource_structure(result, 'google_bigquery_connection', 'test')
         expect(config).not_to have_key('connection_id')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('has_credential')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryConnection do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ aws: [{ 'key1' => 'val1' }], azure: [{ 'key1' => 'val1' }], cloud_resource: [{ 'key1' => 'val1' }], cloud_spanner: [{ 'key1' => 'val1' }], cloud_sql: [{ 'key1' => 'val1' }], description: 'test-value', friendly_name: 'test-value', kms_key_name: 'test-value', location: 'test-value', spark: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ aws: { 'key1' => 'val1' }, azure: { 'key1' => 'val1' }, cloud_resource: { 'key1' => 'val1' }, cloud_spanner: { 'key1' => 'val1' }, cloud_sql: { 'key1' => 'val1' }, configuration: { 'key1' => 'val1' }, connection_id: 'test-value', deletion_policy: 'test-value', description: 'test-value', friendly_name: 'test-value', kms_key_name: 'test-value', location: 'test-value', project: 'test-value', spark: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -75,10 +77,14 @@ RSpec.describe Pangea::Resources::GoogleBigqueryConnection do
         expect(config).to have_key('cloud_resource')
         expect(config).to have_key('cloud_spanner')
         expect(config).to have_key('cloud_sql')
+        expect(config).to have_key('configuration')
+        expect(config).to have_key('connection_id')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('friendly_name')
         expect(config).to have_key('kms_key_name')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
         expect(config).to have_key('spark')
       end
     end
@@ -87,7 +93,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryConnection do
       it 'includes aws when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_connection('opt', required_attrs.merge(aws: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_connection('opt', required_attrs.merge(aws: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_connection', 'opt')
         expect(config).to have_key('aws')
@@ -104,7 +110,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryConnection do
       it 'includes azure when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_connection('opt', required_attrs.merge(azure: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_connection('opt', required_attrs.merge(azure: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_connection', 'opt')
         expect(config).to have_key('azure')
@@ -121,7 +127,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryConnection do
       it 'includes cloud_resource when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_connection('opt', required_attrs.merge(cloud_resource: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_connection('opt', required_attrs.merge(cloud_resource: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_connection', 'opt')
         expect(config).to have_key('cloud_resource')
@@ -138,7 +144,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryConnection do
       it 'includes cloud_spanner when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_connection('opt', required_attrs.merge(cloud_spanner: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_connection('opt', required_attrs.merge(cloud_spanner: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_connection', 'opt')
         expect(config).to have_key('cloud_spanner')
@@ -155,7 +161,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryConnection do
       it 'includes cloud_sql when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_connection('opt', required_attrs.merge(cloud_sql: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_connection('opt', required_attrs.merge(cloud_sql: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_connection', 'opt')
         expect(config).to have_key('cloud_sql')
@@ -168,6 +174,57 @@ RSpec.describe Pangea::Resources::GoogleBigqueryConnection do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_connection', 'minimal')
         expect(config).not_to have_key('cloud_sql')
+      end
+      it 'includes configuration when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_connection('opt', required_attrs.merge(configuration: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_connection', 'opt')
+        expect(config).to have_key('configuration')
+      end
+
+      it 'omits configuration when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_connection', 'minimal')
+        expect(config).not_to have_key('configuration')
+      end
+      it 'includes connection_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_connection('opt', required_attrs.merge(connection_id: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_connection', 'opt')
+        expect(config).to have_key('connection_id')
+      end
+
+      it 'omits connection_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_connection', 'minimal')
+        expect(config).not_to have_key('connection_id')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_connection('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_connection', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_connection', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -237,10 +294,27 @@ RSpec.describe Pangea::Resources::GoogleBigqueryConnection do
         config = validate_resource_structure(result, 'google_bigquery_connection', 'minimal')
         expect(config).not_to have_key('location')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_connection('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_connection', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_connection', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes spark when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_connection('opt', required_attrs.merge(spark: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_connection('opt', required_attrs.merge(spark: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_connection', 'opt')
         expect(config).to have_key('spark')
@@ -297,7 +371,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryConnection do
     resource_type: :google_bigquery_connection,
     method: :google_bigquery_connection,
     required_attrs: {},
-    expected_outputs: [:id, :connection_id, :has_credential, :name, :project],
+    expected_outputs: [:id, :connection_id, :deletion_policy, :has_credential, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

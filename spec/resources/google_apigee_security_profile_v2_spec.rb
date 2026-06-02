@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityProfileV2 do
 
         expect(ref.id).to eq("${google_apigee_security_profile_v2.test.id}")
         expect(ref.create_time).to eq("${google_apigee_security_profile_v2.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_apigee_security_profile_v2.test.deletion_policy}")
         expect(ref.name).to eq("${google_apigee_security_profile_v2.test.name}")
         expect(ref.update_time).to eq("${google_apigee_security_profile_v2.test.update_time}")
       end
@@ -53,13 +54,14 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityProfileV2 do
 
         config = validate_resource_structure(result, 'google_apigee_security_profile_v2', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('update_time')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,11 +70,29 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityProfileV2 do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_security_profile_v2', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_security_profile_v2('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_security_profile_v2', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_security_profile_v2('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_security_profile_v2', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -136,7 +156,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityProfileV2 do
     resource_type: :google_apigee_security_profile_v2,
     method: :google_apigee_security_profile_v2,
     required_attrs: { org_id: 'test-value', profile_assessment_configs: [{ 'key1' => 'val1' }], profile_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

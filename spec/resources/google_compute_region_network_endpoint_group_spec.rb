@@ -38,6 +38,8 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpointGroup do
         ref = synth.google_compute_region_network_endpoint_group('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_region_network_endpoint_group.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_region_network_endpoint_group.test.deletion_policy}")
+        expect(ref.network).to eq("${google_compute_region_network_endpoint_group.test.network}")
         expect(ref.project).to eq("${google_compute_region_network_endpoint_group.test.project}")
         expect(ref.self_link).to eq("${google_compute_region_network_endpoint_group.test.self_link}")
       end
@@ -51,13 +53,15 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpointGroup do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_region_network_endpoint_group', 'test')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('network')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ app_engine: [{ 'key1' => 'val1' }], cloud_function: [{ 'key1' => 'val1' }], cloud_run: [{ 'key1' => 'val1' }], description: 'test-value', network: 'test-value', network_endpoint_type: 'test-value', psc_data: [{ 'key1' => 'val1' }], psc_target_service: 'test-value', subnetwork: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ app_engine: { 'key1' => 'val1' }, cloud_function: { 'key1' => 'val1' }, cloud_run: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', network: 'test-value', network_endpoint_type: 'test-value', project: 'test-value', psc_data: { 'key1' => 'val1' }, psc_target_service: 'test-value', subnetwork: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,9 +73,11 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpointGroup do
         expect(config).to have_key('app_engine')
         expect(config).to have_key('cloud_function')
         expect(config).to have_key('cloud_run')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('network')
         expect(config).to have_key('network_endpoint_type')
+        expect(config).to have_key('project')
         expect(config).to have_key('psc_data')
         expect(config).to have_key('psc_target_service')
         expect(config).to have_key('subnetwork')
@@ -82,7 +88,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpointGroup do
       it 'includes app_engine when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_network_endpoint_group('opt', required_attrs.merge(app_engine: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_network_endpoint_group('opt', required_attrs.merge(app_engine: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_network_endpoint_group', 'opt')
         expect(config).to have_key('app_engine')
@@ -99,7 +105,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpointGroup do
       it 'includes cloud_function when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_network_endpoint_group('opt', required_attrs.merge(cloud_function: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_network_endpoint_group('opt', required_attrs.merge(cloud_function: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_network_endpoint_group', 'opt')
         expect(config).to have_key('cloud_function')
@@ -116,7 +122,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpointGroup do
       it 'includes cloud_run when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_network_endpoint_group('opt', required_attrs.merge(cloud_run: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_network_endpoint_group('opt', required_attrs.merge(cloud_run: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_network_endpoint_group', 'opt')
         expect(config).to have_key('cloud_run')
@@ -129,6 +135,23 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpointGroup do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_network_endpoint_group', 'minimal')
         expect(config).not_to have_key('cloud_run')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_endpoint_group('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_endpoint_group', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_endpoint_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_endpoint_group', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -181,10 +204,27 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpointGroup do
         config = validate_resource_structure(result, 'google_compute_region_network_endpoint_group', 'minimal')
         expect(config).not_to have_key('network_endpoint_type')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_endpoint_group('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_endpoint_group', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_endpoint_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_endpoint_group', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes psc_data when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_network_endpoint_group('opt', required_attrs.merge(psc_data: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_network_endpoint_group('opt', required_attrs.merge(psc_data: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_network_endpoint_group', 'opt')
         expect(config).to have_key('psc_data')
@@ -277,7 +317,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpointGroup do
     resource_type: :google_compute_region_network_endpoint_group,
     method: :google_compute_region_network_endpoint_group,
     required_attrs: { name: 'test-value', region: 'test-value' },
-    expected_outputs: [:id, :project, :self_link],
+    expected_outputs: [:id, :deletion_policy, :network, :project, :self_link],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

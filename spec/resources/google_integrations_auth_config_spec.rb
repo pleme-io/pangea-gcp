@@ -42,6 +42,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsAuthConfig do
         expect(ref.create_time).to eq("${google_integrations_auth_config.test.create_time}")
         expect(ref.creator_email).to eq("${google_integrations_auth_config.test.creator_email}")
         expect(ref.credential_type).to eq("${google_integrations_auth_config.test.credential_type}")
+        expect(ref.deletion_policy).to eq("${google_integrations_auth_config.test.deletion_policy}")
         expect(ref.encrypted_credential).to eq("${google_integrations_auth_config.test.encrypted_credential}")
         expect(ref.last_modifier_email).to eq("${google_integrations_auth_config.test.last_modifier_email}")
         expect(ref.name).to eq("${google_integrations_auth_config.test.name}")
@@ -65,6 +66,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsAuthConfig do
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('creator_email')
         expect(config).not_to have_key('credential_type')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('encrypted_credential')
         expect(config).not_to have_key('last_modifier_email')
         expect(config).not_to have_key('name')
@@ -77,7 +79,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsAuthConfig do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ client_certificate: [{ 'key1' => 'val1' }], decrypted_credential: [{ 'key1' => 'val1' }], description: 'test-value', expiry_notification_duration: ['test-value'], override_valid_time: 'test-value', visibility: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ client_certificate: { 'key1' => 'val1' }, decrypted_credential: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', expiry_notification_duration: ['test-value'], override_valid_time: 'test-value', project: 'test-value', visibility: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -88,9 +90,11 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsAuthConfig do
         config = validate_resource_structure(result, 'google_integrations_auth_config', 'full')
         expect(config).to have_key('client_certificate')
         expect(config).to have_key('decrypted_credential')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('expiry_notification_duration')
         expect(config).to have_key('override_valid_time')
+        expect(config).to have_key('project')
         expect(config).to have_key('visibility')
       end
     end
@@ -99,7 +103,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsAuthConfig do
       it 'includes client_certificate when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_integrations_auth_config('opt', required_attrs.merge(client_certificate: [{ 'key1' => 'val1' }]))
+        synth.google_integrations_auth_config('opt', required_attrs.merge(client_certificate: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_integrations_auth_config', 'opt')
         expect(config).to have_key('client_certificate')
@@ -116,7 +120,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsAuthConfig do
       it 'includes decrypted_credential when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_integrations_auth_config('opt', required_attrs.merge(decrypted_credential: [{ 'key1' => 'val1' }]))
+        synth.google_integrations_auth_config('opt', required_attrs.merge(decrypted_credential: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_integrations_auth_config', 'opt')
         expect(config).to have_key('decrypted_credential')
@@ -129,6 +133,23 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsAuthConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_integrations_auth_config', 'minimal')
         expect(config).not_to have_key('decrypted_credential')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_integrations_auth_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_integrations_auth_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_integrations_auth_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_integrations_auth_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -180,6 +201,23 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsAuthConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_integrations_auth_config', 'minimal')
         expect(config).not_to have_key('override_valid_time')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_integrations_auth_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_integrations_auth_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_integrations_auth_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_integrations_auth_config', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes visibility when provided' do
         synth = create_synthesizer
@@ -243,7 +281,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsAuthConfig do
     resource_type: :google_integrations_auth_config,
     method: :google_integrations_auth_config,
     required_attrs: { display_name: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :certificate_id, :create_time, :creator_email, :credential_type, :encrypted_credential, :last_modifier_email, :name, :project, :reason, :state, :update_time, :valid_time],
+    expected_outputs: [:id, :certificate_id, :create_time, :creator_email, :credential_type, :deletion_policy, :encrypted_credential, :last_modifier_email, :name, :project, :reason, :state, :update_time, :valid_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

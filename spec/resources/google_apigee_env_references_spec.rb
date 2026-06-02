@@ -38,11 +38,24 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvReferences do
         ref = synth.google_apigee_env_references('test', required_attrs)
 
         expect(ref.id).to eq("${google_apigee_env_references.test.id}")
+        expect(ref.deletion_policy).to eq("${google_apigee_env_references.test.deletion_policy}")
+      end
+    end
+
+    context 'computed-only attributes' do
+      it 'excludes computed-only attributes from the resource block' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_env_references('test', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_apigee_env_references', 'test')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -51,11 +64,29 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvReferences do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_env_references', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_env_references('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_env_references', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_env_references('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_env_references', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -120,7 +151,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvReferences do
     resource_type: :google_apigee_env_references,
     method: :google_apigee_env_references,
     required_attrs: { env_id: 'test-value', name: 'test-value', refers: 'test-value', resource_type: 'test-value' },
-    expected_outputs: [:id],
+    expected_outputs: [:id, :deletion_policy],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

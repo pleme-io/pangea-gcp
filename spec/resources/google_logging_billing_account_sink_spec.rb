@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingBillingAccountSink do
         ref = synth.google_logging_billing_account_sink('test', required_attrs)
 
         expect(ref.id).to eq("${google_logging_billing_account_sink.test.id}")
+        expect(ref.deletion_policy).to eq("${google_logging_billing_account_sink.test.deletion_policy}")
         expect(ref.writer_identity).to eq("${google_logging_billing_account_sink.test.writer_identity}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleLoggingBillingAccountSink do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_logging_billing_account_sink', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('writer_identity')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ bigquery_options: [{ 'key1' => 'val1' }], description: 'test-value', disabled: true, exclusions: [{ 'key1' => 'val1' }], filter: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ bigquery_options: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', disabled: true, exclusions: [{ 'key1' => 'val1' }], filter: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -65,6 +67,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingBillingAccountSink do
 
         config = validate_resource_structure(result, 'google_logging_billing_account_sink', 'full')
         expect(config).to have_key('bigquery_options')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('disabled')
         expect(config).to have_key('exclusions')
@@ -76,7 +79,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingBillingAccountSink do
       it 'includes bigquery_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_logging_billing_account_sink('opt', required_attrs.merge(bigquery_options: [{ 'key1' => 'val1' }]))
+        synth.google_logging_billing_account_sink('opt', required_attrs.merge(bigquery_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_logging_billing_account_sink', 'opt')
         expect(config).to have_key('bigquery_options')
@@ -89,6 +92,23 @@ RSpec.describe Pangea::Resources::GoogleLoggingBillingAccountSink do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_logging_billing_account_sink', 'minimal')
         expect(config).not_to have_key('bigquery_options')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_billing_account_sink('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_billing_account_sink', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_billing_account_sink('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_billing_account_sink', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -218,7 +238,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingBillingAccountSink do
     resource_type: :google_logging_billing_account_sink,
     method: :google_logging_billing_account_sink,
     required_attrs: { billing_account: 'test-value', destination: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :writer_identity],
+    expected_outputs: [:id, :deletion_policy, :writer_identity],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disabled]

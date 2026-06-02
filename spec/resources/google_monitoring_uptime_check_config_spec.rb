@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringUptimeCheckConfig do
 
         expect(ref.id).to eq("${google_monitoring_uptime_check_config.test.id}")
         expect(ref.checker_type).to eq("${google_monitoring_uptime_check_config.test.checker_type}")
+        expect(ref.deletion_policy).to eq("${google_monitoring_uptime_check_config.test.deletion_policy}")
         expect(ref.name).to eq("${google_monitoring_uptime_check_config.test.name}")
         expect(ref.project).to eq("${google_monitoring_uptime_check_config.test.project}")
         expect(ref.uptime_check_id).to eq("${google_monitoring_uptime_check_config.test.uptime_check_id}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringUptimeCheckConfig do
 
         config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'test')
         expect(config).not_to have_key('checker_type')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('uptime_check_id')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringUptimeCheckConfig do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ content_matchers: [{ 'key1' => 'val1' }], http_check: [{ 'key1' => 'val1' }], log_check_failures: true, monitored_resource: [{ 'key1' => 'val1' }], period: 'test-value', resource_group: [{ 'key1' => 'val1' }], selected_regions: ['test-value'], synthetic_monitor: [{ 'key1' => 'val1' }], tcp_check: [{ 'key1' => 'val1' }], user_labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ checker_type: 'test-value', content_matchers: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', http_check: { 'key1' => 'val1' }, log_check_failures: true, monitored_resource: { 'key1' => 'val1' }, period: 'test-value', project: 'test-value', resource_group: { 'key1' => 'val1' }, selected_regions: ['test-value'], synthetic_monitor: { 'key1' => 'val1' }, tcp_check: { 'key1' => 'val1' }, user_labels: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,11 +72,14 @@ RSpec.describe Pangea::Resources::GoogleMonitoringUptimeCheckConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'full')
+        expect(config).to have_key('checker_type')
         expect(config).to have_key('content_matchers')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('http_check')
         expect(config).to have_key('log_check_failures')
         expect(config).to have_key('monitored_resource')
         expect(config).to have_key('period')
+        expect(config).to have_key('project')
         expect(config).to have_key('resource_group')
         expect(config).to have_key('selected_regions')
         expect(config).to have_key('synthetic_monitor')
@@ -84,6 +89,23 @@ RSpec.describe Pangea::Resources::GoogleMonitoringUptimeCheckConfig do
     end
 
     context 'optional attributes' do
+      it 'includes checker_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_uptime_check_config('opt', required_attrs.merge(checker_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'opt')
+        expect(config).to have_key('checker_type')
+      end
+
+      it 'omits checker_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_uptime_check_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'minimal')
+        expect(config).not_to have_key('checker_type')
+      end
       it 'includes content_matchers when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -101,10 +123,27 @@ RSpec.describe Pangea::Resources::GoogleMonitoringUptimeCheckConfig do
         config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'minimal')
         expect(config).not_to have_key('content_matchers')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_uptime_check_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_uptime_check_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes http_check when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_monitoring_uptime_check_config('opt', required_attrs.merge(http_check: [{ 'key1' => 'val1' }]))
+        synth.google_monitoring_uptime_check_config('opt', required_attrs.merge(http_check: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'opt')
         expect(config).to have_key('http_check')
@@ -138,7 +177,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringUptimeCheckConfig do
       it 'includes monitored_resource when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_monitoring_uptime_check_config('opt', required_attrs.merge(monitored_resource: [{ 'key1' => 'val1' }]))
+        synth.google_monitoring_uptime_check_config('opt', required_attrs.merge(monitored_resource: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'opt')
         expect(config).to have_key('monitored_resource')
@@ -169,10 +208,27 @@ RSpec.describe Pangea::Resources::GoogleMonitoringUptimeCheckConfig do
         config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'minimal')
         expect(config).not_to have_key('period')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_uptime_check_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_uptime_check_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes resource_group when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_monitoring_uptime_check_config('opt', required_attrs.merge(resource_group: [{ 'key1' => 'val1' }]))
+        synth.google_monitoring_uptime_check_config('opt', required_attrs.merge(resource_group: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'opt')
         expect(config).to have_key('resource_group')
@@ -206,7 +262,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringUptimeCheckConfig do
       it 'includes synthetic_monitor when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_monitoring_uptime_check_config('opt', required_attrs.merge(synthetic_monitor: [{ 'key1' => 'val1' }]))
+        synth.google_monitoring_uptime_check_config('opt', required_attrs.merge(synthetic_monitor: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'opt')
         expect(config).to have_key('synthetic_monitor')
@@ -223,7 +279,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringUptimeCheckConfig do
       it 'includes tcp_check when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_monitoring_uptime_check_config('opt', required_attrs.merge(tcp_check: [{ 'key1' => 'val1' }]))
+        synth.google_monitoring_uptime_check_config('opt', required_attrs.merge(tcp_check: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_monitoring_uptime_check_config', 'opt')
         expect(config).to have_key('tcp_check')
@@ -313,7 +369,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringUptimeCheckConfig do
     resource_type: :google_monitoring_uptime_check_config,
     method: :google_monitoring_uptime_check_config,
     required_attrs: { display_name: 'test-value', timeout: 'test-value' },
-    expected_outputs: [:id, :checker_type, :name, :project, :uptime_check_id],
+    expected_outputs: [:id, :checker_type, :deletion_policy, :name, :project, :uptime_check_id],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:log_check_failures]

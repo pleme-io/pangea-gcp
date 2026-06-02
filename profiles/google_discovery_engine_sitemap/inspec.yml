@@ -1,0 +1,8 @@
+name: google_discovery_engine_sitemap
+title: Manages a google_discovery_engine_sitemap resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

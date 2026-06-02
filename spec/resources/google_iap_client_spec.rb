@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleIapClient do
 
         expect(ref.id).to eq("${google_iap_client.test.id}")
         expect(ref.client_id).to eq("${google_iap_client.test.client_id}")
+        expect(ref.deletion_policy).to eq("${google_iap_client.test.deletion_policy}")
         expect(ref.secret).to eq("${google_iap_client.test.secret}")
       end
     end
@@ -52,7 +53,42 @@ RSpec.describe Pangea::Resources::GoogleIapClient do
 
         config = validate_resource_structure(result, 'google_iap_client', 'test')
         expect(config).not_to have_key('client_id')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('secret')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iap_client('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_iap_client', 'full')
+        expect(config).to have_key('deletion_policy')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iap_client('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iap_client', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iap_client('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iap_client', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -106,7 +142,7 @@ RSpec.describe Pangea::Resources::GoogleIapClient do
     resource_type: :google_iap_client,
     method: :google_iap_client,
     required_attrs: { brand: 'test-value', display_name: 'test-value' },
-    expected_outputs: [:id, :client_id, :secret],
+    expected_outputs: [:id, :client_id, :deletion_policy, :secret],
     sensitive_fields: [:secret],
     immutable_fields: [],
     boolean_fields: []

@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableGcPolicy do
         ref = synth.google_bigtable_gc_policy('test', required_attrs)
 
         expect(ref.id).to eq("${google_bigtable_gc_policy.test.id}")
+        expect(ref.deletion_policy).to eq("${google_bigtable_gc_policy.test.deletion_policy}")
         expect(ref.project).to eq("${google_bigtable_gc_policy.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleBigtableGcPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigtable_gc_policy', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', gc_rules: 'test-value', ignore_warnings: true, max_age: [{ 'key1' => 'val1' }], max_version: [{ 'key1' => 'val1' }], mode: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', gc_rules: 'test-value', ignore_warnings: true, max_age: { 'key1' => 'val1' }, max_version: [{ 'key1' => 'val1' }], mode: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,6 +72,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableGcPolicy do
         expect(config).to have_key('max_age')
         expect(config).to have_key('max_version')
         expect(config).to have_key('mode')
+        expect(config).to have_key('project')
       end
     end
 
@@ -128,7 +131,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableGcPolicy do
       it 'includes max_age when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigtable_gc_policy('opt', required_attrs.merge(max_age: [{ 'key1' => 'val1' }]))
+        synth.google_bigtable_gc_policy('opt', required_attrs.merge(max_age: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigtable_gc_policy', 'opt')
         expect(config).to have_key('max_age')
@@ -175,6 +178,23 @@ RSpec.describe Pangea::Resources::GoogleBigtableGcPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigtable_gc_policy', 'minimal')
         expect(config).not_to have_key('mode')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_gc_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_gc_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_gc_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_gc_policy', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -236,7 +256,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableGcPolicy do
     resource_type: :google_bigtable_gc_policy,
     method: :google_bigtable_gc_policy,
     required_attrs: { column_family: 'test-value', instance_name: 'test-value', table: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:ignore_warnings]

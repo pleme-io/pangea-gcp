@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleCloudIdentityGroupMembership do
 
         expect(ref.id).to eq("${google_cloud_identity_group_membership.test.id}")
         expect(ref.create_time).to eq("${google_cloud_identity_group_membership.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_cloud_identity_group_membership.test.deletion_policy}")
         expect(ref.name).to eq("${google_cloud_identity_group_membership.test.name}")
         expect(ref.type).to eq("${google_cloud_identity_group_membership.test.type}")
         expect(ref.update_time).to eq("${google_cloud_identity_group_membership.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleCloudIdentityGroupMembership do
 
         config = validate_resource_structure(result, 'google_cloud_identity_group_membership', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('type')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleCloudIdentityGroupMembership do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ create_ignore_already_exists: true, preferred_member_key: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ create_ignore_already_exists: true, deletion_policy: 'test-value', preferred_member_key: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,6 +73,7 @@ RSpec.describe Pangea::Resources::GoogleCloudIdentityGroupMembership do
 
         config = validate_resource_structure(result, 'google_cloud_identity_group_membership', 'full')
         expect(config).to have_key('create_ignore_already_exists')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('preferred_member_key')
       end
     end
@@ -93,10 +96,27 @@ RSpec.describe Pangea::Resources::GoogleCloudIdentityGroupMembership do
         config = validate_resource_structure(result, 'google_cloud_identity_group_membership', 'minimal')
         expect(config).not_to have_key('create_ignore_already_exists')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_identity_group_membership('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_identity_group_membership', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_identity_group_membership('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_identity_group_membership', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes preferred_member_key when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_identity_group_membership('opt', required_attrs.merge(preferred_member_key: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_identity_group_membership('opt', required_attrs.merge(preferred_member_key: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_identity_group_membership', 'opt')
         expect(config).to have_key('preferred_member_key')
@@ -169,7 +189,7 @@ RSpec.describe Pangea::Resources::GoogleCloudIdentityGroupMembership do
     resource_type: :google_cloud_identity_group_membership,
     method: :google_cloud_identity_group_membership,
     required_attrs: { group: 'test-value', roles: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :name, :type, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :type, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:create_ignore_already_exists]

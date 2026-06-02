@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvironment do
 
         expect(ref.id).to eq("${google_apigee_environment.test.id}")
         expect(ref.api_proxy_type).to eq("${google_apigee_environment.test.api_proxy_type}")
+        expect(ref.deletion_policy).to eq("${google_apigee_environment.test.deletion_policy}")
         expect(ref.deployment_type).to eq("${google_apigee_environment.test.deployment_type}")
         expect(ref.type).to eq("${google_apigee_environment.test.type}")
       end
@@ -53,13 +54,14 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvironment do
 
         config = validate_resource_structure(result, 'google_apigee_environment', 'test')
         expect(config).not_to have_key('api_proxy_type')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('deployment_type')
         expect(config).not_to have_key('type')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ client_ip_resolution_config: [{ 'key1' => 'val1' }], description: 'test-value', display_name: 'test-value', forward_proxy_uri: 'test-value', node_config: [{ 'key1' => 'val1' }], properties: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ api_proxy_type: 'test-value', client_ip_resolution_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', deployment_type: 'test-value', description: 'test-value', display_name: 'test-value', forward_proxy_uri: 'test-value', node_config: { 'key1' => 'val1' }, properties: { 'key1' => 'val1' }, type: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,20 +70,41 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvironment do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_environment', 'full')
+        expect(config).to have_key('api_proxy_type')
         expect(config).to have_key('client_ip_resolution_config')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('deployment_type')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
         expect(config).to have_key('forward_proxy_uri')
         expect(config).to have_key('node_config')
         expect(config).to have_key('properties')
+        expect(config).to have_key('type')
       end
     end
 
     context 'optional attributes' do
+      it 'includes api_proxy_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_environment('opt', required_attrs.merge(api_proxy_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_environment', 'opt')
+        expect(config).to have_key('api_proxy_type')
+      end
+
+      it 'omits api_proxy_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_environment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_environment', 'minimal')
+        expect(config).not_to have_key('api_proxy_type')
+      end
       it 'includes client_ip_resolution_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_environment('opt', required_attrs.merge(client_ip_resolution_config: [{ 'key1' => 'val1' }]))
+        synth.google_apigee_environment('opt', required_attrs.merge(client_ip_resolution_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_environment', 'opt')
         expect(config).to have_key('client_ip_resolution_config')
@@ -94,6 +117,40 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvironment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_environment', 'minimal')
         expect(config).not_to have_key('client_ip_resolution_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_environment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_environment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_environment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_environment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes deployment_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_environment('opt', required_attrs.merge(deployment_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_environment', 'opt')
+        expect(config).to have_key('deployment_type')
+      end
+
+      it 'omits deployment_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_environment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_environment', 'minimal')
+        expect(config).not_to have_key('deployment_type')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -149,7 +206,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvironment do
       it 'includes node_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_environment('opt', required_attrs.merge(node_config: [{ 'key1' => 'val1' }]))
+        synth.google_apigee_environment('opt', required_attrs.merge(node_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_environment', 'opt')
         expect(config).to have_key('node_config')
@@ -166,7 +223,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvironment do
       it 'includes properties when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_environment('opt', required_attrs.merge(properties: [{ 'key1' => 'val1' }]))
+        synth.google_apigee_environment('opt', required_attrs.merge(properties: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_environment', 'opt')
         expect(config).to have_key('properties')
@@ -179,6 +236,23 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvironment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_environment', 'minimal')
         expect(config).not_to have_key('properties')
+      end
+      it 'includes type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_environment('opt', required_attrs.merge(type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_environment', 'opt')
+        expect(config).to have_key('type')
+      end
+
+      it 'omits type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_environment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_environment', 'minimal')
+        expect(config).not_to have_key('type')
       end
     end
 
@@ -225,7 +299,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvironment do
     resource_type: :google_apigee_environment,
     method: :google_apigee_environment,
     required_attrs: { name: 'test-value', org_id: 'test-value' },
-    expected_outputs: [:id, :api_proxy_type, :deployment_type, :type],
+    expected_outputs: [:id, :api_proxy_type, :deletion_policy, :deployment_type, :type],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

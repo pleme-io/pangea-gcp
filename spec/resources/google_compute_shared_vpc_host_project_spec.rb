@@ -38,6 +38,53 @@ RSpec.describe Pangea::Resources::GoogleComputeSharedVpcHostProject do
         ref = synth.google_compute_shared_vpc_host_project('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_shared_vpc_host_project.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_shared_vpc_host_project.test.deletion_policy}")
+      end
+    end
+
+    context 'computed-only attributes' do
+      it 'excludes computed-only attributes from the resource block' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_shared_vpc_host_project('test', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_compute_shared_vpc_host_project', 'test')
+        expect(config).not_to have_key('deletion_policy')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_shared_vpc_host_project('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_compute_shared_vpc_host_project', 'full')
+        expect(config).to have_key('deletion_policy')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_shared_vpc_host_project('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_shared_vpc_host_project', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_shared_vpc_host_project('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_shared_vpc_host_project', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -83,7 +130,7 @@ RSpec.describe Pangea::Resources::GoogleComputeSharedVpcHostProject do
     resource_type: :google_compute_shared_vpc_host_project,
     method: :google_compute_shared_vpc_host_project,
     required_attrs: { project: 'test-value' },
-    expected_outputs: [:id],
+    expected_outputs: [:id, :deletion_policy],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

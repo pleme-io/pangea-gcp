@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstantSnapshot do
 
         expect(ref.id).to eq("${google_compute_instant_snapshot.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_instant_snapshot.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_instant_snapshot.test.deletion_policy}")
         expect(ref.disk_size_gb).to eq("${google_compute_instant_snapshot.test.disk_size_gb}")
         expect(ref.effective_labels).to eq("${google_compute_instant_snapshot.test.effective_labels}")
         expect(ref.label_fingerprint).to eq("${google_compute_instant_snapshot.test.label_fingerprint}")
@@ -59,6 +60,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstantSnapshot do
 
         config = validate_resource_structure(result, 'google_compute_instant_snapshot', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('disk_size_gb')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('label_fingerprint')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstantSnapshot do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, params: { 'key1' => 'val1' }, project: 'test-value', zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -80,12 +82,33 @@ RSpec.describe Pangea::Resources::GoogleComputeInstantSnapshot do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_instant_snapshot', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('params')
+        expect(config).to have_key('project')
+        expect(config).to have_key('zone')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instant_snapshot('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instant_snapshot', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instant_snapshot('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instant_snapshot', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -119,6 +142,57 @@ RSpec.describe Pangea::Resources::GoogleComputeInstantSnapshot do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instant_snapshot', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes params when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instant_snapshot('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instant_snapshot', 'opt')
+        expect(config).to have_key('params')
+      end
+
+      it 'omits params when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instant_snapshot('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instant_snapshot', 'minimal')
+        expect(config).not_to have_key('params')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instant_snapshot('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instant_snapshot', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instant_snapshot('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instant_snapshot', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instant_snapshot('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instant_snapshot', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instant_snapshot('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instant_snapshot', 'minimal')
+        expect(config).not_to have_key('zone')
       end
     end
 
@@ -165,7 +239,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstantSnapshot do
     resource_type: :google_compute_instant_snapshot,
     method: :google_compute_instant_snapshot,
     required_attrs: { name: 'test-value', source_disk: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :disk_size_gb, :effective_labels, :label_fingerprint, :project, :self_link, :source_disk_id, :terraform_labels, :zone],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :disk_size_gb, :effective_labels, :label_fingerprint, :project, :self_link, :source_disk_id, :terraform_labels, :zone],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

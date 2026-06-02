@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleSccFolderNotificationConfig do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { config_id: 'test-value', folder: 'test-value', pubsub_topic: 'test-value', streaming_config: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { config_id: 'test-value', folder: 'test-value', pubsub_topic: 'test-value', streaming_config: { 'key1' => 'val1' } } }
 
   describe ':google_scc_folder_notification_config' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleSccFolderNotificationConfig do
         ref = synth.google_scc_folder_notification_config('test', required_attrs)
 
         expect(ref.id).to eq("${google_scc_folder_notification_config.test.id}")
+        expect(ref.deletion_policy).to eq("${google_scc_folder_notification_config.test.deletion_policy}")
         expect(ref.name).to eq("${google_scc_folder_notification_config.test.name}")
         expect(ref.service_account).to eq("${google_scc_folder_notification_config.test.service_account}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleSccFolderNotificationConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_scc_folder_notification_config', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('service_account')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,11 +68,29 @@ RSpec.describe Pangea::Resources::GoogleSccFolderNotificationConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_scc_folder_notification_config', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_scc_folder_notification_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_scc_folder_notification_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_scc_folder_notification_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_scc_folder_notification_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -101,7 +121,7 @@ RSpec.describe Pangea::Resources::GoogleSccFolderNotificationConfig do
         expect(config['config_id']).to be_a(String)
         expect(config['folder']).to be_a(String)
         expect(config['pubsub_topic']).to be_a(String)
-        expect(config['streaming_config']).to be_a(Array)
+        expect(config['streaming_config']).to be_a(Hash)
       end
     end
 
@@ -134,8 +154,8 @@ RSpec.describe Pangea::Resources::GoogleSccFolderNotificationConfig do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_scc_folder_notification_config,
     method: :google_scc_folder_notification_config,
-    required_attrs: { config_id: 'test-value', folder: 'test-value', pubsub_topic: 'test-value', streaming_config: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :name, :service_account],
+    required_attrs: { config_id: 'test-value', folder: 'test-value', pubsub_topic: 'test-value', streaming_config: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :deletion_policy, :name, :service_account],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

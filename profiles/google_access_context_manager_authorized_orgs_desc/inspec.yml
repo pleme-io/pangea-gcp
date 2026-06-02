@@ -1,0 +1,8 @@
+name: google_access_context_manager_authorized_orgs_desc
+title: Manages a google_access_context_manager_authorized_orgs_desc resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxWebhook do
         ref = synth.google_dialogflow_cx_webhook('test', required_attrs)
 
         expect(ref.id).to eq("${google_dialogflow_cx_webhook.test.id}")
+        expect(ref.deletion_policy).to eq("${google_dialogflow_cx_webhook.test.deletion_policy}")
         expect(ref.name).to eq("${google_dialogflow_cx_webhook.test.name}")
         expect(ref.start_flow).to eq("${google_dialogflow_cx_webhook.test.start_flow}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxWebhook do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_webhook', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('start_flow')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ disabled: true, enable_spell_correction: true, enable_stackdriver_logging: true, generic_web_service: [{ 'key1' => 'val1' }], parent: 'test-value', security_settings: 'test-value', service_directory: [{ 'key1' => 'val1' }], timeout: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', disabled: true, enable_spell_correction: true, enable_stackdriver_logging: true, generic_web_service: { 'key1' => 'val1' }, parent: 'test-value', security_settings: 'test-value', service_directory: { 'key1' => 'val1' }, timeout: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,6 +68,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxWebhook do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_webhook', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('disabled')
         expect(config).to have_key('enable_spell_correction')
         expect(config).to have_key('enable_stackdriver_logging')
@@ -78,6 +81,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxWebhook do
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_webhook('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_webhook', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_webhook('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_webhook', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes disabled when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -132,7 +152,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxWebhook do
       it 'includes generic_web_service when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_webhook('opt', required_attrs.merge(generic_web_service: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_webhook('opt', required_attrs.merge(generic_web_service: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_webhook', 'opt')
         expect(config).to have_key('generic_web_service')
@@ -183,7 +203,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxWebhook do
       it 'includes service_directory when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_webhook('opt', required_attrs.merge(service_directory: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_webhook('opt', required_attrs.merge(service_directory: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_webhook', 'opt')
         expect(config).to have_key('service_directory')
@@ -294,7 +314,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxWebhook do
     resource_type: :google_dialogflow_cx_webhook,
     method: :google_dialogflow_cx_webhook,
     required_attrs: { display_name: 'test-value' },
-    expected_outputs: [:id, :name, :start_flow],
+    expected_outputs: [:id, :deletion_policy, :name, :start_flow],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disabled, :enable_spell_correction, :enable_stackdriver_logging]

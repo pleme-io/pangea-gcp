@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryRoutine do
 
         expect(ref.id).to eq("${google_bigquery_routine.test.id}")
         expect(ref.creation_time).to eq("${google_bigquery_routine.test.creation_time}")
+        expect(ref.deletion_policy).to eq("${google_bigquery_routine.test.deletion_policy}")
         expect(ref.last_modified_time).to eq("${google_bigquery_routine.test.last_modified_time}")
         expect(ref.project).to eq("${google_bigquery_routine.test.project}")
       end
@@ -53,13 +54,14 @@ RSpec.describe Pangea::Resources::GoogleBigqueryRoutine do
 
         config = validate_resource_structure(result, 'google_bigquery_routine', 'test')
         expect(config).not_to have_key('creation_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('last_modified_time')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ arguments: [{ 'key1' => 'val1' }], data_governance_type: 'test-value', description: 'test-value', determinism_level: 'test-value', imported_libraries: ['test-value'], language: 'test-value', remote_function_options: [{ 'key1' => 'val1' }], return_table_type: 'test-value', return_type: 'test-value', security_mode: 'test-value', spark_options: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ arguments: [{ 'key1' => 'val1' }], data_governance_type: 'test-value', deletion_policy: 'test-value', description: 'test-value', determinism_level: 'test-value', imported_libraries: ['test-value'], language: 'test-value', project: 'test-value', remote_function_options: { 'key1' => 'val1' }, return_table_type: 'test-value', return_type: 'test-value', security_mode: 'test-value', spark_options: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,10 +72,12 @@ RSpec.describe Pangea::Resources::GoogleBigqueryRoutine do
         config = validate_resource_structure(result, 'google_bigquery_routine', 'full')
         expect(config).to have_key('arguments')
         expect(config).to have_key('data_governance_type')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('determinism_level')
         expect(config).to have_key('imported_libraries')
         expect(config).to have_key('language')
+        expect(config).to have_key('project')
         expect(config).to have_key('remote_function_options')
         expect(config).to have_key('return_table_type')
         expect(config).to have_key('return_type')
@@ -116,6 +120,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryRoutine do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_routine', 'minimal')
         expect(config).not_to have_key('data_governance_type')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_routine('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_routine', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_routine('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_routine', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -185,10 +206,27 @@ RSpec.describe Pangea::Resources::GoogleBigqueryRoutine do
         config = validate_resource_structure(result, 'google_bigquery_routine', 'minimal')
         expect(config).not_to have_key('language')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_routine('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_routine', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_routine('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_routine', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes remote_function_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_routine('opt', required_attrs.merge(remote_function_options: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_routine('opt', required_attrs.merge(remote_function_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_routine', 'opt')
         expect(config).to have_key('remote_function_options')
@@ -256,7 +294,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryRoutine do
       it 'includes spark_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_routine('opt', required_attrs.merge(spark_options: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_routine('opt', required_attrs.merge(spark_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_routine', 'opt')
         expect(config).to have_key('spark_options')
@@ -317,7 +355,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryRoutine do
     resource_type: :google_bigquery_routine,
     method: :google_bigquery_routine,
     required_attrs: { dataset_id: 'test-value', definition_body: 'test-value', routine_id: 'test-value', routine_type: 'test-value' },
-    expected_outputs: [:id, :creation_time, :last_modified_time, :project],
+    expected_outputs: [:id, :creation_time, :deletion_policy, :last_modified_time, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleComputeStoragePool do
         expect(ref.id).to eq("${google_compute_storage_pool.test.id}")
         expect(ref.capacity_provisioning_type).to eq("${google_compute_storage_pool.test.capacity_provisioning_type}")
         expect(ref.creation_timestamp).to eq("${google_compute_storage_pool.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_storage_pool.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_compute_storage_pool.test.effective_labels}")
         expect(ref.kind).to eq("${google_compute_storage_pool.test.kind}")
         expect(ref.label_fingerprint).to eq("${google_compute_storage_pool.test.label_fingerprint}")
@@ -62,6 +63,7 @@ RSpec.describe Pangea::Resources::GoogleComputeStoragePool do
         config = validate_resource_structure(result, 'google_compute_storage_pool', 'test')
         expect(config).not_to have_key('capacity_provisioning_type')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('kind')
         expect(config).not_to have_key('label_fingerprint')
@@ -75,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleComputeStoragePool do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deletion_protection: true, description: 'test-value', labels: { 'key1' => 'val1' }, pool_provisioned_iops: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ capacity_provisioning_type: 'test-value', deletion_policy: 'test-value', deletion_protection: true, description: 'test-value', labels: { 'key1' => 'val1' }, params: { 'key1' => 'val1' }, performance_provisioning_type: 'test-value', pool_provisioned_iops: 'test-value', project: 'test-value', zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -84,14 +86,54 @@ RSpec.describe Pangea::Resources::GoogleComputeStoragePool do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_storage_pool', 'full')
+        expect(config).to have_key('capacity_provisioning_type')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('params')
+        expect(config).to have_key('performance_provisioning_type')
         expect(config).to have_key('pool_provisioned_iops')
+        expect(config).to have_key('project')
+        expect(config).to have_key('zone')
       end
     end
 
     context 'optional attributes' do
+      it 'includes capacity_provisioning_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_storage_pool('opt', required_attrs.merge(capacity_provisioning_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_storage_pool', 'opt')
+        expect(config).to have_key('capacity_provisioning_type')
+      end
+
+      it 'omits capacity_provisioning_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_storage_pool', 'minimal')
+        expect(config).not_to have_key('capacity_provisioning_type')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_storage_pool('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_storage_pool', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_storage_pool', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -143,6 +185,40 @@ RSpec.describe Pangea::Resources::GoogleComputeStoragePool do
         config = validate_resource_structure(result, 'google_compute_storage_pool', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes params when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_storage_pool('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_storage_pool', 'opt')
+        expect(config).to have_key('params')
+      end
+
+      it 'omits params when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_storage_pool', 'minimal')
+        expect(config).not_to have_key('params')
+      end
+      it 'includes performance_provisioning_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_storage_pool('opt', required_attrs.merge(performance_provisioning_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_storage_pool', 'opt')
+        expect(config).to have_key('performance_provisioning_type')
+      end
+
+      it 'omits performance_provisioning_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_storage_pool', 'minimal')
+        expect(config).not_to have_key('performance_provisioning_type')
+      end
       it 'includes pool_provisioned_iops when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -159,6 +235,40 @@ RSpec.describe Pangea::Resources::GoogleComputeStoragePool do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_storage_pool', 'minimal')
         expect(config).not_to have_key('pool_provisioned_iops')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_storage_pool('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_storage_pool', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_storage_pool', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_storage_pool('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_storage_pool', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_storage_pool', 'minimal')
+        expect(config).not_to have_key('zone')
       end
     end
 
@@ -221,7 +331,7 @@ RSpec.describe Pangea::Resources::GoogleComputeStoragePool do
     resource_type: :google_compute_storage_pool,
     method: :google_compute_storage_pool,
     required_attrs: { name: 'test-value', pool_provisioned_capacity_gb: 'test-value', pool_provisioned_throughput: 'test-value', storage_pool_type: 'test-value' },
-    expected_outputs: [:id, :capacity_provisioning_type, :creation_timestamp, :effective_labels, :kind, :label_fingerprint, :performance_provisioning_type, :project, :resource_status, :status, :terraform_labels, :zone],
+    expected_outputs: [:id, :capacity_provisioning_type, :creation_timestamp, :deletion_policy, :effective_labels, :kind, :label_fingerprint, :performance_provisioning_type, :project, :resource_status, :status, :terraform_labels, :zone],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection]

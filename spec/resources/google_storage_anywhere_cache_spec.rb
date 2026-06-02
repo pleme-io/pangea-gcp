@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleStorageAnywhereCache do
         expect(ref.id).to eq("${google_storage_anywhere_cache.test.id}")
         expect(ref.anywhere_cache_id).to eq("${google_storage_anywhere_cache.test.anywhere_cache_id}")
         expect(ref.create_time).to eq("${google_storage_anywhere_cache.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_storage_anywhere_cache.test.deletion_policy}")
         expect(ref.pending_update).to eq("${google_storage_anywhere_cache.test.pending_update}")
         expect(ref.state).to eq("${google_storage_anywhere_cache.test.state}")
         expect(ref.update_time).to eq("${google_storage_anywhere_cache.test.update_time}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleStorageAnywhereCache do
         config = validate_resource_structure(result, 'google_storage_anywhere_cache', 'test')
         expect(config).not_to have_key('anywhere_cache_id')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('pending_update')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('update_time')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleStorageAnywhereCache do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ admission_policy: 'test-value', ttl: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ admission_policy: 'test-value', deletion_policy: 'test-value', ingest_on_write: true, ttl: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,6 +75,8 @@ RSpec.describe Pangea::Resources::GoogleStorageAnywhereCache do
 
         config = validate_resource_structure(result, 'google_storage_anywhere_cache', 'full')
         expect(config).to have_key('admission_policy')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('ingest_on_write')
         expect(config).to have_key('ttl')
       end
     end
@@ -95,6 +99,40 @@ RSpec.describe Pangea::Resources::GoogleStorageAnywhereCache do
         config = validate_resource_structure(result, 'google_storage_anywhere_cache', 'minimal')
         expect(config).not_to have_key('admission_policy')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_anywhere_cache('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_anywhere_cache', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_anywhere_cache('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_anywhere_cache', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes ingest_on_write when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_anywhere_cache('opt', required_attrs.merge(ingest_on_write: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_anywhere_cache', 'opt')
+        expect(config).to have_key('ingest_on_write')
+      end
+
+      it 'omits ingest_on_write when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_anywhere_cache('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_anywhere_cache', 'minimal')
+        expect(config).not_to have_key('ingest_on_write')
+      end
       it 'includes ttl when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -111,6 +149,20 @@ RSpec.describe Pangea::Resources::GoogleStorageAnywhereCache do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_anywhere_cache', 'minimal')
         expect(config).not_to have_key('ttl')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts ingest_on_write=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(ingest_on_write: val)
+          synth.google_storage_anywhere_cache("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_storage_anywhere_cache', "bool_#{val}")
+          expect(config['ingest_on_write']).to eq(val)
+        end
       end
     end
 
@@ -157,8 +209,8 @@ RSpec.describe Pangea::Resources::GoogleStorageAnywhereCache do
     resource_type: :google_storage_anywhere_cache,
     method: :google_storage_anywhere_cache,
     required_attrs: { bucket: 'test-value', zone: 'test-value' },
-    expected_outputs: [:id, :anywhere_cache_id, :create_time, :pending_update, :state, :update_time],
+    expected_outputs: [:id, :anywhere_cache_id, :create_time, :deletion_policy, :pending_update, :state, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:ingest_on_write]
 end

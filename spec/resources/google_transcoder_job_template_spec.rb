@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleTranscoderJobTemplate do
         ref = synth.google_transcoder_job_template('test', required_attrs)
 
         expect(ref.id).to eq("${google_transcoder_job_template.test.id}")
+        expect(ref.deletion_policy).to eq("${google_transcoder_job_template.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_transcoder_job_template.test.effective_labels}")
         expect(ref.name).to eq("${google_transcoder_job_template.test.name}")
         expect(ref.project).to eq("${google_transcoder_job_template.test.project}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleTranscoderJobTemplate do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_transcoder_job_template', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleTranscoderJobTemplate do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ config: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ config: { 'key1' => 'val1' }, deletion_policy: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,7 +73,9 @@ RSpec.describe Pangea::Resources::GoogleTranscoderJobTemplate do
 
         config = validate_resource_structure(result, 'google_transcoder_job_template', 'full')
         expect(config).to have_key('config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
@@ -79,7 +83,7 @@ RSpec.describe Pangea::Resources::GoogleTranscoderJobTemplate do
       it 'includes config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_transcoder_job_template('opt', required_attrs.merge(config: [{ 'key1' => 'val1' }]))
+        synth.google_transcoder_job_template('opt', required_attrs.merge(config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_transcoder_job_template', 'opt')
         expect(config).to have_key('config')
@@ -92,6 +96,23 @@ RSpec.describe Pangea::Resources::GoogleTranscoderJobTemplate do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_transcoder_job_template', 'minimal')
         expect(config).not_to have_key('config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_transcoder_job_template('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_transcoder_job_template', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_transcoder_job_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_transcoder_job_template', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes labels when provided' do
         synth = create_synthesizer
@@ -109,6 +130,23 @@ RSpec.describe Pangea::Resources::GoogleTranscoderJobTemplate do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_transcoder_job_template', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_transcoder_job_template('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_transcoder_job_template', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_transcoder_job_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_transcoder_job_template', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -155,7 +193,7 @@ RSpec.describe Pangea::Resources::GoogleTranscoderJobTemplate do
     resource_type: :google_transcoder_job_template,
     method: :google_transcoder_job_template,
     required_attrs: { job_template_id: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :name, :project, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :name, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

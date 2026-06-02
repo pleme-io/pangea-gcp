@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleSccManagementOrganizationSecurityHealthA
 
         expect(ref.id).to eq("${google_scc_management_organization_security_health_analytics_custom_module.test.id}")
         expect(ref.ancestor_module).to eq("${google_scc_management_organization_security_health_analytics_custom_module.test.ancestor_module}")
+        expect(ref.deletion_policy).to eq("${google_scc_management_organization_security_health_analytics_custom_module.test.deletion_policy}")
         expect(ref.last_editor).to eq("${google_scc_management_organization_security_health_analytics_custom_module.test.last_editor}")
         expect(ref.name).to eq("${google_scc_management_organization_security_health_analytics_custom_module.test.name}")
         expect(ref.update_time).to eq("${google_scc_management_organization_security_health_analytics_custom_module.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleSccManagementOrganizationSecurityHealthA
 
         config = validate_resource_structure(result, 'google_scc_management_organization_security_health_analytics_custom_module', 'test')
         expect(config).not_to have_key('ancestor_module')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('last_editor')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleSccManagementOrganizationSecurityHealthA
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ custom_config: [{ 'key1' => 'val1' }], display_name: 'test-value', enablement_state: 'test-value', location: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ custom_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', display_name: 'test-value', enablement_state: 'test-value', location: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,6 +73,7 @@ RSpec.describe Pangea::Resources::GoogleSccManagementOrganizationSecurityHealthA
 
         config = validate_resource_structure(result, 'google_scc_management_organization_security_health_analytics_custom_module', 'full')
         expect(config).to have_key('custom_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('enablement_state')
         expect(config).to have_key('location')
@@ -81,7 +84,7 @@ RSpec.describe Pangea::Resources::GoogleSccManagementOrganizationSecurityHealthA
       it 'includes custom_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_scc_management_organization_security_health_analytics_custom_module('opt', required_attrs.merge(custom_config: [{ 'key1' => 'val1' }]))
+        synth.google_scc_management_organization_security_health_analytics_custom_module('opt', required_attrs.merge(custom_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_scc_management_organization_security_health_analytics_custom_module', 'opt')
         expect(config).to have_key('custom_config')
@@ -94,6 +97,23 @@ RSpec.describe Pangea::Resources::GoogleSccManagementOrganizationSecurityHealthA
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_scc_management_organization_security_health_analytics_custom_module', 'minimal')
         expect(config).not_to have_key('custom_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_scc_management_organization_security_health_analytics_custom_module('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_scc_management_organization_security_health_analytics_custom_module', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_scc_management_organization_security_health_analytics_custom_module('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_scc_management_organization_security_health_analytics_custom_module', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes display_name when provided' do
         synth = create_synthesizer
@@ -190,7 +210,7 @@ RSpec.describe Pangea::Resources::GoogleSccManagementOrganizationSecurityHealthA
     resource_type: :google_scc_management_organization_security_health_analytics_custom_module,
     method: :google_scc_management_organization_security_health_analytics_custom_module,
     required_attrs: { organization: 'test-value' },
-    expected_outputs: [:id, :ancestor_module, :last_editor, :name, :update_time],
+    expected_outputs: [:id, :ancestor_module, :deletion_policy, :last_editor, :name, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

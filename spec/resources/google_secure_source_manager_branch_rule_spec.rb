@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleSecureSourceManagerBranchRule do
 
         expect(ref.id).to eq("${google_secure_source_manager_branch_rule.test.id}")
         expect(ref.create_time).to eq("${google_secure_source_manager_branch_rule.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_secure_source_manager_branch_rule.test.deletion_policy}")
         expect(ref.name).to eq("${google_secure_source_manager_branch_rule.test.name}")
         expect(ref.project).to eq("${google_secure_source_manager_branch_rule.test.project}")
         expect(ref.uid).to eq("${google_secure_source_manager_branch_rule.test.uid}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleSecureSourceManagerBranchRule do
 
         config = validate_resource_structure(result, 'google_secure_source_manager_branch_rule', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('uid')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleSecureSourceManagerBranchRule do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ allow_stale_reviews: true, disabled: true, minimum_approvals_count: 3.14, minimum_reviews_count: 3.14, require_comments_resolved: true, require_linear_history: true, require_pull_request: true }) }
+      let(:all_attrs) { required_attrs.merge({ allow_stale_reviews: true, deletion_policy: 'test-value', disabled: true, minimum_approvals_count: 3.14, minimum_reviews_count: 3.14, project: 'test-value', require_comments_resolved: true, require_linear_history: true, require_pull_request: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,9 +75,11 @@ RSpec.describe Pangea::Resources::GoogleSecureSourceManagerBranchRule do
 
         config = validate_resource_structure(result, 'google_secure_source_manager_branch_rule', 'full')
         expect(config).to have_key('allow_stale_reviews')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('disabled')
         expect(config).to have_key('minimum_approvals_count')
         expect(config).to have_key('minimum_reviews_count')
+        expect(config).to have_key('project')
         expect(config).to have_key('require_comments_resolved')
         expect(config).to have_key('require_linear_history')
         expect(config).to have_key('require_pull_request')
@@ -99,6 +103,23 @@ RSpec.describe Pangea::Resources::GoogleSecureSourceManagerBranchRule do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_secure_source_manager_branch_rule', 'minimal')
         expect(config).not_to have_key('allow_stale_reviews')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_secure_source_manager_branch_rule('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_secure_source_manager_branch_rule', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_secure_source_manager_branch_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_secure_source_manager_branch_rule', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes disabled when provided' do
         synth = create_synthesizer
@@ -150,6 +171,23 @@ RSpec.describe Pangea::Resources::GoogleSecureSourceManagerBranchRule do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_secure_source_manager_branch_rule', 'minimal')
         expect(config).not_to have_key('minimum_reviews_count')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_secure_source_manager_branch_rule('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_secure_source_manager_branch_rule', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_secure_source_manager_branch_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_secure_source_manager_branch_rule', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes require_comments_resolved when provided' do
         synth = create_synthesizer
@@ -307,7 +345,7 @@ RSpec.describe Pangea::Resources::GoogleSecureSourceManagerBranchRule do
     resource_type: :google_secure_source_manager_branch_rule,
     method: :google_secure_source_manager_branch_rule,
     required_attrs: { branch_rule_id: 'test-value', include_pattern: 'test-value', location: 'test-value', repository_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :project, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :project, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:allow_stale_reviews, :disabled, :require_comments_resolved, :require_linear_history, :require_pull_request]

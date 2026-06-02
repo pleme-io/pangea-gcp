@@ -39,9 +39,12 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupVault do
 
         expect(ref.id).to eq("${google_netapp_backup_vault.test.id}")
         expect(ref.backup_vault_type).to eq("${google_netapp_backup_vault.test.backup_vault_type}")
+        expect(ref.backups_crypto_key_version).to eq("${google_netapp_backup_vault.test.backups_crypto_key_version}")
         expect(ref.create_time).to eq("${google_netapp_backup_vault.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_netapp_backup_vault.test.deletion_policy}")
         expect(ref.destination_backup_vault).to eq("${google_netapp_backup_vault.test.destination_backup_vault}")
         expect(ref.effective_labels).to eq("${google_netapp_backup_vault.test.effective_labels}")
+        expect(ref.encryption_state).to eq("${google_netapp_backup_vault.test.encryption_state}")
         expect(ref.project).to eq("${google_netapp_backup_vault.test.project}")
         expect(ref.source_backup_vault).to eq("${google_netapp_backup_vault.test.source_backup_vault}")
         expect(ref.source_region).to eq("${google_netapp_backup_vault.test.source_region}")
@@ -59,9 +62,12 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupVault do
 
         config = validate_resource_structure(result, 'google_netapp_backup_vault', 'test')
         expect(config).not_to have_key('backup_vault_type')
+        expect(config).not_to have_key('backups_crypto_key_version')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('destination_backup_vault')
         expect(config).not_to have_key('effective_labels')
+        expect(config).not_to have_key('encryption_state')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('source_backup_vault')
         expect(config).not_to have_key('source_region')
@@ -71,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupVault do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ backup_region: 'test-value', backup_retention_policy: [{ 'key1' => 'val1' }], description: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ backup_region: 'test-value', backup_retention_policy: { 'key1' => 'val1' }, backup_vault_type: 'test-value', deletion_policy: 'test-value', description: 'test-value', kms_config: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -82,8 +88,12 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupVault do
         config = validate_resource_structure(result, 'google_netapp_backup_vault', 'full')
         expect(config).to have_key('backup_region')
         expect(config).to have_key('backup_retention_policy')
+        expect(config).to have_key('backup_vault_type')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('kms_config')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
@@ -108,7 +118,7 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupVault do
       it 'includes backup_retention_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_netapp_backup_vault('opt', required_attrs.merge(backup_retention_policy: [{ 'key1' => 'val1' }]))
+        synth.google_netapp_backup_vault('opt', required_attrs.merge(backup_retention_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_backup_vault', 'opt')
         expect(config).to have_key('backup_retention_policy')
@@ -121,6 +131,40 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupVault do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_backup_vault', 'minimal')
         expect(config).not_to have_key('backup_retention_policy')
+      end
+      it 'includes backup_vault_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_backup_vault('opt', required_attrs.merge(backup_vault_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_backup_vault', 'opt')
+        expect(config).to have_key('backup_vault_type')
+      end
+
+      it 'omits backup_vault_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_backup_vault('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_backup_vault', 'minimal')
+        expect(config).not_to have_key('backup_vault_type')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_backup_vault('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_backup_vault', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_backup_vault('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_backup_vault', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -139,6 +183,23 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupVault do
         config = validate_resource_structure(result, 'google_netapp_backup_vault', 'minimal')
         expect(config).not_to have_key('description')
       end
+      it 'includes kms_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_backup_vault('opt', required_attrs.merge(kms_config: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_backup_vault', 'opt')
+        expect(config).to have_key('kms_config')
+      end
+
+      it 'omits kms_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_backup_vault('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_backup_vault', 'minimal')
+        expect(config).not_to have_key('kms_config')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -155,6 +216,23 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupVault do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_backup_vault', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_backup_vault('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_backup_vault', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_backup_vault('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_backup_vault', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -201,7 +279,7 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupVault do
     resource_type: :google_netapp_backup_vault,
     method: :google_netapp_backup_vault,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :backup_vault_type, :create_time, :destination_backup_vault, :effective_labels, :project, :source_backup_vault, :source_region, :state, :terraform_labels],
+    expected_outputs: [:id, :backup_vault_type, :backups_crypto_key_version, :create_time, :deletion_policy, :destination_backup_vault, :effective_labels, :encryption_state, :project, :source_backup_vault, :source_region, :state, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -1,0 +1,8 @@
+name: google_vertex_ai_endpoint_with_model_garden_deployment
+title: Manages a google_vertex_ai_endpoint_with_model_garden_deployment resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

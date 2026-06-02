@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetGrpcProxy do
 
         expect(ref.id).to eq("${google_compute_target_grpc_proxy.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_target_grpc_proxy.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_target_grpc_proxy.test.deletion_policy}")
         expect(ref.fingerprint).to eq("${google_compute_target_grpc_proxy.test.fingerprint}")
         expect(ref.project).to eq("${google_compute_target_grpc_proxy.test.project}")
         expect(ref.self_link).to eq("${google_compute_target_grpc_proxy.test.self_link}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetGrpcProxy do
 
         config = validate_resource_structure(result, 'google_compute_target_grpc_proxy', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('fingerprint')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetGrpcProxy do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', url_map: 'test-value', validate_for_proxyless: true }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', project: 'test-value', url_map: 'test-value', validate_for_proxyless: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,13 +74,32 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetGrpcProxy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_target_grpc_proxy', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('project')
         expect(config).to have_key('url_map')
         expect(config).to have_key('validate_for_proxyless')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_grpc_proxy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_grpc_proxy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_grpc_proxy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_grpc_proxy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -95,6 +116,23 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetGrpcProxy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_target_grpc_proxy', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_grpc_proxy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_grpc_proxy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_grpc_proxy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_grpc_proxy', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes url_map when provided' do
         synth = create_synthesizer
@@ -188,7 +226,7 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetGrpcProxy do
     resource_type: :google_compute_target_grpc_proxy,
     method: :google_compute_target_grpc_proxy,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :fingerprint, :project, :self_link, :self_link_with_id],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :fingerprint, :project, :self_link, :self_link_with_id],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:validate_for_proxyless]

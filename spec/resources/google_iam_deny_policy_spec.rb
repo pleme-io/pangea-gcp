@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleIamDenyPolicy do
         ref = synth.google_iam_deny_policy('test', required_attrs)
 
         expect(ref.id).to eq("${google_iam_deny_policy.test.id}")
+        expect(ref.deletion_policy).to eq("${google_iam_deny_policy.test.deletion_policy}")
         expect(ref.etag).to eq("${google_iam_deny_policy.test.etag}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleIamDenyPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_iam_deny_policy', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('etag')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ display_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', display_name: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,11 +66,29 @@ RSpec.describe Pangea::Resources::GoogleIamDenyPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_iam_deny_policy', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_deny_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_deny_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_deny_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_deny_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes display_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -132,7 +152,7 @@ RSpec.describe Pangea::Resources::GoogleIamDenyPolicy do
     resource_type: :google_iam_deny_policy,
     method: :google_iam_deny_policy,
     required_attrs: { name: 'test-value', parent: 'test-value', rules: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :etag],
+    expected_outputs: [:id, :deletion_policy, :etag],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

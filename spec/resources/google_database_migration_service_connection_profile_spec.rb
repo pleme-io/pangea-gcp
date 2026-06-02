@@ -40,10 +40,12 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceConnectionProfil
         expect(ref.id).to eq("${google_database_migration_service_connection_profile.test.id}")
         expect(ref.create_time).to eq("${google_database_migration_service_connection_profile.test.create_time}")
         expect(ref.dbprovider).to eq("${google_database_migration_service_connection_profile.test.dbprovider}")
+        expect(ref.deletion_policy).to eq("${google_database_migration_service_connection_profile.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_database_migration_service_connection_profile.test.effective_labels}")
         expect(ref.error).to eq("${google_database_migration_service_connection_profile.test.error}")
         expect(ref.name).to eq("${google_database_migration_service_connection_profile.test.name}")
         expect(ref.project).to eq("${google_database_migration_service_connection_profile.test.project}")
+        expect(ref.role).to eq("${google_database_migration_service_connection_profile.test.role}")
         expect(ref.state).to eq("${google_database_migration_service_connection_profile.test.state}")
         expect(ref.terraform_labels).to eq("${google_database_migration_service_connection_profile.test.terraform_labels}")
       end
@@ -59,17 +61,19 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceConnectionProfil
         config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('dbprovider')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('error')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
+        expect(config).not_to have_key('role')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('terraform_labels')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ alloydb: [{ 'key1' => 'val1' }], cloudsql: [{ 'key1' => 'val1' }], display_name: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', mysql: [{ 'key1' => 'val1' }], oracle: [{ 'key1' => 'val1' }], postgresql: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ alloydb: { 'key1' => 'val1' }, cloudsql: { 'key1' => 'val1' }, deletion_policy: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', mysql: { 'key1' => 'val1' }, oracle: { 'key1' => 'val1' }, postgresql: { 'key1' => 'val1' }, project: 'test-value', role: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -80,12 +84,15 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceConnectionProfil
         config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'full')
         expect(config).to have_key('alloydb')
         expect(config).to have_key('cloudsql')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
         expect(config).to have_key('mysql')
         expect(config).to have_key('oracle')
         expect(config).to have_key('postgresql')
+        expect(config).to have_key('project')
+        expect(config).to have_key('role')
       end
     end
 
@@ -93,7 +100,7 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceConnectionProfil
       it 'includes alloydb when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_database_migration_service_connection_profile('opt', required_attrs.merge(alloydb: [{ 'key1' => 'val1' }]))
+        synth.google_database_migration_service_connection_profile('opt', required_attrs.merge(alloydb: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'opt')
         expect(config).to have_key('alloydb')
@@ -110,7 +117,7 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceConnectionProfil
       it 'includes cloudsql when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_database_migration_service_connection_profile('opt', required_attrs.merge(cloudsql: [{ 'key1' => 'val1' }]))
+        synth.google_database_migration_service_connection_profile('opt', required_attrs.merge(cloudsql: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'opt')
         expect(config).to have_key('cloudsql')
@@ -123,6 +130,23 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceConnectionProfil
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'minimal')
         expect(config).not_to have_key('cloudsql')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_database_migration_service_connection_profile('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_database_migration_service_connection_profile('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes display_name when provided' do
         synth = create_synthesizer
@@ -178,7 +202,7 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceConnectionProfil
       it 'includes mysql when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_database_migration_service_connection_profile('opt', required_attrs.merge(mysql: [{ 'key1' => 'val1' }]))
+        synth.google_database_migration_service_connection_profile('opt', required_attrs.merge(mysql: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'opt')
         expect(config).to have_key('mysql')
@@ -195,7 +219,7 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceConnectionProfil
       it 'includes oracle when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_database_migration_service_connection_profile('opt', required_attrs.merge(oracle: [{ 'key1' => 'val1' }]))
+        synth.google_database_migration_service_connection_profile('opt', required_attrs.merge(oracle: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'opt')
         expect(config).to have_key('oracle')
@@ -212,7 +236,7 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceConnectionProfil
       it 'includes postgresql when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_database_migration_service_connection_profile('opt', required_attrs.merge(postgresql: [{ 'key1' => 'val1' }]))
+        synth.google_database_migration_service_connection_profile('opt', required_attrs.merge(postgresql: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'opt')
         expect(config).to have_key('postgresql')
@@ -225,6 +249,40 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceConnectionProfil
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'minimal')
         expect(config).not_to have_key('postgresql')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_database_migration_service_connection_profile('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_database_migration_service_connection_profile('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes role when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_database_migration_service_connection_profile('opt', required_attrs.merge(role: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'opt')
+        expect(config).to have_key('role')
+      end
+
+      it 'omits role when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_database_migration_service_connection_profile('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_database_migration_service_connection_profile', 'minimal')
+        expect(config).not_to have_key('role')
       end
     end
 
@@ -270,7 +328,7 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceConnectionProfil
     resource_type: :google_database_migration_service_connection_profile,
     method: :google_database_migration_service_connection_profile,
     required_attrs: { connection_profile_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :dbprovider, :effective_labels, :error, :name, :project, :state, :terraform_labels],
+    expected_outputs: [:id, :create_time, :dbprovider, :deletion_policy, :effective_labels, :error, :name, :project, :role, :state, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

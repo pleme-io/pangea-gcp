@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringCustomService do
         ref = synth.google_monitoring_custom_service('test', required_attrs)
 
         expect(ref.id).to eq("${google_monitoring_custom_service.test.id}")
+        expect(ref.deletion_policy).to eq("${google_monitoring_custom_service.test.deletion_policy}")
         expect(ref.name).to eq("${google_monitoring_custom_service.test.name}")
         expect(ref.project).to eq("${google_monitoring_custom_service.test.project}")
         expect(ref.service_id).to eq("${google_monitoring_custom_service.test.service_id}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringCustomService do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_monitoring_custom_service', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('service_id')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringCustomService do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ display_name: 'test-value', telemetry: [{ 'key1' => 'val1' }], user_labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', display_name: 'test-value', project: 'test-value', service_id: 'test-value', telemetry: { 'key1' => 'val1' }, user_labels: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,13 +70,33 @@ RSpec.describe Pangea::Resources::GoogleMonitoringCustomService do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_monitoring_custom_service', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('project')
+        expect(config).to have_key('service_id')
         expect(config).to have_key('telemetry')
         expect(config).to have_key('user_labels')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_custom_service('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_custom_service', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_custom_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_custom_service', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes display_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -92,10 +114,44 @@ RSpec.describe Pangea::Resources::GoogleMonitoringCustomService do
         config = validate_resource_structure(result, 'google_monitoring_custom_service', 'minimal')
         expect(config).not_to have_key('display_name')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_custom_service('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_custom_service', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_custom_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_custom_service', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes service_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_custom_service('opt', required_attrs.merge(service_id: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_custom_service', 'opt')
+        expect(config).to have_key('service_id')
+      end
+
+      it 'omits service_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_custom_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_custom_service', 'minimal')
+        expect(config).not_to have_key('service_id')
+      end
       it 'includes telemetry when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_monitoring_custom_service('opt', required_attrs.merge(telemetry: [{ 'key1' => 'val1' }]))
+        synth.google_monitoring_custom_service('opt', required_attrs.merge(telemetry: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_monitoring_custom_service', 'opt')
         expect(config).to have_key('telemetry')
@@ -169,7 +225,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringCustomService do
     resource_type: :google_monitoring_custom_service,
     method: :google_monitoring_custom_service,
     required_attrs: {},
-    expected_outputs: [:id, :name, :project, :service_id],
+    expected_outputs: [:id, :deletion_policy, :name, :project, :service_id],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

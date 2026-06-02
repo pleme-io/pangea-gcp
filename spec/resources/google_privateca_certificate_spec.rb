@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificate do
         expect(ref.id).to eq("${google_privateca_certificate.test.id}")
         expect(ref.certificate_description).to eq("${google_privateca_certificate.test.certificate_description}")
         expect(ref.create_time).to eq("${google_privateca_certificate.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_privateca_certificate.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_privateca_certificate.test.effective_labels}")
         expect(ref.issuer_certificate_authority).to eq("${google_privateca_certificate.test.issuer_certificate_authority}")
         expect(ref.pem_certificate).to eq("${google_privateca_certificate.test.pem_certificate}")
@@ -61,6 +62,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificate do
         config = validate_resource_structure(result, 'google_privateca_certificate', 'test')
         expect(config).not_to have_key('certificate_description')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('issuer_certificate_authority')
         expect(config).not_to have_key('pem_certificate')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificate do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ certificate_authority: 'test-value', certificate_template: 'test-value', config: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, lifetime: 'test-value', pem_csr: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ certificate_authority: 'test-value', certificate_template: 'test-value', config: { 'key1' => 'val1' }, deletion_policy: 'test-value', labels: { 'key1' => 'val1' }, lifetime: 'test-value', pem_csr: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -85,9 +87,11 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificate do
         expect(config).to have_key('certificate_authority')
         expect(config).to have_key('certificate_template')
         expect(config).to have_key('config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('labels')
         expect(config).to have_key('lifetime')
         expect(config).to have_key('pem_csr')
+        expect(config).to have_key('project')
       end
     end
 
@@ -129,7 +133,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificate do
       it 'includes config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_privateca_certificate('opt', required_attrs.merge(config: [{ 'key1' => 'val1' }]))
+        synth.google_privateca_certificate('opt', required_attrs.merge(config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_privateca_certificate', 'opt')
         expect(config).to have_key('config')
@@ -142,6 +146,23 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificate do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_privateca_certificate', 'minimal')
         expect(config).not_to have_key('config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privateca_certificate('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privateca_certificate', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privateca_certificate('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privateca_certificate', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes labels when provided' do
         synth = create_synthesizer
@@ -194,6 +215,23 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificate do
         config = validate_resource_structure(result, 'google_privateca_certificate', 'minimal')
         expect(config).not_to have_key('pem_csr')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privateca_certificate('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privateca_certificate', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privateca_certificate('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privateca_certificate', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -240,7 +278,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificate do
     resource_type: :google_privateca_certificate,
     method: :google_privateca_certificate,
     required_attrs: { location: 'test-value', name: 'test-value', pool: 'test-value' },
-    expected_outputs: [:id, :certificate_description, :create_time, :effective_labels, :issuer_certificate_authority, :pem_certificate, :pem_certificate_chain, :project, :revocation_details, :terraform_labels, :update_time],
+    expected_outputs: [:id, :certificate_description, :create_time, :deletion_policy, :effective_labels, :issuer_certificate_authority, :pem_certificate, :pem_certificate_chain, :project, :revocation_details, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

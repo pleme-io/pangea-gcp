@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxIntent do
         ref = synth.google_dialogflow_cx_intent('test', required_attrs)
 
         expect(ref.id).to eq("${google_dialogflow_cx_intent.test.id}")
+        expect(ref.deletion_policy).to eq("${google_dialogflow_cx_intent.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_dialogflow_cx_intent.test.effective_labels}")
         expect(ref.name).to eq("${google_dialogflow_cx_intent.test.name}")
         expect(ref.terraform_labels).to eq("${google_dialogflow_cx_intent.test.terraform_labels}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxIntent do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_intent', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('terraform_labels')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxIntent do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', is_default_negative_intent: true, is_default_welcome_intent: true, is_fallback: true, labels: { 'key1' => 'val1' }, language_code: 'test-value', parameters: [{ 'key1' => 'val1' }], parent: 'test-value', priority: 3.14, training_phrases: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', is_default_negative_intent: true, is_default_welcome_intent: true, is_fallback: true, labels: { 'key1' => 'val1' }, language_code: 'test-value', parameters: [{ 'key1' => 'val1' }], parent: 'test-value', priority: 3.14, training_phrases: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,6 +70,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxIntent do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_intent', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('is_default_negative_intent')
         expect(config).to have_key('is_default_welcome_intent')
@@ -82,6 +85,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxIntent do
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_intent('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_intent', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_intent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_intent', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -332,7 +352,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxIntent do
     resource_type: :google_dialogflow_cx_intent,
     method: :google_dialogflow_cx_intent,
     required_attrs: { display_name: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :name, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :name, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:is_default_negative_intent, :is_default_welcome_intent, :is_fallback]

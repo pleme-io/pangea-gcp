@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComputeProjectMetadataItem do
         ref = synth.google_compute_project_metadata_item('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_project_metadata_item.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_project_metadata_item.test.deletion_policy}")
         expect(ref.project).to eq("${google_compute_project_metadata_item.test.project}")
       end
     end
@@ -50,6 +51,59 @@ RSpec.describe Pangea::Resources::GoogleComputeProjectMetadataItem do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_project_metadata_item', 'test')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('project')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_project_metadata_item('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_compute_project_metadata_item', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_project_metadata_item('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_project_metadata_item', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_project_metadata_item('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_project_metadata_item', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_project_metadata_item('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_project_metadata_item', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_project_metadata_item('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_project_metadata_item', 'minimal')
         expect(config).not_to have_key('project')
       end
     end
@@ -97,7 +151,7 @@ RSpec.describe Pangea::Resources::GoogleComputeProjectMetadataItem do
     resource_type: :google_compute_project_metadata_item,
     method: :google_compute_project_metadata_item,
     required_attrs: { key: 'test-value', value: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

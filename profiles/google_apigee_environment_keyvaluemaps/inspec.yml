@@ -1,0 +1,8 @@
+name: google_apigee_environment_keyvaluemaps
+title: Manages a google_apigee_environment_keyvaluemaps resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

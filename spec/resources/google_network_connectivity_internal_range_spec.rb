@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityInternalRange do
         ref = synth.google_network_connectivity_internal_range('test', required_attrs)
 
         expect(ref.id).to eq("${google_network_connectivity_internal_range.test.id}")
+        expect(ref.deletion_policy).to eq("${google_network_connectivity_internal_range.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_connectivity_internal_range.test.effective_labels}")
         expect(ref.ip_cidr_range).to eq("${google_network_connectivity_internal_range.test.ip_cidr_range}")
         expect(ref.project).to eq("${google_network_connectivity_internal_range.test.project}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityInternalRange do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_connectivity_internal_range', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('ip_cidr_range')
         expect(config).not_to have_key('project')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityInternalRange do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ allocation_options: [{ 'key1' => 'val1' }], description: 'test-value', exclude_cidr_ranges: ['test-value'], immutable: true, labels: { 'key1' => 'val1' }, migration: [{ 'key1' => 'val1' }], overlaps: ['test-value'], prefix_length: 3.14, target_cidr_range: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ allocation_options: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', exclude_cidr_ranges: ['test-value'], immutable: true, ip_cidr_range: 'test-value', labels: { 'key1' => 'val1' }, migration: { 'key1' => 'val1' }, overlaps: ['test-value'], prefix_length: 3.14, project: 'test-value', target_cidr_range: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,13 +75,16 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityInternalRange do
 
         config = validate_resource_structure(result, 'google_network_connectivity_internal_range', 'full')
         expect(config).to have_key('allocation_options')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('exclude_cidr_ranges')
         expect(config).to have_key('immutable')
+        expect(config).to have_key('ip_cidr_range')
         expect(config).to have_key('labels')
         expect(config).to have_key('migration')
         expect(config).to have_key('overlaps')
         expect(config).to have_key('prefix_length')
+        expect(config).to have_key('project')
         expect(config).to have_key('target_cidr_range')
       end
     end
@@ -88,7 +93,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityInternalRange do
       it 'includes allocation_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_network_connectivity_internal_range('opt', required_attrs.merge(allocation_options: [{ 'key1' => 'val1' }]))
+        synth.google_network_connectivity_internal_range('opt', required_attrs.merge(allocation_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_connectivity_internal_range', 'opt')
         expect(config).to have_key('allocation_options')
@@ -101,6 +106,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityInternalRange do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_connectivity_internal_range', 'minimal')
         expect(config).not_to have_key('allocation_options')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_internal_range('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_internal_range', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_internal_range('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_internal_range', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -153,6 +175,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityInternalRange do
         config = validate_resource_structure(result, 'google_network_connectivity_internal_range', 'minimal')
         expect(config).not_to have_key('immutable')
       end
+      it 'includes ip_cidr_range when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_internal_range('opt', required_attrs.merge(ip_cidr_range: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_internal_range', 'opt')
+        expect(config).to have_key('ip_cidr_range')
+      end
+
+      it 'omits ip_cidr_range when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_internal_range('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_internal_range', 'minimal')
+        expect(config).not_to have_key('ip_cidr_range')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -173,7 +212,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityInternalRange do
       it 'includes migration when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_network_connectivity_internal_range('opt', required_attrs.merge(migration: [{ 'key1' => 'val1' }]))
+        synth.google_network_connectivity_internal_range('opt', required_attrs.merge(migration: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_connectivity_internal_range', 'opt')
         expect(config).to have_key('migration')
@@ -220,6 +259,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityInternalRange do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_connectivity_internal_range', 'minimal')
         expect(config).not_to have_key('prefix_length')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_internal_range('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_internal_range', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_internal_range('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_internal_range', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes target_cidr_range when provided' do
         synth = create_synthesizer
@@ -299,7 +355,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityInternalRange do
     resource_type: :google_network_connectivity_internal_range,
     method: :google_network_connectivity_internal_range,
     required_attrs: { name: 'test-value', network: 'test-value', peering: 'test-value', usage: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :ip_cidr_range, :project, :terraform_labels, :users],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :ip_cidr_range, :project, :terraform_labels, :users],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:immutable]

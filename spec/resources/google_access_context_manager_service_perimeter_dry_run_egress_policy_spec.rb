@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeterDryR
 
         expect(ref.id).to eq("${google_access_context_manager_service_perimeter_dry_run_egress_policy.test.id}")
         expect(ref.access_policy_id).to eq("${google_access_context_manager_service_perimeter_dry_run_egress_policy.test.access_policy_id}")
+        expect(ref.deletion_policy).to eq("${google_access_context_manager_service_perimeter_dry_run_egress_policy.test.deletion_policy}")
         expect(ref.etag).to eq("${google_access_context_manager_service_perimeter_dry_run_egress_policy.test.etag}")
       end
     end
@@ -52,12 +53,13 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeterDryR
 
         config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter_dry_run_egress_policy', 'test')
         expect(config).not_to have_key('access_policy_id')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('etag')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ egress_from: [{ 'key1' => 'val1' }], egress_to: [{ 'key1' => 'val1' }], title: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', egress_from: { 'key1' => 'val1' }, egress_to: { 'key1' => 'val1' }, title: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,6 +68,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeterDryR
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter_dry_run_egress_policy', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('egress_from')
         expect(config).to have_key('egress_to')
         expect(config).to have_key('title')
@@ -73,10 +76,27 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeterDryR
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_service_perimeter_dry_run_egress_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter_dry_run_egress_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_service_perimeter_dry_run_egress_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter_dry_run_egress_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes egress_from when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_access_context_manager_service_perimeter_dry_run_egress_policy('opt', required_attrs.merge(egress_from: [{ 'key1' => 'val1' }]))
+        synth.google_access_context_manager_service_perimeter_dry_run_egress_policy('opt', required_attrs.merge(egress_from: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter_dry_run_egress_policy', 'opt')
         expect(config).to have_key('egress_from')
@@ -93,7 +113,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeterDryR
       it 'includes egress_to when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_access_context_manager_service_perimeter_dry_run_egress_policy('opt', required_attrs.merge(egress_to: [{ 'key1' => 'val1' }]))
+        synth.google_access_context_manager_service_perimeter_dry_run_egress_policy('opt', required_attrs.merge(egress_to: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter_dry_run_egress_policy', 'opt')
         expect(config).to have_key('egress_to')
@@ -168,7 +188,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeterDryR
     resource_type: :google_access_context_manager_service_perimeter_dry_run_egress_policy,
     method: :google_access_context_manager_service_perimeter_dry_run_egress_policy,
     required_attrs: { perimeter: 'test-value' },
-    expected_outputs: [:id, :access_policy_id, :etag],
+    expected_outputs: [:id, :access_policy_id, :deletion_policy, :etag],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComposerEnvironment do
         ref = synth.google_composer_environment('test', required_attrs)
 
         expect(ref.id).to eq("${google_composer_environment.test.id}")
+        expect(ref.deletion_policy).to eq("${google_composer_environment.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_composer_environment.test.effective_labels}")
         expect(ref.project).to eq("${google_composer_environment.test.project}")
         expect(ref.region).to eq("${google_composer_environment.test.region}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleComposerEnvironment do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_composer_environment', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('region')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleComposerEnvironment do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ config: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, storage_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ config: { 'key1' => 'val1' }, deletion_policy: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value', storage_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,7 +73,10 @@ RSpec.describe Pangea::Resources::GoogleComposerEnvironment do
 
         config = validate_resource_structure(result, 'google_composer_environment', 'full')
         expect(config).to have_key('config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('storage_config')
       end
     end
@@ -80,7 +85,7 @@ RSpec.describe Pangea::Resources::GoogleComposerEnvironment do
       it 'includes config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_composer_environment('opt', required_attrs.merge(config: [{ 'key1' => 'val1' }]))
+        synth.google_composer_environment('opt', required_attrs.merge(config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_composer_environment', 'opt')
         expect(config).to have_key('config')
@@ -93,6 +98,23 @@ RSpec.describe Pangea::Resources::GoogleComposerEnvironment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_composer_environment', 'minimal')
         expect(config).not_to have_key('config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_composer_environment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_composer_environment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_composer_environment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_composer_environment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes labels when provided' do
         synth = create_synthesizer
@@ -111,10 +133,44 @@ RSpec.describe Pangea::Resources::GoogleComposerEnvironment do
         config = validate_resource_structure(result, 'google_composer_environment', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_composer_environment('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_composer_environment', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_composer_environment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_composer_environment', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_composer_environment('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_composer_environment', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_composer_environment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_composer_environment', 'minimal')
+        expect(config).not_to have_key('region')
+      end
       it 'includes storage_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_composer_environment('opt', required_attrs.merge(storage_config: [{ 'key1' => 'val1' }]))
+        synth.google_composer_environment('opt', required_attrs.merge(storage_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_composer_environment', 'opt')
         expect(config).to have_key('storage_config')
@@ -172,7 +228,7 @@ RSpec.describe Pangea::Resources::GoogleComposerEnvironment do
     resource_type: :google_composer_environment,
     method: :google_composer_environment,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :project, :region, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :project, :region, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

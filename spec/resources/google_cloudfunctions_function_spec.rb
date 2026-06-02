@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
 
         expect(ref.id).to eq("${google_cloudfunctions_function.test.id}")
         expect(ref.build_service_account).to eq("${google_cloudfunctions_function.test.build_service_account}")
+        expect(ref.deletion_policy).to eq("${google_cloudfunctions_function.test.deletion_policy}")
         expect(ref.docker_registry).to eq("${google_cloudfunctions_function.test.docker_registry}")
         expect(ref.effective_labels).to eq("${google_cloudfunctions_function.test.effective_labels}")
         expect(ref.https_trigger_security_level).to eq("${google_cloudfunctions_function.test.https_trigger_security_level}")
@@ -63,6 +64,7 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
 
         config = validate_resource_structure(result, 'google_cloudfunctions_function', 'test')
         expect(config).not_to have_key('build_service_account')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('docker_registry')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('https_trigger_security_level')
@@ -79,7 +81,7 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ automatic_update_policy: [{ 'key1' => 'val1' }], available_memory_mb: 3.14, build_environment_variables: { 'key1' => 'val1' }, build_worker_pool: 'test-value', description: 'test-value', docker_repository: 'test-value', entry_point: 'test-value', environment_variables: { 'key1' => 'val1' }, event_trigger: [{ 'key1' => 'val1' }], ingress_settings: 'test-value', kms_key_name: 'test-value', labels: { 'key1' => 'val1' }, min_instances: 3.14, on_deploy_update_policy: [{ 'key1' => 'val1' }], secret_environment_variables: [{ 'key1' => 'val1' }], secret_volumes: [{ 'key1' => 'val1' }], source_archive_bucket: 'test-value', source_archive_object: 'test-value', source_repository: [{ 'key1' => 'val1' }], timeout: 3.14, trigger_http: true, vpc_connector: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ automatic_update_policy: { 'key1' => 'val1' }, available_memory_mb: 3.14, build_environment_variables: { 'key1' => 'val1' }, build_service_account: 'test-value', build_worker_pool: 'test-value', deletion_policy: 'test-value', description: 'test-value', docker_registry: 'test-value', docker_repository: 'test-value', entry_point: 'test-value', environment_variables: { 'key1' => 'val1' }, event_trigger: { 'key1' => 'val1' }, https_trigger_security_level: 'test-value', https_trigger_url: 'test-value', ingress_settings: 'test-value', kms_key_name: 'test-value', labels: { 'key1' => 'val1' }, max_instances: 3.14, min_instances: 3.14, on_deploy_update_policy: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value', secret_environment_variables: [{ 'key1' => 'val1' }], secret_volumes: [{ 'key1' => 'val1' }], service_account_email: 'test-value', source_archive_bucket: 'test-value', source_archive_object: 'test-value', source_repository: { 'key1' => 'val1' }, timeout: 3.14, trigger_http: true, vpc_connector: 'test-value', vpc_connector_egress_settings: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -91,25 +93,35 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
         expect(config).to have_key('automatic_update_policy')
         expect(config).to have_key('available_memory_mb')
         expect(config).to have_key('build_environment_variables')
+        expect(config).to have_key('build_service_account')
         expect(config).to have_key('build_worker_pool')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('docker_registry')
         expect(config).to have_key('docker_repository')
         expect(config).to have_key('entry_point')
         expect(config).to have_key('environment_variables')
         expect(config).to have_key('event_trigger')
+        expect(config).to have_key('https_trigger_security_level')
+        expect(config).to have_key('https_trigger_url')
         expect(config).to have_key('ingress_settings')
         expect(config).to have_key('kms_key_name')
         expect(config).to have_key('labels')
+        expect(config).to have_key('max_instances')
         expect(config).to have_key('min_instances')
         expect(config).to have_key('on_deploy_update_policy')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('secret_environment_variables')
         expect(config).to have_key('secret_volumes')
+        expect(config).to have_key('service_account_email')
         expect(config).to have_key('source_archive_bucket')
         expect(config).to have_key('source_archive_object')
         expect(config).to have_key('source_repository')
         expect(config).to have_key('timeout')
         expect(config).to have_key('trigger_http')
         expect(config).to have_key('vpc_connector')
+        expect(config).to have_key('vpc_connector_egress_settings')
       end
     end
 
@@ -117,7 +129,7 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
       it 'includes automatic_update_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudfunctions_function('opt', required_attrs.merge(automatic_update_policy: [{ 'key1' => 'val1' }]))
+        synth.google_cloudfunctions_function('opt', required_attrs.merge(automatic_update_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudfunctions_function', 'opt')
         expect(config).to have_key('automatic_update_policy')
@@ -165,6 +177,23 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
         config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
         expect(config).not_to have_key('build_environment_variables')
       end
+      it 'includes build_service_account when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('opt', required_attrs.merge(build_service_account: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'opt')
+        expect(config).to have_key('build_service_account')
+      end
+
+      it 'omits build_service_account when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
+        expect(config).not_to have_key('build_service_account')
+      end
       it 'includes build_worker_pool when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -182,6 +211,23 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
         config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
         expect(config).not_to have_key('build_worker_pool')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -198,6 +244,23 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes docker_registry when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('opt', required_attrs.merge(docker_registry: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'opt')
+        expect(config).to have_key('docker_registry')
+      end
+
+      it 'omits docker_registry when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
+        expect(config).not_to have_key('docker_registry')
       end
       it 'includes docker_repository when provided' do
         synth = create_synthesizer
@@ -253,7 +316,7 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
       it 'includes event_trigger when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudfunctions_function('opt', required_attrs.merge(event_trigger: [{ 'key1' => 'val1' }]))
+        synth.google_cloudfunctions_function('opt', required_attrs.merge(event_trigger: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudfunctions_function', 'opt')
         expect(config).to have_key('event_trigger')
@@ -266,6 +329,40 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
         expect(config).not_to have_key('event_trigger')
+      end
+      it 'includes https_trigger_security_level when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('opt', required_attrs.merge(https_trigger_security_level: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'opt')
+        expect(config).to have_key('https_trigger_security_level')
+      end
+
+      it 'omits https_trigger_security_level when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
+        expect(config).not_to have_key('https_trigger_security_level')
+      end
+      it 'includes https_trigger_url when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('opt', required_attrs.merge(https_trigger_url: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'opt')
+        expect(config).to have_key('https_trigger_url')
+      end
+
+      it 'omits https_trigger_url when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
+        expect(config).not_to have_key('https_trigger_url')
       end
       it 'includes ingress_settings when provided' do
         synth = create_synthesizer
@@ -318,6 +415,23 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
         config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes max_instances when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('opt', required_attrs.merge(max_instances: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'opt')
+        expect(config).to have_key('max_instances')
+      end
+
+      it 'omits max_instances when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
+        expect(config).not_to have_key('max_instances')
+      end
       it 'includes min_instances when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -338,7 +452,7 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
       it 'includes on_deploy_update_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudfunctions_function('opt', required_attrs.merge(on_deploy_update_policy: [{ 'key1' => 'val1' }]))
+        synth.google_cloudfunctions_function('opt', required_attrs.merge(on_deploy_update_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudfunctions_function', 'opt')
         expect(config).to have_key('on_deploy_update_policy')
@@ -351,6 +465,40 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
         expect(config).not_to have_key('on_deploy_update_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
+        expect(config).not_to have_key('region')
       end
       it 'includes secret_environment_variables when provided' do
         synth = create_synthesizer
@@ -385,6 +533,23 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
         expect(config).not_to have_key('secret_volumes')
+      end
+      it 'includes service_account_email when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('opt', required_attrs.merge(service_account_email: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'opt')
+        expect(config).to have_key('service_account_email')
+      end
+
+      it 'omits service_account_email when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
+        expect(config).not_to have_key('service_account_email')
       end
       it 'includes source_archive_bucket when provided' do
         synth = create_synthesizer
@@ -423,7 +588,7 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
       it 'includes source_repository when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudfunctions_function('opt', required_attrs.merge(source_repository: [{ 'key1' => 'val1' }]))
+        synth.google_cloudfunctions_function('opt', required_attrs.merge(source_repository: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudfunctions_function', 'opt')
         expect(config).to have_key('source_repository')
@@ -488,6 +653,23 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
         config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
         expect(config).not_to have_key('vpc_connector')
       end
+      it 'includes vpc_connector_egress_settings when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('opt', required_attrs.merge(vpc_connector_egress_settings: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'opt')
+        expect(config).to have_key('vpc_connector_egress_settings')
+      end
+
+      it 'omits vpc_connector_egress_settings when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions_function('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions_function', 'minimal')
+        expect(config).not_to have_key('vpc_connector_egress_settings')
+      end
     end
 
     context 'boolean fields' do
@@ -547,7 +729,7 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctionsFunction do
     resource_type: :google_cloudfunctions_function,
     method: :google_cloudfunctions_function,
     required_attrs: { name: 'test-value', runtime: 'test-value' },
-    expected_outputs: [:id, :build_service_account, :docker_registry, :effective_labels, :https_trigger_security_level, :https_trigger_url, :max_instances, :project, :region, :service_account_email, :status, :terraform_labels, :version_id, :vpc_connector_egress_settings],
+    expected_outputs: [:id, :build_service_account, :deletion_policy, :docker_registry, :effective_labels, :https_trigger_security_level, :https_trigger_url, :max_instances, :project, :region, :service_account_email, :status, :terraform_labels, :version_id, :vpc_connector_egress_settings],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:trigger_http]

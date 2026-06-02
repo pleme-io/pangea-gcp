@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceMigrationJob do
 
         expect(ref.id).to eq("${google_database_migration_service_migration_job.test.id}")
         expect(ref.create_time).to eq("${google_database_migration_service_migration_job.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_database_migration_service_migration_job.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_database_migration_service_migration_job.test.effective_labels}")
         expect(ref.error).to eq("${google_database_migration_service_migration_job.test.error}")
         expect(ref.name).to eq("${google_database_migration_service_migration_job.test.name}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceMigrationJob do
 
         config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('error')
         expect(config).not_to have_key('name')
@@ -69,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceMigrationJob do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ display_name: 'test-value', dump_flags: [{ 'key1' => 'val1' }], dump_path: 'test-value', dump_type: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', performance_config: [{ 'key1' => 'val1' }], reverse_ssh_connectivity: [{ 'key1' => 'val1' }], static_ip_connectivity: [{ 'key1' => 'val1' }], vpc_peering_connectivity: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', display_name: 'test-value', dump_flags: { 'key1' => 'val1' }, dump_path: 'test-value', dump_type: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', objects_config: { 'key1' => 'val1' }, performance_config: { 'key1' => 'val1' }, postgres_homogeneous_config: { 'key1' => 'val1' }, project: 'test-value', reverse_ssh_connectivity: { 'key1' => 'val1' }, static_ip_connectivity: { 'key1' => 'val1' }, vpc_peering_connectivity: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,13 +80,17 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceMigrationJob do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('dump_flags')
         expect(config).to have_key('dump_path')
         expect(config).to have_key('dump_type')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
+        expect(config).to have_key('objects_config')
         expect(config).to have_key('performance_config')
+        expect(config).to have_key('postgres_homogeneous_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('reverse_ssh_connectivity')
         expect(config).to have_key('static_ip_connectivity')
         expect(config).to have_key('vpc_peering_connectivity')
@@ -92,6 +98,23 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceMigrationJob do
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_database_migration_service_migration_job('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_database_migration_service_migration_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes display_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -112,7 +135,7 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceMigrationJob do
       it 'includes dump_flags when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_database_migration_service_migration_job('opt', required_attrs.merge(dump_flags: [{ 'key1' => 'val1' }]))
+        synth.google_database_migration_service_migration_job('opt', required_attrs.merge(dump_flags: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'opt')
         expect(config).to have_key('dump_flags')
@@ -194,10 +217,27 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceMigrationJob do
         config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'minimal')
         expect(config).not_to have_key('location')
       end
+      it 'includes objects_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_database_migration_service_migration_job('opt', required_attrs.merge(objects_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'opt')
+        expect(config).to have_key('objects_config')
+      end
+
+      it 'omits objects_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_database_migration_service_migration_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'minimal')
+        expect(config).not_to have_key('objects_config')
+      end
       it 'includes performance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_database_migration_service_migration_job('opt', required_attrs.merge(performance_config: [{ 'key1' => 'val1' }]))
+        synth.google_database_migration_service_migration_job('opt', required_attrs.merge(performance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'opt')
         expect(config).to have_key('performance_config')
@@ -211,10 +251,44 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceMigrationJob do
         config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'minimal')
         expect(config).not_to have_key('performance_config')
       end
+      it 'includes postgres_homogeneous_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_database_migration_service_migration_job('opt', required_attrs.merge(postgres_homogeneous_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'opt')
+        expect(config).to have_key('postgres_homogeneous_config')
+      end
+
+      it 'omits postgres_homogeneous_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_database_migration_service_migration_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'minimal')
+        expect(config).not_to have_key('postgres_homogeneous_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_database_migration_service_migration_job('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_database_migration_service_migration_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes reverse_ssh_connectivity when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_database_migration_service_migration_job('opt', required_attrs.merge(reverse_ssh_connectivity: [{ 'key1' => 'val1' }]))
+        synth.google_database_migration_service_migration_job('opt', required_attrs.merge(reverse_ssh_connectivity: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'opt')
         expect(config).to have_key('reverse_ssh_connectivity')
@@ -231,7 +305,7 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceMigrationJob do
       it 'includes static_ip_connectivity when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_database_migration_service_migration_job('opt', required_attrs.merge(static_ip_connectivity: [{ 'key1' => 'val1' }]))
+        synth.google_database_migration_service_migration_job('opt', required_attrs.merge(static_ip_connectivity: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'opt')
         expect(config).to have_key('static_ip_connectivity')
@@ -248,7 +322,7 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceMigrationJob do
       it 'includes vpc_peering_connectivity when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_database_migration_service_migration_job('opt', required_attrs.merge(vpc_peering_connectivity: [{ 'key1' => 'val1' }]))
+        synth.google_database_migration_service_migration_job('opt', required_attrs.merge(vpc_peering_connectivity: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_database_migration_service_migration_job', 'opt')
         expect(config).to have_key('vpc_peering_connectivity')
@@ -309,7 +383,7 @@ RSpec.describe Pangea::Resources::GoogleDatabaseMigrationServiceMigrationJob do
     resource_type: :google_database_migration_service_migration_job,
     method: :google_database_migration_service_migration_job,
     required_attrs: { destination: 'test-value', migration_job_id: 'test-value', source: 'test-value', type: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :error, :name, :phase, :project, :state, :terraform_labels],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :error, :name, :phase, :project, :state, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

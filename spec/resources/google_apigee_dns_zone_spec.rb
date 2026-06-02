@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleApigeeDnsZone do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { description: 'test-value', dns_zone_id: 'test-value', domain: 'test-value', org_id: 'test-value', peering_config: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { description: 'test-value', dns_zone_id: 'test-value', domain: 'test-value', org_id: 'test-value', peering_config: { 'key1' => 'val1' } } }
 
   describe ':google_apigee_dns_zone' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeDnsZone do
         ref = synth.google_apigee_dns_zone('test', required_attrs)
 
         expect(ref.id).to eq("${google_apigee_dns_zone.test.id}")
+        expect(ref.deletion_policy).to eq("${google_apigee_dns_zone.test.deletion_policy}")
         expect(ref.name).to eq("${google_apigee_dns_zone.test.name}")
       end
     end
@@ -50,7 +51,42 @@ RSpec.describe Pangea::Resources::GoogleApigeeDnsZone do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_dns_zone', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_dns_zone('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_apigee_dns_zone', 'full')
+        expect(config).to have_key('deletion_policy')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_dns_zone('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_dns_zone', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_dns_zone('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_dns_zone', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -66,7 +102,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeDnsZone do
         expect(config['dns_zone_id']).to be_a(String)
         expect(config['domain']).to be_a(String)
         expect(config['org_id']).to be_a(String)
-        expect(config['peering_config']).to be_a(Array)
+        expect(config['peering_config']).to be_a(Hash)
       end
     end
 
@@ -99,8 +135,8 @@ RSpec.describe Pangea::Resources::GoogleApigeeDnsZone do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_apigee_dns_zone,
     method: :google_apigee_dns_zone,
-    required_attrs: { description: 'test-value', dns_zone_id: 'test-value', domain: 'test-value', org_id: 'test-value', peering_config: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :name],
+    required_attrs: { description: 'test-value', dns_zone_id: 'test-value', domain: 'test-value', org_id: 'test-value', peering_config: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :deletion_policy, :name],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

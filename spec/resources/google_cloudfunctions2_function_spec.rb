@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctions2Function do
         ref = synth.google_cloudfunctions2_function('test', required_attrs)
 
         expect(ref.id).to eq("${google_cloudfunctions2_function.test.id}")
+        expect(ref.deletion_policy).to eq("${google_cloudfunctions2_function.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_cloudfunctions2_function.test.effective_labels}")
         expect(ref.environment).to eq("${google_cloudfunctions2_function.test.environment}")
         expect(ref.project).to eq("${google_cloudfunctions2_function.test.project}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctions2Function do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_cloudfunctions2_function', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('environment')
         expect(config).not_to have_key('project')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctions2Function do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ build_config: [{ 'key1' => 'val1' }], description: 'test-value', event_trigger: [{ 'key1' => 'val1' }], kms_key_name: 'test-value', labels: { 'key1' => 'val1' }, service_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ build_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', event_trigger: { 'key1' => 'val1' }, kms_key_name: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', service_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -77,10 +79,12 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctions2Function do
 
         config = validate_resource_structure(result, 'google_cloudfunctions2_function', 'full')
         expect(config).to have_key('build_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('event_trigger')
         expect(config).to have_key('kms_key_name')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('service_config')
       end
     end
@@ -89,7 +93,7 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctions2Function do
       it 'includes build_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudfunctions2_function('opt', required_attrs.merge(build_config: [{ 'key1' => 'val1' }]))
+        synth.google_cloudfunctions2_function('opt', required_attrs.merge(build_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudfunctions2_function', 'opt')
         expect(config).to have_key('build_config')
@@ -102,6 +106,23 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctions2Function do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudfunctions2_function', 'minimal')
         expect(config).not_to have_key('build_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions2_function('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions2_function', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions2_function('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions2_function', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -123,7 +144,7 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctions2Function do
       it 'includes event_trigger when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudfunctions2_function('opt', required_attrs.merge(event_trigger: [{ 'key1' => 'val1' }]))
+        synth.google_cloudfunctions2_function('opt', required_attrs.merge(event_trigger: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudfunctions2_function', 'opt')
         expect(config).to have_key('event_trigger')
@@ -171,10 +192,27 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctions2Function do
         config = validate_resource_structure(result, 'google_cloudfunctions2_function', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions2_function('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions2_function', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudfunctions2_function('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudfunctions2_function', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes service_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudfunctions2_function('opt', required_attrs.merge(service_config: [{ 'key1' => 'val1' }]))
+        synth.google_cloudfunctions2_function('opt', required_attrs.merge(service_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudfunctions2_function', 'opt')
         expect(config).to have_key('service_config')
@@ -233,7 +271,7 @@ RSpec.describe Pangea::Resources::GoogleCloudfunctions2Function do
     resource_type: :google_cloudfunctions2_function,
     method: :google_cloudfunctions2_function,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :environment, :project, :state, :terraform_labels, :update_time, :url],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :environment, :project, :state, :terraform_labels, :update_time, :url],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -41,6 +41,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketObject do
         expect(ref.content).to eq("${google_storage_bucket_object.test.content}")
         expect(ref.content_type).to eq("${google_storage_bucket_object.test.content_type}")
         expect(ref.crc32c).to eq("${google_storage_bucket_object.test.crc32c}")
+        expect(ref.deletion_policy).to eq("${google_storage_bucket_object.test.deletion_policy}")
         expect(ref.generation).to eq("${google_storage_bucket_object.test.generation}")
         expect(ref.kms_key_name).to eq("${google_storage_bucket_object.test.kms_key_name}")
         expect(ref.md5hash).to eq("${google_storage_bucket_object.test.md5hash}")
@@ -63,6 +64,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketObject do
         expect(config).not_to have_key('content')
         expect(config).not_to have_key('content_type')
         expect(config).not_to have_key('crc32c')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('generation')
         expect(config).not_to have_key('kms_key_name')
         expect(config).not_to have_key('md5hash')
@@ -75,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketObject do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ cache_control: 'test-value', content_disposition: 'test-value', content_encoding: 'test-value', content_language: 'test-value', customer_encryption: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', detect_md5hash: 'test-value', event_based_hold: true, force_empty_content_type: true, metadata: { 'key1' => 'val1' }, retention: [{ 'key1' => 'val1' }], source: 'test-value', source_md5hash: 'test-value', temporary_hold: true }) }
+      let(:all_attrs) { required_attrs.merge({ cache_control: 'test-value', content: 'test-value', content_disposition: 'test-value', content_encoding: 'test-value', content_language: 'test-value', content_type: 'test-value', contexts: { 'key1' => 'val1' }, customer_encryption: { 'key1' => 'val1' }, deletion_policy: 'test-value', detect_md5hash: 'test-value', event_based_hold: true, force_empty_content_type: true, kms_key_name: 'test-value', metadata: { 'key1' => 'val1' }, retention: { 'key1' => 'val1' }, source: 'test-value', source_md5hash: 'test-value', storage_class: 'test-value', temporary_hold: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -85,18 +87,23 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketObject do
 
         config = validate_resource_structure(result, 'google_storage_bucket_object', 'full')
         expect(config).to have_key('cache_control')
+        expect(config).to have_key('content')
         expect(config).to have_key('content_disposition')
         expect(config).to have_key('content_encoding')
         expect(config).to have_key('content_language')
+        expect(config).to have_key('content_type')
+        expect(config).to have_key('contexts')
         expect(config).to have_key('customer_encryption')
         expect(config).to have_key('deletion_policy')
         expect(config).to have_key('detect_md5hash')
         expect(config).to have_key('event_based_hold')
         expect(config).to have_key('force_empty_content_type')
+        expect(config).to have_key('kms_key_name')
         expect(config).to have_key('metadata')
         expect(config).to have_key('retention')
         expect(config).to have_key('source')
         expect(config).to have_key('source_md5hash')
+        expect(config).to have_key('storage_class')
         expect(config).to have_key('temporary_hold')
       end
     end
@@ -118,6 +125,23 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketObject do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket_object', 'minimal')
         expect(config).not_to have_key('cache_control')
+      end
+      it 'includes content when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket_object('opt', required_attrs.merge(content: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket_object', 'opt')
+        expect(config).to have_key('content')
+      end
+
+      it 'omits content when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket_object('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket_object', 'minimal')
+        expect(config).not_to have_key('content')
       end
       it 'includes content_disposition when provided' do
         synth = create_synthesizer
@@ -170,10 +194,44 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketObject do
         config = validate_resource_structure(result, 'google_storage_bucket_object', 'minimal')
         expect(config).not_to have_key('content_language')
       end
+      it 'includes content_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket_object('opt', required_attrs.merge(content_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket_object', 'opt')
+        expect(config).to have_key('content_type')
+      end
+
+      it 'omits content_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket_object('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket_object', 'minimal')
+        expect(config).not_to have_key('content_type')
+      end
+      it 'includes contexts when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket_object('opt', required_attrs.merge(contexts: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket_object', 'opt')
+        expect(config).to have_key('contexts')
+      end
+
+      it 'omits contexts when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket_object('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket_object', 'minimal')
+        expect(config).not_to have_key('contexts')
+      end
       it 'includes customer_encryption when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_bucket_object('opt', required_attrs.merge(customer_encryption: [{ 'key1' => 'val1' }]))
+        synth.google_storage_bucket_object('opt', required_attrs.merge(customer_encryption: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket_object', 'opt')
         expect(config).to have_key('customer_encryption')
@@ -255,6 +313,23 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketObject do
         config = validate_resource_structure(result, 'google_storage_bucket_object', 'minimal')
         expect(config).not_to have_key('force_empty_content_type')
       end
+      it 'includes kms_key_name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket_object('opt', required_attrs.merge(kms_key_name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket_object', 'opt')
+        expect(config).to have_key('kms_key_name')
+      end
+
+      it 'omits kms_key_name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket_object('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket_object', 'minimal')
+        expect(config).not_to have_key('kms_key_name')
+      end
       it 'includes metadata when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -275,7 +350,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketObject do
       it 'includes retention when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_bucket_object('opt', required_attrs.merge(retention: [{ 'key1' => 'val1' }]))
+        synth.google_storage_bucket_object('opt', required_attrs.merge(retention: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket_object', 'opt')
         expect(config).to have_key('retention')
@@ -322,6 +397,23 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketObject do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket_object', 'minimal')
         expect(config).not_to have_key('source_md5hash')
+      end
+      it 'includes storage_class when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket_object('opt', required_attrs.merge(storage_class: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket_object', 'opt')
+        expect(config).to have_key('storage_class')
+      end
+
+      it 'omits storage_class when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket_object('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket_object', 'minimal')
+        expect(config).not_to have_key('storage_class')
       end
       it 'includes temporary_hold when provided' do
         synth = create_synthesizer
@@ -428,7 +520,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketObject do
     resource_type: :google_storage_bucket_object,
     method: :google_storage_bucket_object,
     required_attrs: { bucket: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :content, :content_type, :crc32c, :generation, :kms_key_name, :md5hash, :md5hexhash, :media_link, :output_name, :self_link, :storage_class],
+    expected_outputs: [:id, :content, :content_type, :crc32c, :deletion_policy, :generation, :kms_key_name, :md5hash, :md5hexhash, :media_link, :output_name, :self_link, :storage_class],
     sensitive_fields: [:content],
     immutable_fields: [],
     boolean_fields: [:event_based_hold, :force_empty_content_type, :temporary_hold]

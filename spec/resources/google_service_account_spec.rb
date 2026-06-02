@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleServiceAccount do
         ref = synth.google_service_account('test', required_attrs)
 
         expect(ref.id).to eq("${google_service_account.test.id}")
+        expect(ref.deletion_policy).to eq("${google_service_account.test.deletion_policy}")
         expect(ref.email).to eq("${google_service_account.test.email}")
         expect(ref.member).to eq("${google_service_account.test.member}")
         expect(ref.name).to eq("${google_service_account.test.name}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleServiceAccount do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_service_account', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('email')
         expect(config).not_to have_key('member')
         expect(config).not_to have_key('name')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleServiceAccount do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ create_ignore_already_exists: true, description: 'test-value', disabled: true, display_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ create_ignore_already_exists: true, deletion_policy: 'test-value', description: 'test-value', disabled: true, display_name: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,9 +75,11 @@ RSpec.describe Pangea::Resources::GoogleServiceAccount do
 
         config = validate_resource_structure(result, 'google_service_account', 'full')
         expect(config).to have_key('create_ignore_already_exists')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('disabled')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('project')
       end
     end
 
@@ -96,6 +100,23 @@ RSpec.describe Pangea::Resources::GoogleServiceAccount do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_service_account', 'minimal')
         expect(config).not_to have_key('create_ignore_already_exists')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_service_account('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_service_account', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_service_account('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_service_account', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -147,6 +168,23 @@ RSpec.describe Pangea::Resources::GoogleServiceAccount do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_service_account', 'minimal')
         expect(config).not_to have_key('display_name')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_service_account('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_service_account', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_service_account('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_service_account', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -217,7 +255,7 @@ RSpec.describe Pangea::Resources::GoogleServiceAccount do
     resource_type: :google_service_account,
     method: :google_service_account,
     required_attrs: { account_id: 'test-value' },
-    expected_outputs: [:id, :email, :member, :name, :project, :unique_id],
+    expected_outputs: [:id, :deletion_policy, :email, :member, :name, :project, :unique_id],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:create_ignore_already_exists, :disabled]

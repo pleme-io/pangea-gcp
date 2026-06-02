@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleRedisClusterUserCreatedConnections do
         ref = synth.google_redis_cluster_user_created_connections('test', required_attrs)
 
         expect(ref.id).to eq("${google_redis_cluster_user_created_connections.test.id}")
+        expect(ref.deletion_policy).to eq("${google_redis_cluster_user_created_connections.test.deletion_policy}")
         expect(ref.project).to eq("${google_redis_cluster_user_created_connections.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleRedisClusterUserCreatedConnections do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_redis_cluster_user_created_connections', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ cluster_endpoints: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ cluster_endpoints: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -65,6 +67,8 @@ RSpec.describe Pangea::Resources::GoogleRedisClusterUserCreatedConnections do
 
         config = validate_resource_structure(result, 'google_redis_cluster_user_created_connections', 'full')
         expect(config).to have_key('cluster_endpoints')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
       end
     end
 
@@ -85,6 +89,40 @@ RSpec.describe Pangea::Resources::GoogleRedisClusterUserCreatedConnections do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_cluster_user_created_connections', 'minimal')
         expect(config).not_to have_key('cluster_endpoints')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster_user_created_connections('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster_user_created_connections', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster_user_created_connections('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster_user_created_connections', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster_user_created_connections('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster_user_created_connections', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster_user_created_connections('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster_user_created_connections', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -131,7 +169,7 @@ RSpec.describe Pangea::Resources::GoogleRedisClusterUserCreatedConnections do
     resource_type: :google_redis_cluster_user_created_connections,
     method: :google_redis_cluster_user_created_connections,
     required_attrs: { name: 'test-value', region: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

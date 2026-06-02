@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleDiscoveryEngineChatEngine do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { chat_engine_config: [{ 'key1' => 'val1' }], collection_id: 'test-value', data_store_ids: ['test-value'], display_name: 'test-value', engine_id: 'test-value', location: 'test-value' } }
+  let(:required_attrs) { { chat_engine_config: { 'key1' => 'val1' }, collection_id: 'test-value', data_store_ids: ['test-value'], display_name: 'test-value', engine_id: 'test-value', location: 'test-value' } }
 
   describe ':google_discovery_engine_chat_engine' do
     context 'with required attributes only' do
@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineChatEngine do
         expect(ref.id).to eq("${google_discovery_engine_chat_engine.test.id}")
         expect(ref.chat_engine_metadata).to eq("${google_discovery_engine_chat_engine.test.chat_engine_metadata}")
         expect(ref.create_time).to eq("${google_discovery_engine_chat_engine.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_discovery_engine_chat_engine.test.deletion_policy}")
         expect(ref.name).to eq("${google_discovery_engine_chat_engine.test.name}")
         expect(ref.project).to eq("${google_discovery_engine_chat_engine.test.project}")
         expect(ref.update_time).to eq("${google_discovery_engine_chat_engine.test.update_time}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineChatEngine do
         config = validate_resource_structure(result, 'google_discovery_engine_chat_engine', 'test')
         expect(config).not_to have_key('chat_engine_metadata')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('update_time')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineChatEngine do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ common_config: [{ 'key1' => 'val1' }], industry_vertical: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ common_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', industry_vertical: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,7 +75,9 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineChatEngine do
 
         config = validate_resource_structure(result, 'google_discovery_engine_chat_engine', 'full')
         expect(config).to have_key('common_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('industry_vertical')
+        expect(config).to have_key('project')
       end
     end
 
@@ -81,7 +85,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineChatEngine do
       it 'includes common_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_discovery_engine_chat_engine('opt', required_attrs.merge(common_config: [{ 'key1' => 'val1' }]))
+        synth.google_discovery_engine_chat_engine('opt', required_attrs.merge(common_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_discovery_engine_chat_engine', 'opt')
         expect(config).to have_key('common_config')
@@ -94,6 +98,23 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineChatEngine do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_discovery_engine_chat_engine', 'minimal')
         expect(config).not_to have_key('common_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_chat_engine('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_chat_engine', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_chat_engine('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_chat_engine', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes industry_vertical when provided' do
         synth = create_synthesizer
@@ -112,6 +133,23 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineChatEngine do
         config = validate_resource_structure(result, 'google_discovery_engine_chat_engine', 'minimal')
         expect(config).not_to have_key('industry_vertical')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_chat_engine('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_chat_engine', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_chat_engine('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_chat_engine', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -122,7 +160,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineChatEngine do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_discovery_engine_chat_engine', 'typed')
-        expect(config['chat_engine_config']).to be_a(Array)
+        expect(config['chat_engine_config']).to be_a(Hash)
         expect(config['collection_id']).to be_a(String)
         expect(config['data_store_ids']).to be_a(Array)
         expect(config['display_name']).to be_a(String)
@@ -160,8 +198,8 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineChatEngine do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_discovery_engine_chat_engine,
     method: :google_discovery_engine_chat_engine,
-    required_attrs: { chat_engine_config: [{ 'key1' => 'val1' }], collection_id: 'test-value', data_store_ids: ['test-value'], display_name: 'test-value', engine_id: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :chat_engine_metadata, :create_time, :name, :project, :update_time],
+    required_attrs: { chat_engine_config: { 'key1' => 'val1' }, collection_id: 'test-value', data_store_ids: ['test-value'], display_name: 'test-value', engine_id: 'test-value', location: 'test-value' },
+    expected_outputs: [:id, :chat_engine_metadata, :create_time, :deletion_policy, :name, :project, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

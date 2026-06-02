@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleSccOrganizationSccBigQueryExport do
 
         expect(ref.id).to eq("${google_scc_organization_scc_big_query_export.test.id}")
         expect(ref.create_time).to eq("${google_scc_organization_scc_big_query_export.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_scc_organization_scc_big_query_export.test.deletion_policy}")
         expect(ref.most_recent_editor).to eq("${google_scc_organization_scc_big_query_export.test.most_recent_editor}")
         expect(ref.name).to eq("${google_scc_organization_scc_big_query_export.test.name}")
         expect(ref.principal).to eq("${google_scc_organization_scc_big_query_export.test.principal}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleSccOrganizationSccBigQueryExport do
 
         config = validate_resource_structure(result, 'google_scc_organization_scc_big_query_export', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('most_recent_editor')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('principal')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleSccOrganizationSccBigQueryExport do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ dataset: 'test-value', description: 'test-value', filter: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ dataset: 'test-value', deletion_policy: 'test-value', description: 'test-value', filter: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,6 +75,7 @@ RSpec.describe Pangea::Resources::GoogleSccOrganizationSccBigQueryExport do
 
         config = validate_resource_structure(result, 'google_scc_organization_scc_big_query_export', 'full')
         expect(config).to have_key('dataset')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('filter')
       end
@@ -95,6 +98,23 @@ RSpec.describe Pangea::Resources::GoogleSccOrganizationSccBigQueryExport do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_scc_organization_scc_big_query_export', 'minimal')
         expect(config).not_to have_key('dataset')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_scc_organization_scc_big_query_export('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_scc_organization_scc_big_query_export', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_scc_organization_scc_big_query_export('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_scc_organization_scc_big_query_export', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -175,7 +195,7 @@ RSpec.describe Pangea::Resources::GoogleSccOrganizationSccBigQueryExport do
     resource_type: :google_scc_organization_scc_big_query_export,
     method: :google_scc_organization_scc_big_query_export,
     required_attrs: { big_query_export_id: 'test-value', organization: 'test-value' },
-    expected_outputs: [:id, :create_time, :most_recent_editor, :name, :principal, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :most_recent_editor, :name, :principal, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

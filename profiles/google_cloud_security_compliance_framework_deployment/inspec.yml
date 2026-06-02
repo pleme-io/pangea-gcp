@@ -1,0 +1,8 @@
+name: google_cloud_security_compliance_framework_deployment
+title: Manages a google_cloud_security_compliance_framework_deployment resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

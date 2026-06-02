@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { dataset_config_id: 'test-value', identity: [{ 'key1' => 'val1' }], location: 'test-value', retention_period_days: 3.14 } }
+  let(:required_attrs) { { dataset_config_id: 'test-value', identity: { 'key1' => 'val1' }, location: 'test-value', retention_period_days: 3.14 } }
 
   describe ':google_storage_insights_dataset_config' do
     context 'with required attributes only' do
@@ -38,8 +38,10 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
         ref = synth.google_storage_insights_dataset_config('test', required_attrs)
 
         expect(ref.id).to eq("${google_storage_insights_dataset_config.test.id}")
+        expect(ref.activity_data_retention_period_days).to eq("${google_storage_insights_dataset_config.test.activity_data_retention_period_days}")
         expect(ref.create_time).to eq("${google_storage_insights_dataset_config.test.create_time}")
         expect(ref.dataset_config_state).to eq("${google_storage_insights_dataset_config.test.dataset_config_state}")
+        expect(ref.deletion_policy).to eq("${google_storage_insights_dataset_config.test.deletion_policy}")
         expect(ref.link).to eq("${google_storage_insights_dataset_config.test.link}")
         expect(ref.name).to eq("${google_storage_insights_dataset_config.test.name}")
         expect(ref.organization_number).to eq("${google_storage_insights_dataset_config.test.organization_number}")
@@ -57,8 +59,10 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'test')
+        expect(config).not_to have_key('activity_data_retention_period_days')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('dataset_config_state')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('link')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('organization_number')
@@ -69,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', exclude_cloud_storage_buckets: [{ 'key1' => 'val1' }], exclude_cloud_storage_locations: [{ 'key1' => 'val1' }], include_cloud_storage_buckets: [{ 'key1' => 'val1' }], include_cloud_storage_locations: [{ 'key1' => 'val1' }], include_newly_created_buckets: true, link_dataset: true, organization_scope: true, source_folders: [{ 'key1' => 'val1' }], source_projects: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ activity_data_retention_period_days: 3.14, deletion_policy: 'test-value', description: 'test-value', exclude_cloud_storage_buckets: { 'key1' => 'val1' }, exclude_cloud_storage_locations: { 'key1' => 'val1' }, include_cloud_storage_buckets: { 'key1' => 'val1' }, include_cloud_storage_locations: { 'key1' => 'val1' }, include_newly_created_buckets: true, link_dataset: true, organization_number: 'test-value', organization_scope: true, project: 'test-value', source_folders: { 'key1' => 'val1' }, source_projects: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,6 +82,8 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'full')
+        expect(config).to have_key('activity_data_retention_period_days')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('exclude_cloud_storage_buckets')
         expect(config).to have_key('exclude_cloud_storage_locations')
@@ -85,13 +91,49 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
         expect(config).to have_key('include_cloud_storage_locations')
         expect(config).to have_key('include_newly_created_buckets')
         expect(config).to have_key('link_dataset')
+        expect(config).to have_key('organization_number')
         expect(config).to have_key('organization_scope')
+        expect(config).to have_key('project')
         expect(config).to have_key('source_folders')
         expect(config).to have_key('source_projects')
       end
     end
 
     context 'optional attributes' do
+      it 'includes activity_data_retention_period_days when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(activity_data_retention_period_days: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'opt')
+        expect(config).to have_key('activity_data_retention_period_days')
+      end
+
+      it 'omits activity_data_retention_period_days when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_insights_dataset_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'minimal')
+        expect(config).not_to have_key('activity_data_retention_period_days')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_insights_dataset_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -112,7 +154,7 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
       it 'includes exclude_cloud_storage_buckets when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(exclude_cloud_storage_buckets: [{ 'key1' => 'val1' }]))
+        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(exclude_cloud_storage_buckets: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'opt')
         expect(config).to have_key('exclude_cloud_storage_buckets')
@@ -129,7 +171,7 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
       it 'includes exclude_cloud_storage_locations when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(exclude_cloud_storage_locations: [{ 'key1' => 'val1' }]))
+        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(exclude_cloud_storage_locations: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'opt')
         expect(config).to have_key('exclude_cloud_storage_locations')
@@ -146,7 +188,7 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
       it 'includes include_cloud_storage_buckets when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(include_cloud_storage_buckets: [{ 'key1' => 'val1' }]))
+        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(include_cloud_storage_buckets: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'opt')
         expect(config).to have_key('include_cloud_storage_buckets')
@@ -163,7 +205,7 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
       it 'includes include_cloud_storage_locations when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(include_cloud_storage_locations: [{ 'key1' => 'val1' }]))
+        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(include_cloud_storage_locations: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'opt')
         expect(config).to have_key('include_cloud_storage_locations')
@@ -211,6 +253,23 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
         config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'minimal')
         expect(config).not_to have_key('link_dataset')
       end
+      it 'includes organization_number when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(organization_number: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'opt')
+        expect(config).to have_key('organization_number')
+      end
+
+      it 'omits organization_number when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_insights_dataset_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'minimal')
+        expect(config).not_to have_key('organization_number')
+      end
       it 'includes organization_scope when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -228,10 +287,27 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
         config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'minimal')
         expect(config).not_to have_key('organization_scope')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_insights_dataset_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes source_folders when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(source_folders: [{ 'key1' => 'val1' }]))
+        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(source_folders: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'opt')
         expect(config).to have_key('source_folders')
@@ -248,7 +324,7 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
       it 'includes source_projects when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(source_projects: [{ 'key1' => 'val1' }]))
+        synth.google_storage_insights_dataset_config('opt', required_attrs.merge(source_projects: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'opt')
         expect(config).to have_key('source_projects')
@@ -309,7 +385,7 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
 
         config = validate_resource_structure(result, 'google_storage_insights_dataset_config', 'typed')
         expect(config['dataset_config_id']).to be_a(String)
-        expect(config['identity']).to be_a(Array)
+        expect(config['identity']).to be_a(Hash)
         expect(config['location']).to be_a(String)
         expect(config['retention_period_days']).to be_a(Float)
       end
@@ -344,8 +420,8 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsDatasetConfig do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_storage_insights_dataset_config,
     method: :google_storage_insights_dataset_config,
-    required_attrs: { dataset_config_id: 'test-value', identity: [{ 'key1' => 'val1' }], location: 'test-value', retention_period_days: 3.14 },
-    expected_outputs: [:id, :create_time, :dataset_config_state, :link, :name, :organization_number, :project, :uid, :update_time],
+    required_attrs: { dataset_config_id: 'test-value', identity: { 'key1' => 'val1' }, location: 'test-value', retention_period_days: 3.14 },
+    expected_outputs: [:id, :activity_data_retention_period_days, :create_time, :dataset_config_state, :deletion_policy, :link, :name, :organization_number, :project, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:include_newly_created_buckets, :link_dataset, :organization_scope]

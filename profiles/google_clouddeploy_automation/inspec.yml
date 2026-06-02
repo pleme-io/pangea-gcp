@@ -1,0 +1,8 @@
+name: google_clouddeploy_automation
+title: Manages a google_clouddeploy_automation resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

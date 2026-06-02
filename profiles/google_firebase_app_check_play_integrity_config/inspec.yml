@@ -1,0 +1,8 @@
+name: google_firebase_app_check_play_integrity_config
+title: Manages a google_firebase_app_check_play_integrity_config resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

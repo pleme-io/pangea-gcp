@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowConversationProfile do
         ref = synth.google_dialogflow_conversation_profile('test', required_attrs)
 
         expect(ref.id).to eq("${google_dialogflow_conversation_profile.test.id}")
+        expect(ref.deletion_policy).to eq("${google_dialogflow_conversation_profile.test.deletion_policy}")
         expect(ref.language_code).to eq("${google_dialogflow_conversation_profile.test.language_code}")
         expect(ref.name).to eq("${google_dialogflow_conversation_profile.test.name}")
         expect(ref.project).to eq("${google_dialogflow_conversation_profile.test.project}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowConversationProfile do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('language_code')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowConversationProfile do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ automated_agent_config: [{ 'key1' => 'val1' }], human_agent_assistant_config: [{ 'key1' => 'val1' }], human_agent_handoff_config: [{ 'key1' => 'val1' }], logging_config: [{ 'key1' => 'val1' }], new_message_event_notification_config: [{ 'key1' => 'val1' }], notification_config: [{ 'key1' => 'val1' }], security_settings: 'test-value', stt_config: [{ 'key1' => 'val1' }], time_zone: 'test-value', tts_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ automated_agent_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', human_agent_assistant_config: { 'key1' => 'val1' }, human_agent_handoff_config: { 'key1' => 'val1' }, language_code: 'test-value', logging_config: { 'key1' => 'val1' }, new_message_event_notification_config: { 'key1' => 'val1' }, new_recognition_result_notification_config: { 'key1' => 'val1' }, notification_config: { 'key1' => 'val1' }, project: 'test-value', security_settings: 'test-value', stt_config: { 'key1' => 'val1' }, time_zone: 'test-value', tts_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,11 +71,15 @@ RSpec.describe Pangea::Resources::GoogleDialogflowConversationProfile do
 
         config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'full')
         expect(config).to have_key('automated_agent_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('human_agent_assistant_config')
         expect(config).to have_key('human_agent_handoff_config')
+        expect(config).to have_key('language_code')
         expect(config).to have_key('logging_config')
         expect(config).to have_key('new_message_event_notification_config')
+        expect(config).to have_key('new_recognition_result_notification_config')
         expect(config).to have_key('notification_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('security_settings')
         expect(config).to have_key('stt_config')
         expect(config).to have_key('time_zone')
@@ -85,7 +91,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowConversationProfile do
       it 'includes automated_agent_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(automated_agent_config: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(automated_agent_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'opt')
         expect(config).to have_key('automated_agent_config')
@@ -99,10 +105,27 @@ RSpec.describe Pangea::Resources::GoogleDialogflowConversationProfile do
         config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'minimal')
         expect(config).not_to have_key('automated_agent_config')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_conversation_profile('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes human_agent_assistant_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(human_agent_assistant_config: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(human_agent_assistant_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'opt')
         expect(config).to have_key('human_agent_assistant_config')
@@ -119,7 +142,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowConversationProfile do
       it 'includes human_agent_handoff_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(human_agent_handoff_config: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(human_agent_handoff_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'opt')
         expect(config).to have_key('human_agent_handoff_config')
@@ -133,10 +156,27 @@ RSpec.describe Pangea::Resources::GoogleDialogflowConversationProfile do
         config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'minimal')
         expect(config).not_to have_key('human_agent_handoff_config')
       end
+      it 'includes language_code when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(language_code: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'opt')
+        expect(config).to have_key('language_code')
+      end
+
+      it 'omits language_code when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_conversation_profile('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'minimal')
+        expect(config).not_to have_key('language_code')
+      end
       it 'includes logging_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(logging_config: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(logging_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'opt')
         expect(config).to have_key('logging_config')
@@ -153,7 +193,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowConversationProfile do
       it 'includes new_message_event_notification_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(new_message_event_notification_config: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(new_message_event_notification_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'opt')
         expect(config).to have_key('new_message_event_notification_config')
@@ -167,10 +207,27 @@ RSpec.describe Pangea::Resources::GoogleDialogflowConversationProfile do
         config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'minimal')
         expect(config).not_to have_key('new_message_event_notification_config')
       end
+      it 'includes new_recognition_result_notification_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(new_recognition_result_notification_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'opt')
+        expect(config).to have_key('new_recognition_result_notification_config')
+      end
+
+      it 'omits new_recognition_result_notification_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_conversation_profile('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'minimal')
+        expect(config).not_to have_key('new_recognition_result_notification_config')
+      end
       it 'includes notification_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(notification_config: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(notification_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'opt')
         expect(config).to have_key('notification_config')
@@ -183,6 +240,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowConversationProfile do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'minimal')
         expect(config).not_to have_key('notification_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_conversation_profile('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes security_settings when provided' do
         synth = create_synthesizer
@@ -204,7 +278,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowConversationProfile do
       it 'includes stt_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(stt_config: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(stt_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'opt')
         expect(config).to have_key('stt_config')
@@ -238,7 +312,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowConversationProfile do
       it 'includes tts_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(tts_config: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_conversation_profile('opt', required_attrs.merge(tts_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_conversation_profile', 'opt')
         expect(config).to have_key('tts_config')
@@ -297,7 +371,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowConversationProfile do
     resource_type: :google_dialogflow_conversation_profile,
     method: :google_dialogflow_conversation_profile,
     required_attrs: { display_name: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :language_code, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :language_code, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

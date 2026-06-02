@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComposerUserWorkloadsConfigMap do
         ref = synth.google_composer_user_workloads_config_map('test', required_attrs)
 
         expect(ref.id).to eq("${google_composer_user_workloads_config_map.test.id}")
+        expect(ref.deletion_policy).to eq("${google_composer_user_workloads_config_map.test.deletion_policy}")
         expect(ref.project).to eq("${google_composer_user_workloads_config_map.test.project}")
         expect(ref.region).to eq("${google_composer_user_workloads_config_map.test.region}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleComposerUserWorkloadsConfigMap do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_composer_user_workloads_config_map', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('region')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ data: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ data: { 'key1' => 'val1' }, deletion_policy: 'test-value', project: 'test-value', region: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,6 +69,9 @@ RSpec.describe Pangea::Resources::GoogleComposerUserWorkloadsConfigMap do
 
         config = validate_resource_structure(result, 'google_composer_user_workloads_config_map', 'full')
         expect(config).to have_key('data')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
       end
     end
 
@@ -87,6 +92,57 @@ RSpec.describe Pangea::Resources::GoogleComposerUserWorkloadsConfigMap do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_composer_user_workloads_config_map', 'minimal')
         expect(config).not_to have_key('data')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_composer_user_workloads_config_map('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_composer_user_workloads_config_map', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_composer_user_workloads_config_map('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_composer_user_workloads_config_map', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_composer_user_workloads_config_map('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_composer_user_workloads_config_map', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_composer_user_workloads_config_map('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_composer_user_workloads_config_map', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_composer_user_workloads_config_map('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_composer_user_workloads_config_map', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_composer_user_workloads_config_map('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_composer_user_workloads_config_map', 'minimal')
+        expect(config).not_to have_key('region')
       end
     end
 
@@ -133,7 +189,7 @@ RSpec.describe Pangea::Resources::GoogleComposerUserWorkloadsConfigMap do
     resource_type: :google_composer_user_workloads_config_map,
     method: :google_composer_user_workloads_config_map,
     required_attrs: { environment: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :project, :region],
+    expected_outputs: [:id, :deletion_policy, :project, :region],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

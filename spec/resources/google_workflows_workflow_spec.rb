@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleWorkflowsWorkflow do
 
         expect(ref.id).to eq("${google_workflows_workflow.test.id}")
         expect(ref.create_time).to eq("${google_workflows_workflow.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_workflows_workflow.test.deletion_policy}")
         expect(ref.description).to eq("${google_workflows_workflow.test.description}")
         expect(ref.effective_labels).to eq("${google_workflows_workflow.test.effective_labels}")
         expect(ref.name).to eq("${google_workflows_workflow.test.name}")
@@ -61,6 +62,7 @@ RSpec.describe Pangea::Resources::GoogleWorkflowsWorkflow do
 
         config = validate_resource_structure(result, 'google_workflows_workflow', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('description')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
@@ -75,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleWorkflowsWorkflow do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ call_log_level: 'test-value', crypto_key_name: 'test-value', deletion_protection: true, execution_history_level: 'test-value', labels: { 'key1' => 'val1' }, region: 'test-value', source_contents: 'test-value', tags: { 'key1' => 'val1' }, user_env_vars: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ call_log_level: 'test-value', crypto_key_name: 'test-value', deletion_policy: 'test-value', deletion_protection: true, description: 'test-value', execution_history_level: 'test-value', labels: { 'key1' => 'val1' }, name: 'test-value', name_prefix: 'test-value', project: 'test-value', region: 'test-value', service_account: 'test-value', source_contents: 'test-value', tags: { 'key1' => 'val1' }, user_env_vars: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -86,10 +88,16 @@ RSpec.describe Pangea::Resources::GoogleWorkflowsWorkflow do
         config = validate_resource_structure(result, 'google_workflows_workflow', 'full')
         expect(config).to have_key('call_log_level')
         expect(config).to have_key('crypto_key_name')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
+        expect(config).to have_key('description')
         expect(config).to have_key('execution_history_level')
         expect(config).to have_key('labels')
+        expect(config).to have_key('name')
+        expect(config).to have_key('name_prefix')
+        expect(config).to have_key('project')
         expect(config).to have_key('region')
+        expect(config).to have_key('service_account')
         expect(config).to have_key('source_contents')
         expect(config).to have_key('tags')
         expect(config).to have_key('user_env_vars')
@@ -131,6 +139,23 @@ RSpec.describe Pangea::Resources::GoogleWorkflowsWorkflow do
         config = validate_resource_structure(result, 'google_workflows_workflow', 'minimal')
         expect(config).not_to have_key('crypto_key_name')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workflows_workflow('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workflows_workflow', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workflows_workflow('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workflows_workflow', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -147,6 +172,23 @@ RSpec.describe Pangea::Resources::GoogleWorkflowsWorkflow do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_workflows_workflow', 'minimal')
         expect(config).not_to have_key('deletion_protection')
+      end
+      it 'includes description when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workflows_workflow('opt', required_attrs.merge(description: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workflows_workflow', 'opt')
+        expect(config).to have_key('description')
+      end
+
+      it 'omits description when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workflows_workflow('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workflows_workflow', 'minimal')
+        expect(config).not_to have_key('description')
       end
       it 'includes execution_history_level when provided' do
         synth = create_synthesizer
@@ -182,6 +224,57 @@ RSpec.describe Pangea::Resources::GoogleWorkflowsWorkflow do
         config = validate_resource_structure(result, 'google_workflows_workflow', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workflows_workflow('opt', required_attrs.merge(name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workflows_workflow', 'opt')
+        expect(config).to have_key('name')
+      end
+
+      it 'omits name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workflows_workflow('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workflows_workflow', 'minimal')
+        expect(config).not_to have_key('name')
+      end
+      it 'includes name_prefix when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workflows_workflow('opt', required_attrs.merge(name_prefix: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workflows_workflow', 'opt')
+        expect(config).to have_key('name_prefix')
+      end
+
+      it 'omits name_prefix when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workflows_workflow('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workflows_workflow', 'minimal')
+        expect(config).not_to have_key('name_prefix')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workflows_workflow('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workflows_workflow', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workflows_workflow('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workflows_workflow', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes region when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -198,6 +291,23 @@ RSpec.describe Pangea::Resources::GoogleWorkflowsWorkflow do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_workflows_workflow', 'minimal')
         expect(config).not_to have_key('region')
+      end
+      it 'includes service_account when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workflows_workflow('opt', required_attrs.merge(service_account: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workflows_workflow', 'opt')
+        expect(config).to have_key('service_account')
+      end
+
+      it 'omits service_account when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workflows_workflow('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workflows_workflow', 'minimal')
+        expect(config).not_to have_key('service_account')
       end
       it 'includes source_contents when provided' do
         synth = create_synthesizer
@@ -307,7 +417,7 @@ RSpec.describe Pangea::Resources::GoogleWorkflowsWorkflow do
     resource_type: :google_workflows_workflow,
     method: :google_workflows_workflow,
     required_attrs: {},
-    expected_outputs: [:id, :create_time, :description, :effective_labels, :name, :name_prefix, :project, :revision_id, :service_account, :state, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :description, :effective_labels, :name, :name_prefix, :project, :revision_id, :service_account, :state, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection]

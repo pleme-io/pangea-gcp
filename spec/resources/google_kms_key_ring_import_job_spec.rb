@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleKmsKeyRingImportJob do
 
         expect(ref.id).to eq("${google_kms_key_ring_import_job.test.id}")
         expect(ref.attestation).to eq("${google_kms_key_ring_import_job.test.attestation}")
+        expect(ref.deletion_policy).to eq("${google_kms_key_ring_import_job.test.deletion_policy}")
         expect(ref.expire_time).to eq("${google_kms_key_ring_import_job.test.expire_time}")
         expect(ref.name).to eq("${google_kms_key_ring_import_job.test.name}")
         expect(ref.public_key).to eq("${google_kms_key_ring_import_job.test.public_key}")
@@ -55,10 +56,45 @@ RSpec.describe Pangea::Resources::GoogleKmsKeyRingImportJob do
 
         config = validate_resource_structure(result, 'google_kms_key_ring_import_job', 'test')
         expect(config).not_to have_key('attestation')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('expire_time')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('public_key')
         expect(config).not_to have_key('state')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_key_ring_import_job('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_kms_key_ring_import_job', 'full')
+        expect(config).to have_key('deletion_policy')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_key_ring_import_job('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_key_ring_import_job', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_key_ring_import_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_key_ring_import_job', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -107,7 +143,7 @@ RSpec.describe Pangea::Resources::GoogleKmsKeyRingImportJob do
     resource_type: :google_kms_key_ring_import_job,
     method: :google_kms_key_ring_import_job,
     required_attrs: { import_job_id: 'test-value', import_method: 'test-value', key_ring: 'test-value', protection_level: 'test-value' },
-    expected_outputs: [:id, :attestation, :expire_time, :name, :public_key, :state],
+    expected_outputs: [:id, :attestation, :deletion_policy, :expire_time, :name, :public_key, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

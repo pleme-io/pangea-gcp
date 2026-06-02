@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendBucket do
 
         expect(ref.id).to eq("${google_compute_backend_bucket.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_backend_bucket.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_backend_bucket.test.deletion_policy}")
         expect(ref.project).to eq("${google_compute_backend_bucket.test.project}")
         expect(ref.self_link).to eq("${google_compute_backend_bucket.test.self_link}")
       end
@@ -53,13 +54,14 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendBucket do
 
         config = validate_resource_structure(result, 'google_compute_backend_bucket', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ cdn_policy: [{ 'key1' => 'val1' }], compression_mode: 'test-value', custom_response_headers: ['test-value'], description: 'test-value', edge_security_policy: 'test-value', enable_cdn: true, load_balancing_scheme: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ cdn_policy: { 'key1' => 'val1' }, compression_mode: 'test-value', custom_response_headers: ['test-value'], deletion_policy: 'test-value', description: 'test-value', edge_security_policy: 'test-value', enable_cdn: true, load_balancing_scheme: 'test-value', params: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,10 +73,13 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendBucket do
         expect(config).to have_key('cdn_policy')
         expect(config).to have_key('compression_mode')
         expect(config).to have_key('custom_response_headers')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('edge_security_policy')
         expect(config).to have_key('enable_cdn')
         expect(config).to have_key('load_balancing_scheme')
+        expect(config).to have_key('params')
+        expect(config).to have_key('project')
       end
     end
 
@@ -82,7 +87,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendBucket do
       it 'includes cdn_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_backend_bucket('opt', required_attrs.merge(cdn_policy: [{ 'key1' => 'val1' }]))
+        synth.google_compute_backend_bucket('opt', required_attrs.merge(cdn_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_backend_bucket', 'opt')
         expect(config).to have_key('cdn_policy')
@@ -129,6 +134,23 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendBucket do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_backend_bucket', 'minimal')
         expect(config).not_to have_key('custom_response_headers')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_bucket('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_bucket', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_bucket('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_bucket', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -198,6 +220,40 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendBucket do
         config = validate_resource_structure(result, 'google_compute_backend_bucket', 'minimal')
         expect(config).not_to have_key('load_balancing_scheme')
       end
+      it 'includes params when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_bucket('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_bucket', 'opt')
+        expect(config).to have_key('params')
+      end
+
+      it 'omits params when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_bucket('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_bucket', 'minimal')
+        expect(config).not_to have_key('params')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_bucket('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_bucket', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_backend_bucket('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_backend_bucket', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'boolean fields' do
@@ -257,7 +313,7 @@ RSpec.describe Pangea::Resources::GoogleComputeBackendBucket do
     resource_type: :google_compute_backend_bucket,
     method: :google_compute_backend_bucket,
     required_attrs: { bucket_name: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :project, :self_link],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :project, :self_link],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:enable_cdn]

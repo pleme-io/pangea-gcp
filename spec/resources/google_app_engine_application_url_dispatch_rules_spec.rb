@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineApplicationUrlDispatchRules do
         ref = synth.google_app_engine_application_url_dispatch_rules('test', required_attrs)
 
         expect(ref.id).to eq("${google_app_engine_application_url_dispatch_rules.test.id}")
+        expect(ref.deletion_policy).to eq("${google_app_engine_application_url_dispatch_rules.test.deletion_policy}")
         expect(ref.project).to eq("${google_app_engine_application_url_dispatch_rules.test.project}")
       end
     end
@@ -50,6 +51,59 @@ RSpec.describe Pangea::Resources::GoogleAppEngineApplicationUrlDispatchRules do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_app_engine_application_url_dispatch_rules', 'test')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('project')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application_url_dispatch_rules('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_app_engine_application_url_dispatch_rules', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application_url_dispatch_rules('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_application_url_dispatch_rules', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application_url_dispatch_rules('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_application_url_dispatch_rules', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application_url_dispatch_rules('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_application_url_dispatch_rules', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application_url_dispatch_rules('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_application_url_dispatch_rules', 'minimal')
         expect(config).not_to have_key('project')
       end
     end
@@ -96,7 +150,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineApplicationUrlDispatchRules do
     resource_type: :google_app_engine_application_url_dispatch_rules,
     method: :google_app_engine_application_url_dispatch_rules,
     required_attrs: { dispatch_rules: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

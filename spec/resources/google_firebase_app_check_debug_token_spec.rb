@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppCheckDebugToken do
 
         expect(ref.id).to eq("${google_firebase_app_check_debug_token.test.id}")
         expect(ref.debug_token_id).to eq("${google_firebase_app_check_debug_token.test.debug_token_id}")
+        expect(ref.deletion_policy).to eq("${google_firebase_app_check_debug_token.test.deletion_policy}")
         expect(ref.project).to eq("${google_firebase_app_check_debug_token.test.project}")
       end
     end
@@ -52,6 +53,59 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppCheckDebugToken do
 
         config = validate_resource_structure(result, 'google_firebase_app_check_debug_token', 'test')
         expect(config).not_to have_key('debug_token_id')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('project')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_check_debug_token('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_firebase_app_check_debug_token', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_check_debug_token('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_check_debug_token', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_check_debug_token('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_check_debug_token', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_check_debug_token('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_check_debug_token', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_check_debug_token('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_check_debug_token', 'minimal')
         expect(config).not_to have_key('project')
       end
     end
@@ -107,7 +161,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppCheckDebugToken do
     resource_type: :google_firebase_app_check_debug_token,
     method: :google_firebase_app_check_debug_token,
     required_attrs: { app_id: 'test-value', display_name: 'test-value', token: 'test-value' },
-    expected_outputs: [:id, :debug_token_id, :project],
+    expected_outputs: [:id, :debug_token_id, :deletion_policy, :project],
     sensitive_fields: [:token],
     immutable_fields: [],
     boolean_fields: []

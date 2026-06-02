@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleSqlSourceRepresentationInstance do
         ref = synth.google_sql_source_representation_instance('test', required_attrs)
 
         expect(ref.id).to eq("${google_sql_source_representation_instance.test.id}")
+        expect(ref.deletion_policy).to eq("${google_sql_source_representation_instance.test.deletion_policy}")
         expect(ref.project).to eq("${google_sql_source_representation_instance.test.project}")
         expect(ref.region).to eq("${google_sql_source_representation_instance.test.region}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleSqlSourceRepresentationInstance do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_sql_source_representation_instance', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('region')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ ca_certificate: 'test-value', client_certificate: 'test-value', client_key: 'test-value', dump_file_path: 'test-value', password: 'test-value', port: 3.14, username: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ ca_certificate: 'test-value', client_certificate: 'test-value', client_key: 'test-value', deletion_policy: 'test-value', dump_file_path: 'test-value', password: 'test-value', port: 3.14, project: 'test-value', region: 'test-value', username: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,9 +71,12 @@ RSpec.describe Pangea::Resources::GoogleSqlSourceRepresentationInstance do
         expect(config).to have_key('ca_certificate')
         expect(config).to have_key('client_certificate')
         expect(config).to have_key('client_key')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('dump_file_path')
         expect(config).to have_key('password')
         expect(config).to have_key('port')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('username')
       end
     end
@@ -128,6 +133,23 @@ RSpec.describe Pangea::Resources::GoogleSqlSourceRepresentationInstance do
         config = validate_resource_structure(result, 'google_sql_source_representation_instance', 'minimal')
         expect(config).not_to have_key('client_key')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_source_representation_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_source_representation_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_source_representation_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_source_representation_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes dump_file_path when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -178,6 +200,40 @@ RSpec.describe Pangea::Resources::GoogleSqlSourceRepresentationInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_sql_source_representation_instance', 'minimal')
         expect(config).not_to have_key('port')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_source_representation_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_source_representation_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_source_representation_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_source_representation_instance', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_source_representation_instance('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_source_representation_instance', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_source_representation_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_source_representation_instance', 'minimal')
+        expect(config).not_to have_key('region')
       end
       it 'includes username when provided' do
         synth = create_synthesizer
@@ -249,7 +305,7 @@ RSpec.describe Pangea::Resources::GoogleSqlSourceRepresentationInstance do
     resource_type: :google_sql_source_representation_instance,
     method: :google_sql_source_representation_instance,
     required_attrs: { database_version: 'test-value', host: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :project, :region],
+    expected_outputs: [:id, :deletion_policy, :project, :region],
     sensitive_fields: [:password],
     immutable_fields: [],
     boolean_fields: []

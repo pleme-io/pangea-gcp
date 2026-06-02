@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleOrganizationAccessApprovalSettings do
 
         expect(ref.id).to eq("${google_organization_access_approval_settings.test.id}")
         expect(ref.ancestor_has_active_key_version).to eq("${google_organization_access_approval_settings.test.ancestor_has_active_key_version}")
+        expect(ref.deletion_policy).to eq("${google_organization_access_approval_settings.test.deletion_policy}")
         expect(ref.enrolled_ancestor).to eq("${google_organization_access_approval_settings.test.enrolled_ancestor}")
         expect(ref.invalid_key_version).to eq("${google_organization_access_approval_settings.test.invalid_key_version}")
         expect(ref.name).to eq("${google_organization_access_approval_settings.test.name}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleOrganizationAccessApprovalSettings do
 
         config = validate_resource_structure(result, 'google_organization_access_approval_settings', 'test')
         expect(config).not_to have_key('ancestor_has_active_key_version')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('enrolled_ancestor')
         expect(config).not_to have_key('invalid_key_version')
         expect(config).not_to have_key('name')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleOrganizationAccessApprovalSettings do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ active_key_version: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ active_key_version: 'test-value', deletion_policy: 'test-value', notification_emails: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,6 +75,8 @@ RSpec.describe Pangea::Resources::GoogleOrganizationAccessApprovalSettings do
 
         config = validate_resource_structure(result, 'google_organization_access_approval_settings', 'full')
         expect(config).to have_key('active_key_version')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('notification_emails')
       end
     end
 
@@ -93,6 +97,40 @@ RSpec.describe Pangea::Resources::GoogleOrganizationAccessApprovalSettings do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_organization_access_approval_settings', 'minimal')
         expect(config).not_to have_key('active_key_version')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_organization_access_approval_settings('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_organization_access_approval_settings', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_organization_access_approval_settings('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_organization_access_approval_settings', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes notification_emails when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_organization_access_approval_settings('opt', required_attrs.merge(notification_emails: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_organization_access_approval_settings', 'opt')
+        expect(config).to have_key('notification_emails')
+      end
+
+      it 'omits notification_emails when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_organization_access_approval_settings('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_organization_access_approval_settings', 'minimal')
+        expect(config).not_to have_key('notification_emails')
       end
     end
 
@@ -139,7 +177,7 @@ RSpec.describe Pangea::Resources::GoogleOrganizationAccessApprovalSettings do
     resource_type: :google_organization_access_approval_settings,
     method: :google_organization_access_approval_settings,
     required_attrs: { enrolled_services: [{ 'key1' => 'val1' }], organization_id: 'test-value' },
-    expected_outputs: [:id, :ancestor_has_active_key_version, :enrolled_ancestor, :invalid_key_version, :name, :notification_emails],
+    expected_outputs: [:id, :ancestor_has_active_key_version, :deletion_policy, :enrolled_ancestor, :invalid_key_version, :name, :notification_emails],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

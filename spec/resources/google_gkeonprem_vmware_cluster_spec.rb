@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { admin_cluster_membership: 'test-value', control_plane_node: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', on_prem_version: 'test-value' } }
+  let(:required_attrs) { { admin_cluster_membership: 'test-value', control_plane_node: { 'key1' => 'val1' }, location: 'test-value', name: 'test-value', on_prem_version: 'test-value' } }
 
   describe ':google_gkeonprem_vmware_cluster' do
     context 'with required attributes only' do
@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
         expect(ref.id).to eq("${google_gkeonprem_vmware_cluster.test.id}")
         expect(ref.create_time).to eq("${google_gkeonprem_vmware_cluster.test.create_time}")
         expect(ref.delete_time).to eq("${google_gkeonprem_vmware_cluster.test.delete_time}")
+        expect(ref.deletion_policy).to eq("${google_gkeonprem_vmware_cluster.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_gkeonprem_vmware_cluster.test.effective_annotations}")
         expect(ref.endpoint).to eq("${google_gkeonprem_vmware_cluster.test.endpoint}")
         expect(ref.etag).to eq("${google_gkeonprem_vmware_cluster.test.etag}")
@@ -66,6 +67,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('delete_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('endpoint')
         expect(config).not_to have_key('etag')
@@ -83,7 +85,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, anti_affinity_groups: [{ 'key1' => 'val1' }], authorization: [{ 'key1' => 'val1' }], auto_repair_config: [{ 'key1' => 'val1' }], dataplane_v2: [{ 'key1' => 'val1' }], description: 'test-value', disable_bundled_ingress: true, enable_advanced_cluster: true, enable_control_plane_v2: true, load_balancer: [{ 'key1' => 'val1' }], network_config: [{ 'key1' => 'val1' }], storage: [{ 'key1' => 'val1' }], upgrade_policy: [{ 'key1' => 'val1' }], vcenter: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, anti_affinity_groups: { 'key1' => 'val1' }, authorization: { 'key1' => 'val1' }, auto_repair_config: { 'key1' => 'val1' }, dataplane_v2: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', disable_bundled_ingress: true, enable_advanced_cluster: true, enable_control_plane_v2: true, load_balancer: { 'key1' => 'val1' }, network_config: { 'key1' => 'val1' }, project: 'test-value', skip_validations: ['test-value'], storage: { 'key1' => 'val1' }, upgrade_policy: { 'key1' => 'val1' }, vcenter: { 'key1' => 'val1' }, vm_tracking_enabled: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -97,15 +99,19 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
         expect(config).to have_key('authorization')
         expect(config).to have_key('auto_repair_config')
         expect(config).to have_key('dataplane_v2')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('disable_bundled_ingress')
         expect(config).to have_key('enable_advanced_cluster')
         expect(config).to have_key('enable_control_plane_v2')
         expect(config).to have_key('load_balancer')
         expect(config).to have_key('network_config')
+        expect(config).to have_key('project')
+        expect(config).to have_key('skip_validations')
         expect(config).to have_key('storage')
         expect(config).to have_key('upgrade_policy')
         expect(config).to have_key('vcenter')
+        expect(config).to have_key('vm_tracking_enabled')
       end
     end
 
@@ -130,7 +136,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
       it 'includes anti_affinity_groups when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(anti_affinity_groups: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(anti_affinity_groups: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'opt')
         expect(config).to have_key('anti_affinity_groups')
@@ -147,7 +153,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
       it 'includes authorization when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(authorization: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(authorization: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'opt')
         expect(config).to have_key('authorization')
@@ -164,7 +170,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
       it 'includes auto_repair_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(auto_repair_config: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(auto_repair_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'opt')
         expect(config).to have_key('auto_repair_config')
@@ -181,7 +187,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
       it 'includes dataplane_v2 when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(dataplane_v2: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(dataplane_v2: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'opt')
         expect(config).to have_key('dataplane_v2')
@@ -194,6 +200,23 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'minimal')
         expect(config).not_to have_key('dataplane_v2')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_vmware_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -266,7 +289,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
       it 'includes load_balancer when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(load_balancer: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(load_balancer: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'opt')
         expect(config).to have_key('load_balancer')
@@ -283,7 +306,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
       it 'includes network_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(network_config: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(network_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'opt')
         expect(config).to have_key('network_config')
@@ -297,10 +320,44 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'minimal')
         expect(config).not_to have_key('network_config')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_vmware_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes skip_validations when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(skip_validations: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'opt')
+        expect(config).to have_key('skip_validations')
+      end
+
+      it 'omits skip_validations when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_vmware_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'minimal')
+        expect(config).not_to have_key('skip_validations')
+      end
       it 'includes storage when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(storage: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(storage: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'opt')
         expect(config).to have_key('storage')
@@ -317,7 +374,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
       it 'includes upgrade_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(upgrade_policy: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(upgrade_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'opt')
         expect(config).to have_key('upgrade_policy')
@@ -334,7 +391,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
       it 'includes vcenter when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(vcenter: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(vcenter: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'opt')
         expect(config).to have_key('vcenter')
@@ -347,6 +404,23 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'minimal')
         expect(config).not_to have_key('vcenter')
+      end
+      it 'includes vm_tracking_enabled when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_vmware_cluster('opt', required_attrs.merge(vm_tracking_enabled: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'opt')
+        expect(config).to have_key('vm_tracking_enabled')
+      end
+
+      it 'omits vm_tracking_enabled when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_vmware_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'minimal')
+        expect(config).not_to have_key('vm_tracking_enabled')
       end
     end
 
@@ -384,6 +458,17 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
           expect(config['enable_control_plane_v2']).to eq(val)
         end
       end
+      [true, false].each do |val|
+        it "accepts vm_tracking_enabled=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(vm_tracking_enabled: val)
+          synth.google_gkeonprem_vmware_cluster("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', "bool_#{val}")
+          expect(config['vm_tracking_enabled']).to eq(val)
+        end
+      end
     end
 
     context 'attribute types' do
@@ -395,7 +480,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
 
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_cluster', 'typed')
         expect(config['admin_cluster_membership']).to be_a(String)
-        expect(config['control_plane_node']).to be_a(Array)
+        expect(config['control_plane_node']).to be_a(Hash)
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
         expect(config['on_prem_version']).to be_a(String)
@@ -431,9 +516,9 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareCluster do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_gkeonprem_vmware_cluster,
     method: :google_gkeonprem_vmware_cluster,
-    required_attrs: { admin_cluster_membership: 'test-value', control_plane_node: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', on_prem_version: 'test-value' },
-    expected_outputs: [:id, :create_time, :delete_time, :effective_annotations, :endpoint, :etag, :fleet, :local_name, :project, :reconciling, :state, :status, :uid, :update_time, :validation_check, :vm_tracking_enabled],
+    required_attrs: { admin_cluster_membership: 'test-value', control_plane_node: { 'key1' => 'val1' }, location: 'test-value', name: 'test-value', on_prem_version: 'test-value' },
+    expected_outputs: [:id, :create_time, :delete_time, :deletion_policy, :effective_annotations, :endpoint, :etag, :fleet, :local_name, :project, :reconciling, :state, :status, :uid, :update_time, :validation_check, :vm_tracking_enabled],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:disable_bundled_ingress, :enable_advanced_cluster, :enable_control_plane_v2]
+    boolean_fields: [:disable_bundled_ingress, :enable_advanced_cluster, :enable_control_plane_v2, :vm_tracking_enabled]
 end

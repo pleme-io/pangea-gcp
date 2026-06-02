@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeterDryR
 
         expect(ref.id).to eq("${google_access_context_manager_service_perimeter_dry_run_resource.test.id}")
         expect(ref.access_policy_id).to eq("${google_access_context_manager_service_perimeter_dry_run_resource.test.access_policy_id}")
+        expect(ref.deletion_policy).to eq("${google_access_context_manager_service_perimeter_dry_run_resource.test.deletion_policy}")
         expect(ref.etag).to eq("${google_access_context_manager_service_perimeter_dry_run_resource.test.etag}")
       end
     end
@@ -52,7 +53,42 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeterDryR
 
         config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter_dry_run_resource', 'test')
         expect(config).not_to have_key('access_policy_id')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('etag')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_service_perimeter_dry_run_resource('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter_dry_run_resource', 'full')
+        expect(config).to have_key('deletion_policy')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_service_perimeter_dry_run_resource('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter_dry_run_resource', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_service_perimeter_dry_run_resource('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_service_perimeter_dry_run_resource', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -99,7 +135,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeterDryR
     resource_type: :google_access_context_manager_service_perimeter_dry_run_resource,
     method: :google_access_context_manager_service_perimeter_dry_run_resource,
     required_attrs: { perimeter_name: 'test-value', resource: 'test-value' },
-    expected_outputs: [:id, :access_policy_id, :etag],
+    expected_outputs: [:id, :access_policy_id, :deletion_policy, :etag],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

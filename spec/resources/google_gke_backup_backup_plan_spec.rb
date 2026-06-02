@@ -39,9 +39,11 @@ RSpec.describe Pangea::Resources::GoogleGkeBackupBackupPlan do
 
         expect(ref.id).to eq("${google_gke_backup_backup_plan.test.id}")
         expect(ref.deactivated).to eq("${google_gke_backup_backup_plan.test.deactivated}")
+        expect(ref.deletion_policy).to eq("${google_gke_backup_backup_plan.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_gke_backup_backup_plan.test.effective_labels}")
         expect(ref.etag).to eq("${google_gke_backup_backup_plan.test.etag}")
         expect(ref.project).to eq("${google_gke_backup_backup_plan.test.project}")
+        expect(ref.protected_namespace_count).to eq("${google_gke_backup_backup_plan.test.protected_namespace_count}")
         expect(ref.protected_pod_count).to eq("${google_gke_backup_backup_plan.test.protected_pod_count}")
         expect(ref.state).to eq("${google_gke_backup_backup_plan.test.state}")
         expect(ref.state_reason).to eq("${google_gke_backup_backup_plan.test.state_reason}")
@@ -59,9 +61,11 @@ RSpec.describe Pangea::Resources::GoogleGkeBackupBackupPlan do
 
         config = validate_resource_structure(result, 'google_gke_backup_backup_plan', 'test')
         expect(config).not_to have_key('deactivated')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('project')
+        expect(config).not_to have_key('protected_namespace_count')
         expect(config).not_to have_key('protected_pod_count')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('state_reason')
@@ -71,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleGkeBackupBackupPlan do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ backup_config: [{ 'key1' => 'val1' }], backup_schedule: [{ 'key1' => 'val1' }], description: 'test-value', labels: { 'key1' => 'val1' }, retention_policy: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ backup_config: { 'key1' => 'val1' }, backup_schedule: { 'key1' => 'val1' }, deactivated: true, deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', retention_policy: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -82,8 +86,11 @@ RSpec.describe Pangea::Resources::GoogleGkeBackupBackupPlan do
         config = validate_resource_structure(result, 'google_gke_backup_backup_plan', 'full')
         expect(config).to have_key('backup_config')
         expect(config).to have_key('backup_schedule')
+        expect(config).to have_key('deactivated')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('retention_policy')
       end
     end
@@ -92,7 +99,7 @@ RSpec.describe Pangea::Resources::GoogleGkeBackupBackupPlan do
       it 'includes backup_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gke_backup_backup_plan('opt', required_attrs.merge(backup_config: [{ 'key1' => 'val1' }]))
+        synth.google_gke_backup_backup_plan('opt', required_attrs.merge(backup_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gke_backup_backup_plan', 'opt')
         expect(config).to have_key('backup_config')
@@ -109,7 +116,7 @@ RSpec.describe Pangea::Resources::GoogleGkeBackupBackupPlan do
       it 'includes backup_schedule when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gke_backup_backup_plan('opt', required_attrs.merge(backup_schedule: [{ 'key1' => 'val1' }]))
+        synth.google_gke_backup_backup_plan('opt', required_attrs.merge(backup_schedule: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gke_backup_backup_plan', 'opt')
         expect(config).to have_key('backup_schedule')
@@ -122,6 +129,40 @@ RSpec.describe Pangea::Resources::GoogleGkeBackupBackupPlan do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gke_backup_backup_plan', 'minimal')
         expect(config).not_to have_key('backup_schedule')
+      end
+      it 'includes deactivated when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gke_backup_backup_plan('opt', required_attrs.merge(deactivated: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gke_backup_backup_plan', 'opt')
+        expect(config).to have_key('deactivated')
+      end
+
+      it 'omits deactivated when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gke_backup_backup_plan('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gke_backup_backup_plan', 'minimal')
+        expect(config).not_to have_key('deactivated')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gke_backup_backup_plan('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gke_backup_backup_plan', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gke_backup_backup_plan('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gke_backup_backup_plan', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -157,10 +198,27 @@ RSpec.describe Pangea::Resources::GoogleGkeBackupBackupPlan do
         config = validate_resource_structure(result, 'google_gke_backup_backup_plan', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gke_backup_backup_plan('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gke_backup_backup_plan', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gke_backup_backup_plan('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gke_backup_backup_plan', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes retention_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gke_backup_backup_plan('opt', required_attrs.merge(retention_policy: [{ 'key1' => 'val1' }]))
+        synth.google_gke_backup_backup_plan('opt', required_attrs.merge(retention_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gke_backup_backup_plan', 'opt')
         expect(config).to have_key('retention_policy')
@@ -173,6 +231,20 @@ RSpec.describe Pangea::Resources::GoogleGkeBackupBackupPlan do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gke_backup_backup_plan', 'minimal')
         expect(config).not_to have_key('retention_policy')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts deactivated=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(deactivated: val)
+          synth.google_gke_backup_backup_plan("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_gke_backup_backup_plan', "bool_#{val}")
+          expect(config['deactivated']).to eq(val)
+        end
       end
     end
 
@@ -220,8 +292,8 @@ RSpec.describe Pangea::Resources::GoogleGkeBackupBackupPlan do
     resource_type: :google_gke_backup_backup_plan,
     method: :google_gke_backup_backup_plan,
     required_attrs: { cluster: 'test-value', location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :deactivated, :effective_labels, :etag, :project, :protected_pod_count, :state, :state_reason, :terraform_labels, :uid],
+    expected_outputs: [:id, :deactivated, :deletion_policy, :effective_labels, :etag, :project, :protected_namespace_count, :protected_pod_count, :state, :state_reason, :terraform_labels, :uid],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:deactivated]
 end

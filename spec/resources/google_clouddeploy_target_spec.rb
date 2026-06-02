@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployTarget do
 
         expect(ref.id).to eq("${google_clouddeploy_target.test.id}")
         expect(ref.create_time).to eq("${google_clouddeploy_target.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_clouddeploy_target.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_clouddeploy_target.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_clouddeploy_target.test.effective_labels}")
         expect(ref.etag).to eq("${google_clouddeploy_target.test.etag}")
@@ -59,6 +60,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployTarget do
 
         config = validate_resource_structure(result, 'google_clouddeploy_target', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployTarget do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, anthos_cluster: [{ 'key1' => 'val1' }], associated_entities: [{ 'key1' => 'val1' }], custom_target: [{ 'key1' => 'val1' }], deploy_parameters: { 'key1' => 'val1' }, description: 'test-value', execution_configs: [{ 'key1' => 'val1' }], gke: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, multi_target: [{ 'key1' => 'val1' }], require_approval: true, run: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, anthos_cluster: { 'key1' => 'val1' }, associated_entities: [{ 'key1' => 'val1' }], custom_target: { 'key1' => 'val1' }, deletion_policy: 'test-value', deploy_parameters: { 'key1' => 'val1' }, description: 'test-value', execution_configs: [{ 'key1' => 'val1' }], gke: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, multi_target: { 'key1' => 'val1' }, project: 'test-value', require_approval: true, run: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -84,12 +86,14 @@ RSpec.describe Pangea::Resources::GoogleClouddeployTarget do
         expect(config).to have_key('anthos_cluster')
         expect(config).to have_key('associated_entities')
         expect(config).to have_key('custom_target')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deploy_parameters')
         expect(config).to have_key('description')
         expect(config).to have_key('execution_configs')
         expect(config).to have_key('gke')
         expect(config).to have_key('labels')
         expect(config).to have_key('multi_target')
+        expect(config).to have_key('project')
         expect(config).to have_key('require_approval')
         expect(config).to have_key('run')
       end
@@ -116,7 +120,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployTarget do
       it 'includes anthos_cluster when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_clouddeploy_target('opt', required_attrs.merge(anthos_cluster: [{ 'key1' => 'val1' }]))
+        synth.google_clouddeploy_target('opt', required_attrs.merge(anthos_cluster: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_clouddeploy_target', 'opt')
         expect(config).to have_key('anthos_cluster')
@@ -150,7 +154,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployTarget do
       it 'includes custom_target when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_clouddeploy_target('opt', required_attrs.merge(custom_target: [{ 'key1' => 'val1' }]))
+        synth.google_clouddeploy_target('opt', required_attrs.merge(custom_target: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_clouddeploy_target', 'opt')
         expect(config).to have_key('custom_target')
@@ -163,6 +167,23 @@ RSpec.describe Pangea::Resources::GoogleClouddeployTarget do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_clouddeploy_target', 'minimal')
         expect(config).not_to have_key('custom_target')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddeploy_target('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddeploy_target', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddeploy_target('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddeploy_target', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes deploy_parameters when provided' do
         synth = create_synthesizer
@@ -218,7 +239,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployTarget do
       it 'includes gke when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_clouddeploy_target('opt', required_attrs.merge(gke: [{ 'key1' => 'val1' }]))
+        synth.google_clouddeploy_target('opt', required_attrs.merge(gke: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_clouddeploy_target', 'opt')
         expect(config).to have_key('gke')
@@ -252,7 +273,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployTarget do
       it 'includes multi_target when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_clouddeploy_target('opt', required_attrs.merge(multi_target: [{ 'key1' => 'val1' }]))
+        synth.google_clouddeploy_target('opt', required_attrs.merge(multi_target: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_clouddeploy_target', 'opt')
         expect(config).to have_key('multi_target')
@@ -265,6 +286,23 @@ RSpec.describe Pangea::Resources::GoogleClouddeployTarget do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_clouddeploy_target', 'minimal')
         expect(config).not_to have_key('multi_target')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddeploy_target('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddeploy_target', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddeploy_target('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddeploy_target', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes require_approval when provided' do
         synth = create_synthesizer
@@ -286,7 +324,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployTarget do
       it 'includes run when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_clouddeploy_target('opt', required_attrs.merge(run: [{ 'key1' => 'val1' }]))
+        synth.google_clouddeploy_target('opt', required_attrs.merge(run: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_clouddeploy_target', 'opt')
         expect(config).to have_key('run')
@@ -359,7 +397,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployTarget do
     resource_type: :google_clouddeploy_target,
     method: :google_clouddeploy_target,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_annotations, :effective_labels, :etag, :project, :target_id, :terraform_labels, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_annotations, :effective_labels, :etag, :project, :target_id, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:require_approval]

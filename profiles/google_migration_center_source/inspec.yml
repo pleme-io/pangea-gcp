@@ -1,0 +1,8 @@
+name: google_migration_center_source
+title: Manages a google_migration_center_source resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

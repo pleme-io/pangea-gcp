@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleOsConfigPatchDeployment do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { instance_filter: [{ 'key1' => 'val1' }], patch_deployment_id: 'test-value' } }
+  let(:required_attrs) { { instance_filter: { 'key1' => 'val1' }, patch_deployment_id: 'test-value' } }
 
   describe ':google_os_config_patch_deployment' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleOsConfigPatchDeployment do
 
         expect(ref.id).to eq("${google_os_config_patch_deployment.test.id}")
         expect(ref.create_time).to eq("${google_os_config_patch_deployment.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_os_config_patch_deployment.test.deletion_policy}")
         expect(ref.last_execute_time).to eq("${google_os_config_patch_deployment.test.last_execute_time}")
         expect(ref.name).to eq("${google_os_config_patch_deployment.test.name}")
         expect(ref.project).to eq("${google_os_config_patch_deployment.test.project}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleOsConfigPatchDeployment do
 
         config = validate_resource_structure(result, 'google_os_config_patch_deployment', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('last_execute_time')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleOsConfigPatchDeployment do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', duration: 'test-value', one_time_schedule: [{ 'key1' => 'val1' }], patch_config: [{ 'key1' => 'val1' }], recurring_schedule: [{ 'key1' => 'val1' }], rollout: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', duration: 'test-value', one_time_schedule: { 'key1' => 'val1' }, patch_config: { 'key1' => 'val1' }, project: 'test-value', recurring_schedule: { 'key1' => 'val1' }, rollout: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,16 +74,35 @@ RSpec.describe Pangea::Resources::GoogleOsConfigPatchDeployment do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_os_config_patch_deployment', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('duration')
         expect(config).to have_key('one_time_schedule')
         expect(config).to have_key('patch_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('recurring_schedule')
         expect(config).to have_key('rollout')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_os_config_patch_deployment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_os_config_patch_deployment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_os_config_patch_deployment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_os_config_patch_deployment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -119,7 +140,7 @@ RSpec.describe Pangea::Resources::GoogleOsConfigPatchDeployment do
       it 'includes one_time_schedule when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_os_config_patch_deployment('opt', required_attrs.merge(one_time_schedule: [{ 'key1' => 'val1' }]))
+        synth.google_os_config_patch_deployment('opt', required_attrs.merge(one_time_schedule: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_os_config_patch_deployment', 'opt')
         expect(config).to have_key('one_time_schedule')
@@ -136,7 +157,7 @@ RSpec.describe Pangea::Resources::GoogleOsConfigPatchDeployment do
       it 'includes patch_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_os_config_patch_deployment('opt', required_attrs.merge(patch_config: [{ 'key1' => 'val1' }]))
+        synth.google_os_config_patch_deployment('opt', required_attrs.merge(patch_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_os_config_patch_deployment', 'opt')
         expect(config).to have_key('patch_config')
@@ -150,10 +171,27 @@ RSpec.describe Pangea::Resources::GoogleOsConfigPatchDeployment do
         config = validate_resource_structure(result, 'google_os_config_patch_deployment', 'minimal')
         expect(config).not_to have_key('patch_config')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_os_config_patch_deployment('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_os_config_patch_deployment', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_os_config_patch_deployment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_os_config_patch_deployment', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes recurring_schedule when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_os_config_patch_deployment('opt', required_attrs.merge(recurring_schedule: [{ 'key1' => 'val1' }]))
+        synth.google_os_config_patch_deployment('opt', required_attrs.merge(recurring_schedule: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_os_config_patch_deployment', 'opt')
         expect(config).to have_key('recurring_schedule')
@@ -170,7 +208,7 @@ RSpec.describe Pangea::Resources::GoogleOsConfigPatchDeployment do
       it 'includes rollout when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_os_config_patch_deployment('opt', required_attrs.merge(rollout: [{ 'key1' => 'val1' }]))
+        synth.google_os_config_patch_deployment('opt', required_attrs.merge(rollout: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_os_config_patch_deployment', 'opt')
         expect(config).to have_key('rollout')
@@ -194,7 +232,7 @@ RSpec.describe Pangea::Resources::GoogleOsConfigPatchDeployment do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_os_config_patch_deployment', 'typed')
-        expect(config['instance_filter']).to be_a(Array)
+        expect(config['instance_filter']).to be_a(Hash)
         expect(config['patch_deployment_id']).to be_a(String)
       end
     end
@@ -228,8 +266,8 @@ RSpec.describe Pangea::Resources::GoogleOsConfigPatchDeployment do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_os_config_patch_deployment,
     method: :google_os_config_patch_deployment,
-    required_attrs: { instance_filter: [{ 'key1' => 'val1' }], patch_deployment_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :last_execute_time, :name, :project, :update_time],
+    required_attrs: { instance_filter: { 'key1' => 'val1' }, patch_deployment_id: 'test-value' },
+    expected_outputs: [:id, :create_time, :deletion_policy, :last_execute_time, :name, :project, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

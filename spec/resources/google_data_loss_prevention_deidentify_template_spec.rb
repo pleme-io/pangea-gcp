@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleDataLossPreventionDeidentifyTemplate do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { deidentify_config: [{ 'key1' => 'val1' }], parent: 'test-value' } }
+  let(:required_attrs) { { deidentify_config: { 'key1' => 'val1' }, parent: 'test-value' } }
 
   describe ':google_data_loss_prevention_deidentify_template' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDeidentifyTemplate do
 
         expect(ref.id).to eq("${google_data_loss_prevention_deidentify_template.test.id}")
         expect(ref.create_time).to eq("${google_data_loss_prevention_deidentify_template.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_data_loss_prevention_deidentify_template.test.deletion_policy}")
         expect(ref.name).to eq("${google_data_loss_prevention_deidentify_template.test.name}")
         expect(ref.template_id).to eq("${google_data_loss_prevention_deidentify_template.test.template_id}")
         expect(ref.update_time).to eq("${google_data_loss_prevention_deidentify_template.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDeidentifyTemplate do
 
         config = validate_resource_structure(result, 'google_data_loss_prevention_deidentify_template', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('template_id')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDeidentifyTemplate do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', display_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', template_id: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,12 +72,31 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDeidentifyTemplate do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_data_loss_prevention_deidentify_template', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('template_id')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_deidentify_template('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_deidentify_template', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_deidentify_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_deidentify_template', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -110,6 +131,23 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDeidentifyTemplate do
         config = validate_resource_structure(result, 'google_data_loss_prevention_deidentify_template', 'minimal')
         expect(config).not_to have_key('display_name')
       end
+      it 'includes template_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_deidentify_template('opt', required_attrs.merge(template_id: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_deidentify_template', 'opt')
+        expect(config).to have_key('template_id')
+      end
+
+      it 'omits template_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_deidentify_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_deidentify_template', 'minimal')
+        expect(config).not_to have_key('template_id')
+      end
     end
 
     context 'attribute types' do
@@ -120,7 +158,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDeidentifyTemplate do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_data_loss_prevention_deidentify_template', 'typed')
-        expect(config['deidentify_config']).to be_a(Array)
+        expect(config['deidentify_config']).to be_a(Hash)
         expect(config['parent']).to be_a(String)
       end
     end
@@ -154,8 +192,8 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDeidentifyTemplate do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_data_loss_prevention_deidentify_template,
     method: :google_data_loss_prevention_deidentify_template,
-    required_attrs: { deidentify_config: [{ 'key1' => 'val1' }], parent: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :template_id, :update_time],
+    required_attrs: { deidentify_config: { 'key1' => 'val1' }, parent: 'test-value' },
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :template_id, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

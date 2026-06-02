@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpointDeployedIndex do
 
         expect(ref.id).to eq("${google_vertex_ai_index_endpoint_deployed_index.test.id}")
         expect(ref.create_time).to eq("${google_vertex_ai_index_endpoint_deployed_index.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_vertex_ai_index_endpoint_deployed_index.test.deletion_policy}")
         expect(ref.index_sync_time).to eq("${google_vertex_ai_index_endpoint_deployed_index.test.index_sync_time}")
         expect(ref.name).to eq("${google_vertex_ai_index_endpoint_deployed_index.test.name}")
         expect(ref.private_endpoints).to eq("${google_vertex_ai_index_endpoint_deployed_index.test.private_endpoints}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpointDeployedIndex do
 
         config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint_deployed_index', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('index_sync_time')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('private_endpoints')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpointDeployedIndex do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ automatic_resources: [{ 'key1' => 'val1' }], dedicated_resources: [{ 'key1' => 'val1' }], deployed_index_auth_config: [{ 'key1' => 'val1' }], deployment_group: 'test-value', display_name: 'test-value', enable_access_logging: true, region: 'test-value', reserved_ip_ranges: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ automatic_resources: { 'key1' => 'val1' }, dedicated_resources: { 'key1' => 'val1' }, deletion_policy: 'test-value', deployed_index_auth_config: { 'key1' => 'val1' }, deployment_group: 'test-value', display_name: 'test-value', enable_access_logging: true, region: 'test-value', reserved_ip_ranges: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,6 +74,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpointDeployedIndex do
         config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint_deployed_index', 'full')
         expect(config).to have_key('automatic_resources')
         expect(config).to have_key('dedicated_resources')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deployed_index_auth_config')
         expect(config).to have_key('deployment_group')
         expect(config).to have_key('display_name')
@@ -85,7 +88,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpointDeployedIndex do
       it 'includes automatic_resources when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_index_endpoint_deployed_index('opt', required_attrs.merge(automatic_resources: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_index_endpoint_deployed_index('opt', required_attrs.merge(automatic_resources: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint_deployed_index', 'opt')
         expect(config).to have_key('automatic_resources')
@@ -102,7 +105,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpointDeployedIndex do
       it 'includes dedicated_resources when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_index_endpoint_deployed_index('opt', required_attrs.merge(dedicated_resources: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_index_endpoint_deployed_index('opt', required_attrs.merge(dedicated_resources: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint_deployed_index', 'opt')
         expect(config).to have_key('dedicated_resources')
@@ -116,10 +119,27 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpointDeployedIndex do
         config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint_deployed_index', 'minimal')
         expect(config).not_to have_key('dedicated_resources')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_index_endpoint_deployed_index('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint_deployed_index', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_index_endpoint_deployed_index('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint_deployed_index', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deployed_index_auth_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_index_endpoint_deployed_index('opt', required_attrs.merge(deployed_index_auth_config: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_index_endpoint_deployed_index('opt', required_attrs.merge(deployed_index_auth_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint_deployed_index', 'opt')
         expect(config).to have_key('deployed_index_auth_config')
@@ -278,7 +298,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpointDeployedIndex do
     resource_type: :google_vertex_ai_index_endpoint_deployed_index,
     method: :google_vertex_ai_index_endpoint_deployed_index,
     required_attrs: { deployed_index_id: 'test-value', index: 'test-value', index_endpoint: 'test-value' },
-    expected_outputs: [:id, :create_time, :index_sync_time, :name, :private_endpoints],
+    expected_outputs: [:id, :create_time, :deletion_policy, :index_sync_time, :name, :private_endpoints],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:enable_access_logging]

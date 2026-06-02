@@ -1,0 +1,8 @@
+name: google_compute_network_firewall_policy_with_rules
+title: Manages a google_compute_network_firewall_policy_with_rules resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

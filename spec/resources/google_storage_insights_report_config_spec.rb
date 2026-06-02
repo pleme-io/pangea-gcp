@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsReportConfig do
         ref = synth.google_storage_insights_report_config('test', required_attrs)
 
         expect(ref.id).to eq("${google_storage_insights_report_config.test.id}")
+        expect(ref.deletion_policy).to eq("${google_storage_insights_report_config.test.deletion_policy}")
         expect(ref.name).to eq("${google_storage_insights_report_config.test.name}")
         expect(ref.project).to eq("${google_storage_insights_report_config.test.project}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsReportConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_storage_insights_report_config', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ csv_options: [{ 'key1' => 'val1' }], display_name: 'test-value', frequency_options: [{ 'key1' => 'val1' }], object_metadata_report_options: [{ 'key1' => 'val1' }], parquet_options: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ csv_options: { 'key1' => 'val1' }, deletion_policy: 'test-value', display_name: 'test-value', force_destroy: true, frequency_options: { 'key1' => 'val1' }, object_metadata_report_options: { 'key1' => 'val1' }, parquet_options: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,10 +69,13 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsReportConfig do
 
         config = validate_resource_structure(result, 'google_storage_insights_report_config', 'full')
         expect(config).to have_key('csv_options')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('force_destroy')
         expect(config).to have_key('frequency_options')
         expect(config).to have_key('object_metadata_report_options')
         expect(config).to have_key('parquet_options')
+        expect(config).to have_key('project')
       end
     end
 
@@ -78,7 +83,7 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsReportConfig do
       it 'includes csv_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_insights_report_config('opt', required_attrs.merge(csv_options: [{ 'key1' => 'val1' }]))
+        synth.google_storage_insights_report_config('opt', required_attrs.merge(csv_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_insights_report_config', 'opt')
         expect(config).to have_key('csv_options')
@@ -91,6 +96,23 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsReportConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_insights_report_config', 'minimal')
         expect(config).not_to have_key('csv_options')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_insights_report_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_insights_report_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_insights_report_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_insights_report_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes display_name when provided' do
         synth = create_synthesizer
@@ -109,10 +131,27 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsReportConfig do
         config = validate_resource_structure(result, 'google_storage_insights_report_config', 'minimal')
         expect(config).not_to have_key('display_name')
       end
+      it 'includes force_destroy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_insights_report_config('opt', required_attrs.merge(force_destroy: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_insights_report_config', 'opt')
+        expect(config).to have_key('force_destroy')
+      end
+
+      it 'omits force_destroy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_insights_report_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_insights_report_config', 'minimal')
+        expect(config).not_to have_key('force_destroy')
+      end
       it 'includes frequency_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_insights_report_config('opt', required_attrs.merge(frequency_options: [{ 'key1' => 'val1' }]))
+        synth.google_storage_insights_report_config('opt', required_attrs.merge(frequency_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_insights_report_config', 'opt')
         expect(config).to have_key('frequency_options')
@@ -129,7 +168,7 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsReportConfig do
       it 'includes object_metadata_report_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_insights_report_config('opt', required_attrs.merge(object_metadata_report_options: [{ 'key1' => 'val1' }]))
+        synth.google_storage_insights_report_config('opt', required_attrs.merge(object_metadata_report_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_insights_report_config', 'opt')
         expect(config).to have_key('object_metadata_report_options')
@@ -146,7 +185,7 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsReportConfig do
       it 'includes parquet_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_insights_report_config('opt', required_attrs.merge(parquet_options: [{ 'key1' => 'val1' }]))
+        synth.google_storage_insights_report_config('opt', required_attrs.merge(parquet_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_insights_report_config', 'opt')
         expect(config).to have_key('parquet_options')
@@ -159,6 +198,37 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsReportConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_insights_report_config', 'minimal')
         expect(config).not_to have_key('parquet_options')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_insights_report_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_insights_report_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_insights_report_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_insights_report_config', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts force_destroy=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(force_destroy: val)
+          synth.google_storage_insights_report_config("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_storage_insights_report_config', "bool_#{val}")
+          expect(config['force_destroy']).to eq(val)
+        end
       end
     end
 
@@ -204,8 +274,8 @@ RSpec.describe Pangea::Resources::GoogleStorageInsightsReportConfig do
     resource_type: :google_storage_insights_report_config,
     method: :google_storage_insights_report_config,
     required_attrs: { location: 'test-value' },
-    expected_outputs: [:id, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:force_destroy]
 end

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleCloudAssetProjectFeed do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { feed_id: 'test-value', feed_output_config: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { feed_id: 'test-value', feed_output_config: { 'key1' => 'val1' } } }
 
   describe ':google_cloud_asset_project_feed' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleCloudAssetProjectFeed do
         ref = synth.google_cloud_asset_project_feed('test', required_attrs)
 
         expect(ref.id).to eq("${google_cloud_asset_project_feed.test.id}")
+        expect(ref.deletion_policy).to eq("${google_cloud_asset_project_feed.test.deletion_policy}")
         expect(ref.name).to eq("${google_cloud_asset_project_feed.test.name}")
         expect(ref.project).to eq("${google_cloud_asset_project_feed.test.project}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleCloudAssetProjectFeed do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_cloud_asset_project_feed', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ asset_names: ['test-value'], asset_types: ['test-value'], billing_project: 'test-value', condition: [{ 'key1' => 'val1' }], content_type: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ asset_names: ['test-value'], asset_types: ['test-value'], billing_project: 'test-value', condition: { 'key1' => 'val1' }, content_type: 'test-value', deletion_policy: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,6 +73,8 @@ RSpec.describe Pangea::Resources::GoogleCloudAssetProjectFeed do
         expect(config).to have_key('billing_project')
         expect(config).to have_key('condition')
         expect(config).to have_key('content_type')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
       end
     end
 
@@ -129,7 +133,7 @@ RSpec.describe Pangea::Resources::GoogleCloudAssetProjectFeed do
       it 'includes condition when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_asset_project_feed('opt', required_attrs.merge(condition: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_asset_project_feed('opt', required_attrs.merge(condition: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_asset_project_feed', 'opt')
         expect(config).to have_key('condition')
@@ -160,6 +164,40 @@ RSpec.describe Pangea::Resources::GoogleCloudAssetProjectFeed do
         config = validate_resource_structure(result, 'google_cloud_asset_project_feed', 'minimal')
         expect(config).not_to have_key('content_type')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_asset_project_feed('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_asset_project_feed', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_asset_project_feed('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_asset_project_feed', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_asset_project_feed('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_asset_project_feed', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_asset_project_feed('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_asset_project_feed', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -171,7 +209,7 @@ RSpec.describe Pangea::Resources::GoogleCloudAssetProjectFeed do
 
         config = validate_resource_structure(result, 'google_cloud_asset_project_feed', 'typed')
         expect(config['feed_id']).to be_a(String)
-        expect(config['feed_output_config']).to be_a(Array)
+        expect(config['feed_output_config']).to be_a(Hash)
       end
     end
 
@@ -204,8 +242,8 @@ RSpec.describe Pangea::Resources::GoogleCloudAssetProjectFeed do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_cloud_asset_project_feed,
     method: :google_cloud_asset_project_feed,
-    required_attrs: { feed_id: 'test-value', feed_output_config: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :name, :project],
+    required_attrs: { feed_id: 'test-value', feed_output_config: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :deletion_policy, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

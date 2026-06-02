@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringAlertPolicy do
 
         expect(ref.id).to eq("${google_monitoring_alert_policy.test.id}")
         expect(ref.creation_record).to eq("${google_monitoring_alert_policy.test.creation_record}")
+        expect(ref.deletion_policy).to eq("${google_monitoring_alert_policy.test.deletion_policy}")
         expect(ref.name).to eq("${google_monitoring_alert_policy.test.name}")
         expect(ref.project).to eq("${google_monitoring_alert_policy.test.project}")
       end
@@ -53,13 +54,14 @@ RSpec.describe Pangea::Resources::GoogleMonitoringAlertPolicy do
 
         config = validate_resource_structure(result, 'google_monitoring_alert_policy', 'test')
         expect(config).not_to have_key('creation_record')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ alert_strategy: [{ 'key1' => 'val1' }], documentation: [{ 'key1' => 'val1' }], enabled: true, notification_channels: ['test-value'], severity: 'test-value', user_labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ alert_strategy: { 'key1' => 'val1' }, deletion_policy: 'test-value', documentation: { 'key1' => 'val1' }, enabled: true, notification_channels: ['test-value'], project: 'test-value', severity: 'test-value', user_labels: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,9 +71,11 @@ RSpec.describe Pangea::Resources::GoogleMonitoringAlertPolicy do
 
         config = validate_resource_structure(result, 'google_monitoring_alert_policy', 'full')
         expect(config).to have_key('alert_strategy')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('documentation')
         expect(config).to have_key('enabled')
         expect(config).to have_key('notification_channels')
+        expect(config).to have_key('project')
         expect(config).to have_key('severity')
         expect(config).to have_key('user_labels')
       end
@@ -81,7 +85,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringAlertPolicy do
       it 'includes alert_strategy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_monitoring_alert_policy('opt', required_attrs.merge(alert_strategy: [{ 'key1' => 'val1' }]))
+        synth.google_monitoring_alert_policy('opt', required_attrs.merge(alert_strategy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_monitoring_alert_policy', 'opt')
         expect(config).to have_key('alert_strategy')
@@ -95,10 +99,27 @@ RSpec.describe Pangea::Resources::GoogleMonitoringAlertPolicy do
         config = validate_resource_structure(result, 'google_monitoring_alert_policy', 'minimal')
         expect(config).not_to have_key('alert_strategy')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_alert_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_alert_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_alert_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_alert_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes documentation when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_monitoring_alert_policy('opt', required_attrs.merge(documentation: [{ 'key1' => 'val1' }]))
+        synth.google_monitoring_alert_policy('opt', required_attrs.merge(documentation: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_monitoring_alert_policy', 'opt')
         expect(config).to have_key('documentation')
@@ -145,6 +166,23 @@ RSpec.describe Pangea::Resources::GoogleMonitoringAlertPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_monitoring_alert_policy', 'minimal')
         expect(config).not_to have_key('notification_channels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_alert_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_alert_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_alert_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_alert_policy', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes severity when provided' do
         synth = create_synthesizer
@@ -240,7 +278,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringAlertPolicy do
     resource_type: :google_monitoring_alert_policy,
     method: :google_monitoring_alert_policy,
     required_attrs: { combiner: 'test-value', conditions: [{ 'key1' => 'val1' }], display_name: 'test-value' },
-    expected_outputs: [:id, :creation_record, :name, :project],
+    expected_outputs: [:id, :creation_record, :deletion_policy, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:enabled]

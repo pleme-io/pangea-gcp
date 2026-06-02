@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPoolProvider do
         ref = synth.google_iam_workload_identity_pool_provider('test', required_attrs)
 
         expect(ref.id).to eq("${google_iam_workload_identity_pool_provider.test.id}")
+        expect(ref.deletion_policy).to eq("${google_iam_workload_identity_pool_provider.test.deletion_policy}")
         expect(ref.name).to eq("${google_iam_workload_identity_pool_provider.test.name}")
         expect(ref.project).to eq("${google_iam_workload_identity_pool_provider.test.project}")
         expect(ref.state).to eq("${google_iam_workload_identity_pool_provider.test.state}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPoolProvider do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_iam_workload_identity_pool_provider', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPoolProvider do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ attribute_condition: 'test-value', attribute_mapping: { 'key1' => 'val1' }, aws: [{ 'key1' => 'val1' }], description: 'test-value', disabled: true, display_name: 'test-value', oidc: [{ 'key1' => 'val1' }], saml: [{ 'key1' => 'val1' }], x509: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ attribute_condition: 'test-value', attribute_mapping: { 'key1' => 'val1' }, aws: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', disabled: true, display_name: 'test-value', oidc: { 'key1' => 'val1' }, project: 'test-value', saml: { 'key1' => 'val1' }, x509: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,10 +73,12 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPoolProvider do
         expect(config).to have_key('attribute_condition')
         expect(config).to have_key('attribute_mapping')
         expect(config).to have_key('aws')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('disabled')
         expect(config).to have_key('display_name')
         expect(config).to have_key('oidc')
+        expect(config).to have_key('project')
         expect(config).to have_key('saml')
         expect(config).to have_key('x509')
       end
@@ -118,7 +122,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPoolProvider do
       it 'includes aws when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_iam_workload_identity_pool_provider('opt', required_attrs.merge(aws: [{ 'key1' => 'val1' }]))
+        synth.google_iam_workload_identity_pool_provider('opt', required_attrs.merge(aws: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_workload_identity_pool_provider', 'opt')
         expect(config).to have_key('aws')
@@ -131,6 +135,23 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPoolProvider do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_workload_identity_pool_provider', 'minimal')
         expect(config).not_to have_key('aws')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool_provider('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool_provider', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool_provider('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool_provider', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -186,7 +207,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPoolProvider do
       it 'includes oidc when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_iam_workload_identity_pool_provider('opt', required_attrs.merge(oidc: [{ 'key1' => 'val1' }]))
+        synth.google_iam_workload_identity_pool_provider('opt', required_attrs.merge(oidc: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_workload_identity_pool_provider', 'opt')
         expect(config).to have_key('oidc')
@@ -200,10 +221,27 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPoolProvider do
         config = validate_resource_structure(result, 'google_iam_workload_identity_pool_provider', 'minimal')
         expect(config).not_to have_key('oidc')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool_provider('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool_provider', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workload_identity_pool_provider('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workload_identity_pool_provider', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes saml when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_iam_workload_identity_pool_provider('opt', required_attrs.merge(saml: [{ 'key1' => 'val1' }]))
+        synth.google_iam_workload_identity_pool_provider('opt', required_attrs.merge(saml: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_workload_identity_pool_provider', 'opt')
         expect(config).to have_key('saml')
@@ -220,7 +258,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPoolProvider do
       it 'includes x509 when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_iam_workload_identity_pool_provider('opt', required_attrs.merge(x509: [{ 'key1' => 'val1' }]))
+        synth.google_iam_workload_identity_pool_provider('opt', required_attrs.merge(x509: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_workload_identity_pool_provider', 'opt')
         expect(config).to have_key('x509')
@@ -293,7 +331,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkloadIdentityPoolProvider do
     resource_type: :google_iam_workload_identity_pool_provider,
     method: :google_iam_workload_identity_pool_provider,
     required_attrs: { workload_identity_pool_id: 'test-value', workload_identity_pool_provider_id: 'test-value' },
-    expected_outputs: [:id, :name, :project, :state],
+    expected_outputs: [:id, :deletion_policy, :name, :project, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disabled]

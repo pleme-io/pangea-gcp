@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesSelfSignedCert do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { alias: 'test-value', environment: 'test-value', keystore: 'test-value', org_id: 'test-value', sig_alg: 'test-value', subject: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { alias: 'test-value', environment: 'test-value', keystore: 'test-value', org_id: 'test-value', sig_alg: 'test-value', subject: { 'key1' => 'val1' } } }
 
   describe ':google_apigee_keystores_aliases_self_signed_cert' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesSelfSignedCert do
 
         expect(ref.id).to eq("${google_apigee_keystores_aliases_self_signed_cert.test.id}")
         expect(ref.certs_info).to eq("${google_apigee_keystores_aliases_self_signed_cert.test.certs_info}")
+        expect(ref.deletion_policy).to eq("${google_apigee_keystores_aliases_self_signed_cert.test.deletion_policy}")
         expect(ref.type).to eq("${google_apigee_keystores_aliases_self_signed_cert.test.type}")
       end
     end
@@ -52,12 +53,13 @@ RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesSelfSignedCert do
 
         config = validate_resource_structure(result, 'google_apigee_keystores_aliases_self_signed_cert', 'test')
         expect(config).not_to have_key('certs_info')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('type')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ cert_validity_in_days: 3.14, key_size: 'test-value', subject_alternative_dns_names: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ cert_validity_in_days: 3.14, deletion_policy: 'test-value', key_size: 'test-value', subject_alternative_dns_names: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,6 +69,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesSelfSignedCert do
 
         config = validate_resource_structure(result, 'google_apigee_keystores_aliases_self_signed_cert', 'full')
         expect(config).to have_key('cert_validity_in_days')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('key_size')
         expect(config).to have_key('subject_alternative_dns_names')
       end
@@ -90,6 +93,23 @@ RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesSelfSignedCert do
         config = validate_resource_structure(result, 'google_apigee_keystores_aliases_self_signed_cert', 'minimal')
         expect(config).not_to have_key('cert_validity_in_days')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_keystores_aliases_self_signed_cert('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_keystores_aliases_self_signed_cert', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_keystores_aliases_self_signed_cert('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_keystores_aliases_self_signed_cert', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes key_size when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -110,7 +130,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesSelfSignedCert do
       it 'includes subject_alternative_dns_names when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_keystores_aliases_self_signed_cert('opt', required_attrs.merge(subject_alternative_dns_names: [{ 'key1' => 'val1' }]))
+        synth.google_apigee_keystores_aliases_self_signed_cert('opt', required_attrs.merge(subject_alternative_dns_names: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_keystores_aliases_self_signed_cert', 'opt')
         expect(config).to have_key('subject_alternative_dns_names')
@@ -139,7 +159,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesSelfSignedCert do
         expect(config['keystore']).to be_a(String)
         expect(config['org_id']).to be_a(String)
         expect(config['sig_alg']).to be_a(String)
-        expect(config['subject']).to be_a(Array)
+        expect(config['subject']).to be_a(Hash)
       end
     end
 
@@ -172,8 +192,8 @@ RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesSelfSignedCert do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_apigee_keystores_aliases_self_signed_cert,
     method: :google_apigee_keystores_aliases_self_signed_cert,
-    required_attrs: { alias: 'test-value', environment: 'test-value', keystore: 'test-value', org_id: 'test-value', sig_alg: 'test-value', subject: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :certs_info, :type],
+    required_attrs: { alias: 'test-value', environment: 'test-value', keystore: 'test-value', org_id: 'test-value', sig_alg: 'test-value', subject: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :certs_info, :deletion_policy, :type],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

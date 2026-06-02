@@ -59,7 +59,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexTaskIamBinding do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ condition: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ condition: { 'key1' => 'val1' }, location: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,6 +69,8 @@ RSpec.describe Pangea::Resources::GoogleDataplexTaskIamBinding do
 
         config = validate_resource_structure(result, 'google_dataplex_task_iam_binding', 'full')
         expect(config).to have_key('condition')
+        expect(config).to have_key('location')
+        expect(config).to have_key('project')
       end
     end
 
@@ -76,7 +78,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexTaskIamBinding do
       it 'includes condition when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataplex_task_iam_binding('opt', required_attrs.merge(condition: [{ 'key1' => 'val1' }]))
+        synth.google_dataplex_task_iam_binding('opt', required_attrs.merge(condition: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataplex_task_iam_binding', 'opt')
         expect(config).to have_key('condition')
@@ -89,6 +91,40 @@ RSpec.describe Pangea::Resources::GoogleDataplexTaskIamBinding do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataplex_task_iam_binding', 'minimal')
         expect(config).not_to have_key('condition')
+      end
+      it 'includes location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_task_iam_binding('opt', required_attrs.merge(location: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_task_iam_binding', 'opt')
+        expect(config).to have_key('location')
+      end
+
+      it 'omits location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_task_iam_binding('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_task_iam_binding', 'minimal')
+        expect(config).not_to have_key('location')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_task_iam_binding('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_task_iam_binding', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_task_iam_binding('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_task_iam_binding', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 

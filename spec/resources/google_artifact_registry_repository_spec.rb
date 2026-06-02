@@ -39,10 +39,12 @@ RSpec.describe Pangea::Resources::GoogleArtifactRegistryRepository do
 
         expect(ref.id).to eq("${google_artifact_registry_repository.test.id}")
         expect(ref.create_time).to eq("${google_artifact_registry_repository.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_artifact_registry_repository.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_artifact_registry_repository.test.effective_labels}")
         expect(ref.location).to eq("${google_artifact_registry_repository.test.location}")
         expect(ref.name).to eq("${google_artifact_registry_repository.test.name}")
         expect(ref.project).to eq("${google_artifact_registry_repository.test.project}")
+        expect(ref.registry_uri).to eq("${google_artifact_registry_repository.test.registry_uri}")
         expect(ref.terraform_labels).to eq("${google_artifact_registry_repository.test.terraform_labels}")
         expect(ref.update_time).to eq("${google_artifact_registry_repository.test.update_time}")
       end
@@ -57,17 +59,19 @@ RSpec.describe Pangea::Resources::GoogleArtifactRegistryRepository do
 
         config = validate_resource_structure(result, 'google_artifact_registry_repository', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('location')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
+        expect(config).not_to have_key('registry_uri')
         expect(config).not_to have_key('terraform_labels')
         expect(config).not_to have_key('update_time')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ cleanup_policies: [{ 'key1' => 'val1' }], cleanup_policy_dry_run: true, description: 'test-value', docker_config: [{ 'key1' => 'val1' }], kms_key_name: 'test-value', labels: { 'key1' => 'val1' }, maven_config: [{ 'key1' => 'val1' }], mode: 'test-value', remote_repository_config: [{ 'key1' => 'val1' }], virtual_repository_config: [{ 'key1' => 'val1' }], vulnerability_scanning_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ cleanup_policies: [{ 'key1' => 'val1' }], cleanup_policy_dry_run: true, deletion_policy: 'test-value', description: 'test-value', docker_config: { 'key1' => 'val1' }, kms_key_name: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', maven_config: { 'key1' => 'val1' }, mode: 'test-value', project: 'test-value', remote_repository_config: { 'key1' => 'val1' }, virtual_repository_config: { 'key1' => 'val1' }, vulnerability_scanning_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,12 +82,15 @@ RSpec.describe Pangea::Resources::GoogleArtifactRegistryRepository do
         config = validate_resource_structure(result, 'google_artifact_registry_repository', 'full')
         expect(config).to have_key('cleanup_policies')
         expect(config).to have_key('cleanup_policy_dry_run')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('docker_config')
         expect(config).to have_key('kms_key_name')
         expect(config).to have_key('labels')
+        expect(config).to have_key('location')
         expect(config).to have_key('maven_config')
         expect(config).to have_key('mode')
+        expect(config).to have_key('project')
         expect(config).to have_key('remote_repository_config')
         expect(config).to have_key('virtual_repository_config')
         expect(config).to have_key('vulnerability_scanning_config')
@@ -125,6 +132,23 @@ RSpec.describe Pangea::Resources::GoogleArtifactRegistryRepository do
         config = validate_resource_structure(result, 'google_artifact_registry_repository', 'minimal')
         expect(config).not_to have_key('cleanup_policy_dry_run')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_artifact_registry_repository('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_artifact_registry_repository', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_artifact_registry_repository('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_artifact_registry_repository', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -145,7 +169,7 @@ RSpec.describe Pangea::Resources::GoogleArtifactRegistryRepository do
       it 'includes docker_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_artifact_registry_repository('opt', required_attrs.merge(docker_config: [{ 'key1' => 'val1' }]))
+        synth.google_artifact_registry_repository('opt', required_attrs.merge(docker_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_artifact_registry_repository', 'opt')
         expect(config).to have_key('docker_config')
@@ -193,10 +217,27 @@ RSpec.describe Pangea::Resources::GoogleArtifactRegistryRepository do
         config = validate_resource_structure(result, 'google_artifact_registry_repository', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_artifact_registry_repository('opt', required_attrs.merge(location: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_artifact_registry_repository', 'opt')
+        expect(config).to have_key('location')
+      end
+
+      it 'omits location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_artifact_registry_repository('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_artifact_registry_repository', 'minimal')
+        expect(config).not_to have_key('location')
+      end
       it 'includes maven_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_artifact_registry_repository('opt', required_attrs.merge(maven_config: [{ 'key1' => 'val1' }]))
+        synth.google_artifact_registry_repository('opt', required_attrs.merge(maven_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_artifact_registry_repository', 'opt')
         expect(config).to have_key('maven_config')
@@ -227,10 +268,27 @@ RSpec.describe Pangea::Resources::GoogleArtifactRegistryRepository do
         config = validate_resource_structure(result, 'google_artifact_registry_repository', 'minimal')
         expect(config).not_to have_key('mode')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_artifact_registry_repository('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_artifact_registry_repository', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_artifact_registry_repository('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_artifact_registry_repository', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes remote_repository_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_artifact_registry_repository('opt', required_attrs.merge(remote_repository_config: [{ 'key1' => 'val1' }]))
+        synth.google_artifact_registry_repository('opt', required_attrs.merge(remote_repository_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_artifact_registry_repository', 'opt')
         expect(config).to have_key('remote_repository_config')
@@ -247,7 +305,7 @@ RSpec.describe Pangea::Resources::GoogleArtifactRegistryRepository do
       it 'includes virtual_repository_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_artifact_registry_repository('opt', required_attrs.merge(virtual_repository_config: [{ 'key1' => 'val1' }]))
+        synth.google_artifact_registry_repository('opt', required_attrs.merge(virtual_repository_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_artifact_registry_repository', 'opt')
         expect(config).to have_key('virtual_repository_config')
@@ -264,7 +322,7 @@ RSpec.describe Pangea::Resources::GoogleArtifactRegistryRepository do
       it 'includes vulnerability_scanning_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_artifact_registry_repository('opt', required_attrs.merge(vulnerability_scanning_config: [{ 'key1' => 'val1' }]))
+        synth.google_artifact_registry_repository('opt', required_attrs.merge(vulnerability_scanning_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_artifact_registry_repository', 'opt')
         expect(config).to have_key('vulnerability_scanning_config')
@@ -337,7 +395,7 @@ RSpec.describe Pangea::Resources::GoogleArtifactRegistryRepository do
     resource_type: :google_artifact_registry_repository,
     method: :google_artifact_registry_repository,
     required_attrs: { format: 'test-value', repository_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :location, :name, :project, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :location, :name, :project, :registry_uri, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:cleanup_policy_dry_run]

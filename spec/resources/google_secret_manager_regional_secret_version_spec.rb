@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerRegionalSecretVersion do
         expect(ref.id).to eq("${google_secret_manager_regional_secret_version.test.id}")
         expect(ref.create_time).to eq("${google_secret_manager_regional_secret_version.test.create_time}")
         expect(ref.customer_managed_encryption).to eq("${google_secret_manager_regional_secret_version.test.customer_managed_encryption}")
+        expect(ref.deletion_policy).to eq("${google_secret_manager_regional_secret_version.test.deletion_policy}")
         expect(ref.destroy_time).to eq("${google_secret_manager_regional_secret_version.test.destroy_time}")
         expect(ref.location).to eq("${google_secret_manager_regional_secret_version.test.location}")
         expect(ref.name).to eq("${google_secret_manager_regional_secret_version.test.name}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerRegionalSecretVersion do
         config = validate_resource_structure(result, 'google_secret_manager_regional_secret_version', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('customer_managed_encryption')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('destroy_time')
         expect(config).not_to have_key('location')
         expect(config).not_to have_key('name')
@@ -209,7 +211,7 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerRegionalSecretVersion do
     resource_type: :google_secret_manager_regional_secret_version,
     method: :google_secret_manager_regional_secret_version,
     required_attrs: { secret: 'test-value', secret_data: 'test-value' },
-    expected_outputs: [:id, :create_time, :customer_managed_encryption, :destroy_time, :location, :name, :version],
+    expected_outputs: [:id, :create_time, :customer_managed_encryption, :deletion_policy, :destroy_time, :location, :name, :version],
     sensitive_fields: [:secret_data],
     immutable_fields: [],
     boolean_fields: [:enabled, :is_secret_data_base64]

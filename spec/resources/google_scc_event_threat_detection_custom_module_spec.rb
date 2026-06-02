@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleSccEventThreatDetectionCustomModule do
         ref = synth.google_scc_event_threat_detection_custom_module('test', required_attrs)
 
         expect(ref.id).to eq("${google_scc_event_threat_detection_custom_module.test.id}")
+        expect(ref.deletion_policy).to eq("${google_scc_event_threat_detection_custom_module.test.deletion_policy}")
         expect(ref.last_editor).to eq("${google_scc_event_threat_detection_custom_module.test.last_editor}")
         expect(ref.name).to eq("${google_scc_event_threat_detection_custom_module.test.name}")
         expect(ref.update_time).to eq("${google_scc_event_threat_detection_custom_module.test.update_time}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleSccEventThreatDetectionCustomModule do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_scc_event_threat_detection_custom_module', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('last_editor')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('update_time')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleSccEventThreatDetectionCustomModule do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ display_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', display_name: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,11 +70,29 @@ RSpec.describe Pangea::Resources::GoogleSccEventThreatDetectionCustomModule do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_scc_event_threat_detection_custom_module', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_scc_event_threat_detection_custom_module('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_scc_event_threat_detection_custom_module', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_scc_event_threat_detection_custom_module('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_scc_event_threat_detection_custom_module', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes display_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -137,7 +157,7 @@ RSpec.describe Pangea::Resources::GoogleSccEventThreatDetectionCustomModule do
     resource_type: :google_scc_event_threat_detection_custom_module,
     method: :google_scc_event_threat_detection_custom_module,
     required_attrs: { config: 'test-value', enablement_state: 'test-value', organization: 'test-value', type: 'test-value' },
-    expected_outputs: [:id, :last_editor, :name, :update_time],
+    expected_outputs: [:id, :deletion_policy, :last_editor, :name, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCaPool do
         ref = synth.google_privateca_ca_pool('test', required_attrs)
 
         expect(ref.id).to eq("${google_privateca_ca_pool.test.id}")
+        expect(ref.deletion_policy).to eq("${google_privateca_ca_pool.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_privateca_ca_pool.test.effective_labels}")
         expect(ref.project).to eq("${google_privateca_ca_pool.test.project}")
         expect(ref.terraform_labels).to eq("${google_privateca_ca_pool.test.terraform_labels}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCaPool do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_privateca_ca_pool', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCaPool do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ issuance_policy: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, publishing_options: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', encryption_spec: { 'key1' => 'val1' }, issuance_policy: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, project: 'test-value', publishing_options: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,17 +70,54 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCaPool do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_privateca_ca_pool', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('encryption_spec')
         expect(config).to have_key('issuance_policy')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('publishing_options')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privateca_ca_pool('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privateca_ca_pool', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privateca_ca_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privateca_ca_pool', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes encryption_spec when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privateca_ca_pool('opt', required_attrs.merge(encryption_spec: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privateca_ca_pool', 'opt')
+        expect(config).to have_key('encryption_spec')
+      end
+
+      it 'omits encryption_spec when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privateca_ca_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privateca_ca_pool', 'minimal')
+        expect(config).not_to have_key('encryption_spec')
+      end
       it 'includes issuance_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_privateca_ca_pool('opt', required_attrs.merge(issuance_policy: [{ 'key1' => 'val1' }]))
+        synth.google_privateca_ca_pool('opt', required_attrs.merge(issuance_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_privateca_ca_pool', 'opt')
         expect(config).to have_key('issuance_policy')
@@ -109,10 +148,27 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCaPool do
         config = validate_resource_structure(result, 'google_privateca_ca_pool', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privateca_ca_pool('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privateca_ca_pool', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privateca_ca_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privateca_ca_pool', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes publishing_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_privateca_ca_pool('opt', required_attrs.merge(publishing_options: [{ 'key1' => 'val1' }]))
+        synth.google_privateca_ca_pool('opt', required_attrs.merge(publishing_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_privateca_ca_pool', 'opt')
         expect(config).to have_key('publishing_options')
@@ -172,7 +228,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCaPool do
     resource_type: :google_privateca_ca_pool,
     method: :google_privateca_ca_pool,
     required_attrs: { location: 'test-value', name: 'test-value', tier: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :project, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

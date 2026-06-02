@@ -42,6 +42,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationConnectorsConnection do
         expect(ref.connector_version_infra_config).to eq("${google_integration_connectors_connection.test.connector_version_infra_config}")
         expect(ref.connector_version_launch_stage).to eq("${google_integration_connectors_connection.test.connector_version_launch_stage}")
         expect(ref.create_time).to eq("${google_integration_connectors_connection.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_integration_connectors_connection.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_integration_connectors_connection.test.effective_labels}")
         expect(ref.eventing_runtime_data).to eq("${google_integration_connectors_connection.test.eventing_runtime_data}")
         expect(ref.project).to eq("${google_integration_connectors_connection.test.project}")
@@ -66,6 +67,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationConnectorsConnection do
         expect(config).not_to have_key('connector_version_infra_config')
         expect(config).not_to have_key('connector_version_launch_stage')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('eventing_runtime_data')
         expect(config).not_to have_key('project')
@@ -79,7 +81,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationConnectorsConnection do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ auth_config: [{ 'key1' => 'val1' }], config_variable: [{ 'key1' => 'val1' }], description: 'test-value', destination_config: [{ 'key1' => 'val1' }], eventing_config: [{ 'key1' => 'val1' }], eventing_enablement_type: 'test-value', labels: { 'key1' => 'val1' }, lock_config: [{ 'key1' => 'val1' }], log_config: [{ 'key1' => 'val1' }], node_config: [{ 'key1' => 'val1' }], ssl_config: [{ 'key1' => 'val1' }], suspended: true }) }
+      let(:all_attrs) { required_attrs.merge({ auth_config: { 'key1' => 'val1' }, config_variable: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', description: 'test-value', destination_config: [{ 'key1' => 'val1' }], eventing_config: { 'key1' => 'val1' }, eventing_enablement_type: 'test-value', labels: { 'key1' => 'val1' }, lock_config: { 'key1' => 'val1' }, log_config: { 'key1' => 'val1' }, node_config: { 'key1' => 'val1' }, project: 'test-value', service_account: 'test-value', ssl_config: { 'key1' => 'val1' }, suspended: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -90,6 +92,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationConnectorsConnection do
         config = validate_resource_structure(result, 'google_integration_connectors_connection', 'full')
         expect(config).to have_key('auth_config')
         expect(config).to have_key('config_variable')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('destination_config')
         expect(config).to have_key('eventing_config')
@@ -98,6 +101,8 @@ RSpec.describe Pangea::Resources::GoogleIntegrationConnectorsConnection do
         expect(config).to have_key('lock_config')
         expect(config).to have_key('log_config')
         expect(config).to have_key('node_config')
+        expect(config).to have_key('project')
+        expect(config).to have_key('service_account')
         expect(config).to have_key('ssl_config')
         expect(config).to have_key('suspended')
       end
@@ -107,7 +112,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationConnectorsConnection do
       it 'includes auth_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_integration_connectors_connection('opt', required_attrs.merge(auth_config: [{ 'key1' => 'val1' }]))
+        synth.google_integration_connectors_connection('opt', required_attrs.merge(auth_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_integration_connectors_connection', 'opt')
         expect(config).to have_key('auth_config')
@@ -137,6 +142,23 @@ RSpec.describe Pangea::Resources::GoogleIntegrationConnectorsConnection do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_integration_connectors_connection', 'minimal')
         expect(config).not_to have_key('config_variable')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_integration_connectors_connection('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_integration_connectors_connection', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_integration_connectors_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_integration_connectors_connection', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -175,7 +197,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationConnectorsConnection do
       it 'includes eventing_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_integration_connectors_connection('opt', required_attrs.merge(eventing_config: [{ 'key1' => 'val1' }]))
+        synth.google_integration_connectors_connection('opt', required_attrs.merge(eventing_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_integration_connectors_connection', 'opt')
         expect(config).to have_key('eventing_config')
@@ -226,7 +248,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationConnectorsConnection do
       it 'includes lock_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_integration_connectors_connection('opt', required_attrs.merge(lock_config: [{ 'key1' => 'val1' }]))
+        synth.google_integration_connectors_connection('opt', required_attrs.merge(lock_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_integration_connectors_connection', 'opt')
         expect(config).to have_key('lock_config')
@@ -243,7 +265,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationConnectorsConnection do
       it 'includes log_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_integration_connectors_connection('opt', required_attrs.merge(log_config: [{ 'key1' => 'val1' }]))
+        synth.google_integration_connectors_connection('opt', required_attrs.merge(log_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_integration_connectors_connection', 'opt')
         expect(config).to have_key('log_config')
@@ -260,7 +282,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationConnectorsConnection do
       it 'includes node_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_integration_connectors_connection('opt', required_attrs.merge(node_config: [{ 'key1' => 'val1' }]))
+        synth.google_integration_connectors_connection('opt', required_attrs.merge(node_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_integration_connectors_connection', 'opt')
         expect(config).to have_key('node_config')
@@ -274,10 +296,44 @@ RSpec.describe Pangea::Resources::GoogleIntegrationConnectorsConnection do
         config = validate_resource_structure(result, 'google_integration_connectors_connection', 'minimal')
         expect(config).not_to have_key('node_config')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_integration_connectors_connection('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_integration_connectors_connection', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_integration_connectors_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_integration_connectors_connection', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes service_account when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_integration_connectors_connection('opt', required_attrs.merge(service_account: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_integration_connectors_connection', 'opt')
+        expect(config).to have_key('service_account')
+      end
+
+      it 'omits service_account when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_integration_connectors_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_integration_connectors_connection', 'minimal')
+        expect(config).not_to have_key('service_account')
+      end
       it 'includes ssl_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_integration_connectors_connection('opt', required_attrs.merge(ssl_config: [{ 'key1' => 'val1' }]))
+        synth.google_integration_connectors_connection('opt', required_attrs.merge(ssl_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_integration_connectors_connection', 'opt')
         expect(config).to have_key('ssl_config')
@@ -368,7 +424,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationConnectorsConnection do
     resource_type: :google_integration_connectors_connection,
     method: :google_integration_connectors_connection,
     required_attrs: { connector_version: 'test-value', location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :connection_revision, :connector_version_infra_config, :connector_version_launch_stage, :create_time, :effective_labels, :eventing_runtime_data, :project, :service_account, :service_directory, :status, :subscription_type, :terraform_labels, :update_time],
+    expected_outputs: [:id, :connection_revision, :connector_version_infra_config, :connector_version_launch_stage, :create_time, :deletion_policy, :effective_labels, :eventing_runtime_data, :project, :service_account, :service_directory, :status, :subscription_type, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:suspended]

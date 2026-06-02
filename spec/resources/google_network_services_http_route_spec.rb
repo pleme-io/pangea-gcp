@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesHttpRoute do
 
         expect(ref.id).to eq("${google_network_services_http_route.test.id}")
         expect(ref.create_time).to eq("${google_network_services_http_route.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_services_http_route.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_services_http_route.test.effective_labels}")
         expect(ref.project).to eq("${google_network_services_http_route.test.project}")
         expect(ref.self_link).to eq("${google_network_services_http_route.test.self_link}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesHttpRoute do
 
         config = validate_resource_structure(result, 'google_network_services_http_route', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesHttpRoute do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', gateways: ['test-value'], labels: { 'key1' => 'val1' }, meshes: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', gateways: ['test-value'], labels: { 'key1' => 'val1' }, meshes: ['test-value'], project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,14 +76,33 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesHttpRoute do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_services_http_route', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('gateways')
         expect(config).to have_key('labels')
         expect(config).to have_key('meshes')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_http_route('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_http_route', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_http_route('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_http_route', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -150,6 +171,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesHttpRoute do
         config = validate_resource_structure(result, 'google_network_services_http_route', 'minimal')
         expect(config).not_to have_key('meshes')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_http_route('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_http_route', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_http_route('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_http_route', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -196,7 +234,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesHttpRoute do
     resource_type: :google_network_services_http_route,
     method: :google_network_services_http_route,
     required_attrs: { hostnames: ['test-value'], name: 'test-value', rules: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :effective_labels, :project, :self_link, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :project, :self_link, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

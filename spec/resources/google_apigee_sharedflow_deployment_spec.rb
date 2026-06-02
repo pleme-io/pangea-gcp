@@ -38,11 +38,24 @@ RSpec.describe Pangea::Resources::GoogleApigeeSharedflowDeployment do
         ref = synth.google_apigee_sharedflow_deployment('test', required_attrs)
 
         expect(ref.id).to eq("${google_apigee_sharedflow_deployment.test.id}")
+        expect(ref.deletion_policy).to eq("${google_apigee_sharedflow_deployment.test.deletion_policy}")
+      end
+    end
+
+    context 'computed-only attributes' do
+      it 'excludes computed-only attributes from the resource block' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_sharedflow_deployment('test', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_apigee_sharedflow_deployment', 'test')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ service_account: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', service_account: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -51,11 +64,29 @@ RSpec.describe Pangea::Resources::GoogleApigeeSharedflowDeployment do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_sharedflow_deployment', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('service_account')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_sharedflow_deployment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_sharedflow_deployment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_sharedflow_deployment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_sharedflow_deployment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes service_account when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -120,7 +151,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeSharedflowDeployment do
     resource_type: :google_apigee_sharedflow_deployment,
     method: :google_apigee_sharedflow_deployment,
     required_attrs: { environment: 'test-value', org_id: 'test-value', revision: 'test-value', sharedflow_id: 'test-value' },
-    expected_outputs: [:id],
+    expected_outputs: [:id, :deletion_policy],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

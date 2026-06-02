@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityMirroringEndpointGroupAss
 
         expect(ref.id).to eq("${google_network_security_mirroring_endpoint_group_association.test.id}")
         expect(ref.create_time).to eq("${google_network_security_mirroring_endpoint_group_association.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_security_mirroring_endpoint_group_association.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_security_mirroring_endpoint_group_association.test.effective_labels}")
         expect(ref.locations).to eq("${google_network_security_mirroring_endpoint_group_association.test.locations}")
         expect(ref.locations_details).to eq("${google_network_security_mirroring_endpoint_group_association.test.locations_details}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityMirroringEndpointGroupAss
 
         config = validate_resource_structure(result, 'google_network_security_mirroring_endpoint_group_association', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('locations')
         expect(config).not_to have_key('locations_details')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityMirroringEndpointGroupAss
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ labels: { 'key1' => 'val1' }, mirroring_endpoint_group_association_id: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', labels: { 'key1' => 'val1' }, mirroring_endpoint_group_association_id: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -82,12 +84,31 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityMirroringEndpointGroupAss
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_security_mirroring_endpoint_group_association', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('labels')
         expect(config).to have_key('mirroring_endpoint_group_association_id')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_mirroring_endpoint_group_association('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_mirroring_endpoint_group_association', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_mirroring_endpoint_group_association('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_mirroring_endpoint_group_association', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -121,6 +142,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityMirroringEndpointGroupAss
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_security_mirroring_endpoint_group_association', 'minimal')
         expect(config).not_to have_key('mirroring_endpoint_group_association_id')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_mirroring_endpoint_group_association('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_mirroring_endpoint_group_association', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_mirroring_endpoint_group_association('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_mirroring_endpoint_group_association', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -168,7 +206,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityMirroringEndpointGroupAss
     resource_type: :google_network_security_mirroring_endpoint_group_association,
     method: :google_network_security_mirroring_endpoint_group_association,
     required_attrs: { location: 'test-value', mirroring_endpoint_group: 'test-value', network: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :locations, :locations_details, :name, :project, :reconciling, :state, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :locations, :locations_details, :name, :project, :reconciling, :state, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

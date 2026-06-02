@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreFederation do
 
         expect(ref.id).to eq("${google_dataproc_metastore_federation.test.id}")
         expect(ref.create_time).to eq("${google_dataproc_metastore_federation.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_dataproc_metastore_federation.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_dataproc_metastore_federation.test.effective_labels}")
         expect(ref.endpoint_uri).to eq("${google_dataproc_metastore_federation.test.endpoint_uri}")
         expect(ref.name).to eq("${google_dataproc_metastore_federation.test.name}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreFederation do
 
         config = validate_resource_structure(result, 'google_dataproc_metastore_federation', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('endpoint_uri')
         expect(config).not_to have_key('name')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreFederation do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deletion_protection: true, labels: { 'key1' => 'val1' }, location: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', deletion_protection: true, labels: { 'key1' => 'val1' }, location: 'test-value', project: 'test-value', tags: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -82,13 +84,33 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreFederation do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dataproc_metastore_federation', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
+        expect(config).to have_key('tags')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_federation('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_federation', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_federation('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_federation', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -139,6 +161,40 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreFederation do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_metastore_federation', 'minimal')
         expect(config).not_to have_key('location')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_federation('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_federation', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_federation('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_federation', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes tags when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_federation('opt', required_attrs.merge(tags: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_federation', 'opt')
+        expect(config).to have_key('tags')
+      end
+
+      it 'omits tags when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_federation('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_federation', 'minimal')
+        expect(config).not_to have_key('tags')
       end
     end
 
@@ -200,7 +256,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreFederation do
     resource_type: :google_dataproc_metastore_federation,
     method: :google_dataproc_metastore_federation,
     required_attrs: { backend_metastores: [{ 'key1' => 'val1' }], federation_id: 'test-value', version: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :endpoint_uri, :name, :project, :state, :state_message, :terraform_labels, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :endpoint_uri, :name, :project, :state, :state_message, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection]

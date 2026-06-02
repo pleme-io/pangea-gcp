@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityHub do
 
         expect(ref.id).to eq("${google_network_connectivity_hub.test.id}")
         expect(ref.create_time).to eq("${google_network_connectivity_hub.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_connectivity_hub.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_connectivity_hub.test.effective_labels}")
         expect(ref.export_psc).to eq("${google_network_connectivity_hub.test.export_psc}")
         expect(ref.name).to eq("${google_network_connectivity_hub.test.name}")
@@ -62,6 +63,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityHub do
 
         config = validate_resource_structure(result, 'google_network_connectivity_hub', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('export_psc')
         expect(config).not_to have_key('name')
@@ -77,7 +79,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityHub do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', export_psc: true, labels: { 'key1' => 'val1' }, name: 'test-value', policy_mode: 'test-value', preset_topology: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -86,12 +88,35 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityHub do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_connectivity_hub', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('export_psc')
         expect(config).to have_key('labels')
+        expect(config).to have_key('name')
+        expect(config).to have_key('policy_mode')
+        expect(config).to have_key('preset_topology')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_hub('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_hub', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_hub('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_hub', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -109,6 +134,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityHub do
         config = validate_resource_structure(result, 'google_network_connectivity_hub', 'minimal')
         expect(config).not_to have_key('description')
       end
+      it 'includes export_psc when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_hub('opt', required_attrs.merge(export_psc: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_hub', 'opt')
+        expect(config).to have_key('export_psc')
+      end
+
+      it 'omits export_psc when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_hub('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_hub', 'minimal')
+        expect(config).not_to have_key('export_psc')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -125,6 +167,88 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityHub do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_connectivity_hub', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_hub('opt', required_attrs.merge(name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_hub', 'opt')
+        expect(config).to have_key('name')
+      end
+
+      it 'omits name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_hub('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_hub', 'minimal')
+        expect(config).not_to have_key('name')
+      end
+      it 'includes policy_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_hub('opt', required_attrs.merge(policy_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_hub', 'opt')
+        expect(config).to have_key('policy_mode')
+      end
+
+      it 'omits policy_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_hub('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_hub', 'minimal')
+        expect(config).not_to have_key('policy_mode')
+      end
+      it 'includes preset_topology when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_hub('opt', required_attrs.merge(preset_topology: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_hub', 'opt')
+        expect(config).to have_key('preset_topology')
+      end
+
+      it 'omits preset_topology when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_hub('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_hub', 'minimal')
+        expect(config).not_to have_key('preset_topology')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_hub('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_hub', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_hub('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_hub', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts export_psc=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(export_psc: val)
+          synth.google_network_connectivity_hub("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_network_connectivity_hub', "bool_#{val}")
+          expect(config['export_psc']).to eq(val)
+        end
       end
     end
 
@@ -169,8 +293,8 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityHub do
     resource_type: :google_network_connectivity_hub,
     method: :google_network_connectivity_hub,
     required_attrs: {},
-    expected_outputs: [:id, :create_time, :effective_labels, :export_psc, :name, :policy_mode, :preset_topology, :project, :routing_vpcs, :state, :terraform_labels, :unique_id, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :export_psc, :name, :policy_mode, :preset_topology, :project, :routing_vpcs, :state, :terraform_labels, :unique_id, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:export_psc]
 end

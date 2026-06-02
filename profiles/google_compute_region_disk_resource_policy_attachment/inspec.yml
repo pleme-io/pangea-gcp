@@ -1,0 +1,8 @@
+name: google_compute_region_disk_resource_policy_attachment
+title: Manages a google_compute_region_disk_resource_policy_attachment resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

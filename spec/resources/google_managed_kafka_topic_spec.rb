@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleManagedKafkaTopic do
         ref = synth.google_managed_kafka_topic('test', required_attrs)
 
         expect(ref.id).to eq("${google_managed_kafka_topic.test.id}")
+        expect(ref.deletion_policy).to eq("${google_managed_kafka_topic.test.deletion_policy}")
         expect(ref.name).to eq("${google_managed_kafka_topic.test.name}")
         expect(ref.project).to eq("${google_managed_kafka_topic.test.project}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleManagedKafkaTopic do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_managed_kafka_topic', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ configs: { 'key1' => 'val1' }, partition_count: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ configs: { 'key1' => 'val1' }, deletion_policy: 'test-value', partition_count: 3.14, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,7 +69,9 @@ RSpec.describe Pangea::Resources::GoogleManagedKafkaTopic do
 
         config = validate_resource_structure(result, 'google_managed_kafka_topic', 'full')
         expect(config).to have_key('configs')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('partition_count')
+        expect(config).to have_key('project')
       end
     end
 
@@ -89,6 +93,23 @@ RSpec.describe Pangea::Resources::GoogleManagedKafkaTopic do
         config = validate_resource_structure(result, 'google_managed_kafka_topic', 'minimal')
         expect(config).not_to have_key('configs')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_managed_kafka_topic('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_managed_kafka_topic', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_managed_kafka_topic('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_managed_kafka_topic', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes partition_count when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -105,6 +126,23 @@ RSpec.describe Pangea::Resources::GoogleManagedKafkaTopic do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_managed_kafka_topic', 'minimal')
         expect(config).not_to have_key('partition_count')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_managed_kafka_topic('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_managed_kafka_topic', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_managed_kafka_topic('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_managed_kafka_topic', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -153,7 +191,7 @@ RSpec.describe Pangea::Resources::GoogleManagedKafkaTopic do
     resource_type: :google_managed_kafka_topic,
     method: :google_managed_kafka_topic,
     required_attrs: { cluster: 'test-value', location: 'test-value', replication_factor: 3.14, topic_id: 'test-value' },
-    expected_outputs: [:id, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

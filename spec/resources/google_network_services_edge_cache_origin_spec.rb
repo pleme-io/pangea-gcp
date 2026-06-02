@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheOrigin do
         ref = synth.google_network_services_edge_cache_origin('test', required_attrs)
 
         expect(ref.id).to eq("${google_network_services_edge_cache_origin.test.id}")
+        expect(ref.deletion_policy).to eq("${google_network_services_edge_cache_origin.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_services_edge_cache_origin.test.effective_labels}")
         expect(ref.port).to eq("${google_network_services_edge_cache_origin.test.port}")
         expect(ref.project).to eq("${google_network_services_edge_cache_origin.test.project}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheOrigin do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('port')
         expect(config).not_to have_key('project')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheOrigin do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ aws_v4_authentication: [{ 'key1' => 'val1' }], description: 'test-value', failover_origin: 'test-value', flex_shielding: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, max_attempts: 3.14, origin_override_action: [{ 'key1' => 'val1' }], origin_redirect: [{ 'key1' => 'val1' }], timeout: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ aws_v4_authentication: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', failover_origin: 'test-value', flex_shielding: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, max_attempts: 3.14, origin_override_action: { 'key1' => 'val1' }, origin_redirect: { 'key1' => 'val1' }, port: 3.14, project: 'test-value', protocol: 'test-value', retry_conditions: ['test-value'], timeout: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -75,6 +77,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheOrigin do
 
         config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'full')
         expect(config).to have_key('aws_v4_authentication')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('failover_origin')
         expect(config).to have_key('flex_shielding')
@@ -82,6 +85,10 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheOrigin do
         expect(config).to have_key('max_attempts')
         expect(config).to have_key('origin_override_action')
         expect(config).to have_key('origin_redirect')
+        expect(config).to have_key('port')
+        expect(config).to have_key('project')
+        expect(config).to have_key('protocol')
+        expect(config).to have_key('retry_conditions')
         expect(config).to have_key('timeout')
       end
     end
@@ -90,7 +97,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheOrigin do
       it 'includes aws_v4_authentication when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(aws_v4_authentication: [{ 'key1' => 'val1' }]))
+        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(aws_v4_authentication: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'opt')
         expect(config).to have_key('aws_v4_authentication')
@@ -103,6 +110,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheOrigin do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'minimal')
         expect(config).not_to have_key('aws_v4_authentication')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_origin('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -141,7 +165,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheOrigin do
       it 'includes flex_shielding when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(flex_shielding: [{ 'key1' => 'val1' }]))
+        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(flex_shielding: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'opt')
         expect(config).to have_key('flex_shielding')
@@ -192,7 +216,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheOrigin do
       it 'includes origin_override_action when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(origin_override_action: [{ 'key1' => 'val1' }]))
+        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(origin_override_action: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'opt')
         expect(config).to have_key('origin_override_action')
@@ -209,7 +233,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheOrigin do
       it 'includes origin_redirect when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(origin_redirect: [{ 'key1' => 'val1' }]))
+        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(origin_redirect: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'opt')
         expect(config).to have_key('origin_redirect')
@@ -223,10 +247,78 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheOrigin do
         config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'minimal')
         expect(config).not_to have_key('origin_redirect')
       end
+      it 'includes port when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(port: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'opt')
+        expect(config).to have_key('port')
+      end
+
+      it 'omits port when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_origin('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'minimal')
+        expect(config).not_to have_key('port')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_origin('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes protocol when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(protocol: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'opt')
+        expect(config).to have_key('protocol')
+      end
+
+      it 'omits protocol when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_origin('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'minimal')
+        expect(config).not_to have_key('protocol')
+      end
+      it 'includes retry_conditions when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(retry_conditions: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'opt')
+        expect(config).to have_key('retry_conditions')
+      end
+
+      it 'omits retry_conditions when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_origin('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'minimal')
+        expect(config).not_to have_key('retry_conditions')
+      end
       it 'includes timeout when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(timeout: [{ 'key1' => 'val1' }]))
+        synth.google_network_services_edge_cache_origin('opt', required_attrs.merge(timeout: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_edge_cache_origin', 'opt')
         expect(config).to have_key('timeout')
@@ -285,7 +377,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheOrigin do
     resource_type: :google_network_services_edge_cache_origin,
     method: :google_network_services_edge_cache_origin,
     required_attrs: { name: 'test-value', origin_address: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :port, :project, :protocol, :retry_conditions, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :port, :project, :protocol, :retry_conditions, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

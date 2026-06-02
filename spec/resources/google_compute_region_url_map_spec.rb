@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionUrlMap do
 
         expect(ref.id).to eq("${google_compute_region_url_map.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_region_url_map.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_region_url_map.test.deletion_policy}")
         expect(ref.fingerprint).to eq("${google_compute_region_url_map.test.fingerprint}")
         expect(ref.map_id).to eq("${google_compute_region_url_map.test.map_id}")
         expect(ref.project).to eq("${google_compute_region_url_map.test.project}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionUrlMap do
 
         config = validate_resource_structure(result, 'google_compute_region_url_map', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('fingerprint')
         expect(config).not_to have_key('map_id')
         expect(config).not_to have_key('project')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionUrlMap do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ default_route_action: [{ 'key1' => 'val1' }], default_service: 'test-value', default_url_redirect: [{ 'key1' => 'val1' }], description: 'test-value', host_rule: [{ 'key1' => 'val1' }], path_matcher: [{ 'key1' => 'val1' }], test: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ default_route_action: { 'key1' => 'val1' }, default_service: 'test-value', default_url_redirect: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', header_action: { 'key1' => 'val1' }, host_rule: [{ 'key1' => 'val1' }], path_matcher: [{ 'key1' => 'val1' }], project: 'test-value', region: 'test-value', test: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -77,9 +79,13 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionUrlMap do
         expect(config).to have_key('default_route_action')
         expect(config).to have_key('default_service')
         expect(config).to have_key('default_url_redirect')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('header_action')
         expect(config).to have_key('host_rule')
         expect(config).to have_key('path_matcher')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('test')
       end
     end
@@ -88,7 +94,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionUrlMap do
       it 'includes default_route_action when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_url_map('opt', required_attrs.merge(default_route_action: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_url_map('opt', required_attrs.merge(default_route_action: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_url_map', 'opt')
         expect(config).to have_key('default_route_action')
@@ -122,7 +128,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionUrlMap do
       it 'includes default_url_redirect when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_url_map('opt', required_attrs.merge(default_url_redirect: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_url_map('opt', required_attrs.merge(default_url_redirect: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_url_map', 'opt')
         expect(config).to have_key('default_url_redirect')
@@ -135,6 +141,23 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionUrlMap do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_url_map', 'minimal')
         expect(config).not_to have_key('default_url_redirect')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_url_map('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_url_map', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_url_map('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_url_map', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -152,6 +175,23 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionUrlMap do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_url_map', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes header_action when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_url_map('opt', required_attrs.merge(header_action: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_url_map', 'opt')
+        expect(config).to have_key('header_action')
+      end
+
+      it 'omits header_action when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_url_map('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_url_map', 'minimal')
+        expect(config).not_to have_key('header_action')
       end
       it 'includes host_rule when provided' do
         synth = create_synthesizer
@@ -186,6 +226,40 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionUrlMap do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_url_map', 'minimal')
         expect(config).not_to have_key('path_matcher')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_url_map('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_url_map', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_url_map('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_url_map', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_url_map('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_url_map', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_url_map('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_url_map', 'minimal')
+        expect(config).not_to have_key('region')
       end
       it 'includes test when provided' do
         synth = create_synthesizer
@@ -248,7 +322,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionUrlMap do
     resource_type: :google_compute_region_url_map,
     method: :google_compute_region_url_map,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :fingerprint, :map_id, :project, :region, :self_link],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :fingerprint, :map_id, :project, :region, :self_link],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstance do
 
         expect(ref.id).to eq("${google_spanner_instance.test.id}")
         expect(ref.default_backup_schedule_type).to eq("${google_spanner_instance.test.default_backup_schedule_type}")
+        expect(ref.deletion_policy).to eq("${google_spanner_instance.test.deletion_policy}")
         expect(ref.edition).to eq("${google_spanner_instance.test.edition}")
         expect(ref.effective_labels).to eq("${google_spanner_instance.test.effective_labels}")
         expect(ref.instance_type).to eq("${google_spanner_instance.test.instance_type}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstance do
 
         config = validate_resource_structure(result, 'google_spanner_instance', 'test')
         expect(config).not_to have_key('default_backup_schedule_type')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('edition')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('instance_type')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ autoscaling_config: [{ 'key1' => 'val1' }], force_destroy: true, labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ autoscaling_config: { 'key1' => 'val1' }, default_backup_schedule_type: 'test-value', deletion_policy: 'test-value', edition: 'test-value', force_destroy: true, instance_type: 'test-value', labels: { 'key1' => 'val1' }, name: 'test-value', num_nodes: 3.14, processing_units: 3.14, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -83,8 +85,16 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstance do
 
         config = validate_resource_structure(result, 'google_spanner_instance', 'full')
         expect(config).to have_key('autoscaling_config')
+        expect(config).to have_key('default_backup_schedule_type')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('edition')
         expect(config).to have_key('force_destroy')
+        expect(config).to have_key('instance_type')
         expect(config).to have_key('labels')
+        expect(config).to have_key('name')
+        expect(config).to have_key('num_nodes')
+        expect(config).to have_key('processing_units')
+        expect(config).to have_key('project')
       end
     end
 
@@ -92,7 +102,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstance do
       it 'includes autoscaling_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_spanner_instance('opt', required_attrs.merge(autoscaling_config: [{ 'key1' => 'val1' }]))
+        synth.google_spanner_instance('opt', required_attrs.merge(autoscaling_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_spanner_instance', 'opt')
         expect(config).to have_key('autoscaling_config')
@@ -105,6 +115,57 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_spanner_instance', 'minimal')
         expect(config).not_to have_key('autoscaling_config')
+      end
+      it 'includes default_backup_schedule_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('opt', required_attrs.merge(default_backup_schedule_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'opt')
+        expect(config).to have_key('default_backup_schedule_type')
+      end
+
+      it 'omits default_backup_schedule_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'minimal')
+        expect(config).not_to have_key('default_backup_schedule_type')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes edition when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('opt', required_attrs.merge(edition: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'opt')
+        expect(config).to have_key('edition')
+      end
+
+      it 'omits edition when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'minimal')
+        expect(config).not_to have_key('edition')
       end
       it 'includes force_destroy when provided' do
         synth = create_synthesizer
@@ -123,6 +184,23 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstance do
         config = validate_resource_structure(result, 'google_spanner_instance', 'minimal')
         expect(config).not_to have_key('force_destroy')
       end
+      it 'includes instance_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('opt', required_attrs.merge(instance_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'opt')
+        expect(config).to have_key('instance_type')
+      end
+
+      it 'omits instance_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'minimal')
+        expect(config).not_to have_key('instance_type')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -139,6 +217,74 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_spanner_instance', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('opt', required_attrs.merge(name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'opt')
+        expect(config).to have_key('name')
+      end
+
+      it 'omits name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'minimal')
+        expect(config).not_to have_key('name')
+      end
+      it 'includes num_nodes when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('opt', required_attrs.merge(num_nodes: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'opt')
+        expect(config).to have_key('num_nodes')
+      end
+
+      it 'omits num_nodes when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'minimal')
+        expect(config).not_to have_key('num_nodes')
+      end
+      it 'includes processing_units when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('opt', required_attrs.merge(processing_units: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'opt')
+        expect(config).to have_key('processing_units')
+      end
+
+      it 'omits processing_units when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'minimal')
+        expect(config).not_to have_key('processing_units')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -199,7 +345,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstance do
     resource_type: :google_spanner_instance,
     method: :google_spanner_instance,
     required_attrs: { config: 'test-value', display_name: 'test-value' },
-    expected_outputs: [:id, :default_backup_schedule_type, :edition, :effective_labels, :instance_type, :name, :num_nodes, :processing_units, :project, :state, :terraform_labels],
+    expected_outputs: [:id, :default_backup_schedule_type, :deletion_policy, :edition, :effective_labels, :instance_type, :name, :num_nodes, :processing_units, :project, :state, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:force_destroy]

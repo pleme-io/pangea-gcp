@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFeatureMembership do
         ref = synth.google_gke_hub_feature_membership('test', required_attrs)
 
         expect(ref.id).to eq("${google_gke_hub_feature_membership.test.id}")
+        expect(ref.deletion_policy).to eq("${google_gke_hub_feature_membership.test.deletion_policy}")
         expect(ref.project).to eq("${google_gke_hub_feature_membership.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFeatureMembership do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_gke_hub_feature_membership', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ configmanagement: [{ 'key1' => 'val1' }], membership_location: 'test-value', mesh: [{ 'key1' => 'val1' }], policycontroller: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ configmanagement: { 'key1' => 'val1' }, deletion_policy: 'test-value', membership_location: 'test-value', mesh: { 'key1' => 'val1' }, policycontroller: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -65,9 +67,11 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFeatureMembership do
 
         config = validate_resource_structure(result, 'google_gke_hub_feature_membership', 'full')
         expect(config).to have_key('configmanagement')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('membership_location')
         expect(config).to have_key('mesh')
         expect(config).to have_key('policycontroller')
+        expect(config).to have_key('project')
       end
     end
 
@@ -75,7 +79,7 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFeatureMembership do
       it 'includes configmanagement when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gke_hub_feature_membership('opt', required_attrs.merge(configmanagement: [{ 'key1' => 'val1' }]))
+        synth.google_gke_hub_feature_membership('opt', required_attrs.merge(configmanagement: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gke_hub_feature_membership', 'opt')
         expect(config).to have_key('configmanagement')
@@ -88,6 +92,23 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFeatureMembership do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gke_hub_feature_membership', 'minimal')
         expect(config).not_to have_key('configmanagement')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gke_hub_feature_membership('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gke_hub_feature_membership', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gke_hub_feature_membership('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gke_hub_feature_membership', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes membership_location when provided' do
         synth = create_synthesizer
@@ -109,7 +130,7 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFeatureMembership do
       it 'includes mesh when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gke_hub_feature_membership('opt', required_attrs.merge(mesh: [{ 'key1' => 'val1' }]))
+        synth.google_gke_hub_feature_membership('opt', required_attrs.merge(mesh: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gke_hub_feature_membership', 'opt')
         expect(config).to have_key('mesh')
@@ -126,7 +147,7 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFeatureMembership do
       it 'includes policycontroller when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gke_hub_feature_membership('opt', required_attrs.merge(policycontroller: [{ 'key1' => 'val1' }]))
+        synth.google_gke_hub_feature_membership('opt', required_attrs.merge(policycontroller: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gke_hub_feature_membership', 'opt')
         expect(config).to have_key('policycontroller')
@@ -139,6 +160,23 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFeatureMembership do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gke_hub_feature_membership', 'minimal')
         expect(config).not_to have_key('policycontroller')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gke_hub_feature_membership('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gke_hub_feature_membership', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gke_hub_feature_membership('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gke_hub_feature_membership', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -186,7 +224,7 @@ RSpec.describe Pangea::Resources::GoogleGkeHubFeatureMembership do
     resource_type: :google_gke_hub_feature_membership,
     method: :google_gke_hub_feature_membership,
     required_attrs: { feature: 'test-value', location: 'test-value', membership: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

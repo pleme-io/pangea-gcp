@@ -41,6 +41,7 @@ RSpec.describe Pangea::Resources::GooglePublicCaExternalAccountKey do
         expect(ref.b64_mac_key).to eq("${google_public_ca_external_account_key.test.b64_mac_key}")
         expect(ref.b64url_mac_key).to eq("${google_public_ca_external_account_key.test.b64url_mac_key}")
         expect(ref.key_id).to eq("${google_public_ca_external_account_key.test.key_id}")
+        expect(ref.mac_key).to eq("${google_public_ca_external_account_key.test.mac_key}")
         expect(ref.name).to eq("${google_public_ca_external_account_key.test.name}")
         expect(ref.project).to eq("${google_public_ca_external_account_key.test.project}")
       end
@@ -57,13 +58,14 @@ RSpec.describe Pangea::Resources::GooglePublicCaExternalAccountKey do
         expect(config).not_to have_key('b64_mac_key')
         expect(config).not_to have_key('b64url_mac_key')
         expect(config).not_to have_key('key_id')
+        expect(config).not_to have_key('mac_key')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ location: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ location: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,6 +75,7 @@ RSpec.describe Pangea::Resources::GooglePublicCaExternalAccountKey do
 
         config = validate_resource_structure(result, 'google_public_ca_external_account_key', 'full')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
       end
     end
 
@@ -94,14 +97,32 @@ RSpec.describe Pangea::Resources::GooglePublicCaExternalAccountKey do
         config = validate_resource_structure(result, 'google_public_ca_external_account_key', 'minimal')
         expect(config).not_to have_key('location')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_public_ca_external_account_key('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_public_ca_external_account_key', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_public_ca_external_account_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_public_ca_external_account_key', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'sensitive fields' do
       it 'documents sensitive attributes' do
-        sensitive_fields = [:b64_mac_key, :b64url_mac_key, :key_id]
+        sensitive_fields = [:b64_mac_key, :b64url_mac_key, :key_id, :mac_key]
         expect(sensitive_fields).to include(:b64_mac_key)
         expect(sensitive_fields).to include(:b64url_mac_key)
         expect(sensitive_fields).to include(:key_id)
+        expect(sensitive_fields).to include(:mac_key)
       end
     end
 
@@ -146,8 +167,8 @@ RSpec.describe Pangea::Resources::GooglePublicCaExternalAccountKey do
     resource_type: :google_public_ca_external_account_key,
     method: :google_public_ca_external_account_key,
     required_attrs: {},
-    expected_outputs: [:id, :b64_mac_key, :b64url_mac_key, :key_id, :name, :project],
-    sensitive_fields: [:b64_mac_key, :b64url_mac_key, :key_id],
+    expected_outputs: [:id, :b64_mac_key, :b64url_mac_key, :key_id, :mac_key, :name, :project],
+    sensitive_fields: [:b64_mac_key, :b64url_mac_key, :key_id, :mac_key],
     immutable_fields: [],
     boolean_fields: []
 end

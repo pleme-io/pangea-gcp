@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleFolder do
         expect(ref.id).to eq("${google_folder.test.id}")
         expect(ref.configured_capabilities).to eq("${google_folder.test.configured_capabilities}")
         expect(ref.create_time).to eq("${google_folder.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_folder.test.deletion_policy}")
         expect(ref.folder_id).to eq("${google_folder.test.folder_id}")
         expect(ref.lifecycle_state).to eq("${google_folder.test.lifecycle_state}")
         expect(ref.management_project).to eq("${google_folder.test.management_project}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleFolder do
         config = validate_resource_structure(result, 'google_folder', 'test')
         expect(config).not_to have_key('configured_capabilities')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('folder_id')
         expect(config).not_to have_key('lifecycle_state')
         expect(config).not_to have_key('management_project')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleFolder do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deletion_protection: true, tags: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', deletion_protection: true, tags: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,12 +76,30 @@ RSpec.describe Pangea::Resources::GoogleFolder do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_folder', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
         expect(config).to have_key('tags')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_folder('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_folder', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_folder('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_folder', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -173,7 +193,7 @@ RSpec.describe Pangea::Resources::GoogleFolder do
     resource_type: :google_folder,
     method: :google_folder,
     required_attrs: { display_name: 'test-value', parent: 'test-value' },
-    expected_outputs: [:id, :configured_capabilities, :create_time, :folder_id, :lifecycle_state, :management_project, :name],
+    expected_outputs: [:id, :configured_capabilities, :create_time, :deletion_policy, :folder_id, :lifecycle_state, :management_project, :name],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection]

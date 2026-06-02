@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleContainerAttachedCluster do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { distribution: 'test-value', fleet: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', oidc_config: [{ 'key1' => 'val1' }], platform_version: 'test-value' } }
+  let(:required_attrs) { { distribution: 'test-value', fleet: { 'key1' => 'val1' }, location: 'test-value', name: 'test-value', oidc_config: { 'key1' => 'val1' }, platform_version: 'test-value' } }
 
   describe ':google_container_attached_cluster' do
     context 'with required attributes only' do
@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAttachedCluster do
         expect(ref.id).to eq("${google_container_attached_cluster.test.id}")
         expect(ref.cluster_region).to eq("${google_container_attached_cluster.test.cluster_region}")
         expect(ref.create_time).to eq("${google_container_attached_cluster.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_container_attached_cluster.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_container_attached_cluster.test.effective_annotations}")
         expect(ref.errors).to eq("${google_container_attached_cluster.test.errors}")
         expect(ref.kubernetes_version).to eq("${google_container_attached_cluster.test.kubernetes_version}")
@@ -62,6 +63,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAttachedCluster do
         config = validate_resource_structure(result, 'google_container_attached_cluster', 'test')
         expect(config).not_to have_key('cluster_region')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('errors')
         expect(config).not_to have_key('kubernetes_version')
@@ -75,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAttachedCluster do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, authorization: [{ 'key1' => 'val1' }], binary_authorization: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', description: 'test-value', logging_config: [{ 'key1' => 'val1' }], monitoring_config: [{ 'key1' => 'val1' }], proxy_config: [{ 'key1' => 'val1' }], security_posture_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, authorization: { 'key1' => 'val1' }, binary_authorization: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', logging_config: { 'key1' => 'val1' }, monitoring_config: { 'key1' => 'val1' }, project: 'test-value', proxy_config: { 'key1' => 'val1' }, security_posture_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -91,6 +93,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAttachedCluster do
         expect(config).to have_key('description')
         expect(config).to have_key('logging_config')
         expect(config).to have_key('monitoring_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('proxy_config')
         expect(config).to have_key('security_posture_config')
       end
@@ -117,7 +120,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAttachedCluster do
       it 'includes authorization when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_attached_cluster('opt', required_attrs.merge(authorization: [{ 'key1' => 'val1' }]))
+        synth.google_container_attached_cluster('opt', required_attrs.merge(authorization: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_attached_cluster', 'opt')
         expect(config).to have_key('authorization')
@@ -134,7 +137,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAttachedCluster do
       it 'includes binary_authorization when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_attached_cluster('opt', required_attrs.merge(binary_authorization: [{ 'key1' => 'val1' }]))
+        synth.google_container_attached_cluster('opt', required_attrs.merge(binary_authorization: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_attached_cluster', 'opt')
         expect(config).to have_key('binary_authorization')
@@ -185,7 +188,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAttachedCluster do
       it 'includes logging_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_attached_cluster('opt', required_attrs.merge(logging_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_attached_cluster('opt', required_attrs.merge(logging_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_attached_cluster', 'opt')
         expect(config).to have_key('logging_config')
@@ -202,7 +205,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAttachedCluster do
       it 'includes monitoring_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_attached_cluster('opt', required_attrs.merge(monitoring_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_attached_cluster('opt', required_attrs.merge(monitoring_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_attached_cluster', 'opt')
         expect(config).to have_key('monitoring_config')
@@ -216,10 +219,27 @@ RSpec.describe Pangea::Resources::GoogleContainerAttachedCluster do
         config = validate_resource_structure(result, 'google_container_attached_cluster', 'minimal')
         expect(config).not_to have_key('monitoring_config')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_attached_cluster('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_attached_cluster', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_attached_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_attached_cluster', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes proxy_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_attached_cluster('opt', required_attrs.merge(proxy_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_attached_cluster('opt', required_attrs.merge(proxy_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_attached_cluster', 'opt')
         expect(config).to have_key('proxy_config')
@@ -236,7 +256,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAttachedCluster do
       it 'includes security_posture_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_attached_cluster('opt', required_attrs.merge(security_posture_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_attached_cluster('opt', required_attrs.merge(security_posture_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_attached_cluster', 'opt')
         expect(config).to have_key('security_posture_config')
@@ -261,10 +281,10 @@ RSpec.describe Pangea::Resources::GoogleContainerAttachedCluster do
 
         config = validate_resource_structure(result, 'google_container_attached_cluster', 'typed')
         expect(config['distribution']).to be_a(String)
-        expect(config['fleet']).to be_a(Array)
+        expect(config['fleet']).to be_a(Hash)
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
-        expect(config['oidc_config']).to be_a(Array)
+        expect(config['oidc_config']).to be_a(Hash)
         expect(config['platform_version']).to be_a(String)
       end
     end
@@ -298,8 +318,8 @@ RSpec.describe Pangea::Resources::GoogleContainerAttachedCluster do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_container_attached_cluster,
     method: :google_container_attached_cluster,
-    required_attrs: { distribution: 'test-value', fleet: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', oidc_config: [{ 'key1' => 'val1' }], platform_version: 'test-value' },
-    expected_outputs: [:id, :cluster_region, :create_time, :effective_annotations, :errors, :kubernetes_version, :project, :reconciling, :state, :uid, :update_time, :workload_identity_config],
+    required_attrs: { distribution: 'test-value', fleet: { 'key1' => 'val1' }, location: 'test-value', name: 'test-value', oidc_config: { 'key1' => 'val1' }, platform_version: 'test-value' },
+    expected_outputs: [:id, :cluster_region, :create_time, :deletion_policy, :effective_annotations, :errors, :kubernetes_version, :project, :reconciling, :state, :uid, :update_time, :workload_identity_config],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

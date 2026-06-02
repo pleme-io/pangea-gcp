@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { liveness_check: [{ 'key1' => 'val1' }], readiness_check: [{ 'key1' => 'val1' }], runtime: 'test-value', service: 'test-value' } }
+  let(:required_attrs) { { liveness_check: { 'key1' => 'val1' }, readiness_check: { 'key1' => 'val1' }, runtime: 'test-value', service: 'test-value' } }
 
   describe ':google_app_engine_flexible_app_version' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
         ref = synth.google_app_engine_flexible_app_version('test', required_attrs)
 
         expect(ref.id).to eq("${google_app_engine_flexible_app_version.test.id}")
+        expect(ref.deletion_policy).to eq("${google_app_engine_flexible_app_version.test.deletion_policy}")
         expect(ref.name).to eq("${google_app_engine_flexible_app_version.test.name}")
         expect(ref.project).to eq("${google_app_engine_flexible_app_version.test.project}")
         expect(ref.runtime_api_version).to eq("${google_app_engine_flexible_app_version.test.runtime_api_version}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('runtime_api_version')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ api_config: [{ 'key1' => 'val1' }], automatic_scaling: [{ 'key1' => 'val1' }], beta_settings: { 'key1' => 'val1' }, default_expiration: 'test-value', delete_service_on_destroy: true, deployment: [{ 'key1' => 'val1' }], endpoints_api_service: [{ 'key1' => 'val1' }], entrypoint: [{ 'key1' => 'val1' }], env_variables: { 'key1' => 'val1' }, flexible_runtime_settings: [{ 'key1' => 'val1' }], handlers: [{ 'key1' => 'val1' }], inbound_services: ['test-value'], instance_class: 'test-value', manual_scaling: [{ 'key1' => 'val1' }], network: [{ 'key1' => 'val1' }], nobuild_files_regex: 'test-value', noop_on_destroy: true, resources: [{ 'key1' => 'val1' }], runtime_channel: 'test-value', runtime_main_executable_path: 'test-value', serving_status: 'test-value', version_id: 'test-value', vpc_access_connector: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ api_config: { 'key1' => 'val1' }, automatic_scaling: { 'key1' => 'val1' }, beta_settings: { 'key1' => 'val1' }, default_expiration: 'test-value', delete_service_on_destroy: true, deletion_policy: 'test-value', deployment: { 'key1' => 'val1' }, endpoints_api_service: { 'key1' => 'val1' }, entrypoint: { 'key1' => 'val1' }, env_variables: { 'key1' => 'val1' }, flexible_runtime_settings: { 'key1' => 'val1' }, handlers: [{ 'key1' => 'val1' }], inbound_services: ['test-value'], instance_class: 'test-value', manual_scaling: { 'key1' => 'val1' }, network: { 'key1' => 'val1' }, nobuild_files_regex: 'test-value', noop_on_destroy: true, project: 'test-value', resources: { 'key1' => 'val1' }, runtime_api_version: 'test-value', runtime_channel: 'test-value', runtime_main_executable_path: 'test-value', service_account: 'test-value', serving_status: 'test-value', version_id: 'test-value', vpc_access_connector: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -75,6 +77,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
         expect(config).to have_key('beta_settings')
         expect(config).to have_key('default_expiration')
         expect(config).to have_key('delete_service_on_destroy')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deployment')
         expect(config).to have_key('endpoints_api_service')
         expect(config).to have_key('entrypoint')
@@ -87,9 +90,12 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
         expect(config).to have_key('network')
         expect(config).to have_key('nobuild_files_regex')
         expect(config).to have_key('noop_on_destroy')
+        expect(config).to have_key('project')
         expect(config).to have_key('resources')
+        expect(config).to have_key('runtime_api_version')
         expect(config).to have_key('runtime_channel')
         expect(config).to have_key('runtime_main_executable_path')
+        expect(config).to have_key('service_account')
         expect(config).to have_key('serving_status')
         expect(config).to have_key('version_id')
         expect(config).to have_key('vpc_access_connector')
@@ -100,7 +106,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
       it 'includes api_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(api_config: [{ 'key1' => 'val1' }]))
+        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(api_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'opt')
         expect(config).to have_key('api_config')
@@ -117,7 +123,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
       it 'includes automatic_scaling when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(automatic_scaling: [{ 'key1' => 'val1' }]))
+        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(automatic_scaling: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'opt')
         expect(config).to have_key('automatic_scaling')
@@ -182,10 +188,27 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'minimal')
         expect(config).not_to have_key('delete_service_on_destroy')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_flexible_app_version('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deployment when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(deployment: [{ 'key1' => 'val1' }]))
+        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(deployment: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'opt')
         expect(config).to have_key('deployment')
@@ -202,7 +225,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
       it 'includes endpoints_api_service when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(endpoints_api_service: [{ 'key1' => 'val1' }]))
+        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(endpoints_api_service: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'opt')
         expect(config).to have_key('endpoints_api_service')
@@ -219,7 +242,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
       it 'includes entrypoint when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(entrypoint: [{ 'key1' => 'val1' }]))
+        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(entrypoint: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'opt')
         expect(config).to have_key('entrypoint')
@@ -253,7 +276,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
       it 'includes flexible_runtime_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(flexible_runtime_settings: [{ 'key1' => 'val1' }]))
+        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(flexible_runtime_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'opt')
         expect(config).to have_key('flexible_runtime_settings')
@@ -321,7 +344,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
       it 'includes manual_scaling when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(manual_scaling: [{ 'key1' => 'val1' }]))
+        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(manual_scaling: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'opt')
         expect(config).to have_key('manual_scaling')
@@ -338,7 +361,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
       it 'includes network when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(network: [{ 'key1' => 'val1' }]))
+        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(network: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'opt')
         expect(config).to have_key('network')
@@ -386,10 +409,27 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'minimal')
         expect(config).not_to have_key('noop_on_destroy')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_flexible_app_version('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes resources when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(resources: [{ 'key1' => 'val1' }]))
+        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(resources: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'opt')
         expect(config).to have_key('resources')
@@ -402,6 +442,23 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'minimal')
         expect(config).not_to have_key('resources')
+      end
+      it 'includes runtime_api_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(runtime_api_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'opt')
+        expect(config).to have_key('runtime_api_version')
+      end
+
+      it 'omits runtime_api_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_flexible_app_version('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'minimal')
+        expect(config).not_to have_key('runtime_api_version')
       end
       it 'includes runtime_channel when provided' do
         synth = create_synthesizer
@@ -436,6 +493,23 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'minimal')
         expect(config).not_to have_key('runtime_main_executable_path')
+      end
+      it 'includes service_account when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(service_account: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'opt')
+        expect(config).to have_key('service_account')
+      end
+
+      it 'omits service_account when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_flexible_app_version('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'minimal')
+        expect(config).not_to have_key('service_account')
       end
       it 'includes serving_status when provided' do
         synth = create_synthesizer
@@ -474,7 +548,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
       it 'includes vpc_access_connector when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(vpc_access_connector: [{ 'key1' => 'val1' }]))
+        synth.google_app_engine_flexible_app_version('opt', required_attrs.merge(vpc_access_connector: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'opt')
         expect(config).to have_key('vpc_access_connector')
@@ -523,8 +597,8 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_app_engine_flexible_app_version', 'typed')
-        expect(config['liveness_check']).to be_a(Array)
-        expect(config['readiness_check']).to be_a(Array)
+        expect(config['liveness_check']).to be_a(Hash)
+        expect(config['readiness_check']).to be_a(Hash)
         expect(config['runtime']).to be_a(String)
         expect(config['service']).to be_a(String)
       end
@@ -559,8 +633,8 @@ RSpec.describe Pangea::Resources::GoogleAppEngineFlexibleAppVersion do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_app_engine_flexible_app_version,
     method: :google_app_engine_flexible_app_version,
-    required_attrs: { liveness_check: [{ 'key1' => 'val1' }], readiness_check: [{ 'key1' => 'val1' }], runtime: 'test-value', service: 'test-value' },
-    expected_outputs: [:id, :name, :project, :runtime_api_version, :service_account],
+    required_attrs: { liveness_check: { 'key1' => 'val1' }, readiness_check: { 'key1' => 'val1' }, runtime: 'test-value', service: 'test-value' },
+    expected_outputs: [:id, :deletion_policy, :name, :project, :runtime_api_version, :service_account],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:delete_service_on_destroy, :noop_on_destroy]

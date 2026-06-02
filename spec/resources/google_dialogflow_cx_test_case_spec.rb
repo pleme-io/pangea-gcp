@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxTestCase do
 
         expect(ref.id).to eq("${google_dialogflow_cx_test_case.test.id}")
         expect(ref.creation_time).to eq("${google_dialogflow_cx_test_case.test.creation_time}")
+        expect(ref.deletion_policy).to eq("${google_dialogflow_cx_test_case.test.deletion_policy}")
         expect(ref.last_test_result).to eq("${google_dialogflow_cx_test_case.test.last_test_result}")
         expect(ref.name).to eq("${google_dialogflow_cx_test_case.test.name}")
       end
@@ -53,13 +54,14 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxTestCase do
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_test_case', 'test')
         expect(config).not_to have_key('creation_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('last_test_result')
         expect(config).not_to have_key('name')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ notes: 'test-value', parent: 'test-value', tags: ['test-value'], test_case_conversation_turns: [{ 'key1' => 'val1' }], test_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', notes: 'test-value', parent: 'test-value', tags: ['test-value'], test_case_conversation_turns: [{ 'key1' => 'val1' }], test_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,6 +70,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxTestCase do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_test_case', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('notes')
         expect(config).to have_key('parent')
         expect(config).to have_key('tags')
@@ -77,6 +80,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxTestCase do
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_test_case('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_test_case', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_test_case('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_test_case', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes notes when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -148,7 +168,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxTestCase do
       it 'includes test_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_test_case('opt', required_attrs.merge(test_config: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_test_case('opt', required_attrs.merge(test_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_test_case', 'opt')
         expect(config).to have_key('test_config')
@@ -206,7 +226,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxTestCase do
     resource_type: :google_dialogflow_cx_test_case,
     method: :google_dialogflow_cx_test_case,
     required_attrs: { display_name: 'test-value' },
-    expected_outputs: [:id, :creation_time, :last_test_result, :name],
+    expected_outputs: [:id, :creation_time, :deletion_policy, :last_test_result, :name],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

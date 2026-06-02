@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferAgentPool do
         ref = synth.google_storage_transfer_agent_pool('test', required_attrs)
 
         expect(ref.id).to eq("${google_storage_transfer_agent_pool.test.id}")
+        expect(ref.deletion_policy).to eq("${google_storage_transfer_agent_pool.test.deletion_policy}")
         expect(ref.project).to eq("${google_storage_transfer_agent_pool.test.project}")
         expect(ref.state).to eq("${google_storage_transfer_agent_pool.test.state}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferAgentPool do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_storage_transfer_agent_pool', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ bandwidth_limit: [{ 'key1' => 'val1' }], display_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ bandwidth_limit: { 'key1' => 'val1' }, deletion_policy: 'test-value', display_name: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,7 +69,9 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferAgentPool do
 
         config = validate_resource_structure(result, 'google_storage_transfer_agent_pool', 'full')
         expect(config).to have_key('bandwidth_limit')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('project')
       end
     end
 
@@ -75,7 +79,7 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferAgentPool do
       it 'includes bandwidth_limit when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_transfer_agent_pool('opt', required_attrs.merge(bandwidth_limit: [{ 'key1' => 'val1' }]))
+        synth.google_storage_transfer_agent_pool('opt', required_attrs.merge(bandwidth_limit: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_transfer_agent_pool', 'opt')
         expect(config).to have_key('bandwidth_limit')
@@ -88,6 +92,23 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferAgentPool do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_transfer_agent_pool', 'minimal')
         expect(config).not_to have_key('bandwidth_limit')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_transfer_agent_pool('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_transfer_agent_pool', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_transfer_agent_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_transfer_agent_pool', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes display_name when provided' do
         synth = create_synthesizer
@@ -105,6 +126,23 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferAgentPool do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_transfer_agent_pool', 'minimal')
         expect(config).not_to have_key('display_name')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_transfer_agent_pool('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_transfer_agent_pool', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_transfer_agent_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_transfer_agent_pool', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -150,7 +188,7 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferAgentPool do
     resource_type: :google_storage_transfer_agent_pool,
     method: :google_storage_transfer_agent_pool,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :project, :state],
+    expected_outputs: [:id, :deletion_policy, :project, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -57,7 +57,7 @@ RSpec.describe Pangea::Resources::GoogleSourcerepoRepositoryIamBinding do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ condition: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ condition: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,6 +67,7 @@ RSpec.describe Pangea::Resources::GoogleSourcerepoRepositoryIamBinding do
 
         config = validate_resource_structure(result, 'google_sourcerepo_repository_iam_binding', 'full')
         expect(config).to have_key('condition')
+        expect(config).to have_key('project')
       end
     end
 
@@ -74,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleSourcerepoRepositoryIamBinding do
       it 'includes condition when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_sourcerepo_repository_iam_binding('opt', required_attrs.merge(condition: [{ 'key1' => 'val1' }]))
+        synth.google_sourcerepo_repository_iam_binding('opt', required_attrs.merge(condition: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_sourcerepo_repository_iam_binding', 'opt')
         expect(config).to have_key('condition')
@@ -87,6 +88,23 @@ RSpec.describe Pangea::Resources::GoogleSourcerepoRepositoryIamBinding do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_sourcerepo_repository_iam_binding', 'minimal')
         expect(config).not_to have_key('condition')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sourcerepo_repository_iam_binding('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sourcerepo_repository_iam_binding', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sourcerepo_repository_iam_binding('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sourcerepo_repository_iam_binding', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 

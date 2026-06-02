@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleStorageHmacKey do
 
         expect(ref.id).to eq("${google_storage_hmac_key.test.id}")
         expect(ref.access_id).to eq("${google_storage_hmac_key.test.access_id}")
+        expect(ref.deletion_policy).to eq("${google_storage_hmac_key.test.deletion_policy}")
         expect(ref.project).to eq("${google_storage_hmac_key.test.project}")
         expect(ref.secret).to eq("${google_storage_hmac_key.test.secret}")
         expect(ref.time_created).to eq("${google_storage_hmac_key.test.time_created}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleStorageHmacKey do
 
         config = validate_resource_structure(result, 'google_storage_hmac_key', 'test')
         expect(config).not_to have_key('access_id')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('secret')
         expect(config).not_to have_key('time_created')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleStorageHmacKey do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ state: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value', state: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,11 +74,47 @@ RSpec.describe Pangea::Resources::GoogleStorageHmacKey do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_storage_hmac_key', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
         expect(config).to have_key('state')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_hmac_key('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_hmac_key', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_hmac_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_hmac_key', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_hmac_key('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_hmac_key', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_hmac_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_hmac_key', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes state when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -145,7 +183,7 @@ RSpec.describe Pangea::Resources::GoogleStorageHmacKey do
     resource_type: :google_storage_hmac_key,
     method: :google_storage_hmac_key,
     required_attrs: { service_account_email: 'test-value' },
-    expected_outputs: [:id, :access_id, :project, :secret, :time_created, :updated],
+    expected_outputs: [:id, :access_id, :deletion_policy, :project, :secret, :time_created, :updated],
     sensitive_fields: [:secret],
     immutable_fields: [],
     boolean_fields: []

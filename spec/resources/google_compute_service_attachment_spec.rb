@@ -39,9 +39,11 @@ RSpec.describe Pangea::Resources::GoogleComputeServiceAttachment do
 
         expect(ref.id).to eq("${google_compute_service_attachment.test.id}")
         expect(ref.connected_endpoints).to eq("${google_compute_service_attachment.test.connected_endpoints}")
+        expect(ref.deletion_policy).to eq("${google_compute_service_attachment.test.deletion_policy}")
         expect(ref.fingerprint).to eq("${google_compute_service_attachment.test.fingerprint}")
         expect(ref.project).to eq("${google_compute_service_attachment.test.project}")
         expect(ref.propagated_connection_limit).to eq("${google_compute_service_attachment.test.propagated_connection_limit}")
+        expect(ref.psc_service_attachment_id).to eq("${google_compute_service_attachment.test.psc_service_attachment_id}")
         expect(ref.reconcile_connections).to eq("${google_compute_service_attachment.test.reconcile_connections}")
         expect(ref.region).to eq("${google_compute_service_attachment.test.region}")
         expect(ref.self_link).to eq("${google_compute_service_attachment.test.self_link}")
@@ -57,9 +59,11 @@ RSpec.describe Pangea::Resources::GoogleComputeServiceAttachment do
 
         config = validate_resource_structure(result, 'google_compute_service_attachment', 'test')
         expect(config).not_to have_key('connected_endpoints')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('fingerprint')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('propagated_connection_limit')
+        expect(config).not_to have_key('psc_service_attachment_id')
         expect(config).not_to have_key('reconcile_connections')
         expect(config).not_to have_key('region')
         expect(config).not_to have_key('self_link')
@@ -67,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleComputeServiceAttachment do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ consumer_accept_lists: [{ 'key1' => 'val1' }], consumer_reject_lists: ['test-value'], description: 'test-value', domain_names: ['test-value'], send_propagated_connection_limit_if_zero: true }) }
+      let(:all_attrs) { required_attrs.merge({ consumer_accept_lists: [{ 'key1' => 'val1' }], consumer_reject_lists: ['test-value'], deletion_policy: 'test-value', description: 'test-value', domain_names: ['test-value'], project: 'test-value', propagated_connection_limit: 3.14, reconcile_connections: true, region: 'test-value', send_propagated_connection_limit_if_zero: true, show_nat_ips: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,9 +82,15 @@ RSpec.describe Pangea::Resources::GoogleComputeServiceAttachment do
         config = validate_resource_structure(result, 'google_compute_service_attachment', 'full')
         expect(config).to have_key('consumer_accept_lists')
         expect(config).to have_key('consumer_reject_lists')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('domain_names')
+        expect(config).to have_key('project')
+        expect(config).to have_key('propagated_connection_limit')
+        expect(config).to have_key('reconcile_connections')
+        expect(config).to have_key('region')
         expect(config).to have_key('send_propagated_connection_limit_if_zero')
+        expect(config).to have_key('show_nat_ips')
       end
     end
 
@@ -119,6 +129,23 @@ RSpec.describe Pangea::Resources::GoogleComputeServiceAttachment do
         config = validate_resource_structure(result, 'google_compute_service_attachment', 'minimal')
         expect(config).not_to have_key('consumer_reject_lists')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_service_attachment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_service_attachment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_service_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_service_attachment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -153,6 +180,74 @@ RSpec.describe Pangea::Resources::GoogleComputeServiceAttachment do
         config = validate_resource_structure(result, 'google_compute_service_attachment', 'minimal')
         expect(config).not_to have_key('domain_names')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_service_attachment('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_service_attachment', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_service_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_service_attachment', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes propagated_connection_limit when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_service_attachment('opt', required_attrs.merge(propagated_connection_limit: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_service_attachment', 'opt')
+        expect(config).to have_key('propagated_connection_limit')
+      end
+
+      it 'omits propagated_connection_limit when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_service_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_service_attachment', 'minimal')
+        expect(config).not_to have_key('propagated_connection_limit')
+      end
+      it 'includes reconcile_connections when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_service_attachment('opt', required_attrs.merge(reconcile_connections: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_service_attachment', 'opt')
+        expect(config).to have_key('reconcile_connections')
+      end
+
+      it 'omits reconcile_connections when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_service_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_service_attachment', 'minimal')
+        expect(config).not_to have_key('reconcile_connections')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_service_attachment('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_service_attachment', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_service_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_service_attachment', 'minimal')
+        expect(config).not_to have_key('region')
+      end
       it 'includes send_propagated_connection_limit_if_zero when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -170,6 +265,23 @@ RSpec.describe Pangea::Resources::GoogleComputeServiceAttachment do
         config = validate_resource_structure(result, 'google_compute_service_attachment', 'minimal')
         expect(config).not_to have_key('send_propagated_connection_limit_if_zero')
       end
+      it 'includes show_nat_ips when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_service_attachment('opt', required_attrs.merge(show_nat_ips: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_service_attachment', 'opt')
+        expect(config).to have_key('show_nat_ips')
+      end
+
+      it 'omits show_nat_ips when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_service_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_service_attachment', 'minimal')
+        expect(config).not_to have_key('show_nat_ips')
+      end
     end
 
     context 'boolean fields' do
@@ -185,6 +297,17 @@ RSpec.describe Pangea::Resources::GoogleComputeServiceAttachment do
         end
       end
       [true, false].each do |val|
+        it "accepts reconcile_connections=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(reconcile_connections: val)
+          synth.google_compute_service_attachment("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_service_attachment', "bool_#{val}")
+          expect(config['reconcile_connections']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
         it "accepts send_propagated_connection_limit_if_zero=#{val}" do
           synth = create_synthesizer
           synth.extend(described_class)
@@ -193,6 +316,17 @@ RSpec.describe Pangea::Resources::GoogleComputeServiceAttachment do
           result = normalize_synthesis(synth.synthesis)
           config = validate_resource_structure(result, 'google_compute_service_attachment', "bool_#{val}")
           expect(config['send_propagated_connection_limit_if_zero']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts show_nat_ips=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(show_nat_ips: val)
+          synth.google_compute_service_attachment("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_service_attachment', "bool_#{val}")
+          expect(config['show_nat_ips']).to eq(val)
         end
       end
     end
@@ -243,8 +377,8 @@ RSpec.describe Pangea::Resources::GoogleComputeServiceAttachment do
     resource_type: :google_compute_service_attachment,
     method: :google_compute_service_attachment,
     required_attrs: { connection_preference: 'test-value', enable_proxy_protocol: true, name: 'test-value', nat_subnets: ['test-value'], target_service: 'test-value' },
-    expected_outputs: [:id, :connected_endpoints, :fingerprint, :project, :propagated_connection_limit, :reconcile_connections, :region, :self_link],
+    expected_outputs: [:id, :connected_endpoints, :deletion_policy, :fingerprint, :project, :propagated_connection_limit, :psc_service_attachment_id, :reconcile_connections, :region, :self_link],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:enable_proxy_protocol, :send_propagated_connection_limit_if_zero]
+    boolean_fields: [:enable_proxy_protocol, :reconcile_connections, :send_propagated_connection_limit_if_zero, :show_nat_ips]
 end

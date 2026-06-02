@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleChronicleDataAccessScope do
         expect(ref.id).to eq("${google_chronicle_data_access_scope.test.id}")
         expect(ref.author).to eq("${google_chronicle_data_access_scope.test.author}")
         expect(ref.create_time).to eq("${google_chronicle_data_access_scope.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_chronicle_data_access_scope.test.deletion_policy}")
         expect(ref.display_name).to eq("${google_chronicle_data_access_scope.test.display_name}")
         expect(ref.last_editor).to eq("${google_chronicle_data_access_scope.test.last_editor}")
         expect(ref.name).to eq("${google_chronicle_data_access_scope.test.name}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleChronicleDataAccessScope do
         config = validate_resource_structure(result, 'google_chronicle_data_access_scope', 'test')
         expect(config).not_to have_key('author')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('display_name')
         expect(config).not_to have_key('last_editor')
         expect(config).not_to have_key('name')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleChronicleDataAccessScope do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ allow_all: true, allowed_data_access_labels: [{ 'key1' => 'val1' }], denied_data_access_labels: [{ 'key1' => 'val1' }], description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ allow_all: true, allowed_data_access_labels: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', denied_data_access_labels: [{ 'key1' => 'val1' }], description: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,8 +80,10 @@ RSpec.describe Pangea::Resources::GoogleChronicleDataAccessScope do
         config = validate_resource_structure(result, 'google_chronicle_data_access_scope', 'full')
         expect(config).to have_key('allow_all')
         expect(config).to have_key('allowed_data_access_labels')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('denied_data_access_labels')
         expect(config).to have_key('description')
+        expect(config).to have_key('project')
       end
     end
 
@@ -118,6 +122,23 @@ RSpec.describe Pangea::Resources::GoogleChronicleDataAccessScope do
         config = validate_resource_structure(result, 'google_chronicle_data_access_scope', 'minimal')
         expect(config).not_to have_key('allowed_data_access_labels')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_data_access_scope('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_data_access_scope', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_data_access_scope('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_data_access_scope', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes denied_data_access_labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -151,6 +172,23 @@ RSpec.describe Pangea::Resources::GoogleChronicleDataAccessScope do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_chronicle_data_access_scope', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_data_access_scope('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_data_access_scope', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_data_access_scope('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_data_access_scope', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -212,7 +250,7 @@ RSpec.describe Pangea::Resources::GoogleChronicleDataAccessScope do
     resource_type: :google_chronicle_data_access_scope,
     method: :google_chronicle_data_access_scope,
     required_attrs: { data_access_scope_id: 'test-value', instance: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :author, :create_time, :display_name, :last_editor, :name, :project, :update_time],
+    expected_outputs: [:id, :author, :create_time, :deletion_policy, :display_name, :last_editor, :name, :project, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:allow_all]

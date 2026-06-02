@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxFlow do
         ref = synth.google_dialogflow_cx_flow('test', required_attrs)
 
         expect(ref.id).to eq("${google_dialogflow_cx_flow.test.id}")
+        expect(ref.deletion_policy).to eq("${google_dialogflow_cx_flow.test.deletion_policy}")
         expect(ref.name).to eq("${google_dialogflow_cx_flow.test.name}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxFlow do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_flow', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ advanced_settings: [{ 'key1' => 'val1' }], description: 'test-value', event_handlers: [{ 'key1' => 'val1' }], is_default_start_flow: true, knowledge_connector_settings: [{ 'key1' => 'val1' }], language_code: 'test-value', nlu_settings: [{ 'key1' => 'val1' }], parent: 'test-value', transition_route_groups: ['test-value'], transition_routes: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ advanced_settings: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', event_handlers: [{ 'key1' => 'val1' }], is_default_start_flow: true, knowledge_connector_settings: { 'key1' => 'val1' }, language_code: 'test-value', nlu_settings: { 'key1' => 'val1' }, parent: 'test-value', transition_route_groups: ['test-value'], transition_routes: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -65,6 +67,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxFlow do
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_flow', 'full')
         expect(config).to have_key('advanced_settings')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('event_handlers')
         expect(config).to have_key('is_default_start_flow')
@@ -81,7 +84,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxFlow do
       it 'includes advanced_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_flow('opt', required_attrs.merge(advanced_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_flow('opt', required_attrs.merge(advanced_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_flow', 'opt')
         expect(config).to have_key('advanced_settings')
@@ -94,6 +97,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxFlow do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_flow', 'minimal')
         expect(config).not_to have_key('advanced_settings')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_flow('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_flow', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_flow('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_flow', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -149,7 +169,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxFlow do
       it 'includes knowledge_connector_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_flow('opt', required_attrs.merge(knowledge_connector_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_flow('opt', required_attrs.merge(knowledge_connector_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_flow', 'opt')
         expect(config).to have_key('knowledge_connector_settings')
@@ -183,7 +203,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxFlow do
       it 'includes nlu_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_flow('opt', required_attrs.merge(nlu_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_flow('opt', required_attrs.merge(nlu_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_flow', 'opt')
         expect(config).to have_key('nlu_settings')
@@ -306,7 +326,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxFlow do
     resource_type: :google_dialogflow_cx_flow,
     method: :google_dialogflow_cx_flow,
     required_attrs: { display_name: 'test-value' },
-    expected_outputs: [:id, :name],
+    expected_outputs: [:id, :deletion_policy, :name],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:is_default_start_flow]

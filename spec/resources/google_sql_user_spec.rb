@@ -38,7 +38,9 @@ RSpec.describe Pangea::Resources::GoogleSqlUser do
         ref = synth.google_sql_user('test', required_attrs)
 
         expect(ref.id).to eq("${google_sql_user.test.id}")
+        expect(ref.deletion_policy).to eq("${google_sql_user.test.deletion_policy}")
         expect(ref.host).to eq("${google_sql_user.test.host}")
+        expect(ref.iam_email).to eq("${google_sql_user.test.iam_email}")
         expect(ref.project).to eq("${google_sql_user.test.project}")
         expect(ref.sql_server_user_details).to eq("${google_sql_user.test.sql_server_user_details}")
       end
@@ -52,14 +54,16 @@ RSpec.describe Pangea::Resources::GoogleSqlUser do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_sql_user', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('host')
+        expect(config).not_to have_key('iam_email')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('sql_server_user_details')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', password: 'test-value', password_policy: [{ 'key1' => 'val1' }], password_wo: 'test-value', password_wo_version: 3.14, type: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ database_roles: ['test-value'], deletion_policy: 'test-value', host: 'test-value', password: 'test-value', password_policy: { 'key1' => 'val1' }, password_wo: 'test-value', password_wo_version: 3.14, project: 'test-value', type: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,16 +72,36 @@ RSpec.describe Pangea::Resources::GoogleSqlUser do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_sql_user', 'full')
+        expect(config).to have_key('database_roles')
         expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('host')
         expect(config).to have_key('password')
         expect(config).to have_key('password_policy')
         expect(config).to have_key('password_wo')
         expect(config).to have_key('password_wo_version')
+        expect(config).to have_key('project')
         expect(config).to have_key('type')
       end
     end
 
     context 'optional attributes' do
+      it 'includes database_roles when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_user('opt', required_attrs.merge(database_roles: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_user', 'opt')
+        expect(config).to have_key('database_roles')
+      end
+
+      it 'omits database_roles when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_user('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_user', 'minimal')
+        expect(config).not_to have_key('database_roles')
+      end
       it 'includes deletion_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -94,6 +118,23 @@ RSpec.describe Pangea::Resources::GoogleSqlUser do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_sql_user', 'minimal')
         expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes host when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_user('opt', required_attrs.merge(host: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_user', 'opt')
+        expect(config).to have_key('host')
+      end
+
+      it 'omits host when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_user('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_user', 'minimal')
+        expect(config).not_to have_key('host')
       end
       it 'includes password when provided' do
         synth = create_synthesizer
@@ -115,7 +156,7 @@ RSpec.describe Pangea::Resources::GoogleSqlUser do
       it 'includes password_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_sql_user('opt', required_attrs.merge(password_policy: [{ 'key1' => 'val1' }]))
+        synth.google_sql_user('opt', required_attrs.merge(password_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_sql_user', 'opt')
         expect(config).to have_key('password_policy')
@@ -162,6 +203,23 @@ RSpec.describe Pangea::Resources::GoogleSqlUser do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_sql_user', 'minimal')
         expect(config).not_to have_key('password_wo_version')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_user('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_user', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_user('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_user', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes type when provided' do
         synth = create_synthesizer
@@ -232,7 +290,7 @@ RSpec.describe Pangea::Resources::GoogleSqlUser do
     resource_type: :google_sql_user,
     method: :google_sql_user,
     required_attrs: { instance: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :host, :project, :sql_server_user_details],
+    expected_outputs: [:id, :deletion_policy, :host, :iam_email, :project, :sql_server_user_details],
     sensitive_fields: [:password],
     immutable_fields: [],
     boolean_fields: []

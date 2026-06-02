@@ -67,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleChronicleRuleDeployment do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ alerting: true, archived: true, enabled: true, run_frequency: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ alerting: true, archived: true, enabled: true, project: 'test-value', run_frequency: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -79,6 +79,7 @@ RSpec.describe Pangea::Resources::GoogleChronicleRuleDeployment do
         expect(config).to have_key('alerting')
         expect(config).to have_key('archived')
         expect(config).to have_key('enabled')
+        expect(config).to have_key('project')
         expect(config).to have_key('run_frequency')
       end
     end
@@ -134,6 +135,23 @@ RSpec.describe Pangea::Resources::GoogleChronicleRuleDeployment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_chronicle_rule_deployment', 'minimal')
         expect(config).not_to have_key('enabled')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_rule_deployment('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_rule_deployment', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_rule_deployment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_rule_deployment', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes run_frequency when provided' do
         synth = create_synthesizer

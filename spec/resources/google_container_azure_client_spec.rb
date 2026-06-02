@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAzureClient do
         expect(ref.id).to eq("${google_container_azure_client.test.id}")
         expect(ref.certificate).to eq("${google_container_azure_client.test.certificate}")
         expect(ref.create_time).to eq("${google_container_azure_client.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_container_azure_client.test.deletion_policy}")
         expect(ref.project).to eq("${google_container_azure_client.test.project}")
         expect(ref.uid).to eq("${google_container_azure_client.test.uid}")
       end
@@ -55,8 +56,61 @@ RSpec.describe Pangea::Resources::GoogleContainerAzureClient do
         config = validate_resource_structure(result, 'google_container_azure_client', 'test')
         expect(config).not_to have_key('certificate')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('uid')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_azure_client('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_container_azure_client', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_azure_client('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_azure_client', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_azure_client('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_azure_client', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_azure_client('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_azure_client', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_azure_client('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_azure_client', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -105,7 +159,7 @@ RSpec.describe Pangea::Resources::GoogleContainerAzureClient do
     resource_type: :google_container_azure_client,
     method: :google_container_azure_client,
     required_attrs: { application_id: 'test-value', location: 'test-value', name: 'test-value', tenant_id: 'test-value' },
-    expected_outputs: [:id, :certificate, :create_time, :project, :uid],
+    expected_outputs: [:id, :certificate, :create_time, :deletion_policy, :project, :uid],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

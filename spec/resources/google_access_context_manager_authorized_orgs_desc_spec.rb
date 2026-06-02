@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAuthorizedOrgsDesc d
 
         expect(ref.id).to eq("${google_access_context_manager_authorized_orgs_desc.test.id}")
         expect(ref.create_time).to eq("${google_access_context_manager_authorized_orgs_desc.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_access_context_manager_authorized_orgs_desc.test.deletion_policy}")
         expect(ref.update_time).to eq("${google_access_context_manager_authorized_orgs_desc.test.update_time}")
       end
     end
@@ -52,12 +53,13 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAuthorizedOrgsDesc d
 
         config = validate_resource_structure(result, 'google_access_context_manager_authorized_orgs_desc', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('update_time')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ asset_type: 'test-value', authorization_direction: 'test-value', authorization_type: 'test-value', orgs: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ asset_type: 'test-value', authorization_direction: 'test-value', authorization_type: 'test-value', deletion_policy: 'test-value', orgs: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,6 +71,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAuthorizedOrgsDesc d
         expect(config).to have_key('asset_type')
         expect(config).to have_key('authorization_direction')
         expect(config).to have_key('authorization_type')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('orgs')
       end
     end
@@ -124,6 +127,23 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAuthorizedOrgsDesc d
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_access_context_manager_authorized_orgs_desc', 'minimal')
         expect(config).not_to have_key('authorization_type')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_authorized_orgs_desc('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_authorized_orgs_desc', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_authorized_orgs_desc('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_authorized_orgs_desc', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes orgs when provided' do
         synth = create_synthesizer
@@ -187,7 +207,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAuthorizedOrgsDesc d
     resource_type: :google_access_context_manager_authorized_orgs_desc,
     method: :google_access_context_manager_authorized_orgs_desc,
     required_attrs: { name: 'test-value', parent: 'test-value' },
-    expected_outputs: [:id, :create_time, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

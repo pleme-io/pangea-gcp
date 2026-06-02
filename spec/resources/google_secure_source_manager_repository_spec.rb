@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleSecureSourceManagerRepository do
 
         expect(ref.id).to eq("${google_secure_source_manager_repository.test.id}")
         expect(ref.create_time).to eq("${google_secure_source_manager_repository.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_secure_source_manager_repository.test.deletion_policy}")
         expect(ref.name).to eq("${google_secure_source_manager_repository.test.name}")
         expect(ref.project).to eq("${google_secure_source_manager_repository.test.project}")
         expect(ref.uid).to eq("${google_secure_source_manager_repository.test.uid}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleSecureSourceManagerRepository do
 
         config = validate_resource_structure(result, 'google_secure_source_manager_repository', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('uid')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleSecureSourceManagerRepository do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', initial_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', initial_config: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -77,6 +79,7 @@ RSpec.describe Pangea::Resources::GoogleSecureSourceManagerRepository do
         expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('initial_config')
+        expect(config).to have_key('project')
       end
     end
 
@@ -118,7 +121,7 @@ RSpec.describe Pangea::Resources::GoogleSecureSourceManagerRepository do
       it 'includes initial_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_secure_source_manager_repository('opt', required_attrs.merge(initial_config: [{ 'key1' => 'val1' }]))
+        synth.google_secure_source_manager_repository('opt', required_attrs.merge(initial_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_secure_source_manager_repository', 'opt')
         expect(config).to have_key('initial_config')
@@ -131,6 +134,23 @@ RSpec.describe Pangea::Resources::GoogleSecureSourceManagerRepository do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_secure_source_manager_repository', 'minimal')
         expect(config).not_to have_key('initial_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_secure_source_manager_repository('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_secure_source_manager_repository', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_secure_source_manager_repository('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_secure_source_manager_repository', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -178,7 +198,7 @@ RSpec.describe Pangea::Resources::GoogleSecureSourceManagerRepository do
     resource_type: :google_secure_source_manager_repository,
     method: :google_secure_source_manager_repository,
     required_attrs: { instance: 'test-value', location: 'test-value', repository_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :project, :uid, :update_time, :uris],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :project, :uid, :update_time, :uris],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

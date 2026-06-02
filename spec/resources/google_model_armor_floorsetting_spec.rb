@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleModelArmorFloorsetting do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { filter_config: [{ 'key1' => 'val1' }], location: 'test-value', parent: 'test-value' } }
+  let(:required_attrs) { { filter_config: { 'key1' => 'val1' }, location: 'test-value', parent: 'test-value' } }
 
   describe ':google_model_armor_floorsetting' do
     context 'with required attributes only' do
@@ -59,7 +59,7 @@ RSpec.describe Pangea::Resources::GoogleModelArmorFloorsetting do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ ai_platform_floor_setting: [{ 'key1' => 'val1' }], enable_floor_setting_enforcement: true, floor_setting_metadata: [{ 'key1' => 'val1' }], integrated_services: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ ai_platform_floor_setting: { 'key1' => 'val1' }, enable_floor_setting_enforcement: true, floor_setting_metadata: { 'key1' => 'val1' }, google_mcp_server_floor_setting: { 'key1' => 'val1' }, integrated_services: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,6 +71,7 @@ RSpec.describe Pangea::Resources::GoogleModelArmorFloorsetting do
         expect(config).to have_key('ai_platform_floor_setting')
         expect(config).to have_key('enable_floor_setting_enforcement')
         expect(config).to have_key('floor_setting_metadata')
+        expect(config).to have_key('google_mcp_server_floor_setting')
         expect(config).to have_key('integrated_services')
       end
     end
@@ -79,7 +80,7 @@ RSpec.describe Pangea::Resources::GoogleModelArmorFloorsetting do
       it 'includes ai_platform_floor_setting when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_model_armor_floorsetting('opt', required_attrs.merge(ai_platform_floor_setting: [{ 'key1' => 'val1' }]))
+        synth.google_model_armor_floorsetting('opt', required_attrs.merge(ai_platform_floor_setting: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_model_armor_floorsetting', 'opt')
         expect(config).to have_key('ai_platform_floor_setting')
@@ -113,7 +114,7 @@ RSpec.describe Pangea::Resources::GoogleModelArmorFloorsetting do
       it 'includes floor_setting_metadata when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_model_armor_floorsetting('opt', required_attrs.merge(floor_setting_metadata: [{ 'key1' => 'val1' }]))
+        synth.google_model_armor_floorsetting('opt', required_attrs.merge(floor_setting_metadata: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_model_armor_floorsetting', 'opt')
         expect(config).to have_key('floor_setting_metadata')
@@ -126,6 +127,23 @@ RSpec.describe Pangea::Resources::GoogleModelArmorFloorsetting do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_model_armor_floorsetting', 'minimal')
         expect(config).not_to have_key('floor_setting_metadata')
+      end
+      it 'includes google_mcp_server_floor_setting when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_model_armor_floorsetting('opt', required_attrs.merge(google_mcp_server_floor_setting: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_model_armor_floorsetting', 'opt')
+        expect(config).to have_key('google_mcp_server_floor_setting')
+      end
+
+      it 'omits google_mcp_server_floor_setting when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_model_armor_floorsetting('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_model_armor_floorsetting', 'minimal')
+        expect(config).not_to have_key('google_mcp_server_floor_setting')
       end
       it 'includes integrated_services when provided' do
         synth = create_synthesizer
@@ -168,7 +186,7 @@ RSpec.describe Pangea::Resources::GoogleModelArmorFloorsetting do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_model_armor_floorsetting', 'typed')
-        expect(config['filter_config']).to be_a(Array)
+        expect(config['filter_config']).to be_a(Hash)
         expect(config['location']).to be_a(String)
         expect(config['parent']).to be_a(String)
       end
@@ -203,7 +221,7 @@ RSpec.describe Pangea::Resources::GoogleModelArmorFloorsetting do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_model_armor_floorsetting,
     method: :google_model_armor_floorsetting,
-    required_attrs: { filter_config: [{ 'key1' => 'val1' }], location: 'test-value', parent: 'test-value' },
+    required_attrs: { filter_config: { 'key1' => 'val1' }, location: 'test-value', parent: 'test-value' },
     expected_outputs: [:id, :create_time, :name, :update_time],
     sensitive_fields: [],
     immutable_fields: [],

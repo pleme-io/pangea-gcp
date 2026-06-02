@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleFilestoreInstance do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { file_shares: [{ 'key1' => 'val1' }], name: 'test-value', networks: [{ 'key1' => 'val1' }], tier: 'test-value' } }
+  let(:required_attrs) { { file_shares: { 'key1' => 'val1' }, name: 'test-value', networks: [{ 'key1' => 'val1' }], tier: 'test-value' } }
 
   describe ':google_filestore_instance' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleFilestoreInstance do
 
         expect(ref.id).to eq("${google_filestore_instance.test.id}")
         expect(ref.create_time).to eq("${google_filestore_instance.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_filestore_instance.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_filestore_instance.test.effective_labels}")
         expect(ref.effective_replication).to eq("${google_filestore_instance.test.effective_replication}")
         expect(ref.etag).to eq("${google_filestore_instance.test.etag}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleFilestoreInstance do
 
         config = validate_resource_structure(result, 'google_filestore_instance', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('effective_replication')
         expect(config).not_to have_key('etag')
@@ -69,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleFilestoreInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deletion_protection_enabled: true, deletion_protection_reason: 'test-value', description: 'test-value', initial_replication: [{ 'key1' => 'val1' }], kms_key_name: 'test-value', labels: { 'key1' => 'val1' }, performance_config: [{ 'key1' => 'val1' }], protocol: 'test-value', tags: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', deletion_protection_enabled: true, deletion_protection_reason: 'test-value', description: 'test-value', desired_replica_state: 'test-value', directory_services: { 'key1' => 'val1' }, initial_replication: { 'key1' => 'val1' }, kms_key_name: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', performance_config: { 'key1' => 'val1' }, project: 'test-value', protocol: 'test-value', tags: { 'key1' => 'val1' }, zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,19 +80,42 @@ RSpec.describe Pangea::Resources::GoogleFilestoreInstance do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_filestore_instance', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection_enabled')
         expect(config).to have_key('deletion_protection_reason')
         expect(config).to have_key('description')
+        expect(config).to have_key('desired_replica_state')
+        expect(config).to have_key('directory_services')
         expect(config).to have_key('initial_replication')
         expect(config).to have_key('kms_key_name')
         expect(config).to have_key('labels')
+        expect(config).to have_key('location')
         expect(config).to have_key('performance_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('protocol')
         expect(config).to have_key('tags')
+        expect(config).to have_key('zone')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deletion_protection_enabled when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -142,10 +167,44 @@ RSpec.describe Pangea::Resources::GoogleFilestoreInstance do
         config = validate_resource_structure(result, 'google_filestore_instance', 'minimal')
         expect(config).not_to have_key('description')
       end
+      it 'includes desired_replica_state when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_instance('opt', required_attrs.merge(desired_replica_state: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_instance', 'opt')
+        expect(config).to have_key('desired_replica_state')
+      end
+
+      it 'omits desired_replica_state when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_instance', 'minimal')
+        expect(config).not_to have_key('desired_replica_state')
+      end
+      it 'includes directory_services when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_instance('opt', required_attrs.merge(directory_services: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_instance', 'opt')
+        expect(config).to have_key('directory_services')
+      end
+
+      it 'omits directory_services when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_instance', 'minimal')
+        expect(config).not_to have_key('directory_services')
+      end
       it 'includes initial_replication when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_filestore_instance('opt', required_attrs.merge(initial_replication: [{ 'key1' => 'val1' }]))
+        synth.google_filestore_instance('opt', required_attrs.merge(initial_replication: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_filestore_instance', 'opt')
         expect(config).to have_key('initial_replication')
@@ -193,10 +252,27 @@ RSpec.describe Pangea::Resources::GoogleFilestoreInstance do
         config = validate_resource_structure(result, 'google_filestore_instance', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_instance('opt', required_attrs.merge(location: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_instance', 'opt')
+        expect(config).to have_key('location')
+      end
+
+      it 'omits location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_instance', 'minimal')
+        expect(config).not_to have_key('location')
+      end
       it 'includes performance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_filestore_instance('opt', required_attrs.merge(performance_config: [{ 'key1' => 'val1' }]))
+        synth.google_filestore_instance('opt', required_attrs.merge(performance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_filestore_instance', 'opt')
         expect(config).to have_key('performance_config')
@@ -209,6 +285,23 @@ RSpec.describe Pangea::Resources::GoogleFilestoreInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_filestore_instance', 'minimal')
         expect(config).not_to have_key('performance_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_instance', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes protocol when provided' do
         synth = create_synthesizer
@@ -244,6 +337,23 @@ RSpec.describe Pangea::Resources::GoogleFilestoreInstance do
         config = validate_resource_structure(result, 'google_filestore_instance', 'minimal')
         expect(config).not_to have_key('tags')
       end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_instance('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_instance', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_instance', 'minimal')
+        expect(config).not_to have_key('zone')
+      end
     end
 
     context 'boolean fields' do
@@ -268,7 +378,7 @@ RSpec.describe Pangea::Resources::GoogleFilestoreInstance do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_filestore_instance', 'typed')
-        expect(config['file_shares']).to be_a(Array)
+        expect(config['file_shares']).to be_a(Hash)
         expect(config['name']).to be_a(String)
         expect(config['networks']).to be_a(Array)
         expect(config['tier']).to be_a(String)
@@ -304,8 +414,8 @@ RSpec.describe Pangea::Resources::GoogleFilestoreInstance do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_filestore_instance,
     method: :google_filestore_instance,
-    required_attrs: { file_shares: [{ 'key1' => 'val1' }], name: 'test-value', networks: [{ 'key1' => 'val1' }], tier: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :effective_replication, :etag, :location, :project, :terraform_labels, :zone],
+    required_attrs: { file_shares: { 'key1' => 'val1' }, name: 'test-value', networks: [{ 'key1' => 'val1' }], tier: 'test-value' },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :effective_replication, :etag, :location, :project, :terraform_labels, :zone],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection_enabled]

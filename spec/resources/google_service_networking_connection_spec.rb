@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleServiceNetworkingConnection do
         ref = synth.google_service_networking_connection('test', required_attrs)
 
         expect(ref.id).to eq("${google_service_networking_connection.test.id}")
+        expect(ref.deletion_policy).to eq("${google_service_networking_connection.test.deletion_policy}")
         expect(ref.peering).to eq("${google_service_networking_connection.test.peering}")
       end
     end
@@ -50,6 +51,7 @@ RSpec.describe Pangea::Resources::GoogleServiceNetworkingConnection do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_service_networking_connection', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('peering')
       end
     end
@@ -164,7 +166,7 @@ RSpec.describe Pangea::Resources::GoogleServiceNetworkingConnection do
     resource_type: :google_service_networking_connection,
     method: :google_service_networking_connection,
     required_attrs: { network: 'test-value', reserved_peering_ranges: ['test-value'], service: 'test-value' },
-    expected_outputs: [:id, :peering],
+    expected_outputs: [:id, :deletion_policy, :peering],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:update_on_creation_fail]

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListing do
 
         expect(ref.id).to eq("${google_bigquery_analytics_hub_listing.test.id}")
         expect(ref.commercial_info).to eq("${google_bigquery_analytics_hub_listing.test.commercial_info}")
+        expect(ref.deletion_policy).to eq("${google_bigquery_analytics_hub_listing.test.deletion_policy}")
         expect(ref.discovery_type).to eq("${google_bigquery_analytics_hub_listing.test.discovery_type}")
         expect(ref.name).to eq("${google_bigquery_analytics_hub_listing.test.name}")
         expect(ref.project).to eq("${google_bigquery_analytics_hub_listing.test.project}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListing do
 
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'test')
         expect(config).not_to have_key('commercial_info')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('discovery_type')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListing do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ allow_only_metadata_sharing: true, bigquery_dataset: [{ 'key1' => 'val1' }], categories: ['test-value'], data_provider: [{ 'key1' => 'val1' }], delete_commercial: true, description: 'test-value', documentation: 'test-value', icon: 'test-value', log_linked_dataset_query_user_email: true, primary_contact: 'test-value', publisher: [{ 'key1' => 'val1' }], pubsub_topic: [{ 'key1' => 'val1' }], request_access: 'test-value', restricted_export_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ allow_only_metadata_sharing: true, bigquery_dataset: { 'key1' => 'val1' }, categories: ['test-value'], data_provider: { 'key1' => 'val1' }, delete_commercial: true, deletion_policy: 'test-value', description: 'test-value', discovery_type: 'test-value', documentation: 'test-value', icon: 'test-value', log_linked_dataset_query_user_email: true, primary_contact: 'test-value', project: 'test-value', publisher: { 'key1' => 'val1' }, pubsub_topic: { 'key1' => 'val1' }, request_access: 'test-value', restricted_export_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -77,11 +79,14 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListing do
         expect(config).to have_key('categories')
         expect(config).to have_key('data_provider')
         expect(config).to have_key('delete_commercial')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('discovery_type')
         expect(config).to have_key('documentation')
         expect(config).to have_key('icon')
         expect(config).to have_key('log_linked_dataset_query_user_email')
         expect(config).to have_key('primary_contact')
+        expect(config).to have_key('project')
         expect(config).to have_key('publisher')
         expect(config).to have_key('pubsub_topic')
         expect(config).to have_key('request_access')
@@ -110,7 +115,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListing do
       it 'includes bigquery_dataset when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_analytics_hub_listing('opt', required_attrs.merge(bigquery_dataset: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_analytics_hub_listing('opt', required_attrs.merge(bigquery_dataset: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'opt')
         expect(config).to have_key('bigquery_dataset')
@@ -144,7 +149,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListing do
       it 'includes data_provider when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_analytics_hub_listing('opt', required_attrs.merge(data_provider: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_analytics_hub_listing('opt', required_attrs.merge(data_provider: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'opt')
         expect(config).to have_key('data_provider')
@@ -175,6 +180,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListing do
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'minimal')
         expect(config).not_to have_key('delete_commercial')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_listing('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_listing('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -191,6 +213,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListing do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes discovery_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_listing('opt', required_attrs.merge(discovery_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'opt')
+        expect(config).to have_key('discovery_type')
+      end
+
+      it 'omits discovery_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_listing('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'minimal')
+        expect(config).not_to have_key('discovery_type')
       end
       it 'includes documentation when provided' do
         synth = create_synthesizer
@@ -260,10 +299,27 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListing do
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'minimal')
         expect(config).not_to have_key('primary_contact')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_listing('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_listing('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes publisher when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_analytics_hub_listing('opt', required_attrs.merge(publisher: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_analytics_hub_listing('opt', required_attrs.merge(publisher: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'opt')
         expect(config).to have_key('publisher')
@@ -280,7 +336,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListing do
       it 'includes pubsub_topic when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_analytics_hub_listing('opt', required_attrs.merge(pubsub_topic: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_analytics_hub_listing('opt', required_attrs.merge(pubsub_topic: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'opt')
         expect(config).to have_key('pubsub_topic')
@@ -314,7 +370,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListing do
       it 'includes restricted_export_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_analytics_hub_listing('opt', required_attrs.merge(restricted_export_config: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_analytics_hub_listing('opt', required_attrs.merge(restricted_export_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing', 'opt')
         expect(config).to have_key('restricted_export_config')
@@ -411,7 +467,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListing do
     resource_type: :google_bigquery_analytics_hub_listing,
     method: :google_bigquery_analytics_hub_listing,
     required_attrs: { data_exchange_id: 'test-value', display_name: 'test-value', listing_id: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :commercial_info, :discovery_type, :name, :project, :state],
+    expected_outputs: [:id, :commercial_info, :deletion_policy, :discovery_type, :name, :project, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:allow_only_metadata_sharing, :delete_commercial, :log_linked_dataset_query_user_email]

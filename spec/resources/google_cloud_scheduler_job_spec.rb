@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleCloudSchedulerJob do
         ref = synth.google_cloud_scheduler_job('test', required_attrs)
 
         expect(ref.id).to eq("${google_cloud_scheduler_job.test.id}")
+        expect(ref.deletion_policy).to eq("${google_cloud_scheduler_job.test.deletion_policy}")
         expect(ref.paused).to eq("${google_cloud_scheduler_job.test.paused}")
         expect(ref.project).to eq("${google_cloud_scheduler_job.test.project}")
         expect(ref.region).to eq("${google_cloud_scheduler_job.test.region}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleCloudSchedulerJob do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('paused')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('region')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleCloudSchedulerJob do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ app_engine_http_target: [{ 'key1' => 'val1' }], attempt_deadline: 'test-value', description: 'test-value', http_target: [{ 'key1' => 'val1' }], pubsub_target: [{ 'key1' => 'val1' }], retry_config: [{ 'key1' => 'val1' }], schedule: 'test-value', time_zone: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ app_engine_http_target: { 'key1' => 'val1' }, attempt_deadline: 'test-value', deletion_policy: 'test-value', description: 'test-value', http_target: { 'key1' => 'val1' }, paused: true, project: 'test-value', pubsub_target: { 'key1' => 'val1' }, region: 'test-value', retry_config: { 'key1' => 'val1' }, schedule: 'test-value', time_zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,9 +74,13 @@ RSpec.describe Pangea::Resources::GoogleCloudSchedulerJob do
         config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'full')
         expect(config).to have_key('app_engine_http_target')
         expect(config).to have_key('attempt_deadline')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('http_target')
+        expect(config).to have_key('paused')
+        expect(config).to have_key('project')
         expect(config).to have_key('pubsub_target')
+        expect(config).to have_key('region')
         expect(config).to have_key('retry_config')
         expect(config).to have_key('schedule')
         expect(config).to have_key('time_zone')
@@ -85,7 +91,7 @@ RSpec.describe Pangea::Resources::GoogleCloudSchedulerJob do
       it 'includes app_engine_http_target when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_scheduler_job('opt', required_attrs.merge(app_engine_http_target: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_scheduler_job('opt', required_attrs.merge(app_engine_http_target: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'opt')
         expect(config).to have_key('app_engine_http_target')
@@ -116,6 +122,23 @@ RSpec.describe Pangea::Resources::GoogleCloudSchedulerJob do
         config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'minimal')
         expect(config).not_to have_key('attempt_deadline')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_scheduler_job('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_scheduler_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -136,7 +159,7 @@ RSpec.describe Pangea::Resources::GoogleCloudSchedulerJob do
       it 'includes http_target when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_scheduler_job('opt', required_attrs.merge(http_target: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_scheduler_job('opt', required_attrs.merge(http_target: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'opt')
         expect(config).to have_key('http_target')
@@ -150,10 +173,44 @@ RSpec.describe Pangea::Resources::GoogleCloudSchedulerJob do
         config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'minimal')
         expect(config).not_to have_key('http_target')
       end
+      it 'includes paused when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_scheduler_job('opt', required_attrs.merge(paused: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'opt')
+        expect(config).to have_key('paused')
+      end
+
+      it 'omits paused when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_scheduler_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'minimal')
+        expect(config).not_to have_key('paused')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_scheduler_job('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_scheduler_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes pubsub_target when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_scheduler_job('opt', required_attrs.merge(pubsub_target: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_scheduler_job('opt', required_attrs.merge(pubsub_target: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'opt')
         expect(config).to have_key('pubsub_target')
@@ -167,10 +224,27 @@ RSpec.describe Pangea::Resources::GoogleCloudSchedulerJob do
         config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'minimal')
         expect(config).not_to have_key('pubsub_target')
       end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_scheduler_job('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_scheduler_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'minimal')
+        expect(config).not_to have_key('region')
+      end
       it 'includes retry_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_scheduler_job('opt', required_attrs.merge(retry_config: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_scheduler_job('opt', required_attrs.merge(retry_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_scheduler_job', 'opt')
         expect(config).to have_key('retry_config')
@@ -220,6 +294,20 @@ RSpec.describe Pangea::Resources::GoogleCloudSchedulerJob do
       end
     end
 
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts paused=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(paused: val)
+          synth.google_cloud_scheduler_job("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_cloud_scheduler_job', "bool_#{val}")
+          expect(config['paused']).to eq(val)
+        end
+      end
+    end
+
     context 'attribute types' do
       it 'validates expected attribute types' do
         synth = create_synthesizer
@@ -262,8 +350,8 @@ RSpec.describe Pangea::Resources::GoogleCloudSchedulerJob do
     resource_type: :google_cloud_scheduler_job,
     method: :google_cloud_scheduler_job,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :paused, :project, :region, :state],
+    expected_outputs: [:id, :deletion_policy, :paused, :project, :region, :state],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:paused]
 end

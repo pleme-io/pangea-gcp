@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingLogView do
 
         expect(ref.id).to eq("${google_logging_log_view.test.id}")
         expect(ref.create_time).to eq("${google_logging_log_view.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_logging_log_view.test.deletion_policy}")
         expect(ref.location).to eq("${google_logging_log_view.test.location}")
         expect(ref.parent).to eq("${google_logging_log_view.test.parent}")
         expect(ref.update_time).to eq("${google_logging_log_view.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingLogView do
 
         config = validate_resource_structure(result, 'google_logging_log_view', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('location')
         expect(config).not_to have_key('parent')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingLogView do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', filter: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', filter: 'test-value', location: 'test-value', parent: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,12 +72,32 @@ RSpec.describe Pangea::Resources::GoogleLoggingLogView do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_logging_log_view', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('filter')
+        expect(config).to have_key('location')
+        expect(config).to have_key('parent')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_log_view('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_log_view', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_log_view('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_log_view', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -109,6 +131,40 @@ RSpec.describe Pangea::Resources::GoogleLoggingLogView do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_logging_log_view', 'minimal')
         expect(config).not_to have_key('filter')
+      end
+      it 'includes location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_log_view('opt', required_attrs.merge(location: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_log_view', 'opt')
+        expect(config).to have_key('location')
+      end
+
+      it 'omits location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_log_view('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_log_view', 'minimal')
+        expect(config).not_to have_key('location')
+      end
+      it 'includes parent when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_log_view('opt', required_attrs.merge(parent: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_log_view', 'opt')
+        expect(config).to have_key('parent')
+      end
+
+      it 'omits parent when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_log_view('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_log_view', 'minimal')
+        expect(config).not_to have_key('parent')
       end
     end
 
@@ -155,7 +211,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingLogView do
     resource_type: :google_logging_log_view,
     method: :google_logging_log_view,
     required_attrs: { bucket: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :create_time, :location, :parent, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :location, :parent, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

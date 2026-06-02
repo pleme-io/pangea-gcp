@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleNetworkManagementConnectivityTest do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { destination: [{ 'key1' => 'val1' }], name: 'test-value', source: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { destination: { 'key1' => 'val1' }, name: 'test-value', source: { 'key1' => 'val1' } } }
 
   describe ':google_network_management_connectivity_test' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementConnectivityTest do
         ref = synth.google_network_management_connectivity_test('test', required_attrs)
 
         expect(ref.id).to eq("${google_network_management_connectivity_test.test.id}")
+        expect(ref.deletion_policy).to eq("${google_network_management_connectivity_test.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_management_connectivity_test.test.effective_labels}")
         expect(ref.project).to eq("${google_network_management_connectivity_test.test.project}")
         expect(ref.terraform_labels).to eq("${google_network_management_connectivity_test.test.terraform_labels}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementConnectivityTest do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_management_connectivity_test', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementConnectivityTest do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ bypass_firewall_checks: true, description: 'test-value', labels: { 'key1' => 'val1' }, protocol: 'test-value', related_projects: ['test-value'], round_trip: true }) }
+      let(:all_attrs) { required_attrs.merge({ bypass_firewall_checks: true, deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', protocol: 'test-value', related_projects: ['test-value'], round_trip: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,8 +71,10 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementConnectivityTest do
 
         config = validate_resource_structure(result, 'google_network_management_connectivity_test', 'full')
         expect(config).to have_key('bypass_firewall_checks')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('protocol')
         expect(config).to have_key('related_projects')
         expect(config).to have_key('round_trip')
@@ -94,6 +98,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementConnectivityTest do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_management_connectivity_test', 'minimal')
         expect(config).not_to have_key('bypass_firewall_checks')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_connectivity_test('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_connectivity_test', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_connectivity_test('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_connectivity_test', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -128,6 +149,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementConnectivityTest do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_management_connectivity_test', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_connectivity_test('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_connectivity_test', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_management_connectivity_test('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_management_connectivity_test', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes protocol when provided' do
         synth = create_synthesizer
@@ -215,9 +253,9 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementConnectivityTest do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_management_connectivity_test', 'typed')
-        expect(config['destination']).to be_a(Array)
+        expect(config['destination']).to be_a(Hash)
         expect(config['name']).to be_a(String)
-        expect(config['source']).to be_a(Array)
+        expect(config['source']).to be_a(Hash)
       end
     end
 
@@ -250,8 +288,8 @@ RSpec.describe Pangea::Resources::GoogleNetworkManagementConnectivityTest do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_network_management_connectivity_test,
     method: :google_network_management_connectivity_test,
-    required_attrs: { destination: [{ 'key1' => 'val1' }], name: 'test-value', source: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :effective_labels, :project, :terraform_labels],
+    required_attrs: { destination: { 'key1' => 'val1' }, name: 'test-value', source: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:bypass_firewall_checks, :round_trip]

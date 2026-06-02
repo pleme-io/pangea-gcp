@@ -56,6 +56,40 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolIamPolicy do
       end
     end
 
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ location: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_iam_policy('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_iam_policy', 'full')
+        expect(config).to have_key('location')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_iam_policy('opt', required_attrs.merge(location: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_iam_policy', 'opt')
+        expect(config).to have_key('location')
+      end
+
+      it 'omits location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_iam_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_iam_policy', 'minimal')
+        expect(config).not_to have_key('location')
+      end
+    end
+
     context 'attribute types' do
       it 'validates expected attribute types' do
         synth = create_synthesizer

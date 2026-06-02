@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleMigrationCenterPreferenceSet do
 
         expect(ref.id).to eq("${google_migration_center_preference_set.test.id}")
         expect(ref.create_time).to eq("${google_migration_center_preference_set.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_migration_center_preference_set.test.deletion_policy}")
         expect(ref.name).to eq("${google_migration_center_preference_set.test.name}")
         expect(ref.project).to eq("${google_migration_center_preference_set.test.project}")
         expect(ref.update_time).to eq("${google_migration_center_preference_set.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleMigrationCenterPreferenceSet do
 
         config = validate_resource_structure(result, 'google_migration_center_preference_set', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleMigrationCenterPreferenceSet do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', display_name: 'test-value', virtual_machine_preferences: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', project: 'test-value', virtual_machine_preferences: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,13 +72,32 @@ RSpec.describe Pangea::Resources::GoogleMigrationCenterPreferenceSet do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_migration_center_preference_set', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('project')
         expect(config).to have_key('virtual_machine_preferences')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_migration_center_preference_set('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_migration_center_preference_set', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_migration_center_preference_set('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_migration_center_preference_set', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -111,10 +132,27 @@ RSpec.describe Pangea::Resources::GoogleMigrationCenterPreferenceSet do
         config = validate_resource_structure(result, 'google_migration_center_preference_set', 'minimal')
         expect(config).not_to have_key('display_name')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_migration_center_preference_set('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_migration_center_preference_set', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_migration_center_preference_set('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_migration_center_preference_set', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes virtual_machine_preferences when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_migration_center_preference_set('opt', required_attrs.merge(virtual_machine_preferences: [{ 'key1' => 'val1' }]))
+        synth.google_migration_center_preference_set('opt', required_attrs.merge(virtual_machine_preferences: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_migration_center_preference_set', 'opt')
         expect(config).to have_key('virtual_machine_preferences')
@@ -173,7 +211,7 @@ RSpec.describe Pangea::Resources::GoogleMigrationCenterPreferenceSet do
     resource_type: :google_migration_center_preference_set,
     method: :google_migration_center_preference_set,
     required_attrs: { location: 'test-value', preference_set_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :project, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :project, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerTrustConfig do
 
         expect(ref.id).to eq("${google_certificate_manager_trust_config.test.id}")
         expect(ref.create_time).to eq("${google_certificate_manager_trust_config.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_certificate_manager_trust_config.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_certificate_manager_trust_config.test.effective_labels}")
         expect(ref.project).to eq("${google_certificate_manager_trust_config.test.project}")
         expect(ref.terraform_labels).to eq("${google_certificate_manager_trust_config.test.terraform_labels}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerTrustConfig do
 
         config = validate_resource_structure(result, 'google_certificate_manager_trust_config', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerTrustConfig do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ allowlisted_certificates: [{ 'key1' => 'val1' }], description: 'test-value', labels: { 'key1' => 'val1' }, trust_stores: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ allowlisted_certificates: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', trust_stores: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,8 +75,10 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerTrustConfig do
 
         config = validate_resource_structure(result, 'google_certificate_manager_trust_config', 'full')
         expect(config).to have_key('allowlisted_certificates')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('trust_stores')
       end
     end
@@ -96,6 +100,23 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerTrustConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_certificate_manager_trust_config', 'minimal')
         expect(config).not_to have_key('allowlisted_certificates')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_certificate_manager_trust_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_certificate_manager_trust_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_certificate_manager_trust_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_certificate_manager_trust_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -130,6 +151,23 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerTrustConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_certificate_manager_trust_config', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_certificate_manager_trust_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_certificate_manager_trust_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_certificate_manager_trust_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_certificate_manager_trust_config', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes trust_stores when provided' do
         synth = create_synthesizer
@@ -193,7 +231,7 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerTrustConfig do
     resource_type: :google_certificate_manager_trust_config,
     method: :google_certificate_manager_trust_config,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :project, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :project, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

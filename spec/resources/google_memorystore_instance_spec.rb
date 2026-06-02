@@ -39,10 +39,13 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
 
         expect(ref.id).to eq("${google_memorystore_instance.test.id}")
         expect(ref.authorization_mode).to eq("${google_memorystore_instance.test.authorization_mode}")
+        expect(ref.available_maintenance_versions).to eq("${google_memorystore_instance.test.available_maintenance_versions}")
         expect(ref.backup_collection).to eq("${google_memorystore_instance.test.backup_collection}")
         expect(ref.create_time).to eq("${google_memorystore_instance.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_memorystore_instance.test.deletion_policy}")
         expect(ref.discovery_endpoints).to eq("${google_memorystore_instance.test.discovery_endpoints}")
         expect(ref.effective_labels).to eq("${google_memorystore_instance.test.effective_labels}")
+        expect(ref.effective_maintenance_version).to eq("${google_memorystore_instance.test.effective_maintenance_version}")
         expect(ref.endpoints).to eq("${google_memorystore_instance.test.endpoints}")
         expect(ref.engine_version).to eq("${google_memorystore_instance.test.engine_version}")
         expect(ref.maintenance_schedule).to eq("${google_memorystore_instance.test.maintenance_schedule}")
@@ -55,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
         expect(ref.psc_attachment_details).to eq("${google_memorystore_instance.test.psc_attachment_details}")
         expect(ref.psc_auto_connections).to eq("${google_memorystore_instance.test.psc_auto_connections}")
         expect(ref.replica_count).to eq("${google_memorystore_instance.test.replica_count}")
+        expect(ref.server_ca_mode).to eq("${google_memorystore_instance.test.server_ca_mode}")
         expect(ref.state).to eq("${google_memorystore_instance.test.state}")
         expect(ref.state_info).to eq("${google_memorystore_instance.test.state_info}")
         expect(ref.terraform_labels).to eq("${google_memorystore_instance.test.terraform_labels}")
@@ -73,10 +77,13 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
 
         config = validate_resource_structure(result, 'google_memorystore_instance', 'test')
         expect(config).not_to have_key('authorization_mode')
+        expect(config).not_to have_key('available_maintenance_versions')
         expect(config).not_to have_key('backup_collection')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('discovery_endpoints')
         expect(config).not_to have_key('effective_labels')
+        expect(config).not_to have_key('effective_maintenance_version')
         expect(config).not_to have_key('endpoints')
         expect(config).not_to have_key('engine_version')
         expect(config).not_to have_key('maintenance_schedule')
@@ -89,6 +96,7 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
         expect(config).not_to have_key('psc_attachment_details')
         expect(config).not_to have_key('psc_auto_connections')
         expect(config).not_to have_key('replica_count')
+        expect(config).not_to have_key('server_ca_mode')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('state_info')
         expect(config).not_to have_key('terraform_labels')
@@ -99,7 +107,7 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ allow_fewer_zones_deployment: true, automated_backup_config: [{ 'key1' => 'val1' }], cross_instance_replication_config: [{ 'key1' => 'val1' }], deletion_protection_enabled: true, desired_auto_created_endpoints: [{ 'key1' => 'val1' }], desired_psc_auto_connections: [{ 'key1' => 'val1' }], engine_configs: { 'key1' => 'val1' }, gcs_source: [{ 'key1' => 'val1' }], kms_key: 'test-value', labels: { 'key1' => 'val1' }, maintenance_policy: [{ 'key1' => 'val1' }], managed_backup_source: [{ 'key1' => 'val1' }], persistence_config: [{ 'key1' => 'val1' }], zone_distribution_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ authorization_mode: 'test-value', automated_backup_config: { 'key1' => 'val1' }, cross_instance_replication_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', deletion_protection_enabled: true, desired_auto_created_endpoints: [{ 'key1' => 'val1' }], desired_psc_auto_connections: [{ 'key1' => 'val1' }], engine_configs: { 'key1' => 'val1' }, engine_version: 'test-value', gcs_source: { 'key1' => 'val1' }, kms_key: 'test-value', labels: { 'key1' => 'val1' }, maintenance_policy: { 'key1' => 'val1' }, maintenance_version: 'test-value', managed_backup_source: { 'key1' => 'val1' }, mode: 'test-value', node_type: 'test-value', persistence_config: { 'key1' => 'val1' }, project: 'test-value', replica_count: 3.14, server_ca_mode: 'test-value', server_ca_pool: 'test-value', transit_encryption_mode: 'test-value', zone_distribution_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -108,45 +116,55 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_memorystore_instance', 'full')
-        expect(config).to have_key('allow_fewer_zones_deployment')
+        expect(config).to have_key('authorization_mode')
         expect(config).to have_key('automated_backup_config')
         expect(config).to have_key('cross_instance_replication_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection_enabled')
         expect(config).to have_key('desired_auto_created_endpoints')
         expect(config).to have_key('desired_psc_auto_connections')
         expect(config).to have_key('engine_configs')
+        expect(config).to have_key('engine_version')
         expect(config).to have_key('gcs_source')
         expect(config).to have_key('kms_key')
         expect(config).to have_key('labels')
         expect(config).to have_key('maintenance_policy')
+        expect(config).to have_key('maintenance_version')
         expect(config).to have_key('managed_backup_source')
+        expect(config).to have_key('mode')
+        expect(config).to have_key('node_type')
         expect(config).to have_key('persistence_config')
+        expect(config).to have_key('project')
+        expect(config).to have_key('replica_count')
+        expect(config).to have_key('server_ca_mode')
+        expect(config).to have_key('server_ca_pool')
+        expect(config).to have_key('transit_encryption_mode')
         expect(config).to have_key('zone_distribution_config')
       end
     end
 
     context 'optional attributes' do
-      it 'includes allow_fewer_zones_deployment when provided' do
+      it 'includes authorization_mode when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_memorystore_instance('opt', required_attrs.merge(allow_fewer_zones_deployment: true))
+        synth.google_memorystore_instance('opt', required_attrs.merge(authorization_mode: 'test-value'))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
-        expect(config).to have_key('allow_fewer_zones_deployment')
+        expect(config).to have_key('authorization_mode')
       end
 
-      it 'omits allow_fewer_zones_deployment when not provided' do
+      it 'omits authorization_mode when not provided' do
         synth = create_synthesizer
         synth.extend(described_class)
         synth.google_memorystore_instance('minimal', required_attrs)
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
-        expect(config).not_to have_key('allow_fewer_zones_deployment')
+        expect(config).not_to have_key('authorization_mode')
       end
       it 'includes automated_backup_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_memorystore_instance('opt', required_attrs.merge(automated_backup_config: [{ 'key1' => 'val1' }]))
+        synth.google_memorystore_instance('opt', required_attrs.merge(automated_backup_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
         expect(config).to have_key('automated_backup_config')
@@ -163,7 +181,7 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
       it 'includes cross_instance_replication_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_memorystore_instance('opt', required_attrs.merge(cross_instance_replication_config: [{ 'key1' => 'val1' }]))
+        synth.google_memorystore_instance('opt', required_attrs.merge(cross_instance_replication_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
         expect(config).to have_key('cross_instance_replication_config')
@@ -176,6 +194,23 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
         expect(config).not_to have_key('cross_instance_replication_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes deletion_protection_enabled when provided' do
         synth = create_synthesizer
@@ -245,10 +280,27 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
         config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
         expect(config).not_to have_key('engine_configs')
       end
+      it 'includes engine_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('opt', required_attrs.merge(engine_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
+        expect(config).to have_key('engine_version')
+      end
+
+      it 'omits engine_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
+        expect(config).not_to have_key('engine_version')
+      end
       it 'includes gcs_source when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_memorystore_instance('opt', required_attrs.merge(gcs_source: [{ 'key1' => 'val1' }]))
+        synth.google_memorystore_instance('opt', required_attrs.merge(gcs_source: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
         expect(config).to have_key('gcs_source')
@@ -299,7 +351,7 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
       it 'includes maintenance_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_memorystore_instance('opt', required_attrs.merge(maintenance_policy: [{ 'key1' => 'val1' }]))
+        synth.google_memorystore_instance('opt', required_attrs.merge(maintenance_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
         expect(config).to have_key('maintenance_policy')
@@ -313,10 +365,27 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
         config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
         expect(config).not_to have_key('maintenance_policy')
       end
+      it 'includes maintenance_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('opt', required_attrs.merge(maintenance_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
+        expect(config).to have_key('maintenance_version')
+      end
+
+      it 'omits maintenance_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
+        expect(config).not_to have_key('maintenance_version')
+      end
       it 'includes managed_backup_source when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_memorystore_instance('opt', required_attrs.merge(managed_backup_source: [{ 'key1' => 'val1' }]))
+        synth.google_memorystore_instance('opt', required_attrs.merge(managed_backup_source: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
         expect(config).to have_key('managed_backup_source')
@@ -330,10 +399,44 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
         config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
         expect(config).not_to have_key('managed_backup_source')
       end
+      it 'includes mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('opt', required_attrs.merge(mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
+        expect(config).to have_key('mode')
+      end
+
+      it 'omits mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
+        expect(config).not_to have_key('mode')
+      end
+      it 'includes node_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('opt', required_attrs.merge(node_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
+        expect(config).to have_key('node_type')
+      end
+
+      it 'omits node_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
+        expect(config).not_to have_key('node_type')
+      end
       it 'includes persistence_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_memorystore_instance('opt', required_attrs.merge(persistence_config: [{ 'key1' => 'val1' }]))
+        synth.google_memorystore_instance('opt', required_attrs.merge(persistence_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
         expect(config).to have_key('persistence_config')
@@ -347,10 +450,95 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
         config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
         expect(config).not_to have_key('persistence_config')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes replica_count when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('opt', required_attrs.merge(replica_count: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
+        expect(config).to have_key('replica_count')
+      end
+
+      it 'omits replica_count when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
+        expect(config).not_to have_key('replica_count')
+      end
+      it 'includes server_ca_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('opt', required_attrs.merge(server_ca_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
+        expect(config).to have_key('server_ca_mode')
+      end
+
+      it 'omits server_ca_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
+        expect(config).not_to have_key('server_ca_mode')
+      end
+      it 'includes server_ca_pool when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('opt', required_attrs.merge(server_ca_pool: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
+        expect(config).to have_key('server_ca_pool')
+      end
+
+      it 'omits server_ca_pool when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
+        expect(config).not_to have_key('server_ca_pool')
+      end
+      it 'includes transit_encryption_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('opt', required_attrs.merge(transit_encryption_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
+        expect(config).to have_key('transit_encryption_mode')
+      end
+
+      it 'omits transit_encryption_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memorystore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memorystore_instance', 'minimal')
+        expect(config).not_to have_key('transit_encryption_mode')
+      end
       it 'includes zone_distribution_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_memorystore_instance('opt', required_attrs.merge(zone_distribution_config: [{ 'key1' => 'val1' }]))
+        synth.google_memorystore_instance('opt', required_attrs.merge(zone_distribution_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_memorystore_instance', 'opt')
         expect(config).to have_key('zone_distribution_config')
@@ -367,17 +555,6 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
     end
 
     context 'boolean fields' do
-      [true, false].each do |val|
-        it "accepts allow_fewer_zones_deployment=#{val}" do
-          synth = create_synthesizer
-          synth.extend(described_class)
-          attrs = required_attrs.merge(allow_fewer_zones_deployment: val)
-          synth.google_memorystore_instance("bool_#{val}", attrs)
-          result = normalize_synthesis(synth.synthesis)
-          config = validate_resource_structure(result, 'google_memorystore_instance', "bool_#{val}")
-          expect(config['allow_fewer_zones_deployment']).to eq(val)
-        end
-      end
       [true, false].each do |val|
         it "accepts deletion_protection_enabled=#{val}" do
           synth = create_synthesizer
@@ -435,8 +612,8 @@ RSpec.describe Pangea::Resources::GoogleMemorystoreInstance do
     resource_type: :google_memorystore_instance,
     method: :google_memorystore_instance,
     required_attrs: { instance_id: 'test-value', location: 'test-value', shard_count: 3.14 },
-    expected_outputs: [:id, :authorization_mode, :backup_collection, :create_time, :discovery_endpoints, :effective_labels, :endpoints, :engine_version, :maintenance_schedule, :managed_server_ca, :mode, :name, :node_config, :node_type, :project, :psc_attachment_details, :psc_auto_connections, :replica_count, :state, :state_info, :terraform_labels, :transit_encryption_mode, :uid, :update_time],
+    expected_outputs: [:id, :authorization_mode, :available_maintenance_versions, :backup_collection, :create_time, :deletion_policy, :discovery_endpoints, :effective_labels, :effective_maintenance_version, :endpoints, :engine_version, :maintenance_schedule, :managed_server_ca, :mode, :name, :node_config, :node_type, :project, :psc_attachment_details, :psc_auto_connections, :replica_count, :server_ca_mode, :state, :state_info, :terraform_labels, :transit_encryption_mode, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:allow_fewer_zones_deployment, :deletion_protection_enabled]
+    boolean_fields: [:deletion_protection_enabled]
 end

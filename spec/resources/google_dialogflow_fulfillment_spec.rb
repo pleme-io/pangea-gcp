@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowFulfillment do
         ref = synth.google_dialogflow_fulfillment('test', required_attrs)
 
         expect(ref.id).to eq("${google_dialogflow_fulfillment.test.id}")
+        expect(ref.deletion_policy).to eq("${google_dialogflow_fulfillment.test.deletion_policy}")
         expect(ref.name).to eq("${google_dialogflow_fulfillment.test.name}")
         expect(ref.project).to eq("${google_dialogflow_fulfillment.test.project}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleDialogflowFulfillment do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_fulfillment', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ enabled: true, features: [{ 'key1' => 'val1' }], generic_web_service: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', enabled: true, features: [{ 'key1' => 'val1' }], generic_web_service: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,13 +68,32 @@ RSpec.describe Pangea::Resources::GoogleDialogflowFulfillment do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_fulfillment', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('enabled')
         expect(config).to have_key('features')
         expect(config).to have_key('generic_web_service')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_fulfillment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_fulfillment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_fulfillment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_fulfillment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes enabled when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -110,7 +131,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowFulfillment do
       it 'includes generic_web_service when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_fulfillment('opt', required_attrs.merge(generic_web_service: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_fulfillment('opt', required_attrs.merge(generic_web_service: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_fulfillment', 'opt')
         expect(config).to have_key('generic_web_service')
@@ -123,6 +144,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowFulfillment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_fulfillment', 'minimal')
         expect(config).not_to have_key('generic_web_service')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_fulfillment('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_fulfillment', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_fulfillment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_fulfillment', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -182,7 +220,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowFulfillment do
     resource_type: :google_dialogflow_fulfillment,
     method: :google_dialogflow_fulfillment,
     required_attrs: { display_name: 'test-value' },
-    expected_outputs: [:id, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:enabled]

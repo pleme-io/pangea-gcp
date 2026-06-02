@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleServiceNetworkingPeeredDnsDomain do
         ref = synth.google_service_networking_peered_dns_domain('test', required_attrs)
 
         expect(ref.id).to eq("${google_service_networking_peered_dns_domain.test.id}")
+        expect(ref.deletion_policy).to eq("${google_service_networking_peered_dns_domain.test.deletion_policy}")
         expect(ref.parent).to eq("${google_service_networking_peered_dns_domain.test.parent}")
         expect(ref.project).to eq("${google_service_networking_peered_dns_domain.test.project}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleServiceNetworkingPeeredDnsDomain do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_service_networking_peered_dns_domain', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('parent')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ service: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value', service: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,11 +68,47 @@ RSpec.describe Pangea::Resources::GoogleServiceNetworkingPeeredDnsDomain do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_service_networking_peered_dns_domain', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
         expect(config).to have_key('service')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_service_networking_peered_dns_domain('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_service_networking_peered_dns_domain', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_service_networking_peered_dns_domain('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_service_networking_peered_dns_domain', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_service_networking_peered_dns_domain('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_service_networking_peered_dns_domain', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_service_networking_peered_dns_domain('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_service_networking_peered_dns_domain', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes service when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -134,7 +172,7 @@ RSpec.describe Pangea::Resources::GoogleServiceNetworkingPeeredDnsDomain do
     resource_type: :google_service_networking_peered_dns_domain,
     method: :google_service_networking_peered_dns_domain,
     required_attrs: { dns_suffix: 'test-value', name: 'test-value', network: 'test-value' },
-    expected_outputs: [:id, :parent, :project],
+    expected_outputs: [:id, :deletion_policy, :parent, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

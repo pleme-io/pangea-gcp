@@ -38,9 +38,12 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineCluster do
         ref = synth.google_vmwareengine_cluster('test', required_attrs)
 
         expect(ref.id).to eq("${google_vmwareengine_cluster.test.id}")
+        expect(ref.create_time).to eq("${google_vmwareengine_cluster.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_vmwareengine_cluster.test.deletion_policy}")
         expect(ref.management).to eq("${google_vmwareengine_cluster.test.management}")
         expect(ref.state).to eq("${google_vmwareengine_cluster.test.state}")
         expect(ref.uid).to eq("${google_vmwareengine_cluster.test.uid}")
+        expect(ref.update_time).to eq("${google_vmwareengine_cluster.test.update_time}")
       end
     end
 
@@ -52,14 +55,17 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineCluster do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vmwareengine_cluster', 'test')
+        expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('management')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('uid')
+        expect(config).not_to have_key('update_time')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ autoscaling_settings: [{ 'key1' => 'val1' }], node_type_configs: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ autoscaling_settings: { 'key1' => 'val1' }, datastore_mount_config: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', node_type_configs: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,6 +75,8 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineCluster do
 
         config = validate_resource_structure(result, 'google_vmwareengine_cluster', 'full')
         expect(config).to have_key('autoscaling_settings')
+        expect(config).to have_key('datastore_mount_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('node_type_configs')
       end
     end
@@ -77,7 +85,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineCluster do
       it 'includes autoscaling_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vmwareengine_cluster('opt', required_attrs.merge(autoscaling_settings: [{ 'key1' => 'val1' }]))
+        synth.google_vmwareengine_cluster('opt', required_attrs.merge(autoscaling_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vmwareengine_cluster', 'opt')
         expect(config).to have_key('autoscaling_settings')
@@ -90,6 +98,40 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vmwareengine_cluster', 'minimal')
         expect(config).not_to have_key('autoscaling_settings')
+      end
+      it 'includes datastore_mount_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_cluster('opt', required_attrs.merge(datastore_mount_config: [{ 'key1' => 'val1' }]))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_cluster', 'opt')
+        expect(config).to have_key('datastore_mount_config')
+      end
+
+      it 'omits datastore_mount_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_cluster', 'minimal')
+        expect(config).not_to have_key('datastore_mount_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_cluster('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_cluster', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_cluster', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes node_type_configs when provided' do
         synth = create_synthesizer
@@ -153,7 +195,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineCluster do
     resource_type: :google_vmwareengine_cluster,
     method: :google_vmwareengine_cluster,
     required_attrs: { name: 'test-value', parent: 'test-value' },
-    expected_outputs: [:id, :management, :state, :uid],
+    expected_outputs: [:id, :create_time, :deletion_policy, :management, :state, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

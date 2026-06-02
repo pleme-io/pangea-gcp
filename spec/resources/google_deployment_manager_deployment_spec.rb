@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleDeploymentManagerDeployment do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { name: 'test-value', target: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { name: 'test-value', target: { 'key1' => 'val1' } } }
 
   describe ':google_deployment_manager_deployment' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDeploymentManagerDeployment do
         ref = synth.google_deployment_manager_deployment('test', required_attrs)
 
         expect(ref.id).to eq("${google_deployment_manager_deployment.test.id}")
+        expect(ref.deletion_policy).to eq("${google_deployment_manager_deployment.test.deletion_policy}")
         expect(ref.deployment_id).to eq("${google_deployment_manager_deployment.test.deployment_id}")
         expect(ref.manifest).to eq("${google_deployment_manager_deployment.test.manifest}")
         expect(ref.project).to eq("${google_deployment_manager_deployment.test.project}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleDeploymentManagerDeployment do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_deployment_manager_deployment', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('deployment_id')
         expect(config).not_to have_key('manifest')
         expect(config).not_to have_key('project')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleDeploymentManagerDeployment do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ create_policy: 'test-value', delete_policy: 'test-value', description: 'test-value', labels: [{ 'key1' => 'val1' }], preview: true }) }
+      let(:all_attrs) { required_attrs.merge({ create_policy: 'test-value', delete_policy: 'test-value', deletion_policy: 'test-value', description: 'test-value', labels: [{ 'key1' => 'val1' }], preview: true, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,9 +74,11 @@ RSpec.describe Pangea::Resources::GoogleDeploymentManagerDeployment do
         config = validate_resource_structure(result, 'google_deployment_manager_deployment', 'full')
         expect(config).to have_key('create_policy')
         expect(config).to have_key('delete_policy')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
         expect(config).to have_key('preview')
+        expect(config).to have_key('project')
       end
     end
 
@@ -112,6 +116,23 @@ RSpec.describe Pangea::Resources::GoogleDeploymentManagerDeployment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_deployment_manager_deployment', 'minimal')
         expect(config).not_to have_key('delete_policy')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_deployment_manager_deployment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_deployment_manager_deployment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_deployment_manager_deployment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_deployment_manager_deployment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -164,6 +185,23 @@ RSpec.describe Pangea::Resources::GoogleDeploymentManagerDeployment do
         config = validate_resource_structure(result, 'google_deployment_manager_deployment', 'minimal')
         expect(config).not_to have_key('preview')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_deployment_manager_deployment('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_deployment_manager_deployment', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_deployment_manager_deployment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_deployment_manager_deployment', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'boolean fields' do
@@ -189,7 +227,7 @@ RSpec.describe Pangea::Resources::GoogleDeploymentManagerDeployment do
 
         config = validate_resource_structure(result, 'google_deployment_manager_deployment', 'typed')
         expect(config['name']).to be_a(String)
-        expect(config['target']).to be_a(Array)
+        expect(config['target']).to be_a(Hash)
       end
     end
 
@@ -222,8 +260,8 @@ RSpec.describe Pangea::Resources::GoogleDeploymentManagerDeployment do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_deployment_manager_deployment,
     method: :google_deployment_manager_deployment,
-    required_attrs: { name: 'test-value', target: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :deployment_id, :manifest, :project, :self_link],
+    required_attrs: { name: 'test-value', target: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :deletion_policy, :deployment_id, :manifest, :project, :self_link],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:preview]

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerVpnConnection do
 
         expect(ref.id).to eq("${google_edgecontainer_vpn_connection.test.id}")
         expect(ref.create_time).to eq("${google_edgecontainer_vpn_connection.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_edgecontainer_vpn_connection.test.deletion_policy}")
         expect(ref.details).to eq("${google_edgecontainer_vpn_connection.test.details}")
         expect(ref.effective_labels).to eq("${google_edgecontainer_vpn_connection.test.effective_labels}")
         expect(ref.enable_high_availability).to eq("${google_edgecontainer_vpn_connection.test.enable_high_availability}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerVpnConnection do
 
         config = validate_resource_structure(result, 'google_edgecontainer_vpn_connection', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('details')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('enable_high_availability')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerVpnConnection do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ labels: { 'key1' => 'val1' }, nat_gateway_ip: 'test-value', router: 'test-value', vpc: 'test-value', vpc_project: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', enable_high_availability: true, labels: { 'key1' => 'val1' }, nat_gateway_ip: 'test-value', project: 'test-value', router: 'test-value', vpc: 'test-value', vpc_project: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,8 +78,11 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerVpnConnection do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_edgecontainer_vpn_connection', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('enable_high_availability')
         expect(config).to have_key('labels')
         expect(config).to have_key('nat_gateway_ip')
+        expect(config).to have_key('project')
         expect(config).to have_key('router')
         expect(config).to have_key('vpc')
         expect(config).to have_key('vpc_project')
@@ -85,6 +90,40 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerVpnConnection do
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_vpn_connection('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_vpn_connection', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_vpn_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_vpn_connection', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes enable_high_availability when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_vpn_connection('opt', required_attrs.merge(enable_high_availability: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_vpn_connection', 'opt')
+        expect(config).to have_key('enable_high_availability')
+      end
+
+      it 'omits enable_high_availability when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_vpn_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_vpn_connection', 'minimal')
+        expect(config).not_to have_key('enable_high_availability')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -118,6 +157,23 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerVpnConnection do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_edgecontainer_vpn_connection', 'minimal')
         expect(config).not_to have_key('nat_gateway_ip')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_vpn_connection('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_vpn_connection', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_vpn_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_vpn_connection', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes router when provided' do
         synth = create_synthesizer
@@ -156,7 +212,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerVpnConnection do
       it 'includes vpc_project when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_edgecontainer_vpn_connection('opt', required_attrs.merge(vpc_project: [{ 'key1' => 'val1' }]))
+        synth.google_edgecontainer_vpn_connection('opt', required_attrs.merge(vpc_project: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_edgecontainer_vpn_connection', 'opt')
         expect(config).to have_key('vpc_project')
@@ -169,6 +225,20 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerVpnConnection do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_edgecontainer_vpn_connection', 'minimal')
         expect(config).not_to have_key('vpc_project')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts enable_high_availability=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(enable_high_availability: val)
+          synth.google_edgecontainer_vpn_connection("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_edgecontainer_vpn_connection', "bool_#{val}")
+          expect(config['enable_high_availability']).to eq(val)
+        end
       end
     end
 
@@ -216,8 +286,8 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerVpnConnection do
     resource_type: :google_edgecontainer_vpn_connection,
     method: :google_edgecontainer_vpn_connection,
     required_attrs: { cluster: 'test-value', location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :create_time, :details, :effective_labels, :enable_high_availability, :project, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :details, :effective_labels, :enable_high_availability, :project, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:enable_high_availability]
 end

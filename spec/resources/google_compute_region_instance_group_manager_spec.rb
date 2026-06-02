@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceGroupManager do
 
         expect(ref.id).to eq("${google_compute_region_instance_group_manager.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_region_instance_group_manager.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_region_instance_group_manager.test.deletion_policy}")
         expect(ref.distribution_policy_target_shape).to eq("${google_compute_region_instance_group_manager.test.distribution_policy_target_shape}")
         expect(ref.distribution_policy_zones).to eq("${google_compute_region_instance_group_manager.test.distribution_policy_zones}")
         expect(ref.fingerprint).to eq("${google_compute_region_instance_group_manager.test.fingerprint}")
@@ -63,6 +64,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceGroupManager do
 
         config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('distribution_policy_target_shape')
         expect(config).not_to have_key('distribution_policy_zones')
         expect(config).not_to have_key('fingerprint')
@@ -79,7 +81,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceGroupManager do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ all_instances_config: [{ 'key1' => 'val1' }], auto_healing_policies: [{ 'key1' => 'val1' }], description: 'test-value', instance_flexibility_policy: [{ 'key1' => 'val1' }], instance_lifecycle_policy: [{ 'key1' => 'val1' }], list_managed_instances_results: 'test-value', named_port: [{ 'key1' => 'val1' }], standby_policy: [{ 'key1' => 'val1' }], stateful_disk: [{ 'key1' => 'val1' }], stateful_external_ip: [{ 'key1' => 'val1' }], stateful_internal_ip: [{ 'key1' => 'val1' }], target_pools: ['test-value'], update_policy: [{ 'key1' => 'val1' }], wait_for_instances: true, wait_for_instances_status: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ all_instances_config: { 'key1' => 'val1' }, auto_healing_policies: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', distribution_policy_target_shape: 'test-value', distribution_policy_zones: ['test-value'], instance_flexibility_policy: { 'key1' => 'val1' }, instance_lifecycle_policy: { 'key1' => 'val1' }, list_managed_instances_results: 'test-value', named_port: [{ 'key1' => 'val1' }], project: 'test-value', region: 'test-value', resource_policies: { 'key1' => 'val1' }, standby_policy: { 'key1' => 'val1' }, stateful_disk: [{ 'key1' => 'val1' }], stateful_external_ip: [{ 'key1' => 'val1' }], stateful_internal_ip: [{ 'key1' => 'val1' }], target_pools: ['test-value'], target_size: 3.14, target_size_policy: [{ 'key1' => 'val1' }], target_stopped_size: 3.14, target_suspended_size: 3.14, update_policy: { 'key1' => 'val1' }, wait_for_instances: true, wait_for_instances_status: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -90,16 +92,26 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceGroupManager do
         config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'full')
         expect(config).to have_key('all_instances_config')
         expect(config).to have_key('auto_healing_policies')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('distribution_policy_target_shape')
+        expect(config).to have_key('distribution_policy_zones')
         expect(config).to have_key('instance_flexibility_policy')
         expect(config).to have_key('instance_lifecycle_policy')
         expect(config).to have_key('list_managed_instances_results')
         expect(config).to have_key('named_port')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
+        expect(config).to have_key('resource_policies')
         expect(config).to have_key('standby_policy')
         expect(config).to have_key('stateful_disk')
         expect(config).to have_key('stateful_external_ip')
         expect(config).to have_key('stateful_internal_ip')
         expect(config).to have_key('target_pools')
+        expect(config).to have_key('target_size')
+        expect(config).to have_key('target_size_policy')
+        expect(config).to have_key('target_stopped_size')
+        expect(config).to have_key('target_suspended_size')
         expect(config).to have_key('update_policy')
         expect(config).to have_key('wait_for_instances')
         expect(config).to have_key('wait_for_instances_status')
@@ -110,7 +122,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceGroupManager do
       it 'includes all_instances_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(all_instances_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(all_instances_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
         expect(config).to have_key('all_instances_config')
@@ -127,7 +139,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceGroupManager do
       it 'includes auto_healing_policies when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(auto_healing_policies: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(auto_healing_policies: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
         expect(config).to have_key('auto_healing_policies')
@@ -140,6 +152,23 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceGroupManager do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'minimal')
         expect(config).not_to have_key('auto_healing_policies')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -158,10 +187,44 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceGroupManager do
         config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'minimal')
         expect(config).not_to have_key('description')
       end
+      it 'includes distribution_policy_target_shape when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(distribution_policy_target_shape: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
+        expect(config).to have_key('distribution_policy_target_shape')
+      end
+
+      it 'omits distribution_policy_target_shape when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'minimal')
+        expect(config).not_to have_key('distribution_policy_target_shape')
+      end
+      it 'includes distribution_policy_zones when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(distribution_policy_zones: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
+        expect(config).to have_key('distribution_policy_zones')
+      end
+
+      it 'omits distribution_policy_zones when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'minimal')
+        expect(config).not_to have_key('distribution_policy_zones')
+      end
       it 'includes instance_flexibility_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(instance_flexibility_policy: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(instance_flexibility_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
         expect(config).to have_key('instance_flexibility_policy')
@@ -178,7 +241,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceGroupManager do
       it 'includes instance_lifecycle_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(instance_lifecycle_policy: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(instance_lifecycle_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
         expect(config).to have_key('instance_lifecycle_policy')
@@ -226,10 +289,61 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceGroupManager do
         config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'minimal')
         expect(config).not_to have_key('named_port')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'minimal')
+        expect(config).not_to have_key('region')
+      end
+      it 'includes resource_policies when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(resource_policies: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
+        expect(config).to have_key('resource_policies')
+      end
+
+      it 'omits resource_policies when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'minimal')
+        expect(config).not_to have_key('resource_policies')
+      end
       it 'includes standby_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(standby_policy: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(standby_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
         expect(config).to have_key('standby_policy')
@@ -311,10 +425,78 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceGroupManager do
         config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'minimal')
         expect(config).not_to have_key('target_pools')
       end
+      it 'includes target_size when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(target_size: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
+        expect(config).to have_key('target_size')
+      end
+
+      it 'omits target_size when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'minimal')
+        expect(config).not_to have_key('target_size')
+      end
+      it 'includes target_size_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(target_size_policy: [{ 'key1' => 'val1' }]))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
+        expect(config).to have_key('target_size_policy')
+      end
+
+      it 'omits target_size_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'minimal')
+        expect(config).not_to have_key('target_size_policy')
+      end
+      it 'includes target_stopped_size when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(target_stopped_size: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
+        expect(config).to have_key('target_stopped_size')
+      end
+
+      it 'omits target_stopped_size when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'minimal')
+        expect(config).not_to have_key('target_stopped_size')
+      end
+      it 'includes target_suspended_size when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(target_suspended_size: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
+        expect(config).to have_key('target_suspended_size')
+      end
+
+      it 'omits target_suspended_size when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_group_manager('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'minimal')
+        expect(config).not_to have_key('target_suspended_size')
+      end
       it 'includes update_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(update_policy: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_instance_group_manager('opt', required_attrs.merge(update_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_group_manager', 'opt')
         expect(config).to have_key('update_policy')
@@ -422,7 +604,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceGroupManager do
     resource_type: :google_compute_region_instance_group_manager,
     method: :google_compute_region_instance_group_manager,
     required_attrs: { base_instance_name: 'test-value', name: 'test-value', version: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :creation_timestamp, :distribution_policy_target_shape, :distribution_policy_zones, :fingerprint, :instance_group, :instance_group_manager_id, :project, :region, :self_link, :status, :target_size, :target_stopped_size, :target_suspended_size],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :distribution_policy_target_shape, :distribution_policy_zones, :fingerprint, :instance_group, :instance_group_manager_id, :project, :region, :self_link, :status, :target_size, :target_stopped_size, :target_suspended_size],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:wait_for_instances]

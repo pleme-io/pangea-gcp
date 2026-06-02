@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleCloudQuotasQuotaPreference do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { quota_config: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { quota_config: { 'key1' => 'val1' } } }
 
   describe ':google_cloud_quotas_quota_preference' do
     context 'with required attributes only' do
@@ -71,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleCloudQuotasQuotaPreference do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ contact_email: 'test-value', ignore_safety_checks: 'test-value', justification: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ contact_email: 'test-value', dimensions: { 'key1' => 'val1' }, ignore_safety_checks: 'test-value', justification: 'test-value', name: 'test-value', parent: 'test-value', quota_id: 'test-value', service: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -81,8 +81,13 @@ RSpec.describe Pangea::Resources::GoogleCloudQuotasQuotaPreference do
 
         config = validate_resource_structure(result, 'google_cloud_quotas_quota_preference', 'full')
         expect(config).to have_key('contact_email')
+        expect(config).to have_key('dimensions')
         expect(config).to have_key('ignore_safety_checks')
         expect(config).to have_key('justification')
+        expect(config).to have_key('name')
+        expect(config).to have_key('parent')
+        expect(config).to have_key('quota_id')
+        expect(config).to have_key('service')
       end
     end
 
@@ -103,6 +108,23 @@ RSpec.describe Pangea::Resources::GoogleCloudQuotasQuotaPreference do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_quotas_quota_preference', 'minimal')
         expect(config).not_to have_key('contact_email')
+      end
+      it 'includes dimensions when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_quotas_quota_preference('opt', required_attrs.merge(dimensions: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_quotas_quota_preference', 'opt')
+        expect(config).to have_key('dimensions')
+      end
+
+      it 'omits dimensions when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_quotas_quota_preference('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_quotas_quota_preference', 'minimal')
+        expect(config).not_to have_key('dimensions')
       end
       it 'includes ignore_safety_checks when provided' do
         synth = create_synthesizer
@@ -138,6 +160,74 @@ RSpec.describe Pangea::Resources::GoogleCloudQuotasQuotaPreference do
         config = validate_resource_structure(result, 'google_cloud_quotas_quota_preference', 'minimal')
         expect(config).not_to have_key('justification')
       end
+      it 'includes name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_quotas_quota_preference('opt', required_attrs.merge(name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_quotas_quota_preference', 'opt')
+        expect(config).to have_key('name')
+      end
+
+      it 'omits name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_quotas_quota_preference('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_quotas_quota_preference', 'minimal')
+        expect(config).not_to have_key('name')
+      end
+      it 'includes parent when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_quotas_quota_preference('opt', required_attrs.merge(parent: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_quotas_quota_preference', 'opt')
+        expect(config).to have_key('parent')
+      end
+
+      it 'omits parent when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_quotas_quota_preference('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_quotas_quota_preference', 'minimal')
+        expect(config).not_to have_key('parent')
+      end
+      it 'includes quota_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_quotas_quota_preference('opt', required_attrs.merge(quota_id: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_quotas_quota_preference', 'opt')
+        expect(config).to have_key('quota_id')
+      end
+
+      it 'omits quota_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_quotas_quota_preference('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_quotas_quota_preference', 'minimal')
+        expect(config).not_to have_key('quota_id')
+      end
+      it 'includes service when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_quotas_quota_preference('opt', required_attrs.merge(service: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_quotas_quota_preference', 'opt')
+        expect(config).to have_key('service')
+      end
+
+      it 'omits service when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_quotas_quota_preference('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_quotas_quota_preference', 'minimal')
+        expect(config).not_to have_key('service')
+      end
     end
 
     context 'attribute types' do
@@ -148,7 +238,7 @@ RSpec.describe Pangea::Resources::GoogleCloudQuotasQuotaPreference do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_cloud_quotas_quota_preference', 'typed')
-        expect(config['quota_config']).to be_a(Array)
+        expect(config['quota_config']).to be_a(Hash)
       end
     end
 
@@ -181,7 +271,7 @@ RSpec.describe Pangea::Resources::GoogleCloudQuotasQuotaPreference do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_cloud_quotas_quota_preference,
     method: :google_cloud_quotas_quota_preference,
-    required_attrs: { quota_config: [{ 'key1' => 'val1' }] },
+    required_attrs: { quota_config: { 'key1' => 'val1' } },
     expected_outputs: [:id, :create_time, :dimensions, :etag, :name, :parent, :quota_id, :reconciling, :service, :update_time],
     sensitive_fields: [],
     immutable_fields: [],

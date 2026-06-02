@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDiscoveryConfig do
 
         expect(ref.id).to eq("${google_data_loss_prevention_discovery_config.test.id}")
         expect(ref.create_time).to eq("${google_data_loss_prevention_discovery_config.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_data_loss_prevention_discovery_config.test.deletion_policy}")
         expect(ref.errors).to eq("${google_data_loss_prevention_discovery_config.test.errors}")
         expect(ref.last_run_time).to eq("${google_data_loss_prevention_discovery_config.test.last_run_time}")
         expect(ref.name).to eq("${google_data_loss_prevention_discovery_config.test.name}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDiscoveryConfig do
 
         config = validate_resource_structure(result, 'google_data_loss_prevention_discovery_config', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('errors')
         expect(config).not_to have_key('last_run_time')
         expect(config).not_to have_key('name')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDiscoveryConfig do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ actions: [{ 'key1' => 'val1' }], display_name: 'test-value', inspect_templates: ['test-value'], org_config: [{ 'key1' => 'val1' }], status: 'test-value', targets: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ actions: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', display_name: 'test-value', inspect_templates: ['test-value'], org_config: { 'key1' => 'val1' }, other_cloud_starting_location: { 'key1' => 'val1' }, status: 'test-value', targets: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,9 +75,11 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDiscoveryConfig do
 
         config = validate_resource_structure(result, 'google_data_loss_prevention_discovery_config', 'full')
         expect(config).to have_key('actions')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('inspect_templates')
         expect(config).to have_key('org_config')
+        expect(config).to have_key('other_cloud_starting_location')
         expect(config).to have_key('status')
         expect(config).to have_key('targets')
       end
@@ -98,6 +102,23 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDiscoveryConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_loss_prevention_discovery_config', 'minimal')
         expect(config).not_to have_key('actions')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_discovery_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_discovery_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_discovery_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_discovery_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes display_name when provided' do
         synth = create_synthesizer
@@ -136,7 +157,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDiscoveryConfig do
       it 'includes org_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_data_loss_prevention_discovery_config('opt', required_attrs.merge(org_config: [{ 'key1' => 'val1' }]))
+        synth.google_data_loss_prevention_discovery_config('opt', required_attrs.merge(org_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_loss_prevention_discovery_config', 'opt')
         expect(config).to have_key('org_config')
@@ -149,6 +170,23 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDiscoveryConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_loss_prevention_discovery_config', 'minimal')
         expect(config).not_to have_key('org_config')
+      end
+      it 'includes other_cloud_starting_location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_discovery_config('opt', required_attrs.merge(other_cloud_starting_location: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_discovery_config', 'opt')
+        expect(config).to have_key('other_cloud_starting_location')
+      end
+
+      it 'omits other_cloud_starting_location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_discovery_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_discovery_config', 'minimal')
+        expect(config).not_to have_key('other_cloud_starting_location')
       end
       it 'includes status when provided' do
         synth = create_synthesizer
@@ -229,7 +267,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionDiscoveryConfig do
     resource_type: :google_data_loss_prevention_discovery_config,
     method: :google_data_loss_prevention_discovery_config,
     required_attrs: { location: 'test-value', parent: 'test-value' },
-    expected_outputs: [:id, :create_time, :errors, :last_run_time, :name, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :errors, :last_run_time, :name, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

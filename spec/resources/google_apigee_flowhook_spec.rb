@@ -38,11 +38,24 @@ RSpec.describe Pangea::Resources::GoogleApigeeFlowhook do
         ref = synth.google_apigee_flowhook('test', required_attrs)
 
         expect(ref.id).to eq("${google_apigee_flowhook.test.id}")
+        expect(ref.deletion_policy).to eq("${google_apigee_flowhook.test.deletion_policy}")
+      end
+    end
+
+    context 'computed-only attributes' do
+      it 'excludes computed-only attributes from the resource block' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_flowhook('test', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_apigee_flowhook', 'test')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ continue_on_error: true, description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ continue_on_error: true, deletion_policy: 'test-value', description: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -52,6 +65,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeFlowhook do
 
         config = validate_resource_structure(result, 'google_apigee_flowhook', 'full')
         expect(config).to have_key('continue_on_error')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
       end
     end
@@ -73,6 +87,23 @@ RSpec.describe Pangea::Resources::GoogleApigeeFlowhook do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_flowhook', 'minimal')
         expect(config).not_to have_key('continue_on_error')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_flowhook('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_flowhook', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_flowhook('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_flowhook', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -152,7 +183,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeFlowhook do
     resource_type: :google_apigee_flowhook,
     method: :google_apigee_flowhook,
     required_attrs: { environment: 'test-value', flow_hook_point: 'test-value', org_id: 'test-value', sharedflow: 'test-value' },
-    expected_outputs: [:id],
+    expected_outputs: [:id, :deletion_policy],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:continue_on_error]

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleEdgecontainerCluster do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { authorization: [{ 'key1' => 'val1' }], fleet: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', networking: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { authorization: { 'key1' => 'val1' }, fleet: { 'key1' => 'val1' }, location: 'test-value', name: 'test-value', networking: { 'key1' => 'val1' } } }
 
   describe ':google_edgecontainer_cluster' do
     context 'with required attributes only' do
@@ -42,6 +42,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerCluster do
         expect(ref.control_plane_version).to eq("${google_edgecontainer_cluster.test.control_plane_version}")
         expect(ref.create_time).to eq("${google_edgecontainer_cluster.test.create_time}")
         expect(ref.default_max_pods_per_node).to eq("${google_edgecontainer_cluster.test.default_max_pods_per_node}")
+        expect(ref.deletion_policy).to eq("${google_edgecontainer_cluster.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_edgecontainer_cluster.test.effective_labels}")
         expect(ref.endpoint).to eq("${google_edgecontainer_cluster.test.endpoint}")
         expect(ref.external_load_balancer_ipv4_address_pools).to eq("${google_edgecontainer_cluster.test.external_load_balancer_ipv4_address_pools}")
@@ -69,6 +70,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerCluster do
         expect(config).not_to have_key('control_plane_version')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('default_max_pods_per_node')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('endpoint')
         expect(config).not_to have_key('external_load_balancer_ipv4_address_pools')
@@ -85,7 +87,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerCluster do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ control_plane: [{ 'key1' => 'val1' }], control_plane_encryption: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, maintenance_policy: [{ 'key1' => 'val1' }], system_addons_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ control_plane: { 'key1' => 'val1' }, control_plane_encryption: { 'key1' => 'val1' }, default_max_pods_per_node: 3.14, deletion_policy: 'test-value', external_load_balancer_ipv4_address_pools: ['test-value'], labels: { 'key1' => 'val1' }, maintenance_policy: { 'key1' => 'val1' }, project: 'test-value', release_channel: 'test-value', system_addons_config: { 'key1' => 'val1' }, target_version: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -96,9 +98,15 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerCluster do
         config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'full')
         expect(config).to have_key('control_plane')
         expect(config).to have_key('control_plane_encryption')
+        expect(config).to have_key('default_max_pods_per_node')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('external_load_balancer_ipv4_address_pools')
         expect(config).to have_key('labels')
         expect(config).to have_key('maintenance_policy')
+        expect(config).to have_key('project')
+        expect(config).to have_key('release_channel')
         expect(config).to have_key('system_addons_config')
+        expect(config).to have_key('target_version')
       end
     end
 
@@ -106,7 +114,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerCluster do
       it 'includes control_plane when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_edgecontainer_cluster('opt', required_attrs.merge(control_plane: [{ 'key1' => 'val1' }]))
+        synth.google_edgecontainer_cluster('opt', required_attrs.merge(control_plane: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'opt')
         expect(config).to have_key('control_plane')
@@ -123,7 +131,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerCluster do
       it 'includes control_plane_encryption when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_edgecontainer_cluster('opt', required_attrs.merge(control_plane_encryption: [{ 'key1' => 'val1' }]))
+        synth.google_edgecontainer_cluster('opt', required_attrs.merge(control_plane_encryption: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'opt')
         expect(config).to have_key('control_plane_encryption')
@@ -136,6 +144,57 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'minimal')
         expect(config).not_to have_key('control_plane_encryption')
+      end
+      it 'includes default_max_pods_per_node when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_cluster('opt', required_attrs.merge(default_max_pods_per_node: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'opt')
+        expect(config).to have_key('default_max_pods_per_node')
+      end
+
+      it 'omits default_max_pods_per_node when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'minimal')
+        expect(config).not_to have_key('default_max_pods_per_node')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_cluster('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes external_load_balancer_ipv4_address_pools when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_cluster('opt', required_attrs.merge(external_load_balancer_ipv4_address_pools: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'opt')
+        expect(config).to have_key('external_load_balancer_ipv4_address_pools')
+      end
+
+      it 'omits external_load_balancer_ipv4_address_pools when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'minimal')
+        expect(config).not_to have_key('external_load_balancer_ipv4_address_pools')
       end
       it 'includes labels when provided' do
         synth = create_synthesizer
@@ -157,7 +216,7 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerCluster do
       it 'includes maintenance_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_edgecontainer_cluster('opt', required_attrs.merge(maintenance_policy: [{ 'key1' => 'val1' }]))
+        synth.google_edgecontainer_cluster('opt', required_attrs.merge(maintenance_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'opt')
         expect(config).to have_key('maintenance_policy')
@@ -171,10 +230,44 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerCluster do
         config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'minimal')
         expect(config).not_to have_key('maintenance_policy')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_cluster('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes release_channel when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_cluster('opt', required_attrs.merge(release_channel: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'opt')
+        expect(config).to have_key('release_channel')
+      end
+
+      it 'omits release_channel when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'minimal')
+        expect(config).not_to have_key('release_channel')
+      end
       it 'includes system_addons_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_edgecontainer_cluster('opt', required_attrs.merge(system_addons_config: [{ 'key1' => 'val1' }]))
+        synth.google_edgecontainer_cluster('opt', required_attrs.merge(system_addons_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'opt')
         expect(config).to have_key('system_addons_config')
@@ -187,6 +280,23 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'minimal')
         expect(config).not_to have_key('system_addons_config')
+      end
+      it 'includes target_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_cluster('opt', required_attrs.merge(target_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'opt')
+        expect(config).to have_key('target_version')
+      end
+
+      it 'omits target_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_edgecontainer_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'minimal')
+        expect(config).not_to have_key('target_version')
       end
     end
 
@@ -205,11 +315,11 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerCluster do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_edgecontainer_cluster', 'typed')
-        expect(config['authorization']).to be_a(Array)
-        expect(config['fleet']).to be_a(Array)
+        expect(config['authorization']).to be_a(Hash)
+        expect(config['fleet']).to be_a(Hash)
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
-        expect(config['networking']).to be_a(Array)
+        expect(config['networking']).to be_a(Hash)
       end
     end
 
@@ -242,8 +352,8 @@ RSpec.describe Pangea::Resources::GoogleEdgecontainerCluster do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_edgecontainer_cluster,
     method: :google_edgecontainer_cluster,
-    required_attrs: { authorization: [{ 'key1' => 'val1' }], fleet: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', networking: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :cluster_ca_certificate, :control_plane_version, :create_time, :default_max_pods_per_node, :effective_labels, :endpoint, :external_load_balancer_ipv4_address_pools, :maintenance_events, :node_version, :port, :project, :release_channel, :status, :target_version, :terraform_labels, :update_time],
+    required_attrs: { authorization: { 'key1' => 'val1' }, fleet: { 'key1' => 'val1' }, location: 'test-value', name: 'test-value', networking: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :cluster_ca_certificate, :control_plane_version, :create_time, :default_max_pods_per_node, :deletion_policy, :effective_labels, :endpoint, :external_load_balancer_ipv4_address_pools, :maintenance_events, :node_version, :port, :project, :release_channel, :status, :target_version, :terraform_labels, :update_time],
     sensitive_fields: [:cluster_ca_certificate],
     immutable_fields: [],
     boolean_fields: []

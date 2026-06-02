@@ -64,6 +64,90 @@ RSpec.describe Pangea::Resources::GoogleLoggingFolderSettings do
       end
     end
 
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ disable_default_sink: true, kms_key_name: 'test-value', storage_location: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_folder_settings('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_logging_folder_settings', 'full')
+        expect(config).to have_key('disable_default_sink')
+        expect(config).to have_key('kms_key_name')
+        expect(config).to have_key('storage_location')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes disable_default_sink when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_folder_settings('opt', required_attrs.merge(disable_default_sink: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_folder_settings', 'opt')
+        expect(config).to have_key('disable_default_sink')
+      end
+
+      it 'omits disable_default_sink when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_folder_settings('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_folder_settings', 'minimal')
+        expect(config).not_to have_key('disable_default_sink')
+      end
+      it 'includes kms_key_name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_folder_settings('opt', required_attrs.merge(kms_key_name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_folder_settings', 'opt')
+        expect(config).to have_key('kms_key_name')
+      end
+
+      it 'omits kms_key_name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_folder_settings('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_folder_settings', 'minimal')
+        expect(config).not_to have_key('kms_key_name')
+      end
+      it 'includes storage_location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_folder_settings('opt', required_attrs.merge(storage_location: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_folder_settings', 'opt')
+        expect(config).to have_key('storage_location')
+      end
+
+      it 'omits storage_location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_folder_settings('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_folder_settings', 'minimal')
+        expect(config).not_to have_key('storage_location')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts disable_default_sink=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(disable_default_sink: val)
+          synth.google_logging_folder_settings("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_logging_folder_settings', "bool_#{val}")
+          expect(config['disable_default_sink']).to eq(val)
+        end
+      end
+    end
+
     context 'attribute types' do
       it 'validates expected attribute types' do
         synth = create_synthesizer
@@ -109,5 +193,5 @@ RSpec.describe Pangea::Resources::GoogleLoggingFolderSettings do
     expected_outputs: [:id, :disable_default_sink, :kms_key_name, :kms_service_account_id, :logging_service_account_id, :name, :storage_location],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:disable_default_sink]
 end

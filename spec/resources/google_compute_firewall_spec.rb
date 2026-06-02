@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewall do
 
         expect(ref.id).to eq("${google_compute_firewall.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_firewall.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_firewall.test.deletion_policy}")
         expect(ref.destination_ranges).to eq("${google_compute_firewall.test.destination_ranges}")
         expect(ref.direction).to eq("${google_compute_firewall.test.direction}")
         expect(ref.enable_logging).to eq("${google_compute_firewall.test.enable_logging}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewall do
 
         config = validate_resource_structure(result, 'google_compute_firewall', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('destination_ranges')
         expect(config).not_to have_key('direction')
         expect(config).not_to have_key('enable_logging')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewall do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ allow: [{ 'key1' => 'val1' }], deny: [{ 'key1' => 'val1' }], description: 'test-value', disabled: true, log_config: [{ 'key1' => 'val1' }], params: [{ 'key1' => 'val1' }], priority: 3.14, source_ranges: ['test-value'], source_service_accounts: ['test-value'], source_tags: ['test-value'], target_service_accounts: ['test-value'], target_tags: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ allow: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', deny: [{ 'key1' => 'val1' }], description: 'test-value', destination_ranges: ['test-value'], direction: 'test-value', disabled: true, enable_logging: true, log_config: { 'key1' => 'val1' }, params: { 'key1' => 'val1' }, priority: 3.14, project: 'test-value', source_ranges: ['test-value'], source_service_accounts: ['test-value'], source_tags: ['test-value'], target_service_accounts: ['test-value'], target_tags: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -75,12 +77,17 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewall do
 
         config = validate_resource_structure(result, 'google_compute_firewall', 'full')
         expect(config).to have_key('allow')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deny')
         expect(config).to have_key('description')
+        expect(config).to have_key('destination_ranges')
+        expect(config).to have_key('direction')
         expect(config).to have_key('disabled')
+        expect(config).to have_key('enable_logging')
         expect(config).to have_key('log_config')
         expect(config).to have_key('params')
         expect(config).to have_key('priority')
+        expect(config).to have_key('project')
         expect(config).to have_key('source_ranges')
         expect(config).to have_key('source_service_accounts')
         expect(config).to have_key('source_tags')
@@ -106,6 +113,23 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewall do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_firewall', 'minimal')
         expect(config).not_to have_key('allow')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_firewall('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_firewall', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_firewall('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_firewall', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes deny when provided' do
         synth = create_synthesizer
@@ -141,6 +165,40 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewall do
         config = validate_resource_structure(result, 'google_compute_firewall', 'minimal')
         expect(config).not_to have_key('description')
       end
+      it 'includes destination_ranges when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_firewall('opt', required_attrs.merge(destination_ranges: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_firewall', 'opt')
+        expect(config).to have_key('destination_ranges')
+      end
+
+      it 'omits destination_ranges when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_firewall('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_firewall', 'minimal')
+        expect(config).not_to have_key('destination_ranges')
+      end
+      it 'includes direction when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_firewall('opt', required_attrs.merge(direction: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_firewall', 'opt')
+        expect(config).to have_key('direction')
+      end
+
+      it 'omits direction when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_firewall('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_firewall', 'minimal')
+        expect(config).not_to have_key('direction')
+      end
       it 'includes disabled when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -158,10 +216,27 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewall do
         config = validate_resource_structure(result, 'google_compute_firewall', 'minimal')
         expect(config).not_to have_key('disabled')
       end
+      it 'includes enable_logging when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_firewall('opt', required_attrs.merge(enable_logging: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_firewall', 'opt')
+        expect(config).to have_key('enable_logging')
+      end
+
+      it 'omits enable_logging when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_firewall('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_firewall', 'minimal')
+        expect(config).not_to have_key('enable_logging')
+      end
       it 'includes log_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_firewall('opt', required_attrs.merge(log_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_firewall('opt', required_attrs.merge(log_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_firewall', 'opt')
         expect(config).to have_key('log_config')
@@ -178,7 +253,7 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewall do
       it 'includes params when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_firewall('opt', required_attrs.merge(params: [{ 'key1' => 'val1' }]))
+        synth.google_compute_firewall('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_firewall', 'opt')
         expect(config).to have_key('params')
@@ -208,6 +283,23 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewall do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_firewall', 'minimal')
         expect(config).not_to have_key('priority')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_firewall('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_firewall', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_firewall('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_firewall', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes source_ranges when provided' do
         synth = create_synthesizer
@@ -308,6 +400,17 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewall do
           expect(config['disabled']).to eq(val)
         end
       end
+      [true, false].each do |val|
+        it "accepts enable_logging=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(enable_logging: val)
+          synth.google_compute_firewall("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_firewall', "bool_#{val}")
+          expect(config['enable_logging']).to eq(val)
+        end
+      end
     end
 
     context 'attribute types' do
@@ -353,8 +456,8 @@ RSpec.describe Pangea::Resources::GoogleComputeFirewall do
     resource_type: :google_compute_firewall,
     method: :google_compute_firewall,
     required_attrs: { name: 'test-value', network: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :destination_ranges, :direction, :enable_logging, :project, :self_link],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :destination_ranges, :direction, :enable_logging, :project, :self_link],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:disabled]
+    boolean_fields: [:disabled, :enable_logging]
 end

@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareHl7V2Store do
         ref = synth.google_healthcare_hl7_v2_store('test', required_attrs)
 
         expect(ref.id).to eq("${google_healthcare_hl7_v2_store.test.id}")
+        expect(ref.deletion_policy).to eq("${google_healthcare_hl7_v2_store.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_healthcare_hl7_v2_store.test.effective_labels}")
         expect(ref.self_link).to eq("${google_healthcare_hl7_v2_store.test.self_link}")
         expect(ref.terraform_labels).to eq("${google_healthcare_hl7_v2_store.test.terraform_labels}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareHl7V2Store do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_healthcare_hl7_v2_store', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('self_link')
         expect(config).not_to have_key('terraform_labels')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareHl7V2Store do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ labels: { 'key1' => 'val1' }, notification_config: [{ 'key1' => 'val1' }], notification_configs: [{ 'key1' => 'val1' }], parser_config: [{ 'key1' => 'val1' }], reject_duplicate_message: true }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', labels: { 'key1' => 'val1' }, notification_config: { 'key1' => 'val1' }, notification_configs: [{ 'key1' => 'val1' }], parser_config: { 'key1' => 'val1' }, reject_duplicate_message: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,6 +70,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareHl7V2Store do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_healthcare_hl7_v2_store', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('labels')
         expect(config).to have_key('notification_config')
         expect(config).to have_key('notification_configs')
@@ -77,6 +80,23 @@ RSpec.describe Pangea::Resources::GoogleHealthcareHl7V2Store do
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_hl7_v2_store('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_hl7_v2_store', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_hl7_v2_store('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_hl7_v2_store', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -97,7 +117,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareHl7V2Store do
       it 'includes notification_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_healthcare_hl7_v2_store('opt', required_attrs.merge(notification_config: [{ 'key1' => 'val1' }]))
+        synth.google_healthcare_hl7_v2_store('opt', required_attrs.merge(notification_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_healthcare_hl7_v2_store', 'opt')
         expect(config).to have_key('notification_config')
@@ -131,7 +151,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareHl7V2Store do
       it 'includes parser_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_healthcare_hl7_v2_store('opt', required_attrs.merge(parser_config: [{ 'key1' => 'val1' }]))
+        synth.google_healthcare_hl7_v2_store('opt', required_attrs.merge(parser_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_healthcare_hl7_v2_store', 'opt')
         expect(config).to have_key('parser_config')
@@ -221,7 +241,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareHl7V2Store do
     resource_type: :google_healthcare_hl7_v2_store,
     method: :google_healthcare_hl7_v2_store,
     required_attrs: { dataset: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :self_link, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :self_link, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:reject_duplicate_message]

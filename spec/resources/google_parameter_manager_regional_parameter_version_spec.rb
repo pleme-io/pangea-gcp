@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleParameterManagerRegionalParameterVersion
 
         expect(ref.id).to eq("${google_parameter_manager_regional_parameter_version.test.id}")
         expect(ref.create_time).to eq("${google_parameter_manager_regional_parameter_version.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_parameter_manager_regional_parameter_version.test.deletion_policy}")
         expect(ref.kms_key_version).to eq("${google_parameter_manager_regional_parameter_version.test.kms_key_version}")
         expect(ref.location).to eq("${google_parameter_manager_regional_parameter_version.test.location}")
         expect(ref.name).to eq("${google_parameter_manager_regional_parameter_version.test.name}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleParameterManagerRegionalParameterVersion
 
         config = validate_resource_structure(result, 'google_parameter_manager_regional_parameter_version', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('kms_key_version')
         expect(config).not_to have_key('location')
         expect(config).not_to have_key('name')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleParameterManagerRegionalParameterVersion
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ disabled: true }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', disabled: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,11 +74,29 @@ RSpec.describe Pangea::Resources::GoogleParameterManagerRegionalParameterVersion
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_parameter_manager_regional_parameter_version', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('disabled')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_parameter_manager_regional_parameter_version('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_parameter_manager_regional_parameter_version', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_parameter_manager_regional_parameter_version('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_parameter_manager_regional_parameter_version', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes disabled when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -161,7 +181,7 @@ RSpec.describe Pangea::Resources::GoogleParameterManagerRegionalParameterVersion
     resource_type: :google_parameter_manager_regional_parameter_version,
     method: :google_parameter_manager_regional_parameter_version,
     required_attrs: { parameter: 'test-value', parameter_data: 'test-value', parameter_version_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :kms_key_version, :location, :name, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :kms_key_version, :location, :name, :update_time],
     sensitive_fields: [:parameter_data],
     immutable_fields: [],
     boolean_fields: [:disabled]

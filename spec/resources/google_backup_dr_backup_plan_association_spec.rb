@@ -40,7 +40,7 @@ RSpec.describe Pangea::Resources::GoogleBackupDrBackupPlanAssociation do
         expect(ref.id).to eq("${google_backup_dr_backup_plan_association.test.id}")
         expect(ref.create_time).to eq("${google_backup_dr_backup_plan_association.test.create_time}")
         expect(ref.data_source).to eq("${google_backup_dr_backup_plan_association.test.data_source}")
-        expect(ref.last_successful_backup_consistency_time).to eq("${google_backup_dr_backup_plan_association.test.last_successful_backup_consistency_time}")
+        expect(ref.deletion_policy).to eq("${google_backup_dr_backup_plan_association.test.deletion_policy}")
         expect(ref.name).to eq("${google_backup_dr_backup_plan_association.test.name}")
         expect(ref.project).to eq("${google_backup_dr_backup_plan_association.test.project}")
         expect(ref.rules_config_info).to eq("${google_backup_dr_backup_plan_association.test.rules_config_info}")
@@ -58,11 +58,63 @@ RSpec.describe Pangea::Resources::GoogleBackupDrBackupPlanAssociation do
         config = validate_resource_structure(result, 'google_backup_dr_backup_plan_association', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('data_source')
-        expect(config).not_to have_key('last_successful_backup_consistency_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('rules_config_info')
         expect(config).not_to have_key('update_time')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_backup_dr_backup_plan_association('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_backup_dr_backup_plan_association', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_backup_dr_backup_plan_association('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_backup_dr_backup_plan_association', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_backup_dr_backup_plan_association('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_backup_dr_backup_plan_association', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_backup_dr_backup_plan_association('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_backup_dr_backup_plan_association', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_backup_dr_backup_plan_association('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_backup_dr_backup_plan_association', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -112,7 +164,7 @@ RSpec.describe Pangea::Resources::GoogleBackupDrBackupPlanAssociation do
     resource_type: :google_backup_dr_backup_plan_association,
     method: :google_backup_dr_backup_plan_association,
     required_attrs: { backup_plan: 'test-value', backup_plan_association_id: 'test-value', location: 'test-value', resource: 'test-value', resource_type: 'test-value' },
-    expected_outputs: [:id, :create_time, :data_source, :last_successful_backup_consistency_time, :name, :project, :rules_config_info, :update_time],
+    expected_outputs: [:id, :create_time, :data_source, :deletion_policy, :name, :project, :rules_config_info, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

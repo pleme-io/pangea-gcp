@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleBiglakeTable do
         expect(ref.id).to eq("${google_biglake_table.test.id}")
         expect(ref.create_time).to eq("${google_biglake_table.test.create_time}")
         expect(ref.delete_time).to eq("${google_biglake_table.test.delete_time}")
+        expect(ref.deletion_policy).to eq("${google_biglake_table.test.deletion_policy}")
         expect(ref.etag).to eq("${google_biglake_table.test.etag}")
         expect(ref.expire_time).to eq("${google_biglake_table.test.expire_time}")
         expect(ref.update_time).to eq("${google_biglake_table.test.update_time}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleBiglakeTable do
         config = validate_resource_structure(result, 'google_biglake_table', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('delete_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('expire_time')
         expect(config).not_to have_key('update_time')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleBiglakeTable do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ database: 'test-value', hive_options: [{ 'key1' => 'val1' }], type: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ database: 'test-value', deletion_policy: 'test-value', hive_options: { 'key1' => 'val1' }, type: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,6 +75,7 @@ RSpec.describe Pangea::Resources::GoogleBiglakeTable do
 
         config = validate_resource_structure(result, 'google_biglake_table', 'full')
         expect(config).to have_key('database')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('hive_options')
         expect(config).to have_key('type')
       end
@@ -96,10 +99,27 @@ RSpec.describe Pangea::Resources::GoogleBiglakeTable do
         config = validate_resource_structure(result, 'google_biglake_table', 'minimal')
         expect(config).not_to have_key('database')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_biglake_table('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_biglake_table', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_biglake_table('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_biglake_table', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes hive_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_biglake_table('opt', required_attrs.merge(hive_options: [{ 'key1' => 'val1' }]))
+        synth.google_biglake_table('opt', required_attrs.merge(hive_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_biglake_table', 'opt')
         expect(config).to have_key('hive_options')
@@ -174,7 +194,7 @@ RSpec.describe Pangea::Resources::GoogleBiglakeTable do
     resource_type: :google_biglake_table,
     method: :google_biglake_table,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :create_time, :delete_time, :etag, :expire_time, :update_time],
+    expected_outputs: [:id, :create_time, :delete_time, :deletion_policy, :etag, :expire_time, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

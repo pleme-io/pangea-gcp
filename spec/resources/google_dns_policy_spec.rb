@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDnsPolicy do
         ref = synth.google_dns_policy('test', required_attrs)
 
         expect(ref.id).to eq("${google_dns_policy.test.id}")
+        expect(ref.deletion_policy).to eq("${google_dns_policy.test.deletion_policy}")
         expect(ref.project).to eq("${google_dns_policy.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleDnsPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dns_policy', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ alternative_name_server_config: [{ 'key1' => 'val1' }], description: 'test-value', dns64_config: [{ 'key1' => 'val1' }], enable_inbound_forwarding: true, enable_logging: true, networks: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ alternative_name_server_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', dns64_config: { 'key1' => 'val1' }, enable_inbound_forwarding: true, enable_logging: true, networks: [{ 'key1' => 'val1' }], project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -65,11 +67,13 @@ RSpec.describe Pangea::Resources::GoogleDnsPolicy do
 
         config = validate_resource_structure(result, 'google_dns_policy', 'full')
         expect(config).to have_key('alternative_name_server_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('dns64_config')
         expect(config).to have_key('enable_inbound_forwarding')
         expect(config).to have_key('enable_logging')
         expect(config).to have_key('networks')
+        expect(config).to have_key('project')
       end
     end
 
@@ -77,7 +81,7 @@ RSpec.describe Pangea::Resources::GoogleDnsPolicy do
       it 'includes alternative_name_server_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dns_policy('opt', required_attrs.merge(alternative_name_server_config: [{ 'key1' => 'val1' }]))
+        synth.google_dns_policy('opt', required_attrs.merge(alternative_name_server_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dns_policy', 'opt')
         expect(config).to have_key('alternative_name_server_config')
@@ -90,6 +94,23 @@ RSpec.describe Pangea::Resources::GoogleDnsPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dns_policy', 'minimal')
         expect(config).not_to have_key('alternative_name_server_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dns_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dns_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dns_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dns_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -111,7 +132,7 @@ RSpec.describe Pangea::Resources::GoogleDnsPolicy do
       it 'includes dns64_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dns_policy('opt', required_attrs.merge(dns64_config: [{ 'key1' => 'val1' }]))
+        synth.google_dns_policy('opt', required_attrs.merge(dns64_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dns_policy', 'opt')
         expect(config).to have_key('dns64_config')
@@ -175,6 +196,23 @@ RSpec.describe Pangea::Resources::GoogleDnsPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dns_policy', 'minimal')
         expect(config).not_to have_key('networks')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dns_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dns_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dns_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dns_policy', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -245,7 +283,7 @@ RSpec.describe Pangea::Resources::GoogleDnsPolicy do
     resource_type: :google_dns_policy,
     method: :google_dns_policy,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:enable_inbound_forwarding, :enable_logging]

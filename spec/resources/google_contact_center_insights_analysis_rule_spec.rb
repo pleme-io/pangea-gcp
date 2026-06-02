@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleContactCenterInsightsAnalysisRule do
 
         expect(ref.id).to eq("${google_contact_center_insights_analysis_rule.test.id}")
         expect(ref.create_time).to eq("${google_contact_center_insights_analysis_rule.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_contact_center_insights_analysis_rule.test.deletion_policy}")
         expect(ref.name).to eq("${google_contact_center_insights_analysis_rule.test.name}")
         expect(ref.project).to eq("${google_contact_center_insights_analysis_rule.test.project}")
         expect(ref.update_time).to eq("${google_contact_center_insights_analysis_rule.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleContactCenterInsightsAnalysisRule do
 
         config = validate_resource_structure(result, 'google_contact_center_insights_analysis_rule', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleContactCenterInsightsAnalysisRule do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ active: true, analysis_percentage: 3.14, annotator_selector: [{ 'key1' => 'val1' }], conversation_filter: 'test-value', display_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ active: true, analysis_percentage: 3.14, annotator_selector: { 'key1' => 'val1' }, conversation_filter: 'test-value', deletion_policy: 'test-value', display_name: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,7 +76,9 @@ RSpec.describe Pangea::Resources::GoogleContactCenterInsightsAnalysisRule do
         expect(config).to have_key('analysis_percentage')
         expect(config).to have_key('annotator_selector')
         expect(config).to have_key('conversation_filter')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('project')
       end
     end
 
@@ -116,7 +120,7 @@ RSpec.describe Pangea::Resources::GoogleContactCenterInsightsAnalysisRule do
       it 'includes annotator_selector when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_contact_center_insights_analysis_rule('opt', required_attrs.merge(annotator_selector: [{ 'key1' => 'val1' }]))
+        synth.google_contact_center_insights_analysis_rule('opt', required_attrs.merge(annotator_selector: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_contact_center_insights_analysis_rule', 'opt')
         expect(config).to have_key('annotator_selector')
@@ -147,6 +151,23 @@ RSpec.describe Pangea::Resources::GoogleContactCenterInsightsAnalysisRule do
         config = validate_resource_structure(result, 'google_contact_center_insights_analysis_rule', 'minimal')
         expect(config).not_to have_key('conversation_filter')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_contact_center_insights_analysis_rule('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_contact_center_insights_analysis_rule', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_contact_center_insights_analysis_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_contact_center_insights_analysis_rule', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes display_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -163,6 +184,23 @@ RSpec.describe Pangea::Resources::GoogleContactCenterInsightsAnalysisRule do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_contact_center_insights_analysis_rule', 'minimal')
         expect(config).not_to have_key('display_name')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_contact_center_insights_analysis_rule('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_contact_center_insights_analysis_rule', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_contact_center_insights_analysis_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_contact_center_insights_analysis_rule', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -222,7 +260,7 @@ RSpec.describe Pangea::Resources::GoogleContactCenterInsightsAnalysisRule do
     resource_type: :google_contact_center_insights_analysis_rule,
     method: :google_contact_center_insights_analysis_rule,
     required_attrs: { location: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :project, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :project, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:active]

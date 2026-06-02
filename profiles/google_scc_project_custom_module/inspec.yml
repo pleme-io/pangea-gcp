@@ -1,0 +1,8 @@
+name: google_scc_project_custom_module
+title: Manages a google_scc_project_custom_module resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryBiReservation do
         ref = synth.google_bigquery_bi_reservation('test', required_attrs)
 
         expect(ref.id).to eq("${google_bigquery_bi_reservation.test.id}")
+        expect(ref.deletion_policy).to eq("${google_bigquery_bi_reservation.test.deletion_policy}")
         expect(ref.name).to eq("${google_bigquery_bi_reservation.test.name}")
         expect(ref.project).to eq("${google_bigquery_bi_reservation.test.project}")
         expect(ref.update_time).to eq("${google_bigquery_bi_reservation.test.update_time}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryBiReservation do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigquery_bi_reservation', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('update_time')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryBiReservation do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ preferred_tables: [{ 'key1' => 'val1' }], size: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', preferred_tables: [{ 'key1' => 'val1' }], project: 'test-value', size: 3.14 }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,12 +70,31 @@ RSpec.describe Pangea::Resources::GoogleBigqueryBiReservation do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigquery_bi_reservation', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('preferred_tables')
+        expect(config).to have_key('project')
         expect(config).to have_key('size')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_bi_reservation('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_bi_reservation', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_bi_reservation('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_bi_reservation', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes preferred_tables when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -90,6 +111,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryBiReservation do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_bi_reservation', 'minimal')
         expect(config).not_to have_key('preferred_tables')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_bi_reservation('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_bi_reservation', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_bi_reservation('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_bi_reservation', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes size when provided' do
         synth = create_synthesizer
@@ -152,7 +190,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryBiReservation do
     resource_type: :google_bigquery_bi_reservation,
     method: :google_bigquery_bi_reservation,
     required_attrs: { location: 'test-value' },
-    expected_outputs: [:id, :name, :project, :update_time],
+    expected_outputs: [:id, :deletion_policy, :name, :project, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

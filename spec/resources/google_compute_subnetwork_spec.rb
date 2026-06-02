@@ -38,8 +38,9 @@ RSpec.describe Pangea::Resources::GoogleComputeSubnetwork do
         ref = synth.google_compute_subnetwork('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_subnetwork.test.id}")
+        expect(ref.allow_subnet_cidr_routes_overlap).to eq("${google_compute_subnetwork.test.allow_subnet_cidr_routes_overlap}")
         expect(ref.creation_timestamp).to eq("${google_compute_subnetwork.test.creation_timestamp}")
-        expect(ref.enable_flow_logs).to eq("${google_compute_subnetwork.test.enable_flow_logs}")
+        expect(ref.deletion_policy).to eq("${google_compute_subnetwork.test.deletion_policy}")
         expect(ref.external_ipv6_prefix).to eq("${google_compute_subnetwork.test.external_ipv6_prefix}")
         expect(ref.fingerprint).to eq("${google_compute_subnetwork.test.fingerprint}")
         expect(ref.gateway_address).to eq("${google_compute_subnetwork.test.gateway_address}")
@@ -67,8 +68,9 @@ RSpec.describe Pangea::Resources::GoogleComputeSubnetwork do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_subnetwork', 'test')
+        expect(config).not_to have_key('allow_subnet_cidr_routes_overlap')
         expect(config).not_to have_key('creation_timestamp')
-        expect(config).not_to have_key('enable_flow_logs')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('external_ipv6_prefix')
         expect(config).not_to have_key('fingerprint')
         expect(config).not_to have_key('gateway_address')
@@ -89,7 +91,7 @@ RSpec.describe Pangea::Resources::GoogleComputeSubnetwork do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', ip_collection: 'test-value', ipv6_access_type: 'test-value', log_config: [{ 'key1' => 'val1' }], params: [{ 'key1' => 'val1' }], reserved_internal_range: 'test-value', role: 'test-value', secondary_ip_range: [{ 'key1' => 'val1' }], send_secondary_ip_range_if_empty: true }) }
+      let(:all_attrs) { required_attrs.merge({ allow_subnet_cidr_routes_overlap: true, deletion_policy: 'test-value', description: 'test-value', external_ipv6_prefix: 'test-value', internal_ipv6_prefix: 'test-value', ip_cidr_range: 'test-value', ip_collection: 'test-value', ipv6_access_type: 'test-value', log_config: { 'key1' => 'val1' }, params: { 'key1' => 'val1' }, private_ip_google_access: true, private_ipv6_google_access: 'test-value', project: 'test-value', purpose: 'test-value', region: 'test-value', reserved_internal_range: 'test-value', resolve_subnet_mask: 'test-value', role: 'test-value', secondary_ip_range: [{ 'key1' => 'val1' }], send_secondary_ip_range_if_empty: true, stack_type: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -98,19 +100,65 @@ RSpec.describe Pangea::Resources::GoogleComputeSubnetwork do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_subnetwork', 'full')
+        expect(config).to have_key('allow_subnet_cidr_routes_overlap')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('external_ipv6_prefix')
+        expect(config).to have_key('internal_ipv6_prefix')
+        expect(config).to have_key('ip_cidr_range')
         expect(config).to have_key('ip_collection')
         expect(config).to have_key('ipv6_access_type')
         expect(config).to have_key('log_config')
         expect(config).to have_key('params')
+        expect(config).to have_key('private_ip_google_access')
+        expect(config).to have_key('private_ipv6_google_access')
+        expect(config).to have_key('project')
+        expect(config).to have_key('purpose')
+        expect(config).to have_key('region')
         expect(config).to have_key('reserved_internal_range')
+        expect(config).to have_key('resolve_subnet_mask')
         expect(config).to have_key('role')
         expect(config).to have_key('secondary_ip_range')
         expect(config).to have_key('send_secondary_ip_range_if_empty')
+        expect(config).to have_key('stack_type')
       end
     end
 
     context 'optional attributes' do
+      it 'includes allow_subnet_cidr_routes_overlap when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('opt', required_attrs.merge(allow_subnet_cidr_routes_overlap: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'opt')
+        expect(config).to have_key('allow_subnet_cidr_routes_overlap')
+      end
+
+      it 'omits allow_subnet_cidr_routes_overlap when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
+        expect(config).not_to have_key('allow_subnet_cidr_routes_overlap')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -127,6 +175,57 @@ RSpec.describe Pangea::Resources::GoogleComputeSubnetwork do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes external_ipv6_prefix when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('opt', required_attrs.merge(external_ipv6_prefix: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'opt')
+        expect(config).to have_key('external_ipv6_prefix')
+      end
+
+      it 'omits external_ipv6_prefix when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
+        expect(config).not_to have_key('external_ipv6_prefix')
+      end
+      it 'includes internal_ipv6_prefix when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('opt', required_attrs.merge(internal_ipv6_prefix: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'opt')
+        expect(config).to have_key('internal_ipv6_prefix')
+      end
+
+      it 'omits internal_ipv6_prefix when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
+        expect(config).not_to have_key('internal_ipv6_prefix')
+      end
+      it 'includes ip_cidr_range when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('opt', required_attrs.merge(ip_cidr_range: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'opt')
+        expect(config).to have_key('ip_cidr_range')
+      end
+
+      it 'omits ip_cidr_range when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
+        expect(config).not_to have_key('ip_cidr_range')
       end
       it 'includes ip_collection when provided' do
         synth = create_synthesizer
@@ -165,7 +264,7 @@ RSpec.describe Pangea::Resources::GoogleComputeSubnetwork do
       it 'includes log_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_subnetwork('opt', required_attrs.merge(log_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_subnetwork('opt', required_attrs.merge(log_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_subnetwork', 'opt')
         expect(config).to have_key('log_config')
@@ -182,7 +281,7 @@ RSpec.describe Pangea::Resources::GoogleComputeSubnetwork do
       it 'includes params when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_subnetwork('opt', required_attrs.merge(params: [{ 'key1' => 'val1' }]))
+        synth.google_compute_subnetwork('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_subnetwork', 'opt')
         expect(config).to have_key('params')
@@ -195,6 +294,91 @@ RSpec.describe Pangea::Resources::GoogleComputeSubnetwork do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
         expect(config).not_to have_key('params')
+      end
+      it 'includes private_ip_google_access when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('opt', required_attrs.merge(private_ip_google_access: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'opt')
+        expect(config).to have_key('private_ip_google_access')
+      end
+
+      it 'omits private_ip_google_access when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
+        expect(config).not_to have_key('private_ip_google_access')
+      end
+      it 'includes private_ipv6_google_access when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('opt', required_attrs.merge(private_ipv6_google_access: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'opt')
+        expect(config).to have_key('private_ipv6_google_access')
+      end
+
+      it 'omits private_ipv6_google_access when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
+        expect(config).not_to have_key('private_ipv6_google_access')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes purpose when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('opt', required_attrs.merge(purpose: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'opt')
+        expect(config).to have_key('purpose')
+      end
+
+      it 'omits purpose when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
+        expect(config).not_to have_key('purpose')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
+        expect(config).not_to have_key('region')
       end
       it 'includes reserved_internal_range when provided' do
         synth = create_synthesizer
@@ -212,6 +396,23 @@ RSpec.describe Pangea::Resources::GoogleComputeSubnetwork do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
         expect(config).not_to have_key('reserved_internal_range')
+      end
+      it 'includes resolve_subnet_mask when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('opt', required_attrs.merge(resolve_subnet_mask: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'opt')
+        expect(config).to have_key('resolve_subnet_mask')
+      end
+
+      it 'omits resolve_subnet_mask when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
+        expect(config).not_to have_key('resolve_subnet_mask')
       end
       it 'includes role when provided' do
         synth = create_synthesizer
@@ -264,9 +465,48 @@ RSpec.describe Pangea::Resources::GoogleComputeSubnetwork do
         config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
         expect(config).not_to have_key('send_secondary_ip_range_if_empty')
       end
+      it 'includes stack_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('opt', required_attrs.merge(stack_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'opt')
+        expect(config).to have_key('stack_type')
+      end
+
+      it 'omits stack_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_subnetwork('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_subnetwork', 'minimal')
+        expect(config).not_to have_key('stack_type')
+      end
     end
 
     context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts allow_subnet_cidr_routes_overlap=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(allow_subnet_cidr_routes_overlap: val)
+          synth.google_compute_subnetwork("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_subnetwork', "bool_#{val}")
+          expect(config['allow_subnet_cidr_routes_overlap']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts private_ip_google_access=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(private_ip_google_access: val)
+          synth.google_compute_subnetwork("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_subnetwork', "bool_#{val}")
+          expect(config['private_ip_google_access']).to eq(val)
+        end
+      end
       [true, false].each do |val|
         it "accepts send_secondary_ip_range_if_empty=#{val}" do
           synth = create_synthesizer
@@ -323,8 +563,8 @@ RSpec.describe Pangea::Resources::GoogleComputeSubnetwork do
     resource_type: :google_compute_subnetwork,
     method: :google_compute_subnetwork,
     required_attrs: { name: 'test-value', network: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :enable_flow_logs, :external_ipv6_prefix, :fingerprint, :gateway_address, :internal_ipv6_prefix, :ip_cidr_range, :ipv6_cidr_range, :ipv6_gce_endpoint, :private_ip_google_access, :private_ipv6_google_access, :project, :purpose, :region, :self_link, :stack_type, :state, :subnetwork_id],
+    expected_outputs: [:id, :allow_subnet_cidr_routes_overlap, :creation_timestamp, :deletion_policy, :external_ipv6_prefix, :fingerprint, :gateway_address, :internal_ipv6_prefix, :ip_cidr_range, :ipv6_cidr_range, :ipv6_gce_endpoint, :private_ip_google_access, :private_ipv6_google_access, :project, :purpose, :region, :self_link, :stack_type, :state, :subnetwork_id],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:send_secondary_ip_range_if_empty]
+    boolean_fields: [:allow_subnet_cidr_routes_overlap, :private_ip_google_access, :send_secondary_ip_range_if_empty]
 end

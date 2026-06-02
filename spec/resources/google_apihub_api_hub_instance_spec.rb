@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleApihubApiHubInstance do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { config: [{ 'key1' => 'val1' }], location: 'test-value' } }
+  let(:required_attrs) { { config: { 'key1' => 'val1' }, location: 'test-value' } }
 
   describe ':google_apihub_api_hub_instance' do
     context 'with required attributes only' do
@@ -69,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleApihubApiHubInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ api_hub_instance_id: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ api_hub_instance_id: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -81,6 +81,7 @@ RSpec.describe Pangea::Resources::GoogleApihubApiHubInstance do
         expect(config).to have_key('api_hub_instance_id')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
@@ -136,6 +137,23 @@ RSpec.describe Pangea::Resources::GoogleApihubApiHubInstance do
         config = validate_resource_structure(result, 'google_apihub_api_hub_instance', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apihub_api_hub_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apihub_api_hub_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apihub_api_hub_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apihub_api_hub_instance', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -146,7 +164,7 @@ RSpec.describe Pangea::Resources::GoogleApihubApiHubInstance do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apihub_api_hub_instance', 'typed')
-        expect(config['config']).to be_a(Array)
+        expect(config['config']).to be_a(Hash)
         expect(config['location']).to be_a(String)
       end
     end
@@ -180,7 +198,7 @@ RSpec.describe Pangea::Resources::GoogleApihubApiHubInstance do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_apihub_api_hub_instance,
     method: :google_apihub_api_hub_instance,
-    required_attrs: { config: [{ 'key1' => 'val1' }], location: 'test-value' },
+    required_attrs: { config: { 'key1' => 'val1' }, location: 'test-value' },
     expected_outputs: [:id, :create_time, :effective_labels, :name, :project, :state, :state_message, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],

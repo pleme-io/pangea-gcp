@@ -38,8 +38,11 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
         ref = synth.google_dialogflow_cx_agent('test', required_attrs)
 
         expect(ref.id).to eq("${google_dialogflow_cx_agent.test.id}")
+        expect(ref.deletion_policy).to eq("${google_dialogflow_cx_agent.test.deletion_policy}")
         expect(ref.name).to eq("${google_dialogflow_cx_agent.test.name}")
         expect(ref.project).to eq("${google_dialogflow_cx_agent.test.project}")
+        expect(ref.satisfies_pzi).to eq("${google_dialogflow_cx_agent.test.satisfies_pzi}")
+        expect(ref.satisfies_pzs).to eq("${google_dialogflow_cx_agent.test.satisfies_pzs}")
         expect(ref.start_flow).to eq("${google_dialogflow_cx_agent.test.start_flow}")
       end
     end
@@ -52,14 +55,17 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
+        expect(config).not_to have_key('satisfies_pzi')
+        expect(config).not_to have_key('satisfies_pzs')
         expect(config).not_to have_key('start_flow')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ advanced_settings: [{ 'key1' => 'val1' }], avatar_uri: 'test-value', delete_chat_engine_on_destroy: true, description: 'test-value', enable_spell_correction: true, enable_stackdriver_logging: true, gen_app_builder_settings: [{ 'key1' => 'val1' }], git_integration_settings: [{ 'key1' => 'val1' }], security_settings: 'test-value', speech_to_text_settings: [{ 'key1' => 'val1' }], supported_language_codes: ['test-value'], text_to_speech_settings: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ advanced_settings: { 'key1' => 'val1' }, answer_feedback_settings: { 'key1' => 'val1' }, avatar_uri: 'test-value', client_certificate_settings: { 'key1' => 'val1' }, delete_chat_engine_on_destroy: true, deletion_policy: 'test-value', description: 'test-value', enable_multi_language_training: true, enable_spell_correction: true, enable_stackdriver_logging: true, gen_app_builder_settings: { 'key1' => 'val1' }, git_integration_settings: { 'key1' => 'val1' }, locked: true, personalization_settings: { 'key1' => 'val1' }, project: 'test-value', security_settings: 'test-value', speech_to_text_settings: { 'key1' => 'val1' }, start_playbook: 'test-value', supported_language_codes: ['test-value'], text_to_speech_settings: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,15 +75,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'full')
         expect(config).to have_key('advanced_settings')
+        expect(config).to have_key('answer_feedback_settings')
         expect(config).to have_key('avatar_uri')
+        expect(config).to have_key('client_certificate_settings')
         expect(config).to have_key('delete_chat_engine_on_destroy')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('enable_multi_language_training')
         expect(config).to have_key('enable_spell_correction')
         expect(config).to have_key('enable_stackdriver_logging')
         expect(config).to have_key('gen_app_builder_settings')
         expect(config).to have_key('git_integration_settings')
+        expect(config).to have_key('locked')
+        expect(config).to have_key('personalization_settings')
+        expect(config).to have_key('project')
         expect(config).to have_key('security_settings')
         expect(config).to have_key('speech_to_text_settings')
+        expect(config).to have_key('start_playbook')
         expect(config).to have_key('supported_language_codes')
         expect(config).to have_key('text_to_speech_settings')
       end
@@ -87,7 +101,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
       it 'includes advanced_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(advanced_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(advanced_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'opt')
         expect(config).to have_key('advanced_settings')
@@ -100,6 +114,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'minimal')
         expect(config).not_to have_key('advanced_settings')
+      end
+      it 'includes answer_feedback_settings when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(answer_feedback_settings: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'opt')
+        expect(config).to have_key('answer_feedback_settings')
+      end
+
+      it 'omits answer_feedback_settings when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'minimal')
+        expect(config).not_to have_key('answer_feedback_settings')
       end
       it 'includes avatar_uri when provided' do
         synth = create_synthesizer
@@ -118,6 +149,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
         config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'minimal')
         expect(config).not_to have_key('avatar_uri')
       end
+      it 'includes client_certificate_settings when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(client_certificate_settings: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'opt')
+        expect(config).to have_key('client_certificate_settings')
+      end
+
+      it 'omits client_certificate_settings when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'minimal')
+        expect(config).not_to have_key('client_certificate_settings')
+      end
       it 'includes delete_chat_engine_on_destroy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -135,6 +183,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
         config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'minimal')
         expect(config).not_to have_key('delete_chat_engine_on_destroy')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -151,6 +216,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes enable_multi_language_training when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(enable_multi_language_training: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'opt')
+        expect(config).to have_key('enable_multi_language_training')
+      end
+
+      it 'omits enable_multi_language_training when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'minimal')
+        expect(config).not_to have_key('enable_multi_language_training')
       end
       it 'includes enable_spell_correction when provided' do
         synth = create_synthesizer
@@ -189,7 +271,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
       it 'includes gen_app_builder_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(gen_app_builder_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(gen_app_builder_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'opt')
         expect(config).to have_key('gen_app_builder_settings')
@@ -206,7 +288,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
       it 'includes git_integration_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(git_integration_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(git_integration_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'opt')
         expect(config).to have_key('git_integration_settings')
@@ -219,6 +301,57 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'minimal')
         expect(config).not_to have_key('git_integration_settings')
+      end
+      it 'includes locked when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(locked: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'opt')
+        expect(config).to have_key('locked')
+      end
+
+      it 'omits locked when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'minimal')
+        expect(config).not_to have_key('locked')
+      end
+      it 'includes personalization_settings when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(personalization_settings: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'opt')
+        expect(config).to have_key('personalization_settings')
+      end
+
+      it 'omits personalization_settings when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'minimal')
+        expect(config).not_to have_key('personalization_settings')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes security_settings when provided' do
         synth = create_synthesizer
@@ -240,7 +373,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
       it 'includes speech_to_text_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(speech_to_text_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(speech_to_text_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'opt')
         expect(config).to have_key('speech_to_text_settings')
@@ -253,6 +386,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'minimal')
         expect(config).not_to have_key('speech_to_text_settings')
+      end
+      it 'includes start_playbook when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(start_playbook: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'opt')
+        expect(config).to have_key('start_playbook')
+      end
+
+      it 'omits start_playbook when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_agent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'minimal')
+        expect(config).not_to have_key('start_playbook')
       end
       it 'includes supported_language_codes when provided' do
         synth = create_synthesizer
@@ -274,7 +424,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
       it 'includes text_to_speech_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(text_to_speech_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_agent('opt', required_attrs.merge(text_to_speech_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_agent', 'opt')
         expect(config).to have_key('text_to_speech_settings')
@@ -303,6 +453,17 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
         end
       end
       [true, false].each do |val|
+        it "accepts enable_multi_language_training=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(enable_multi_language_training: val)
+          synth.google_dialogflow_cx_agent("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_dialogflow_cx_agent', "bool_#{val}")
+          expect(config['enable_multi_language_training']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
         it "accepts enable_spell_correction=#{val}" do
           synth = create_synthesizer
           synth.extend(described_class)
@@ -322,6 +483,17 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
           result = normalize_synthesis(synth.synthesis)
           config = validate_resource_structure(result, 'google_dialogflow_cx_agent', "bool_#{val}")
           expect(config['enable_stackdriver_logging']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts locked=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(locked: val)
+          synth.google_dialogflow_cx_agent("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_dialogflow_cx_agent', "bool_#{val}")
+          expect(config['locked']).to eq(val)
         end
       end
     end
@@ -371,8 +543,8 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxAgent do
     resource_type: :google_dialogflow_cx_agent,
     method: :google_dialogflow_cx_agent,
     required_attrs: { default_language_code: 'test-value', display_name: 'test-value', location: 'test-value', time_zone: 'test-value' },
-    expected_outputs: [:id, :name, :project, :start_flow],
+    expected_outputs: [:id, :deletion_policy, :name, :project, :satisfies_pzi, :satisfies_pzs, :start_flow],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:delete_chat_engine_on_destroy, :enable_spell_correction, :enable_stackdriver_logging]
+    boolean_fields: [:delete_chat_engine_on_destroy, :enable_multi_language_training, :enable_spell_correction, :enable_stackdriver_logging, :locked]
 end

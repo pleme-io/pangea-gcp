@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GooglePubsubTopic do
         ref = synth.google_pubsub_topic('test', required_attrs)
 
         expect(ref.id).to eq("${google_pubsub_topic.test.id}")
+        expect(ref.deletion_policy).to eq("${google_pubsub_topic.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_pubsub_topic.test.effective_labels}")
         expect(ref.project).to eq("${google_pubsub_topic.test.project}")
         expect(ref.terraform_labels).to eq("${google_pubsub_topic.test.terraform_labels}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GooglePubsubTopic do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_pubsub_topic', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GooglePubsubTopic do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ ingestion_data_source_settings: [{ 'key1' => 'val1' }], kms_key_name: 'test-value', labels: { 'key1' => 'val1' }, message_retention_duration: 'test-value', message_storage_policy: [{ 'key1' => 'val1' }], message_transforms: [{ 'key1' => 'val1' }], schema_settings: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', ingestion_data_source_settings: { 'key1' => 'val1' }, kms_key_name: 'test-value', labels: { 'key1' => 'val1' }, message_retention_duration: 'test-value', message_storage_policy: { 'key1' => 'val1' }, message_transforms: [{ 'key1' => 'val1' }], project: 'test-value', schema_settings: { 'key1' => 'val1' }, tags: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,21 +70,41 @@ RSpec.describe Pangea::Resources::GooglePubsubTopic do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_pubsub_topic', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('ingestion_data_source_settings')
         expect(config).to have_key('kms_key_name')
         expect(config).to have_key('labels')
         expect(config).to have_key('message_retention_duration')
         expect(config).to have_key('message_storage_policy')
         expect(config).to have_key('message_transforms')
+        expect(config).to have_key('project')
         expect(config).to have_key('schema_settings')
+        expect(config).to have_key('tags')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_topic('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_topic', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_topic('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_topic', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes ingestion_data_source_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_pubsub_topic('opt', required_attrs.merge(ingestion_data_source_settings: [{ 'key1' => 'val1' }]))
+        synth.google_pubsub_topic('opt', required_attrs.merge(ingestion_data_source_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_topic', 'opt')
         expect(config).to have_key('ingestion_data_source_settings')
@@ -150,7 +172,7 @@ RSpec.describe Pangea::Resources::GooglePubsubTopic do
       it 'includes message_storage_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_pubsub_topic('opt', required_attrs.merge(message_storage_policy: [{ 'key1' => 'val1' }]))
+        synth.google_pubsub_topic('opt', required_attrs.merge(message_storage_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_topic', 'opt')
         expect(config).to have_key('message_storage_policy')
@@ -181,10 +203,27 @@ RSpec.describe Pangea::Resources::GooglePubsubTopic do
         config = validate_resource_structure(result, 'google_pubsub_topic', 'minimal')
         expect(config).not_to have_key('message_transforms')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_topic('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_topic', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_topic('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_topic', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes schema_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_pubsub_topic('opt', required_attrs.merge(schema_settings: [{ 'key1' => 'val1' }]))
+        synth.google_pubsub_topic('opt', required_attrs.merge(schema_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_topic', 'opt')
         expect(config).to have_key('schema_settings')
@@ -197,6 +236,23 @@ RSpec.describe Pangea::Resources::GooglePubsubTopic do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_topic', 'minimal')
         expect(config).not_to have_key('schema_settings')
+      end
+      it 'includes tags when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_topic('opt', required_attrs.merge(tags: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_topic', 'opt')
+        expect(config).to have_key('tags')
+      end
+
+      it 'omits tags when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_topic('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_topic', 'minimal')
+        expect(config).not_to have_key('tags')
       end
     end
 
@@ -242,7 +298,7 @@ RSpec.describe Pangea::Resources::GooglePubsubTopic do
     resource_type: :google_pubsub_topic,
     method: :google_pubsub_topic,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :project, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

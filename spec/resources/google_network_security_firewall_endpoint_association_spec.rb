@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityFirewallEndpointAssociati
 
         expect(ref.id).to eq("${google_network_security_firewall_endpoint_association.test.id}")
         expect(ref.create_time).to eq("${google_network_security_firewall_endpoint_association.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_security_firewall_endpoint_association.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_security_firewall_endpoint_association.test.effective_labels}")
         expect(ref.reconciling).to eq("${google_network_security_firewall_endpoint_association.test.reconciling}")
         expect(ref.self_link).to eq("${google_network_security_firewall_endpoint_association.test.self_link}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityFirewallEndpointAssociati
 
         config = validate_resource_structure(result, 'google_network_security_firewall_endpoint_association', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('reconciling')
         expect(config).not_to have_key('self_link')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityFirewallEndpointAssociati
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ disabled: true, labels: { 'key1' => 'val1' }, parent: 'test-value', tls_inspection_policy: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', disabled: true, labels: { 'key1' => 'val1' }, parent: 'test-value', tls_inspection_policy: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,6 +78,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityFirewallEndpointAssociati
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_security_firewall_endpoint_association', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('disabled')
         expect(config).to have_key('labels')
         expect(config).to have_key('parent')
@@ -84,6 +87,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityFirewallEndpointAssociati
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_firewall_endpoint_association('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_firewall_endpoint_association', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_firewall_endpoint_association('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_firewall_endpoint_association', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes disabled when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -213,7 +233,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityFirewallEndpointAssociati
     resource_type: :google_network_security_firewall_endpoint_association,
     method: :google_network_security_firewall_endpoint_association,
     required_attrs: { firewall_endpoint: 'test-value', location: 'test-value', name: 'test-value', network: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :reconciling, :self_link, :state, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :reconciling, :self_link, :state, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disabled]

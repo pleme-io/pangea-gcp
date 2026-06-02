@@ -38,6 +38,9 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstancePartition do
         ref = synth.google_spanner_instance_partition('test', required_attrs)
 
         expect(ref.id).to eq("${google_spanner_instance_partition.test.id}")
+        expect(ref.deletion_policy).to eq("${google_spanner_instance_partition.test.deletion_policy}")
+        expect(ref.node_count).to eq("${google_spanner_instance_partition.test.node_count}")
+        expect(ref.processing_units).to eq("${google_spanner_instance_partition.test.processing_units}")
         expect(ref.project).to eq("${google_spanner_instance_partition.test.project}")
         expect(ref.state).to eq("${google_spanner_instance_partition.test.state}")
       end
@@ -51,13 +54,16 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstancePartition do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_spanner_instance_partition', 'test')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('node_count')
+        expect(config).not_to have_key('processing_units')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ node_count: 3.14, processing_units: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ autoscaling_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', node_count: 3.14, processing_units: 3.14, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,12 +72,49 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstancePartition do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_spanner_instance_partition', 'full')
+        expect(config).to have_key('autoscaling_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('node_count')
         expect(config).to have_key('processing_units')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes autoscaling_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance_partition('opt', required_attrs.merge(autoscaling_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance_partition', 'opt')
+        expect(config).to have_key('autoscaling_config')
+      end
+
+      it 'omits autoscaling_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance_partition('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance_partition', 'minimal')
+        expect(config).not_to have_key('autoscaling_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance_partition('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance_partition', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance_partition('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance_partition', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes node_count when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -105,6 +148,23 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstancePartition do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_spanner_instance_partition', 'minimal')
         expect(config).not_to have_key('processing_units')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance_partition('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance_partition', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_spanner_instance_partition('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_spanner_instance_partition', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -153,7 +213,7 @@ RSpec.describe Pangea::Resources::GoogleSpannerInstancePartition do
     resource_type: :google_spanner_instance_partition,
     method: :google_spanner_instance_partition,
     required_attrs: { config: 'test-value', display_name: 'test-value', instance: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :project, :state],
+    expected_outputs: [:id, :deletion_policy, :node_count, :processing_units, :project, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

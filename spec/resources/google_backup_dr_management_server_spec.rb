@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleBackupDrManagementServer do
         ref = synth.google_backup_dr_management_server('test', required_attrs)
 
         expect(ref.id).to eq("${google_backup_dr_management_server.test.id}")
+        expect(ref.deletion_policy).to eq("${google_backup_dr_management_server.test.deletion_policy}")
         expect(ref.management_uri).to eq("${google_backup_dr_management_server.test.management_uri}")
         expect(ref.oauth2_client_id).to eq("${google_backup_dr_management_server.test.oauth2_client_id}")
         expect(ref.project).to eq("${google_backup_dr_management_server.test.project}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleBackupDrManagementServer do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_backup_dr_management_server', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('management_uri')
         expect(config).not_to have_key('oauth2_client_id')
         expect(config).not_to have_key('project')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleBackupDrManagementServer do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ networks: [{ 'key1' => 'val1' }], type: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', networks: [{ 'key1' => 'val1' }], project: 'test-value', type: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,12 +70,31 @@ RSpec.describe Pangea::Resources::GoogleBackupDrManagementServer do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_backup_dr_management_server', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('networks')
+        expect(config).to have_key('project')
         expect(config).to have_key('type')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_backup_dr_management_server('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_backup_dr_management_server', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_backup_dr_management_server('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_backup_dr_management_server', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes networks when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -90,6 +111,23 @@ RSpec.describe Pangea::Resources::GoogleBackupDrManagementServer do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_backup_dr_management_server', 'minimal')
         expect(config).not_to have_key('networks')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_backup_dr_management_server('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_backup_dr_management_server', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_backup_dr_management_server('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_backup_dr_management_server', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes type when provided' do
         synth = create_synthesizer
@@ -153,7 +191,7 @@ RSpec.describe Pangea::Resources::GoogleBackupDrManagementServer do
     resource_type: :google_backup_dr_management_server,
     method: :google_backup_dr_management_server,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :management_uri, :oauth2_client_id, :project],
+    expected_outputs: [:id, :deletion_policy, :management_uri, :oauth2_client_id, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

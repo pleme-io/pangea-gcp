@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
         expect(ref.id).to eq("${google_dataproc_metastore_service.test.id}")
         expect(ref.artifact_gcs_uri).to eq("${google_dataproc_metastore_service.test.artifact_gcs_uri}")
         expect(ref.create_time).to eq("${google_dataproc_metastore_service.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_dataproc_metastore_service.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_dataproc_metastore_service.test.effective_labels}")
         expect(ref.endpoint_uri).to eq("${google_dataproc_metastore_service.test.endpoint_uri}")
         expect(ref.name).to eq("${google_dataproc_metastore_service.test.name}")
@@ -65,6 +66,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'test')
         expect(config).not_to have_key('artifact_gcs_uri')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('endpoint_uri')
         expect(config).not_to have_key('name')
@@ -81,7 +83,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ database_type: 'test-value', deletion_protection: true, encryption_config: [{ 'key1' => 'val1' }], hive_metastore_config: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, location: 'test-value', maintenance_window: [{ 'key1' => 'val1' }], metadata_integration: [{ 'key1' => 'val1' }], network_config: [{ 'key1' => 'val1' }], release_channel: 'test-value', scaling_config: [{ 'key1' => 'val1' }], scheduled_backup: [{ 'key1' => 'val1' }], telemetry_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ database_type: 'test-value', deletion_policy: 'test-value', deletion_protection: true, encryption_config: { 'key1' => 'val1' }, hive_metastore_config: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, location: 'test-value', maintenance_window: { 'key1' => 'val1' }, metadata_integration: { 'key1' => 'val1' }, network: 'test-value', network_config: { 'key1' => 'val1' }, port: 3.14, project: 'test-value', release_channel: 'test-value', scaling_config: { 'key1' => 'val1' }, scheduled_backup: { 'key1' => 'val1' }, tags: { 'key1' => 'val1' }, telemetry_config: { 'key1' => 'val1' }, tier: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -91,6 +93,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
 
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'full')
         expect(config).to have_key('database_type')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
         expect(config).to have_key('encryption_config')
         expect(config).to have_key('hive_metastore_config')
@@ -98,11 +101,16 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
         expect(config).to have_key('location')
         expect(config).to have_key('maintenance_window')
         expect(config).to have_key('metadata_integration')
+        expect(config).to have_key('network')
         expect(config).to have_key('network_config')
+        expect(config).to have_key('port')
+        expect(config).to have_key('project')
         expect(config).to have_key('release_channel')
         expect(config).to have_key('scaling_config')
         expect(config).to have_key('scheduled_backup')
+        expect(config).to have_key('tags')
         expect(config).to have_key('telemetry_config')
+        expect(config).to have_key('tier')
       end
     end
 
@@ -124,6 +132,23 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'minimal')
         expect(config).not_to have_key('database_type')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_service('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -144,7 +169,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
       it 'includes encryption_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_metastore_service('opt', required_attrs.merge(encryption_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_metastore_service('opt', required_attrs.merge(encryption_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'opt')
         expect(config).to have_key('encryption_config')
@@ -161,7 +186,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
       it 'includes hive_metastore_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_metastore_service('opt', required_attrs.merge(hive_metastore_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_metastore_service('opt', required_attrs.merge(hive_metastore_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'opt')
         expect(config).to have_key('hive_metastore_config')
@@ -212,7 +237,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
       it 'includes maintenance_window when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_metastore_service('opt', required_attrs.merge(maintenance_window: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_metastore_service('opt', required_attrs.merge(maintenance_window: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'opt')
         expect(config).to have_key('maintenance_window')
@@ -229,7 +254,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
       it 'includes metadata_integration when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_metastore_service('opt', required_attrs.merge(metadata_integration: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_metastore_service('opt', required_attrs.merge(metadata_integration: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'opt')
         expect(config).to have_key('metadata_integration')
@@ -243,10 +268,27 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'minimal')
         expect(config).not_to have_key('metadata_integration')
       end
+      it 'includes network when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_service('opt', required_attrs.merge(network: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'opt')
+        expect(config).to have_key('network')
+      end
+
+      it 'omits network when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'minimal')
+        expect(config).not_to have_key('network')
+      end
       it 'includes network_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_metastore_service('opt', required_attrs.merge(network_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_metastore_service('opt', required_attrs.merge(network_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'opt')
         expect(config).to have_key('network_config')
@@ -259,6 +301,40 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'minimal')
         expect(config).not_to have_key('network_config')
+      end
+      it 'includes port when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_service('opt', required_attrs.merge(port: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'opt')
+        expect(config).to have_key('port')
+      end
+
+      it 'omits port when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'minimal')
+        expect(config).not_to have_key('port')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_service('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes release_channel when provided' do
         synth = create_synthesizer
@@ -280,7 +356,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
       it 'includes scaling_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_metastore_service('opt', required_attrs.merge(scaling_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_metastore_service('opt', required_attrs.merge(scaling_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'opt')
         expect(config).to have_key('scaling_config')
@@ -297,7 +373,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
       it 'includes scheduled_backup when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_metastore_service('opt', required_attrs.merge(scheduled_backup: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_metastore_service('opt', required_attrs.merge(scheduled_backup: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'opt')
         expect(config).to have_key('scheduled_backup')
@@ -311,10 +387,27 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'minimal')
         expect(config).not_to have_key('scheduled_backup')
       end
+      it 'includes tags when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_service('opt', required_attrs.merge(tags: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'opt')
+        expect(config).to have_key('tags')
+      end
+
+      it 'omits tags when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'minimal')
+        expect(config).not_to have_key('tags')
+      end
       it 'includes telemetry_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_metastore_service('opt', required_attrs.merge(telemetry_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_metastore_service('opt', required_attrs.merge(telemetry_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'opt')
         expect(config).to have_key('telemetry_config')
@@ -327,6 +420,23 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'minimal')
         expect(config).not_to have_key('telemetry_config')
+      end
+      it 'includes tier when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_service('opt', required_attrs.merge(tier: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'opt')
+        expect(config).to have_key('tier')
+      end
+
+      it 'omits tier when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_metastore_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_metastore_service', 'minimal')
+        expect(config).not_to have_key('tier')
       end
     end
 
@@ -386,7 +496,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocMetastoreService do
     resource_type: :google_dataproc_metastore_service,
     method: :google_dataproc_metastore_service,
     required_attrs: { service_id: 'test-value' },
-    expected_outputs: [:id, :artifact_gcs_uri, :create_time, :effective_labels, :endpoint_uri, :name, :network, :port, :project, :state, :state_message, :terraform_labels, :tier, :uid, :update_time],
+    expected_outputs: [:id, :artifact_gcs_uri, :create_time, :deletion_policy, :effective_labels, :endpoint_uri, :name, :network, :port, :project, :state, :state_message, :terraform_labels, :tier, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection]

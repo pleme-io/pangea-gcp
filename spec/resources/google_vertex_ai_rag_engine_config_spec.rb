@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleVertexAiRagEngineConfig do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { rag_managed_db_config: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { rag_managed_db_config: { 'key1' => 'val1' } } }
 
   describe ':google_vertex_ai_rag_engine_config' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiRagEngineConfig do
         ref = synth.google_vertex_ai_rag_engine_config('test', required_attrs)
 
         expect(ref.id).to eq("${google_vertex_ai_rag_engine_config.test.id}")
+        expect(ref.deletion_policy).to eq("${google_vertex_ai_rag_engine_config.test.deletion_policy}")
         expect(ref.name).to eq("${google_vertex_ai_rag_engine_config.test.name}")
         expect(ref.project).to eq("${google_vertex_ai_rag_engine_config.test.project}")
         expect(ref.region).to eq("${google_vertex_ai_rag_engine_config.test.region}")
@@ -52,8 +53,79 @@ RSpec.describe Pangea::Resources::GoogleVertexAiRagEngineConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vertex_ai_rag_engine_config', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
+        expect(config).not_to have_key('region')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value', region: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_rag_engine_config('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_vertex_ai_rag_engine_config', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_rag_engine_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_rag_engine_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_rag_engine_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_rag_engine_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_rag_engine_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_rag_engine_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_rag_engine_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_rag_engine_config', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_rag_engine_config('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_rag_engine_config', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_rag_engine_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_rag_engine_config', 'minimal')
         expect(config).not_to have_key('region')
       end
     end
@@ -66,7 +138,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiRagEngineConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vertex_ai_rag_engine_config', 'typed')
-        expect(config['rag_managed_db_config']).to be_a(Array)
+        expect(config['rag_managed_db_config']).to be_a(Hash)
       end
     end
 
@@ -99,8 +171,8 @@ RSpec.describe Pangea::Resources::GoogleVertexAiRagEngineConfig do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_vertex_ai_rag_engine_config,
     method: :google_vertex_ai_rag_engine_config,
-    required_attrs: { rag_managed_db_config: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :name, :project, :region],
+    required_attrs: { rag_managed_db_config: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :deletion_policy, :name, :project, :region],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

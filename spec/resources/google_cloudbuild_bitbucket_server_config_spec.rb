@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleCloudbuildBitbucketServerConfig do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { api_key: 'test-value', config_id: 'test-value', host_uri: 'test-value', location: 'test-value', secrets: [{ 'key1' => 'val1' }], username: 'test-value' } }
+  let(:required_attrs) { { api_key: 'test-value', config_id: 'test-value', host_uri: 'test-value', location: 'test-value', secrets: { 'key1' => 'val1' }, username: 'test-value' } }
 
   describe ':google_cloudbuild_bitbucket_server_config' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildBitbucketServerConfig do
         ref = synth.google_cloudbuild_bitbucket_server_config('test', required_attrs)
 
         expect(ref.id).to eq("${google_cloudbuild_bitbucket_server_config.test.id}")
+        expect(ref.deletion_policy).to eq("${google_cloudbuild_bitbucket_server_config.test.deletion_policy}")
         expect(ref.name).to eq("${google_cloudbuild_bitbucket_server_config.test.name}")
         expect(ref.project).to eq("${google_cloudbuild_bitbucket_server_config.test.project}")
         expect(ref.webhook_key).to eq("${google_cloudbuild_bitbucket_server_config.test.webhook_key}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildBitbucketServerConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_cloudbuild_bitbucket_server_config', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('webhook_key')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildBitbucketServerConfig do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ connected_repositories: [{ 'key1' => 'val1' }], peered_network: 'test-value', ssl_ca: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ connected_repositories: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', peered_network: 'test-value', project: 'test-value', ssl_ca: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,7 +71,9 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildBitbucketServerConfig do
 
         config = validate_resource_structure(result, 'google_cloudbuild_bitbucket_server_config', 'full')
         expect(config).to have_key('connected_repositories')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('peered_network')
+        expect(config).to have_key('project')
         expect(config).to have_key('ssl_ca')
       end
     end
@@ -92,6 +96,23 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildBitbucketServerConfig do
         config = validate_resource_structure(result, 'google_cloudbuild_bitbucket_server_config', 'minimal')
         expect(config).not_to have_key('connected_repositories')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_bitbucket_server_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_bitbucket_server_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_bitbucket_server_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_bitbucket_server_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes peered_network when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -108,6 +129,23 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildBitbucketServerConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_bitbucket_server_config', 'minimal')
         expect(config).not_to have_key('peered_network')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_bitbucket_server_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_bitbucket_server_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_bitbucket_server_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_bitbucket_server_config', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes ssl_ca when provided' do
         synth = create_synthesizer
@@ -140,7 +178,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildBitbucketServerConfig do
         expect(config['config_id']).to be_a(String)
         expect(config['host_uri']).to be_a(String)
         expect(config['location']).to be_a(String)
-        expect(config['secrets']).to be_a(Array)
+        expect(config['secrets']).to be_a(Hash)
         expect(config['username']).to be_a(String)
       end
     end
@@ -174,8 +212,8 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildBitbucketServerConfig do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_cloudbuild_bitbucket_server_config,
     method: :google_cloudbuild_bitbucket_server_config,
-    required_attrs: { api_key: 'test-value', config_id: 'test-value', host_uri: 'test-value', location: 'test-value', secrets: [{ 'key1' => 'val1' }], username: 'test-value' },
-    expected_outputs: [:id, :name, :project, :webhook_key],
+    required_attrs: { api_key: 'test-value', config_id: 'test-value', host_uri: 'test-value', location: 'test-value', secrets: { 'key1' => 'val1' }, username: 'test-value' },
+    expected_outputs: [:id, :deletion_policy, :name, :project, :webhook_key],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

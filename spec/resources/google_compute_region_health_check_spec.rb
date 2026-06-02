@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionHealthCheck do
 
         expect(ref.id).to eq("${google_compute_region_health_check.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_region_health_check.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_region_health_check.test.deletion_policy}")
         expect(ref.health_check_id).to eq("${google_compute_region_health_check.test.health_check_id}")
         expect(ref.project).to eq("${google_compute_region_health_check.test.project}")
         expect(ref.region).to eq("${google_compute_region_health_check.test.region}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionHealthCheck do
 
         config = validate_resource_structure(result, 'google_compute_region_health_check', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('health_check_id')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('region')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionHealthCheck do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ check_interval_sec: 3.14, description: 'test-value', grpc_health_check: [{ 'key1' => 'val1' }], healthy_threshold: 3.14, http2_health_check: [{ 'key1' => 'val1' }], http_health_check: [{ 'key1' => 'val1' }], https_health_check: [{ 'key1' => 'val1' }], log_config: [{ 'key1' => 'val1' }], ssl_health_check: [{ 'key1' => 'val1' }], tcp_health_check: [{ 'key1' => 'val1' }], timeout_sec: 3.14, unhealthy_threshold: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ check_interval_sec: 3.14, deletion_policy: 'test-value', description: 'test-value', grpc_health_check: { 'key1' => 'val1' }, grpc_tls_health_check: { 'key1' => 'val1' }, healthy_threshold: 3.14, http2_health_check: { 'key1' => 'val1' }, http_health_check: { 'key1' => 'val1' }, https_health_check: { 'key1' => 'val1' }, log_config: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value', ssl_health_check: { 'key1' => 'val1' }, tcp_health_check: { 'key1' => 'val1' }, timeout_sec: 3.14, unhealthy_threshold: 3.14 }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -75,13 +77,17 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionHealthCheck do
 
         config = validate_resource_structure(result, 'google_compute_region_health_check', 'full')
         expect(config).to have_key('check_interval_sec')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('grpc_health_check')
+        expect(config).to have_key('grpc_tls_health_check')
         expect(config).to have_key('healthy_threshold')
         expect(config).to have_key('http2_health_check')
         expect(config).to have_key('http_health_check')
         expect(config).to have_key('https_health_check')
         expect(config).to have_key('log_config')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('ssl_health_check')
         expect(config).to have_key('tcp_health_check')
         expect(config).to have_key('timeout_sec')
@@ -107,6 +113,23 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionHealthCheck do
         config = validate_resource_structure(result, 'google_compute_region_health_check', 'minimal')
         expect(config).not_to have_key('check_interval_sec')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_health_check('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_health_check', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_health_check('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_health_check', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -127,7 +150,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionHealthCheck do
       it 'includes grpc_health_check when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_health_check('opt', required_attrs.merge(grpc_health_check: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_health_check('opt', required_attrs.merge(grpc_health_check: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_health_check', 'opt')
         expect(config).to have_key('grpc_health_check')
@@ -140,6 +163,23 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionHealthCheck do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_health_check', 'minimal')
         expect(config).not_to have_key('grpc_health_check')
+      end
+      it 'includes grpc_tls_health_check when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_health_check('opt', required_attrs.merge(grpc_tls_health_check: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_health_check', 'opt')
+        expect(config).to have_key('grpc_tls_health_check')
+      end
+
+      it 'omits grpc_tls_health_check when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_health_check('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_health_check', 'minimal')
+        expect(config).not_to have_key('grpc_tls_health_check')
       end
       it 'includes healthy_threshold when provided' do
         synth = create_synthesizer
@@ -161,7 +201,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionHealthCheck do
       it 'includes http2_health_check when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_health_check('opt', required_attrs.merge(http2_health_check: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_health_check('opt', required_attrs.merge(http2_health_check: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_health_check', 'opt')
         expect(config).to have_key('http2_health_check')
@@ -178,7 +218,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionHealthCheck do
       it 'includes http_health_check when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_health_check('opt', required_attrs.merge(http_health_check: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_health_check('opt', required_attrs.merge(http_health_check: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_health_check', 'opt')
         expect(config).to have_key('http_health_check')
@@ -195,7 +235,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionHealthCheck do
       it 'includes https_health_check when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_health_check('opt', required_attrs.merge(https_health_check: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_health_check('opt', required_attrs.merge(https_health_check: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_health_check', 'opt')
         expect(config).to have_key('https_health_check')
@@ -212,7 +252,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionHealthCheck do
       it 'includes log_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_health_check('opt', required_attrs.merge(log_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_health_check('opt', required_attrs.merge(log_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_health_check', 'opt')
         expect(config).to have_key('log_config')
@@ -226,10 +266,44 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionHealthCheck do
         config = validate_resource_structure(result, 'google_compute_region_health_check', 'minimal')
         expect(config).not_to have_key('log_config')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_health_check('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_health_check', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_health_check('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_health_check', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_health_check('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_health_check', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_health_check('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_health_check', 'minimal')
+        expect(config).not_to have_key('region')
+      end
       it 'includes ssl_health_check when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_health_check('opt', required_attrs.merge(ssl_health_check: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_health_check('opt', required_attrs.merge(ssl_health_check: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_health_check', 'opt')
         expect(config).to have_key('ssl_health_check')
@@ -246,7 +320,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionHealthCheck do
       it 'includes tcp_health_check when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_health_check('opt', required_attrs.merge(tcp_health_check: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_health_check('opt', required_attrs.merge(tcp_health_check: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_health_check', 'opt')
         expect(config).to have_key('tcp_health_check')
@@ -338,7 +412,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionHealthCheck do
     resource_type: :google_compute_region_health_check,
     method: :google_compute_region_health_check,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :health_check_id, :project, :region, :self_link, :type],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :health_check_id, :project, :region, :self_link, :type],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

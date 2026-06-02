@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexGlossary do
         expect(ref.id).to eq("${google_dataplex_glossary.test.id}")
         expect(ref.category_count).to eq("${google_dataplex_glossary.test.category_count}")
         expect(ref.create_time).to eq("${google_dataplex_glossary.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_dataplex_glossary.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_dataplex_glossary.test.effective_labels}")
         expect(ref.name).to eq("${google_dataplex_glossary.test.name}")
         expect(ref.project).to eq("${google_dataplex_glossary.test.project}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexGlossary do
         config = validate_resource_structure(result, 'google_dataplex_glossary', 'test')
         expect(config).not_to have_key('category_count')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexGlossary do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -80,13 +82,32 @@ RSpec.describe Pangea::Resources::GoogleDataplexGlossary do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dataplex_glossary', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_glossary('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_glossary', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_glossary('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_glossary', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -138,6 +159,23 @@ RSpec.describe Pangea::Resources::GoogleDataplexGlossary do
         config = validate_resource_structure(result, 'google_dataplex_glossary', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_glossary('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_glossary', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_glossary('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_glossary', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -183,7 +221,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexGlossary do
     resource_type: :google_dataplex_glossary,
     method: :google_dataplex_glossary,
     required_attrs: { glossary_id: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :category_count, :create_time, :effective_labels, :name, :project, :term_count, :terraform_labels, :uid, :update_time],
+    expected_outputs: [:id, :category_count, :create_time, :deletion_policy, :effective_labels, :name, :project, :term_count, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -1,0 +1,8 @@
+name: google_privileged_access_manager_entitlement
+title: Manages a google_privileged_access_manager_entitlement resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

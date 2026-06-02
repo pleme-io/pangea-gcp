@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleComputeVpnTunnel do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { name: 'test-value', shared_secret: 'test-value' } }
+  let(:required_attrs) { { name: 'test-value' } }
 
   describe ':google_compute_vpn_tunnel' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnTunnel do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'test')
-        validate_required_attributes(config, [:name, :shared_secret])
+        validate_required_attributes(config, [:name])
       end
 
       it 'returns a ResourceReference' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnTunnel do
 
         expect(ref.id).to eq("${google_compute_vpn_tunnel.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_vpn_tunnel.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_vpn_tunnel.test.deletion_policy}")
         expect(ref.detailed_status).to eq("${google_compute_vpn_tunnel.test.detailed_status}")
         expect(ref.effective_labels).to eq("${google_compute_vpn_tunnel.test.effective_labels}")
         expect(ref.label_fingerprint).to eq("${google_compute_vpn_tunnel.test.label_fingerprint}")
@@ -63,6 +64,7 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnTunnel do
 
         config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('detailed_status')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('label_fingerprint')
@@ -79,7 +81,7 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnTunnel do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', ike_version: 3.14, labels: { 'key1' => 'val1' }, peer_external_gateway: 'test-value', peer_external_gateway_interface: 3.14, peer_gcp_gateway: 'test-value', router: 'test-value', target_vpn_gateway: 'test-value', vpn_gateway: 'test-value', vpn_gateway_interface: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ cipher_suite: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', ike_version: 3.14, labels: { 'key1' => 'val1' }, local_traffic_selector: ['test-value'], params: { 'key1' => 'val1' }, peer_external_gateway: 'test-value', peer_external_gateway_interface: 3.14, peer_gcp_gateway: 'test-value', peer_ip: 'test-value', project: 'test-value', region: 'test-value', remote_traffic_selector: ['test-value'], router: 'test-value', shared_secret: 'test-value', shared_secret_wo: 'test-value', shared_secret_wo_version: 'test-value', target_vpn_gateway: 'test-value', vpn_gateway: 'test-value', vpn_gateway_interface: 3.14 }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -88,13 +90,24 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnTunnel do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'full')
+        expect(config).to have_key('cipher_suite')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('ike_version')
         expect(config).to have_key('labels')
+        expect(config).to have_key('local_traffic_selector')
+        expect(config).to have_key('params')
         expect(config).to have_key('peer_external_gateway')
         expect(config).to have_key('peer_external_gateway_interface')
         expect(config).to have_key('peer_gcp_gateway')
+        expect(config).to have_key('peer_ip')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
+        expect(config).to have_key('remote_traffic_selector')
         expect(config).to have_key('router')
+        expect(config).to have_key('shared_secret')
+        expect(config).to have_key('shared_secret_wo')
+        expect(config).to have_key('shared_secret_wo_version')
         expect(config).to have_key('target_vpn_gateway')
         expect(config).to have_key('vpn_gateway')
         expect(config).to have_key('vpn_gateway_interface')
@@ -102,6 +115,40 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnTunnel do
     end
 
     context 'optional attributes' do
+      it 'includes cipher_suite when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('opt', required_attrs.merge(cipher_suite: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'opt')
+        expect(config).to have_key('cipher_suite')
+      end
+
+      it 'omits cipher_suite when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'minimal')
+        expect(config).not_to have_key('cipher_suite')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -152,6 +199,40 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnTunnel do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes local_traffic_selector when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('opt', required_attrs.merge(local_traffic_selector: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'opt')
+        expect(config).to have_key('local_traffic_selector')
+      end
+
+      it 'omits local_traffic_selector when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'minimal')
+        expect(config).not_to have_key('local_traffic_selector')
+      end
+      it 'includes params when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'opt')
+        expect(config).to have_key('params')
+      end
+
+      it 'omits params when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'minimal')
+        expect(config).not_to have_key('params')
       end
       it 'includes peer_external_gateway when provided' do
         synth = create_synthesizer
@@ -204,6 +285,74 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnTunnel do
         config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'minimal')
         expect(config).not_to have_key('peer_gcp_gateway')
       end
+      it 'includes peer_ip when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('opt', required_attrs.merge(peer_ip: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'opt')
+        expect(config).to have_key('peer_ip')
+      end
+
+      it 'omits peer_ip when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'minimal')
+        expect(config).not_to have_key('peer_ip')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'minimal')
+        expect(config).not_to have_key('region')
+      end
+      it 'includes remote_traffic_selector when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('opt', required_attrs.merge(remote_traffic_selector: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'opt')
+        expect(config).to have_key('remote_traffic_selector')
+      end
+
+      it 'omits remote_traffic_selector when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'minimal')
+        expect(config).not_to have_key('remote_traffic_selector')
+      end
       it 'includes router when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -220,6 +369,57 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnTunnel do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'minimal')
         expect(config).not_to have_key('router')
+      end
+      it 'includes shared_secret when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('opt', required_attrs.merge(shared_secret: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'opt')
+        expect(config).to have_key('shared_secret')
+      end
+
+      it 'omits shared_secret when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'minimal')
+        expect(config).not_to have_key('shared_secret')
+      end
+      it 'includes shared_secret_wo when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('opt', required_attrs.merge(shared_secret_wo: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'opt')
+        expect(config).to have_key('shared_secret_wo')
+      end
+
+      it 'omits shared_secret_wo when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'minimal')
+        expect(config).not_to have_key('shared_secret_wo')
+      end
+      it 'includes shared_secret_wo_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('opt', required_attrs.merge(shared_secret_wo_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'opt')
+        expect(config).to have_key('shared_secret_wo_version')
+      end
+
+      it 'omits shared_secret_wo_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_vpn_tunnel('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'minimal')
+        expect(config).not_to have_key('shared_secret_wo_version')
       end
       it 'includes target_vpn_gateway when provided' do
         synth = create_synthesizer
@@ -290,7 +490,6 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnTunnel do
 
         config = validate_resource_structure(result, 'google_compute_vpn_tunnel', 'typed')
         expect(config['name']).to be_a(String)
-        expect(config['shared_secret']).to be_a(String)
       end
     end
 
@@ -323,8 +522,8 @@ RSpec.describe Pangea::Resources::GoogleComputeVpnTunnel do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_compute_vpn_tunnel,
     method: :google_compute_vpn_tunnel,
-    required_attrs: { name: 'test-value', shared_secret: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :detailed_status, :effective_labels, :label_fingerprint, :local_traffic_selector, :peer_ip, :project, :region, :remote_traffic_selector, :self_link, :shared_secret_hash, :terraform_labels, :tunnel_id],
+    required_attrs: { name: 'test-value' },
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :detailed_status, :effective_labels, :label_fingerprint, :local_traffic_selector, :peer_ip, :project, :region, :remote_traffic_selector, :self_link, :shared_secret_hash, :terraform_labels, :tunnel_id],
     sensitive_fields: [:shared_secret],
     immutable_fields: [],
     boolean_fields: []

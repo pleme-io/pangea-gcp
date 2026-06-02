@@ -1,0 +1,8 @@
+name: google_access_context_manager_access_level_condition
+title: Manages a google_access_context_manager_access_level_condition resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

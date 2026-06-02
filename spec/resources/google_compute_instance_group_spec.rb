@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceGroup do
         ref = synth.google_compute_instance_group('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_instance_group.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_instance_group.test.deletion_policy}")
         expect(ref.instances).to eq("${google_compute_instance_group.test.instances}")
         expect(ref.network).to eq("${google_compute_instance_group.test.network}")
         expect(ref.project).to eq("${google_compute_instance_group.test.project}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceGroup do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_instance_group', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('instances')
         expect(config).not_to have_key('network')
         expect(config).not_to have_key('project')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceGroup do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', named_port: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', instances: ['test-value'], named_port: [{ 'key1' => 'val1' }], network: 'test-value', project: 'test-value', zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,12 +76,34 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceGroup do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_instance_group', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('instances')
         expect(config).to have_key('named_port')
+        expect(config).to have_key('network')
+        expect(config).to have_key('project')
+        expect(config).to have_key('zone')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_group('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_group', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_group', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -97,6 +121,23 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceGroup do
         config = validate_resource_structure(result, 'google_compute_instance_group', 'minimal')
         expect(config).not_to have_key('description')
       end
+      it 'includes instances when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_group('opt', required_attrs.merge(instances: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_group', 'opt')
+        expect(config).to have_key('instances')
+      end
+
+      it 'omits instances when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_group', 'minimal')
+        expect(config).not_to have_key('instances')
+      end
       it 'includes named_port when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -113,6 +154,57 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceGroup do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_group', 'minimal')
         expect(config).not_to have_key('named_port')
+      end
+      it 'includes network when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_group('opt', required_attrs.merge(network: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_group', 'opt')
+        expect(config).to have_key('network')
+      end
+
+      it 'omits network when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_group', 'minimal')
+        expect(config).not_to have_key('network')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_group('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_group', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_group', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_group('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_group', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_group', 'minimal')
+        expect(config).not_to have_key('zone')
       end
     end
 
@@ -158,7 +250,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceGroup do
     resource_type: :google_compute_instance_group,
     method: :google_compute_instance_group,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :instances, :network, :project, :self_link, :size, :zone],
+    expected_outputs: [:id, :deletion_policy, :instances, :network, :project, :self_link, :size, :zone],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

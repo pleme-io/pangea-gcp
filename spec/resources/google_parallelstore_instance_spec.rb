@@ -41,6 +41,7 @@ RSpec.describe Pangea::Resources::GoogleParallelstoreInstance do
         expect(ref.access_points).to eq("${google_parallelstore_instance.test.access_points}")
         expect(ref.create_time).to eq("${google_parallelstore_instance.test.create_time}")
         expect(ref.daos_version).to eq("${google_parallelstore_instance.test.daos_version}")
+        expect(ref.deletion_policy).to eq("${google_parallelstore_instance.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_parallelstore_instance.test.effective_labels}")
         expect(ref.effective_reserved_ip_range).to eq("${google_parallelstore_instance.test.effective_reserved_ip_range}")
         expect(ref.name).to eq("${google_parallelstore_instance.test.name}")
@@ -62,6 +63,7 @@ RSpec.describe Pangea::Resources::GoogleParallelstoreInstance do
         expect(config).not_to have_key('access_points')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('daos_version')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('effective_reserved_ip_range')
         expect(config).not_to have_key('name')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleParallelstoreInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deployment_type: 'test-value', description: 'test-value', directory_stripe_level: 'test-value', file_stripe_level: 'test-value', labels: { 'key1' => 'val1' }, network: 'test-value', reserved_ip_range: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', deployment_type: 'test-value', description: 'test-value', directory_stripe_level: 'test-value', file_stripe_level: 'test-value', labels: { 'key1' => 'val1' }, network: 'test-value', project: 'test-value', reserved_ip_range: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -82,17 +84,36 @@ RSpec.describe Pangea::Resources::GoogleParallelstoreInstance do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_parallelstore_instance', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deployment_type')
         expect(config).to have_key('description')
         expect(config).to have_key('directory_stripe_level')
         expect(config).to have_key('file_stripe_level')
         expect(config).to have_key('labels')
         expect(config).to have_key('network')
+        expect(config).to have_key('project')
         expect(config).to have_key('reserved_ip_range')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_parallelstore_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_parallelstore_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_parallelstore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_parallelstore_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deployment_type when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -195,6 +216,23 @@ RSpec.describe Pangea::Resources::GoogleParallelstoreInstance do
         config = validate_resource_structure(result, 'google_parallelstore_instance', 'minimal')
         expect(config).not_to have_key('network')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_parallelstore_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_parallelstore_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_parallelstore_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_parallelstore_instance', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes reserved_ip_range when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -258,7 +296,7 @@ RSpec.describe Pangea::Resources::GoogleParallelstoreInstance do
     resource_type: :google_parallelstore_instance,
     method: :google_parallelstore_instance,
     required_attrs: { capacity_gib: 'test-value', instance_id: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :access_points, :create_time, :daos_version, :effective_labels, :effective_reserved_ip_range, :name, :project, :state, :terraform_labels, :update_time],
+    expected_outputs: [:id, :access_points, :create_time, :daos_version, :deletion_policy, :effective_labels, :effective_reserved_ip_range, :name, :project, :state, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

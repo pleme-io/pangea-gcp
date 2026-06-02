@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleOsLoginSshPublicKey do
         ref = synth.google_os_login_ssh_public_key('test', required_attrs)
 
         expect(ref.id).to eq("${google_os_login_ssh_public_key.test.id}")
+        expect(ref.deletion_policy).to eq("${google_os_login_ssh_public_key.test.deletion_policy}")
         expect(ref.fingerprint).to eq("${google_os_login_ssh_public_key.test.fingerprint}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleOsLoginSshPublicKey do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_os_login_ssh_public_key', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('fingerprint')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ expiration_time_usec: 'test-value', project: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', expiration_time_usec: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,12 +66,30 @@ RSpec.describe Pangea::Resources::GoogleOsLoginSshPublicKey do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_os_login_ssh_public_key', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('expiration_time_usec')
         expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_os_login_ssh_public_key('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_os_login_ssh_public_key', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_os_login_ssh_public_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_os_login_ssh_public_key', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes expiration_time_usec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -149,7 +169,7 @@ RSpec.describe Pangea::Resources::GoogleOsLoginSshPublicKey do
     resource_type: :google_os_login_ssh_public_key,
     method: :google_os_login_ssh_public_key,
     required_attrs: { key: 'test-value', user: 'test-value' },
-    expected_outputs: [:id, :fingerprint],
+    expected_outputs: [:id, :deletion_policy, :fingerprint],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

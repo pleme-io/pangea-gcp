@@ -39,8 +39,10 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
 
         expect(ref.id).to eq("${google_alloydb_cluster.test.id}")
         expect(ref.backup_source).to eq("${google_alloydb_cluster.test.backup_source}")
+        expect(ref.backupdr_backup_source).to eq("${google_alloydb_cluster.test.backupdr_backup_source}")
         expect(ref.continuous_backup_info).to eq("${google_alloydb_cluster.test.continuous_backup_info}")
         expect(ref.database_version).to eq("${google_alloydb_cluster.test.database_version}")
+        expect(ref.deletion_policy).to eq("${google_alloydb_cluster.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_alloydb_cluster.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_alloydb_cluster.test.effective_labels}")
         expect(ref.encryption_info).to eq("${google_alloydb_cluster.test.encryption_info}")
@@ -65,8 +67,10 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
 
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'test')
         expect(config).not_to have_key('backup_source')
+        expect(config).not_to have_key('backupdr_backup_source')
         expect(config).not_to have_key('continuous_backup_info')
         expect(config).not_to have_key('database_version')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('encryption_info')
@@ -83,7 +87,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, automated_backup_policy: [{ 'key1' => 'val1' }], cluster_type: 'test-value', continuous_backup_config: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', display_name: 'test-value', encryption_config: [{ 'key1' => 'val1' }], etag: 'test-value', initial_user: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, maintenance_update_policy: [{ 'key1' => 'val1' }], network_config: [{ 'key1' => 'val1' }], psc_config: [{ 'key1' => 'val1' }], restore_backup_source: [{ 'key1' => 'val1' }], restore_continuous_backup_source: [{ 'key1' => 'val1' }], secondary_config: [{ 'key1' => 'val1' }], skip_await_major_version_upgrade: true }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, automated_backup_policy: { 'key1' => 'val1' }, cluster_type: 'test-value', continuous_backup_config: { 'key1' => 'val1' }, database_version: 'test-value', dataplex_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', deletion_protection: true, display_name: 'test-value', encryption_config: { 'key1' => 'val1' }, etag: 'test-value', initial_user: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, maintenance_update_policy: { 'key1' => 'val1' }, network_config: { 'key1' => 'val1' }, project: 'test-value', psc_config: { 'key1' => 'val1' }, restore_backup_source: { 'key1' => 'val1' }, restore_backupdr_backup_source: { 'key1' => 'val1' }, restore_backupdr_pitr_source: { 'key1' => 'val1' }, restore_continuous_backup_source: { 'key1' => 'val1' }, secondary_config: { 'key1' => 'val1' }, skip_await_major_version_upgrade: true, subscription_type: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -96,7 +100,10 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
         expect(config).to have_key('automated_backup_policy')
         expect(config).to have_key('cluster_type')
         expect(config).to have_key('continuous_backup_config')
+        expect(config).to have_key('database_version')
+        expect(config).to have_key('dataplex_config')
         expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('deletion_protection')
         expect(config).to have_key('display_name')
         expect(config).to have_key('encryption_config')
         expect(config).to have_key('etag')
@@ -104,11 +111,15 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
         expect(config).to have_key('labels')
         expect(config).to have_key('maintenance_update_policy')
         expect(config).to have_key('network_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('psc_config')
         expect(config).to have_key('restore_backup_source')
+        expect(config).to have_key('restore_backupdr_backup_source')
+        expect(config).to have_key('restore_backupdr_pitr_source')
         expect(config).to have_key('restore_continuous_backup_source')
         expect(config).to have_key('secondary_config')
         expect(config).to have_key('skip_await_major_version_upgrade')
+        expect(config).to have_key('subscription_type')
       end
     end
 
@@ -133,7 +144,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
       it 'includes automated_backup_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_cluster('opt', required_attrs.merge(automated_backup_policy: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_cluster('opt', required_attrs.merge(automated_backup_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
         expect(config).to have_key('automated_backup_policy')
@@ -167,7 +178,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
       it 'includes continuous_backup_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_cluster('opt', required_attrs.merge(continuous_backup_config: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_cluster('opt', required_attrs.merge(continuous_backup_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
         expect(config).to have_key('continuous_backup_config')
@@ -180,6 +191,40 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'minimal')
         expect(config).not_to have_key('continuous_backup_config')
+      end
+      it 'includes database_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_cluster('opt', required_attrs.merge(database_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
+        expect(config).to have_key('database_version')
+      end
+
+      it 'omits database_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_cluster', 'minimal')
+        expect(config).not_to have_key('database_version')
+      end
+      it 'includes dataplex_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_cluster('opt', required_attrs.merge(dataplex_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
+        expect(config).to have_key('dataplex_config')
+      end
+
+      it 'omits dataplex_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_cluster', 'minimal')
+        expect(config).not_to have_key('dataplex_config')
       end
       it 'includes deletion_policy when provided' do
         synth = create_synthesizer
@@ -197,6 +242,23 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'minimal')
         expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes deletion_protection when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_cluster('opt', required_attrs.merge(deletion_protection: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
+        expect(config).to have_key('deletion_protection')
+      end
+
+      it 'omits deletion_protection when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_cluster', 'minimal')
+        expect(config).not_to have_key('deletion_protection')
       end
       it 'includes display_name when provided' do
         synth = create_synthesizer
@@ -218,7 +280,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
       it 'includes encryption_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_cluster('opt', required_attrs.merge(encryption_config: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_cluster('opt', required_attrs.merge(encryption_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
         expect(config).to have_key('encryption_config')
@@ -252,7 +314,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
       it 'includes initial_user when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_cluster('opt', required_attrs.merge(initial_user: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_cluster('opt', required_attrs.merge(initial_user: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
         expect(config).to have_key('initial_user')
@@ -286,7 +348,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
       it 'includes maintenance_update_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_cluster('opt', required_attrs.merge(maintenance_update_policy: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_cluster('opt', required_attrs.merge(maintenance_update_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
         expect(config).to have_key('maintenance_update_policy')
@@ -303,7 +365,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
       it 'includes network_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_cluster('opt', required_attrs.merge(network_config: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_cluster('opt', required_attrs.merge(network_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
         expect(config).to have_key('network_config')
@@ -317,10 +379,27 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'minimal')
         expect(config).not_to have_key('network_config')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_cluster('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_cluster', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes psc_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_cluster('opt', required_attrs.merge(psc_config: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_cluster('opt', required_attrs.merge(psc_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
         expect(config).to have_key('psc_config')
@@ -337,7 +416,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
       it 'includes restore_backup_source when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_cluster('opt', required_attrs.merge(restore_backup_source: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_cluster('opt', required_attrs.merge(restore_backup_source: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
         expect(config).to have_key('restore_backup_source')
@@ -351,10 +430,44 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'minimal')
         expect(config).not_to have_key('restore_backup_source')
       end
+      it 'includes restore_backupdr_backup_source when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_cluster('opt', required_attrs.merge(restore_backupdr_backup_source: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
+        expect(config).to have_key('restore_backupdr_backup_source')
+      end
+
+      it 'omits restore_backupdr_backup_source when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_cluster', 'minimal')
+        expect(config).not_to have_key('restore_backupdr_backup_source')
+      end
+      it 'includes restore_backupdr_pitr_source when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_cluster('opt', required_attrs.merge(restore_backupdr_pitr_source: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
+        expect(config).to have_key('restore_backupdr_pitr_source')
+      end
+
+      it 'omits restore_backupdr_pitr_source when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_cluster', 'minimal')
+        expect(config).not_to have_key('restore_backupdr_pitr_source')
+      end
       it 'includes restore_continuous_backup_source when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_cluster('opt', required_attrs.merge(restore_continuous_backup_source: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_cluster('opt', required_attrs.merge(restore_continuous_backup_source: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
         expect(config).to have_key('restore_continuous_backup_source')
@@ -371,7 +484,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
       it 'includes secondary_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_alloydb_cluster('opt', required_attrs.merge(secondary_config: [{ 'key1' => 'val1' }]))
+        synth.google_alloydb_cluster('opt', required_attrs.merge(secondary_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
         expect(config).to have_key('secondary_config')
@@ -402,9 +515,37 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
         config = validate_resource_structure(result, 'google_alloydb_cluster', 'minimal')
         expect(config).not_to have_key('skip_await_major_version_upgrade')
       end
+      it 'includes subscription_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_cluster('opt', required_attrs.merge(subscription_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_cluster', 'opt')
+        expect(config).to have_key('subscription_type')
+      end
+
+      it 'omits subscription_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_cluster', 'minimal')
+        expect(config).not_to have_key('subscription_type')
+      end
     end
 
     context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts deletion_protection=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(deletion_protection: val)
+          synth.google_alloydb_cluster("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_alloydb_cluster', "bool_#{val}")
+          expect(config['deletion_protection']).to eq(val)
+        end
+      end
       [true, false].each do |val|
         it "accepts skip_await_major_version_upgrade=#{val}" do
           synth = create_synthesizer
@@ -461,8 +602,8 @@ RSpec.describe Pangea::Resources::GoogleAlloydbCluster do
     resource_type: :google_alloydb_cluster,
     method: :google_alloydb_cluster,
     required_attrs: { cluster_id: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :backup_source, :continuous_backup_info, :database_version, :effective_annotations, :effective_labels, :encryption_info, :migration_source, :name, :project, :reconciling, :state, :subscription_type, :terraform_labels, :trial_metadata, :uid],
+    expected_outputs: [:id, :backup_source, :backupdr_backup_source, :continuous_backup_info, :database_version, :deletion_policy, :effective_annotations, :effective_labels, :encryption_info, :migration_source, :name, :project, :reconciling, :state, :subscription_type, :terraform_labels, :trial_metadata, :uid],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:skip_await_major_version_upgrade]
+    boolean_fields: [:deletion_protection, :skip_await_major_version_upgrade]
 end

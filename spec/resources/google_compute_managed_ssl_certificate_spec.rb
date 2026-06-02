@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleComputeManagedSslCertificate do
         expect(ref.id).to eq("${google_compute_managed_ssl_certificate.test.id}")
         expect(ref.certificate_id).to eq("${google_compute_managed_ssl_certificate.test.certificate_id}")
         expect(ref.creation_timestamp).to eq("${google_compute_managed_ssl_certificate.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_managed_ssl_certificate.test.deletion_policy}")
         expect(ref.expire_time).to eq("${google_compute_managed_ssl_certificate.test.expire_time}")
         expect(ref.project).to eq("${google_compute_managed_ssl_certificate.test.project}")
         expect(ref.self_link).to eq("${google_compute_managed_ssl_certificate.test.self_link}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleComputeManagedSslCertificate do
         config = validate_resource_structure(result, 'google_compute_managed_ssl_certificate', 'test')
         expect(config).not_to have_key('certificate_id')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('expire_time')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleComputeManagedSslCertificate do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', managed: [{ 'key1' => 'val1' }], name: 'test-value', type: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', managed: { 'key1' => 'val1' }, name: 'test-value', project: 'test-value', type: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,14 +76,33 @@ RSpec.describe Pangea::Resources::GoogleComputeManagedSslCertificate do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_managed_ssl_certificate', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('managed')
         expect(config).to have_key('name')
+        expect(config).to have_key('project')
         expect(config).to have_key('type')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_managed_ssl_certificate('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_managed_ssl_certificate', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_managed_ssl_certificate('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_managed_ssl_certificate', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -102,7 +123,7 @@ RSpec.describe Pangea::Resources::GoogleComputeManagedSslCertificate do
       it 'includes managed when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_managed_ssl_certificate('opt', required_attrs.merge(managed: [{ 'key1' => 'val1' }]))
+        synth.google_compute_managed_ssl_certificate('opt', required_attrs.merge(managed: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_managed_ssl_certificate', 'opt')
         expect(config).to have_key('managed')
@@ -132,6 +153,23 @@ RSpec.describe Pangea::Resources::GoogleComputeManagedSslCertificate do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_managed_ssl_certificate', 'minimal')
         expect(config).not_to have_key('name')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_managed_ssl_certificate('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_managed_ssl_certificate', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_managed_ssl_certificate('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_managed_ssl_certificate', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes type when provided' do
         synth = create_synthesizer
@@ -193,7 +231,7 @@ RSpec.describe Pangea::Resources::GoogleComputeManagedSslCertificate do
     resource_type: :google_compute_managed_ssl_certificate,
     method: :google_compute_managed_ssl_certificate,
     required_attrs: {},
-    expected_outputs: [:id, :certificate_id, :creation_timestamp, :expire_time, :project, :self_link, :subject_alternative_names],
+    expected_outputs: [:id, :certificate_id, :creation_timestamp, :deletion_policy, :expire_time, :project, :self_link, :subject_alternative_names],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

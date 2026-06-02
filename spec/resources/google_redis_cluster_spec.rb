@@ -38,9 +38,13 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
         ref = synth.google_redis_cluster('test', required_attrs)
 
         expect(ref.id).to eq("${google_redis_cluster.test.id}")
+        expect(ref.available_maintenance_versions).to eq("${google_redis_cluster.test.available_maintenance_versions}")
         expect(ref.backup_collection).to eq("${google_redis_cluster.test.backup_collection}")
         expect(ref.create_time).to eq("${google_redis_cluster.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_redis_cluster.test.deletion_policy}")
         expect(ref.discovery_endpoints).to eq("${google_redis_cluster.test.discovery_endpoints}")
+        expect(ref.effective_labels).to eq("${google_redis_cluster.test.effective_labels}")
+        expect(ref.effective_maintenance_version).to eq("${google_redis_cluster.test.effective_maintenance_version}")
         expect(ref.maintenance_schedule).to eq("${google_redis_cluster.test.maintenance_schedule}")
         expect(ref.managed_server_ca).to eq("${google_redis_cluster.test.managed_server_ca}")
         expect(ref.name).to eq("${google_redis_cluster.test.name}")
@@ -50,9 +54,11 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
         expect(ref.psc_connections).to eq("${google_redis_cluster.test.psc_connections}")
         expect(ref.psc_service_attachments).to eq("${google_redis_cluster.test.psc_service_attachments}")
         expect(ref.region).to eq("${google_redis_cluster.test.region}")
+        expect(ref.server_ca_mode).to eq("${google_redis_cluster.test.server_ca_mode}")
         expect(ref.size_gb).to eq("${google_redis_cluster.test.size_gb}")
         expect(ref.state).to eq("${google_redis_cluster.test.state}")
         expect(ref.state_info).to eq("${google_redis_cluster.test.state_info}")
+        expect(ref.terraform_labels).to eq("${google_redis_cluster.test.terraform_labels}")
         expect(ref.uid).to eq("${google_redis_cluster.test.uid}")
       end
     end
@@ -65,9 +71,13 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_redis_cluster', 'test')
+        expect(config).not_to have_key('available_maintenance_versions')
         expect(config).not_to have_key('backup_collection')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('discovery_endpoints')
+        expect(config).not_to have_key('effective_labels')
+        expect(config).not_to have_key('effective_maintenance_version')
         expect(config).not_to have_key('maintenance_schedule')
         expect(config).not_to have_key('managed_server_ca')
         expect(config).not_to have_key('name')
@@ -77,15 +87,17 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
         expect(config).not_to have_key('psc_connections')
         expect(config).not_to have_key('psc_service_attachments')
         expect(config).not_to have_key('region')
+        expect(config).not_to have_key('server_ca_mode')
         expect(config).not_to have_key('size_gb')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('state_info')
+        expect(config).not_to have_key('terraform_labels')
         expect(config).not_to have_key('uid')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ allow_fewer_zones_deployment: true, authorization_mode: 'test-value', automated_backup_config: [{ 'key1' => 'val1' }], cross_cluster_replication_config: [{ 'key1' => 'val1' }], deletion_protection_enabled: true, gcs_source: [{ 'key1' => 'val1' }], kms_key: 'test-value', maintenance_policy: [{ 'key1' => 'val1' }], managed_backup_source: [{ 'key1' => 'val1' }], persistence_config: [{ 'key1' => 'val1' }], psc_configs: [{ 'key1' => 'val1' }], redis_configs: { 'key1' => 'val1' }, replica_count: 3.14, transit_encryption_mode: 'test-value', zone_distribution_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ authorization_mode: 'test-value', automated_backup_config: { 'key1' => 'val1' }, cross_cluster_replication_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', deletion_protection_enabled: true, gcs_source: { 'key1' => 'val1' }, kms_key: 'test-value', labels: { 'key1' => 'val1' }, maintenance_policy: { 'key1' => 'val1' }, maintenance_version: 'test-value', managed_backup_source: { 'key1' => 'val1' }, name: 'test-value', node_type: 'test-value', persistence_config: { 'key1' => 'val1' }, project: 'test-value', psc_configs: [{ 'key1' => 'val1' }], redis_configs: { 'key1' => 'val1' }, region: 'test-value', replica_count: 3.14, server_ca_mode: 'test-value', server_ca_pool: 'test-value', transit_encryption_mode: 'test-value', zone_distribution_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -94,42 +106,33 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_redis_cluster', 'full')
-        expect(config).to have_key('allow_fewer_zones_deployment')
         expect(config).to have_key('authorization_mode')
         expect(config).to have_key('automated_backup_config')
         expect(config).to have_key('cross_cluster_replication_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection_enabled')
         expect(config).to have_key('gcs_source')
         expect(config).to have_key('kms_key')
+        expect(config).to have_key('labels')
         expect(config).to have_key('maintenance_policy')
+        expect(config).to have_key('maintenance_version')
         expect(config).to have_key('managed_backup_source')
+        expect(config).to have_key('name')
+        expect(config).to have_key('node_type')
         expect(config).to have_key('persistence_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('psc_configs')
         expect(config).to have_key('redis_configs')
+        expect(config).to have_key('region')
         expect(config).to have_key('replica_count')
+        expect(config).to have_key('server_ca_mode')
+        expect(config).to have_key('server_ca_pool')
         expect(config).to have_key('transit_encryption_mode')
         expect(config).to have_key('zone_distribution_config')
       end
     end
 
     context 'optional attributes' do
-      it 'includes allow_fewer_zones_deployment when provided' do
-        synth = create_synthesizer
-        synth.extend(described_class)
-        synth.google_redis_cluster('opt', required_attrs.merge(allow_fewer_zones_deployment: true))
-        result = normalize_synthesis(synth.synthesis)
-        config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
-        expect(config).to have_key('allow_fewer_zones_deployment')
-      end
-
-      it 'omits allow_fewer_zones_deployment when not provided' do
-        synth = create_synthesizer
-        synth.extend(described_class)
-        synth.google_redis_cluster('minimal', required_attrs)
-        result = normalize_synthesis(synth.synthesis)
-        config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
-        expect(config).not_to have_key('allow_fewer_zones_deployment')
-      end
       it 'includes authorization_mode when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -150,7 +153,7 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
       it 'includes automated_backup_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_redis_cluster('opt', required_attrs.merge(automated_backup_config: [{ 'key1' => 'val1' }]))
+        synth.google_redis_cluster('opt', required_attrs.merge(automated_backup_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
         expect(config).to have_key('automated_backup_config')
@@ -167,7 +170,7 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
       it 'includes cross_cluster_replication_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_redis_cluster('opt', required_attrs.merge(cross_cluster_replication_config: [{ 'key1' => 'val1' }]))
+        synth.google_redis_cluster('opt', required_attrs.merge(cross_cluster_replication_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
         expect(config).to have_key('cross_cluster_replication_config')
@@ -180,6 +183,23 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
         expect(config).not_to have_key('cross_cluster_replication_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes deletion_protection_enabled when provided' do
         synth = create_synthesizer
@@ -201,7 +221,7 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
       it 'includes gcs_source when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_redis_cluster('opt', required_attrs.merge(gcs_source: [{ 'key1' => 'val1' }]))
+        synth.google_redis_cluster('opt', required_attrs.merge(gcs_source: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
         expect(config).to have_key('gcs_source')
@@ -232,10 +252,27 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
         config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
         expect(config).not_to have_key('kms_key')
       end
+      it 'includes labels when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('opt', required_attrs.merge(labels: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
+        expect(config).to have_key('labels')
+      end
+
+      it 'omits labels when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
+        expect(config).not_to have_key('labels')
+      end
       it 'includes maintenance_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_redis_cluster('opt', required_attrs.merge(maintenance_policy: [{ 'key1' => 'val1' }]))
+        synth.google_redis_cluster('opt', required_attrs.merge(maintenance_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
         expect(config).to have_key('maintenance_policy')
@@ -249,10 +286,27 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
         config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
         expect(config).not_to have_key('maintenance_policy')
       end
+      it 'includes maintenance_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('opt', required_attrs.merge(maintenance_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
+        expect(config).to have_key('maintenance_version')
+      end
+
+      it 'omits maintenance_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
+        expect(config).not_to have_key('maintenance_version')
+      end
       it 'includes managed_backup_source when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_redis_cluster('opt', required_attrs.merge(managed_backup_source: [{ 'key1' => 'val1' }]))
+        synth.google_redis_cluster('opt', required_attrs.merge(managed_backup_source: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
         expect(config).to have_key('managed_backup_source')
@@ -266,10 +320,44 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
         config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
         expect(config).not_to have_key('managed_backup_source')
       end
+      it 'includes name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('opt', required_attrs.merge(name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
+        expect(config).to have_key('name')
+      end
+
+      it 'omits name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
+        expect(config).not_to have_key('name')
+      end
+      it 'includes node_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('opt', required_attrs.merge(node_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
+        expect(config).to have_key('node_type')
+      end
+
+      it 'omits node_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
+        expect(config).not_to have_key('node_type')
+      end
       it 'includes persistence_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_redis_cluster('opt', required_attrs.merge(persistence_config: [{ 'key1' => 'val1' }]))
+        synth.google_redis_cluster('opt', required_attrs.merge(persistence_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
         expect(config).to have_key('persistence_config')
@@ -282,6 +370,23 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
         expect(config).not_to have_key('persistence_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes psc_configs when provided' do
         synth = create_synthesizer
@@ -317,6 +422,23 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
         config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
         expect(config).not_to have_key('redis_configs')
       end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
+        expect(config).not_to have_key('region')
+      end
       it 'includes replica_count when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -333,6 +455,40 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
         expect(config).not_to have_key('replica_count')
+      end
+      it 'includes server_ca_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('opt', required_attrs.merge(server_ca_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
+        expect(config).to have_key('server_ca_mode')
+      end
+
+      it 'omits server_ca_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
+        expect(config).not_to have_key('server_ca_mode')
+      end
+      it 'includes server_ca_pool when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('opt', required_attrs.merge(server_ca_pool: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
+        expect(config).to have_key('server_ca_pool')
+      end
+
+      it 'omits server_ca_pool when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_cluster', 'minimal')
+        expect(config).not_to have_key('server_ca_pool')
       end
       it 'includes transit_encryption_mode when provided' do
         synth = create_synthesizer
@@ -354,7 +510,7 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
       it 'includes zone_distribution_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_redis_cluster('opt', required_attrs.merge(zone_distribution_config: [{ 'key1' => 'val1' }]))
+        synth.google_redis_cluster('opt', required_attrs.merge(zone_distribution_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_cluster', 'opt')
         expect(config).to have_key('zone_distribution_config')
@@ -371,17 +527,6 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
     end
 
     context 'boolean fields' do
-      [true, false].each do |val|
-        it "accepts allow_fewer_zones_deployment=#{val}" do
-          synth = create_synthesizer
-          synth.extend(described_class)
-          attrs = required_attrs.merge(allow_fewer_zones_deployment: val)
-          synth.google_redis_cluster("bool_#{val}", attrs)
-          result = normalize_synthesis(synth.synthesis)
-          config = validate_resource_structure(result, 'google_redis_cluster', "bool_#{val}")
-          expect(config['allow_fewer_zones_deployment']).to eq(val)
-        end
-      end
       [true, false].each do |val|
         it "accepts deletion_protection_enabled=#{val}" do
           synth = create_synthesizer
@@ -437,8 +582,8 @@ RSpec.describe Pangea::Resources::GoogleRedisCluster do
     resource_type: :google_redis_cluster,
     method: :google_redis_cluster,
     required_attrs: { shard_count: 3.14 },
-    expected_outputs: [:id, :backup_collection, :create_time, :discovery_endpoints, :maintenance_schedule, :managed_server_ca, :name, :node_type, :precise_size_gb, :project, :psc_connections, :psc_service_attachments, :region, :size_gb, :state, :state_info, :uid],
+    expected_outputs: [:id, :available_maintenance_versions, :backup_collection, :create_time, :deletion_policy, :discovery_endpoints, :effective_labels, :effective_maintenance_version, :maintenance_schedule, :managed_server_ca, :name, :node_type, :precise_size_gb, :project, :psc_connections, :psc_service_attachments, :region, :server_ca_mode, :size_gb, :state, :state_info, :terraform_labels, :uid],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:allow_fewer_zones_deployment, :deletion_protection_enabled]
+    boolean_fields: [:deletion_protection_enabled]
 end

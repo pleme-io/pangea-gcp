@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleBigtableSchemaBundle do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { proto_schema: [{ 'key1' => 'val1' }], schema_bundle_id: 'test-value' } }
+  let(:required_attrs) { { proto_schema: { 'key1' => 'val1' }, schema_bundle_id: 'test-value' } }
 
   describe ':google_bigtable_schema_bundle' do
     context 'with required attributes only' do
@@ -38,6 +38,8 @@ RSpec.describe Pangea::Resources::GoogleBigtableSchemaBundle do
         ref = synth.google_bigtable_schema_bundle('test', required_attrs)
 
         expect(ref.id).to eq("${google_bigtable_schema_bundle.test.id}")
+        expect(ref.deletion_policy).to eq("${google_bigtable_schema_bundle.test.deletion_policy}")
+        expect(ref.etag).to eq("${google_bigtable_schema_bundle.test.etag}")
         expect(ref.name).to eq("${google_bigtable_schema_bundle.test.name}")
         expect(ref.project).to eq("${google_bigtable_schema_bundle.test.project}")
       end
@@ -51,13 +53,15 @@ RSpec.describe Pangea::Resources::GoogleBigtableSchemaBundle do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigtable_schema_bundle', 'test')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('etag')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ ignore_warnings: true, instance: 'test-value', table: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', ignore_warnings: true, instance: 'test-value', project: 'test-value', table: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,13 +70,32 @@ RSpec.describe Pangea::Resources::GoogleBigtableSchemaBundle do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigtable_schema_bundle', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('ignore_warnings')
         expect(config).to have_key('instance')
+        expect(config).to have_key('project')
         expect(config).to have_key('table')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_schema_bundle('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_schema_bundle', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_schema_bundle('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_schema_bundle', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes ignore_warnings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -106,6 +129,23 @@ RSpec.describe Pangea::Resources::GoogleBigtableSchemaBundle do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigtable_schema_bundle', 'minimal')
         expect(config).not_to have_key('instance')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_schema_bundle('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_schema_bundle', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_schema_bundle('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_schema_bundle', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes table when provided' do
         synth = create_synthesizer
@@ -148,7 +188,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableSchemaBundle do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigtable_schema_bundle', 'typed')
-        expect(config['proto_schema']).to be_a(Array)
+        expect(config['proto_schema']).to be_a(Hash)
         expect(config['schema_bundle_id']).to be_a(String)
       end
     end
@@ -182,8 +222,8 @@ RSpec.describe Pangea::Resources::GoogleBigtableSchemaBundle do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_bigtable_schema_bundle,
     method: :google_bigtable_schema_bundle,
-    required_attrs: { proto_schema: [{ 'key1' => 'val1' }], schema_bundle_id: 'test-value' },
-    expected_outputs: [:id, :name, :project],
+    required_attrs: { proto_schema: { 'key1' => 'val1' }, schema_bundle_id: 'test-value' },
+    expected_outputs: [:id, :deletion_policy, :etag, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:ignore_warnings]

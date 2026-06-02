@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvgroupAttachment do
         ref = synth.google_apigee_envgroup_attachment('test', required_attrs)
 
         expect(ref.id).to eq("${google_apigee_envgroup_attachment.test.id}")
+        expect(ref.deletion_policy).to eq("${google_apigee_envgroup_attachment.test.deletion_policy}")
         expect(ref.name).to eq("${google_apigee_envgroup_attachment.test.name}")
       end
     end
@@ -50,7 +51,42 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvgroupAttachment do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_envgroup_attachment', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_envgroup_attachment('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_apigee_envgroup_attachment', 'full')
+        expect(config).to have_key('deletion_policy')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_envgroup_attachment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_envgroup_attachment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_envgroup_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_envgroup_attachment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -97,7 +133,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvgroupAttachment do
     resource_type: :google_apigee_envgroup_attachment,
     method: :google_apigee_envgroup_attachment,
     required_attrs: { envgroup_id: 'test-value', environment: 'test-value' },
-    expected_outputs: [:id, :name],
+    expected_outputs: [:id, :deletion_policy, :name],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

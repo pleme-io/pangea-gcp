@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryCapacityCommitment do
         expect(ref.id).to eq("${google_bigquery_capacity_commitment.test.id}")
         expect(ref.commitment_end_time).to eq("${google_bigquery_capacity_commitment.test.commitment_end_time}")
         expect(ref.commitment_start_time).to eq("${google_bigquery_capacity_commitment.test.commitment_start_time}")
+        expect(ref.deletion_policy).to eq("${google_bigquery_capacity_commitment.test.deletion_policy}")
         expect(ref.name).to eq("${google_bigquery_capacity_commitment.test.name}")
         expect(ref.project).to eq("${google_bigquery_capacity_commitment.test.project}")
         expect(ref.state).to eq("${google_bigquery_capacity_commitment.test.state}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryCapacityCommitment do
         config = validate_resource_structure(result, 'google_bigquery_capacity_commitment', 'test')
         expect(config).not_to have_key('commitment_end_time')
         expect(config).not_to have_key('commitment_start_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryCapacityCommitment do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ capacity_commitment_id: 'test-value', edition: 'test-value', enforce_single_admin_project_per_org: 'test-value', location: 'test-value', renewal_plan: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ capacity_commitment_id: 'test-value', deletion_policy: 'test-value', edition: 'test-value', enforce_single_admin_project_per_org: 'test-value', location: 'test-value', project: 'test-value', renewal_plan: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,9 +75,11 @@ RSpec.describe Pangea::Resources::GoogleBigqueryCapacityCommitment do
 
         config = validate_resource_structure(result, 'google_bigquery_capacity_commitment', 'full')
         expect(config).to have_key('capacity_commitment_id')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('edition')
         expect(config).to have_key('enforce_single_admin_project_per_org')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
         expect(config).to have_key('renewal_plan')
       end
     end
@@ -97,6 +101,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryCapacityCommitment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_capacity_commitment', 'minimal')
         expect(config).not_to have_key('capacity_commitment_id')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_capacity_commitment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_capacity_commitment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_capacity_commitment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_capacity_commitment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes edition when provided' do
         synth = create_synthesizer
@@ -148,6 +169,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryCapacityCommitment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_capacity_commitment', 'minimal')
         expect(config).not_to have_key('location')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_capacity_commitment('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_capacity_commitment', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_capacity_commitment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_capacity_commitment', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes renewal_plan when provided' do
         synth = create_synthesizer
@@ -211,7 +249,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryCapacityCommitment do
     resource_type: :google_bigquery_capacity_commitment,
     method: :google_bigquery_capacity_commitment,
     required_attrs: { plan: 'test-value', slot_count: 3.14 },
-    expected_outputs: [:id, :commitment_end_time, :commitment_start_time, :name, :project, :state],
+    expected_outputs: [:id, :commitment_end_time, :commitment_start_time, :deletion_policy, :name, :project, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

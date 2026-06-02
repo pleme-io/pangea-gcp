@@ -39,8 +39,10 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerSecretVersion do
 
         expect(ref.id).to eq("${google_secret_manager_secret_version.test.id}")
         expect(ref.create_time).to eq("${google_secret_manager_secret_version.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_secret_manager_secret_version.test.deletion_policy}")
         expect(ref.destroy_time).to eq("${google_secret_manager_secret_version.test.destroy_time}")
         expect(ref.name).to eq("${google_secret_manager_secret_version.test.name}")
+        expect(ref.project).to eq("${google_secret_manager_secret_version.test.project}")
         expect(ref.version).to eq("${google_secret_manager_secret_version.test.version}")
       end
     end
@@ -54,14 +56,16 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerSecretVersion do
 
         config = validate_resource_structure(result, 'google_secret_manager_secret_version', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('destroy_time')
         expect(config).not_to have_key('name')
+        expect(config).not_to have_key('project')
         expect(config).not_to have_key('version')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', enabled: true, is_secret_data_base64: true, secret_data: 'test-value', secret_data_wo: 'test-value', secret_data_wo_version: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', enabled: true, is_secret_data_base64: true, project: 'test-value', secret_data: 'test-value', secret_data_wo: 'test-value', secret_data_wo_version: 3.14 }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,6 +77,7 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerSecretVersion do
         expect(config).to have_key('deletion_policy')
         expect(config).to have_key('enabled')
         expect(config).to have_key('is_secret_data_base64')
+        expect(config).to have_key('project')
         expect(config).to have_key('secret_data')
         expect(config).to have_key('secret_data_wo')
         expect(config).to have_key('secret_data_wo_version')
@@ -130,6 +135,23 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerSecretVersion do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_secret_manager_secret_version', 'minimal')
         expect(config).not_to have_key('is_secret_data_base64')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_secret_manager_secret_version('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_secret_manager_secret_version', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_secret_manager_secret_version('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_secret_manager_secret_version', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes secret_data when provided' do
         synth = create_synthesizer
@@ -258,7 +280,7 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerSecretVersion do
     resource_type: :google_secret_manager_secret_version,
     method: :google_secret_manager_secret_version,
     required_attrs: { secret: 'test-value' },
-    expected_outputs: [:id, :create_time, :destroy_time, :name, :version],
+    expected_outputs: [:id, :create_time, :deletion_policy, :destroy_time, :name, :project, :version],
     sensitive_fields: [:secret_data],
     immutable_fields: [],
     boolean_fields: [:enabled, :is_secret_data_base64]

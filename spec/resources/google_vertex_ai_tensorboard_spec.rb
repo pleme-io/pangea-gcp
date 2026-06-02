@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiTensorboard do
         expect(ref.id).to eq("${google_vertex_ai_tensorboard.test.id}")
         expect(ref.blob_storage_path_prefix).to eq("${google_vertex_ai_tensorboard.test.blob_storage_path_prefix}")
         expect(ref.create_time).to eq("${google_vertex_ai_tensorboard.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_vertex_ai_tensorboard.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_vertex_ai_tensorboard.test.effective_labels}")
         expect(ref.name).to eq("${google_vertex_ai_tensorboard.test.name}")
         expect(ref.project).to eq("${google_vertex_ai_tensorboard.test.project}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiTensorboard do
         config = validate_resource_structure(result, 'google_vertex_ai_tensorboard', 'test')
         expect(config).not_to have_key('blob_storage_path_prefix')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiTensorboard do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', encryption_spec: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', encryption_spec: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -80,13 +82,33 @@ RSpec.describe Pangea::Resources::GoogleVertexAiTensorboard do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vertex_ai_tensorboard', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('encryption_spec')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_tensorboard('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_tensorboard', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_tensorboard('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_tensorboard', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -107,7 +129,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiTensorboard do
       it 'includes encryption_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_tensorboard('opt', required_attrs.merge(encryption_spec: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_tensorboard('opt', required_attrs.merge(encryption_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_tensorboard', 'opt')
         expect(config).to have_key('encryption_spec')
@@ -137,6 +159,40 @@ RSpec.describe Pangea::Resources::GoogleVertexAiTensorboard do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_tensorboard', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_tensorboard('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_tensorboard', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_tensorboard('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_tensorboard', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_tensorboard('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_tensorboard', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_tensorboard('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_tensorboard', 'minimal')
+        expect(config).not_to have_key('region')
       end
     end
 
@@ -182,7 +238,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiTensorboard do
     resource_type: :google_vertex_ai_tensorboard,
     method: :google_vertex_ai_tensorboard,
     required_attrs: { display_name: 'test-value' },
-    expected_outputs: [:id, :blob_storage_path_prefix, :create_time, :effective_labels, :name, :project, :region, :run_count, :terraform_labels, :update_time],
+    expected_outputs: [:id, :blob_storage_path_prefix, :create_time, :deletion_policy, :effective_labels, :name, :project, :region, :run_count, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

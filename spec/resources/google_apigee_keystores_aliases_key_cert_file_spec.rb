@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesKeyCertFile do
         ref = synth.google_apigee_keystores_aliases_key_cert_file('test', required_attrs)
 
         expect(ref.id).to eq("${google_apigee_keystores_aliases_key_cert_file.test.id}")
+        expect(ref.certs_info).to eq("${google_apigee_keystores_aliases_key_cert_file.test.certs_info}")
         expect(ref.type).to eq("${google_apigee_keystores_aliases_key_cert_file.test.type}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesKeyCertFile do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_keystores_aliases_key_cert_file', 'test')
+        expect(config).not_to have_key('certs_info')
         expect(config).not_to have_key('type')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ certs_info: [{ 'key1' => 'val1' }], key: 'test-value', password: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ key: 'test-value', password: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,30 +66,12 @@ RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesKeyCertFile do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_keystores_aliases_key_cert_file', 'full')
-        expect(config).to have_key('certs_info')
         expect(config).to have_key('key')
         expect(config).to have_key('password')
       end
     end
 
     context 'optional attributes' do
-      it 'includes certs_info when provided' do
-        synth = create_synthesizer
-        synth.extend(described_class)
-        synth.google_apigee_keystores_aliases_key_cert_file('opt', required_attrs.merge(certs_info: [{ 'key1' => 'val1' }]))
-        result = normalize_synthesis(synth.synthesis)
-        config = validate_resource_structure(result, 'google_apigee_keystores_aliases_key_cert_file', 'opt')
-        expect(config).to have_key('certs_info')
-      end
-
-      it 'omits certs_info when not provided' do
-        synth = create_synthesizer
-        synth.extend(described_class)
-        synth.google_apigee_keystores_aliases_key_cert_file('minimal', required_attrs)
-        result = normalize_synthesis(synth.synthesis)
-        config = validate_resource_structure(result, 'google_apigee_keystores_aliases_key_cert_file', 'minimal')
-        expect(config).not_to have_key('certs_info')
-      end
       it 'includes key when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -178,7 +162,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesKeyCertFile do
     resource_type: :google_apigee_keystores_aliases_key_cert_file,
     method: :google_apigee_keystores_aliases_key_cert_file,
     required_attrs: { alias: 'test-value', cert: 'test-value', environment: 'test-value', keystore: 'test-value', org_id: 'test-value' },
-    expected_outputs: [:id, :type],
+    expected_outputs: [:id, :certs_info, :type],
     sensitive_fields: [:key, :password],
     immutable_fields: [],
     boolean_fields: []

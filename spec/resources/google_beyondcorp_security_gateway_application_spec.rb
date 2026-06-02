@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGatewayApplication do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { application_id: 'test-value', endpoint_matchers: [{ 'key1' => 'val1' }], security_gateway_id: 'test-value' } }
+  let(:required_attrs) { { application_id: 'test-value', security_gateway_id: 'test-value' } }
 
   describe ':google_beyondcorp_security_gateway_application' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGatewayApplication do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_beyondcorp_security_gateway_application', 'test')
-        validate_required_attributes(config, [:application_id, :endpoint_matchers, :security_gateway_id])
+        validate_required_attributes(config, [:application_id, :security_gateway_id])
       end
 
       it 'returns a ResourceReference' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGatewayApplication do
 
         expect(ref.id).to eq("${google_beyondcorp_security_gateway_application.test.id}")
         expect(ref.create_time).to eq("${google_beyondcorp_security_gateway_application.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_beyondcorp_security_gateway_application.test.deletion_policy}")
         expect(ref.name).to eq("${google_beyondcorp_security_gateway_application.test.name}")
         expect(ref.project).to eq("${google_beyondcorp_security_gateway_application.test.project}")
         expect(ref.update_time).to eq("${google_beyondcorp_security_gateway_application.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGatewayApplication do
 
         config = validate_resource_structure(result, 'google_beyondcorp_security_gateway_application', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGatewayApplication do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ display_name: 'test-value', upstreams: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', display_name: 'test-value', endpoint_matchers: [{ 'key1' => 'val1' }], project: 'test-value', schema: 'test-value', upstreams: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,12 +72,33 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGatewayApplication do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_beyondcorp_security_gateway_application', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('endpoint_matchers')
+        expect(config).to have_key('project')
+        expect(config).to have_key('schema')
         expect(config).to have_key('upstreams')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway_application('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway_application', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway_application('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway_application', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes display_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -92,6 +115,57 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGatewayApplication do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_beyondcorp_security_gateway_application', 'minimal')
         expect(config).not_to have_key('display_name')
+      end
+      it 'includes endpoint_matchers when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway_application('opt', required_attrs.merge(endpoint_matchers: [{ 'key1' => 'val1' }]))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway_application', 'opt')
+        expect(config).to have_key('endpoint_matchers')
+      end
+
+      it 'omits endpoint_matchers when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway_application('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway_application', 'minimal')
+        expect(config).not_to have_key('endpoint_matchers')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway_application('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway_application', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway_application('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway_application', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes schema when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway_application('opt', required_attrs.merge(schema: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway_application', 'opt')
+        expect(config).to have_key('schema')
+      end
+
+      it 'omits schema when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway_application('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway_application', 'minimal')
+        expect(config).not_to have_key('schema')
       end
       it 'includes upstreams when provided' do
         synth = create_synthesizer
@@ -121,7 +195,6 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGatewayApplication do
 
         config = validate_resource_structure(result, 'google_beyondcorp_security_gateway_application', 'typed')
         expect(config['application_id']).to be_a(String)
-        expect(config['endpoint_matchers']).to be_a(Array)
         expect(config['security_gateway_id']).to be_a(String)
       end
     end
@@ -155,8 +228,8 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGatewayApplication do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_beyondcorp_security_gateway_application,
     method: :google_beyondcorp_security_gateway_application,
-    required_attrs: { application_id: 'test-value', endpoint_matchers: [{ 'key1' => 'val1' }], security_gateway_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :project, :update_time],
+    required_attrs: { application_id: 'test-value', security_gateway_id: 'test-value' },
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :project, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

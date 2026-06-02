@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleComputeAutoscaler do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { autoscaling_policy: [{ 'key1' => 'val1' }], name: 'test-value', target: 'test-value' } }
+  let(:required_attrs) { { autoscaling_policy: { 'key1' => 'val1' }, name: 'test-value', target: 'test-value' } }
 
   describe ':google_compute_autoscaler' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeAutoscaler do
 
         expect(ref.id).to eq("${google_compute_autoscaler.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_autoscaler.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_autoscaler.test.deletion_policy}")
         expect(ref.project).to eq("${google_compute_autoscaler.test.project}")
         expect(ref.self_link).to eq("${google_compute_autoscaler.test.self_link}")
         expect(ref.zone).to eq("${google_compute_autoscaler.test.zone}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleComputeAutoscaler do
 
         config = validate_resource_structure(result, 'google_compute_autoscaler', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
         expect(config).not_to have_key('zone')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleComputeAutoscaler do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', project: 'test-value', zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,11 +72,31 @@ RSpec.describe Pangea::Resources::GoogleComputeAutoscaler do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_autoscaler', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('project')
+        expect(config).to have_key('zone')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_autoscaler('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_autoscaler', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_autoscaler('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_autoscaler', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -92,6 +114,40 @@ RSpec.describe Pangea::Resources::GoogleComputeAutoscaler do
         config = validate_resource_structure(result, 'google_compute_autoscaler', 'minimal')
         expect(config).not_to have_key('description')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_autoscaler('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_autoscaler', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_autoscaler('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_autoscaler', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_autoscaler('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_autoscaler', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_autoscaler('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_autoscaler', 'minimal')
+        expect(config).not_to have_key('zone')
+      end
     end
 
     context 'attribute types' do
@@ -102,7 +158,7 @@ RSpec.describe Pangea::Resources::GoogleComputeAutoscaler do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_autoscaler', 'typed')
-        expect(config['autoscaling_policy']).to be_a(Array)
+        expect(config['autoscaling_policy']).to be_a(Hash)
         expect(config['name']).to be_a(String)
         expect(config['target']).to be_a(String)
       end
@@ -137,8 +193,8 @@ RSpec.describe Pangea::Resources::GoogleComputeAutoscaler do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_compute_autoscaler,
     method: :google_compute_autoscaler,
-    required_attrs: { autoscaling_policy: [{ 'key1' => 'val1' }], name: 'test-value', target: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :project, :self_link, :zone],
+    required_attrs: { autoscaling_policy: { 'key1' => 'val1' }, name: 'test-value', target: 'test-value' },
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :project, :self_link, :zone],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -40,10 +40,13 @@ RSpec.describe Pangea::Resources::GoogleDataFusionInstance do
         expect(ref.id).to eq("${google_data_fusion_instance.test.id}")
         expect(ref.api_endpoint).to eq("${google_data_fusion_instance.test.api_endpoint}")
         expect(ref.create_time).to eq("${google_data_fusion_instance.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_data_fusion_instance.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_data_fusion_instance.test.effective_labels}")
         expect(ref.gcs_bucket).to eq("${google_data_fusion_instance.test.gcs_bucket}")
+        expect(ref.maintenance_events).to eq("${google_data_fusion_instance.test.maintenance_events}")
         expect(ref.options).to eq("${google_data_fusion_instance.test.options}")
         expect(ref.p4_service_account).to eq("${google_data_fusion_instance.test.p4_service_account}")
+        expect(ref.patch_revision).to eq("${google_data_fusion_instance.test.patch_revision}")
         expect(ref.project).to eq("${google_data_fusion_instance.test.project}")
         expect(ref.region).to eq("${google_data_fusion_instance.test.region}")
         expect(ref.service_endpoint).to eq("${google_data_fusion_instance.test.service_endpoint}")
@@ -67,10 +70,13 @@ RSpec.describe Pangea::Resources::GoogleDataFusionInstance do
         config = validate_resource_structure(result, 'google_data_fusion_instance', 'test')
         expect(config).not_to have_key('api_endpoint')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('gcs_bucket')
+        expect(config).not_to have_key('maintenance_events')
         expect(config).not_to have_key('options')
         expect(config).not_to have_key('p4_service_account')
+        expect(config).not_to have_key('patch_revision')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('region')
         expect(config).not_to have_key('service_endpoint')
@@ -85,7 +91,7 @@ RSpec.describe Pangea::Resources::GoogleDataFusionInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ accelerators: [{ 'key1' => 'val1' }], crypto_key_config: [{ 'key1' => 'val1' }], dataproc_service_account: 'test-value', description: 'test-value', display_name: 'test-value', enable_rbac: true, enable_stackdriver_logging: true, enable_stackdriver_monitoring: true, event_publish_config: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, network_config: [{ 'key1' => 'val1' }], private_instance: true, tags: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ accelerators: [{ 'key1' => 'val1' }], crypto_key_config: { 'key1' => 'val1' }, dataproc_service_account: 'test-value', deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', enable_rbac: true, enable_stackdriver_logging: true, enable_stackdriver_monitoring: true, event_publish_config: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, maintenance_policy: { 'key1' => 'val1' }, network_config: { 'key1' => 'val1' }, options: { 'key1' => 'val1' }, patch_revision: 'test-value', private_instance: true, project: 'test-value', region: 'test-value', tags: { 'key1' => 'val1' }, version: 'test-value', zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -97,6 +103,7 @@ RSpec.describe Pangea::Resources::GoogleDataFusionInstance do
         expect(config).to have_key('accelerators')
         expect(config).to have_key('crypto_key_config')
         expect(config).to have_key('dataproc_service_account')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
         expect(config).to have_key('enable_rbac')
@@ -104,9 +111,16 @@ RSpec.describe Pangea::Resources::GoogleDataFusionInstance do
         expect(config).to have_key('enable_stackdriver_monitoring')
         expect(config).to have_key('event_publish_config')
         expect(config).to have_key('labels')
+        expect(config).to have_key('maintenance_policy')
         expect(config).to have_key('network_config')
+        expect(config).to have_key('options')
+        expect(config).to have_key('patch_revision')
         expect(config).to have_key('private_instance')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('tags')
+        expect(config).to have_key('version')
+        expect(config).to have_key('zone')
       end
     end
 
@@ -131,7 +145,7 @@ RSpec.describe Pangea::Resources::GoogleDataFusionInstance do
       it 'includes crypto_key_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_data_fusion_instance('opt', required_attrs.merge(crypto_key_config: [{ 'key1' => 'val1' }]))
+        synth.google_data_fusion_instance('opt', required_attrs.merge(crypto_key_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_fusion_instance', 'opt')
         expect(config).to have_key('crypto_key_config')
@@ -161,6 +175,23 @@ RSpec.describe Pangea::Resources::GoogleDataFusionInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_fusion_instance', 'minimal')
         expect(config).not_to have_key('dataproc_service_account')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -250,7 +281,7 @@ RSpec.describe Pangea::Resources::GoogleDataFusionInstance do
       it 'includes event_publish_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_data_fusion_instance('opt', required_attrs.merge(event_publish_config: [{ 'key1' => 'val1' }]))
+        synth.google_data_fusion_instance('opt', required_attrs.merge(event_publish_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_fusion_instance', 'opt')
         expect(config).to have_key('event_publish_config')
@@ -281,10 +312,27 @@ RSpec.describe Pangea::Resources::GoogleDataFusionInstance do
         config = validate_resource_structure(result, 'google_data_fusion_instance', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes maintenance_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('opt', required_attrs.merge(maintenance_policy: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'opt')
+        expect(config).to have_key('maintenance_policy')
+      end
+
+      it 'omits maintenance_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'minimal')
+        expect(config).not_to have_key('maintenance_policy')
+      end
       it 'includes network_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_data_fusion_instance('opt', required_attrs.merge(network_config: [{ 'key1' => 'val1' }]))
+        synth.google_data_fusion_instance('opt', required_attrs.merge(network_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_fusion_instance', 'opt')
         expect(config).to have_key('network_config')
@@ -297,6 +345,40 @@ RSpec.describe Pangea::Resources::GoogleDataFusionInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_fusion_instance', 'minimal')
         expect(config).not_to have_key('network_config')
+      end
+      it 'includes options when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('opt', required_attrs.merge(options: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'opt')
+        expect(config).to have_key('options')
+      end
+
+      it 'omits options when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'minimal')
+        expect(config).not_to have_key('options')
+      end
+      it 'includes patch_revision when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('opt', required_attrs.merge(patch_revision: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'opt')
+        expect(config).to have_key('patch_revision')
+      end
+
+      it 'omits patch_revision when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'minimal')
+        expect(config).not_to have_key('patch_revision')
       end
       it 'includes private_instance when provided' do
         synth = create_synthesizer
@@ -315,6 +397,40 @@ RSpec.describe Pangea::Resources::GoogleDataFusionInstance do
         config = validate_resource_structure(result, 'google_data_fusion_instance', 'minimal')
         expect(config).not_to have_key('private_instance')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'minimal')
+        expect(config).not_to have_key('region')
+      end
       it 'includes tags when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -331,6 +447,40 @@ RSpec.describe Pangea::Resources::GoogleDataFusionInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_fusion_instance', 'minimal')
         expect(config).not_to have_key('tags')
+      end
+      it 'includes version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('opt', required_attrs.merge(version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'opt')
+        expect(config).to have_key('version')
+      end
+
+      it 'omits version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'minimal')
+        expect(config).not_to have_key('version')
+      end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_fusion_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_fusion_instance', 'minimal')
+        expect(config).not_to have_key('zone')
       end
     end
 
@@ -424,7 +574,7 @@ RSpec.describe Pangea::Resources::GoogleDataFusionInstance do
     resource_type: :google_data_fusion_instance,
     method: :google_data_fusion_instance,
     required_attrs: { name: 'test-value', type: 'test-value' },
-    expected_outputs: [:id, :api_endpoint, :create_time, :effective_labels, :gcs_bucket, :options, :p4_service_account, :project, :region, :service_endpoint, :state, :state_message, :tenant_project_id, :terraform_labels, :update_time, :version, :zone],
+    expected_outputs: [:id, :api_endpoint, :create_time, :deletion_policy, :effective_labels, :gcs_bucket, :maintenance_events, :options, :p4_service_account, :patch_revision, :project, :region, :service_endpoint, :state, :state_message, :tenant_project_id, :terraform_labels, :update_time, :version, :zone],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:enable_rbac, :enable_stackdriver_logging, :enable_stackdriver_monitoring, :private_instance]

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleClouddeployAutomation do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { delivery_pipeline: 'test-value', location: 'test-value', name: 'test-value', rules: [{ 'key1' => 'val1' }], selector: [{ 'key1' => 'val1' }], service_account: 'test-value' } }
+  let(:required_attrs) { { delivery_pipeline: 'test-value', location: 'test-value', name: 'test-value', rules: [{ 'key1' => 'val1' }], selector: { 'key1' => 'val1' }, service_account: 'test-value' } }
 
   describe ':google_clouddeploy_automation' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployAutomation do
 
         expect(ref.id).to eq("${google_clouddeploy_automation.test.id}")
         expect(ref.create_time).to eq("${google_clouddeploy_automation.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_clouddeploy_automation.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_clouddeploy_automation.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_clouddeploy_automation.test.effective_labels}")
         expect(ref.etag).to eq("${google_clouddeploy_automation.test.etag}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployAutomation do
 
         config = validate_resource_structure(result, 'google_clouddeploy_automation', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
@@ -69,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployAutomation do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, description: 'test-value', labels: { 'key1' => 'val1' }, suspended: true }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', suspended: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -79,8 +81,10 @@ RSpec.describe Pangea::Resources::GoogleClouddeployAutomation do
 
         config = validate_resource_structure(result, 'google_clouddeploy_automation', 'full')
         expect(config).to have_key('annotations')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('suspended')
       end
     end
@@ -102,6 +106,23 @@ RSpec.describe Pangea::Resources::GoogleClouddeployAutomation do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_clouddeploy_automation', 'minimal')
         expect(config).not_to have_key('annotations')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddeploy_automation('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddeploy_automation', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddeploy_automation('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddeploy_automation', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -136,6 +157,23 @@ RSpec.describe Pangea::Resources::GoogleClouddeployAutomation do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_clouddeploy_automation', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddeploy_automation('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddeploy_automation', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddeploy_automation('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddeploy_automation', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes suspended when provided' do
         synth = create_synthesizer
@@ -182,7 +220,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployAutomation do
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
         expect(config['rules']).to be_a(Array)
-        expect(config['selector']).to be_a(Array)
+        expect(config['selector']).to be_a(Hash)
         expect(config['service_account']).to be_a(String)
       end
     end
@@ -216,8 +254,8 @@ RSpec.describe Pangea::Resources::GoogleClouddeployAutomation do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_clouddeploy_automation,
     method: :google_clouddeploy_automation,
-    required_attrs: { delivery_pipeline: 'test-value', location: 'test-value', name: 'test-value', rules: [{ 'key1' => 'val1' }], selector: [{ 'key1' => 'val1' }], service_account: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_annotations, :effective_labels, :etag, :project, :terraform_labels, :uid, :update_time],
+    required_attrs: { delivery_pipeline: 'test-value', location: 'test-value', name: 'test-value', rules: [{ 'key1' => 'val1' }], selector: { 'key1' => 'val1' }, service_account: 'test-value' },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_annotations, :effective_labels, :etag, :project, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:suspended]

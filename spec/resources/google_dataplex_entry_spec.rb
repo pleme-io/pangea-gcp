@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexEntry do
 
         expect(ref.id).to eq("${google_dataplex_entry.test.id}")
         expect(ref.create_time).to eq("${google_dataplex_entry.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_dataplex_entry.test.deletion_policy}")
         expect(ref.name).to eq("${google_dataplex_entry.test.name}")
         expect(ref.project).to eq("${google_dataplex_entry.test.project}")
         expect(ref.update_time).to eq("${google_dataplex_entry.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexEntry do
 
         config = validate_resource_structure(result, 'google_dataplex_entry', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexEntry do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ aspects: [{ 'key1' => 'val1' }], entry_group_id: 'test-value', entry_id: 'test-value', entry_source: [{ 'key1' => 'val1' }], fully_qualified_name: 'test-value', location: 'test-value', parent_entry: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ aspects: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', entry_group_id: 'test-value', entry_id: 'test-value', entry_source: { 'key1' => 'val1' }, fully_qualified_name: 'test-value', location: 'test-value', parent_entry: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,12 +73,14 @@ RSpec.describe Pangea::Resources::GoogleDataplexEntry do
 
         config = validate_resource_structure(result, 'google_dataplex_entry', 'full')
         expect(config).to have_key('aspects')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('entry_group_id')
         expect(config).to have_key('entry_id')
         expect(config).to have_key('entry_source')
         expect(config).to have_key('fully_qualified_name')
         expect(config).to have_key('location')
         expect(config).to have_key('parent_entry')
+        expect(config).to have_key('project')
       end
     end
 
@@ -97,6 +101,23 @@ RSpec.describe Pangea::Resources::GoogleDataplexEntry do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataplex_entry', 'minimal')
         expect(config).not_to have_key('aspects')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_entry('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_entry', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_entry('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_entry', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes entry_group_id when provided' do
         synth = create_synthesizer
@@ -135,7 +156,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexEntry do
       it 'includes entry_source when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataplex_entry('opt', required_attrs.merge(entry_source: [{ 'key1' => 'val1' }]))
+        synth.google_dataplex_entry('opt', required_attrs.merge(entry_source: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataplex_entry', 'opt')
         expect(config).to have_key('entry_source')
@@ -200,6 +221,23 @@ RSpec.describe Pangea::Resources::GoogleDataplexEntry do
         config = validate_resource_structure(result, 'google_dataplex_entry', 'minimal')
         expect(config).not_to have_key('parent_entry')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_entry('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_entry', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_entry('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_entry', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -244,7 +282,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexEntry do
     resource_type: :google_dataplex_entry,
     method: :google_dataplex_entry,
     required_attrs: { entry_type: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :project, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :project, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

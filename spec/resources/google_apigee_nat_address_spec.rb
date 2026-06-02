@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeNatAddress do
         ref = synth.google_apigee_nat_address('test', required_attrs)
 
         expect(ref.id).to eq("${google_apigee_nat_address.test.id}")
+        expect(ref.deletion_policy).to eq("${google_apigee_nat_address.test.deletion_policy}")
         expect(ref.ip_address).to eq("${google_apigee_nat_address.test.ip_address}")
         expect(ref.state).to eq("${google_apigee_nat_address.test.state}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleApigeeNatAddress do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_nat_address', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('ip_address')
         expect(config).not_to have_key('state')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ activate: true }) }
+      let(:all_attrs) { required_attrs.merge({ activate: true, deletion_policy: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,6 +69,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeNatAddress do
 
         config = validate_resource_structure(result, 'google_apigee_nat_address', 'full')
         expect(config).to have_key('activate')
+        expect(config).to have_key('deletion_policy')
       end
     end
 
@@ -87,6 +90,23 @@ RSpec.describe Pangea::Resources::GoogleApigeeNatAddress do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_nat_address', 'minimal')
         expect(config).not_to have_key('activate')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_nat_address('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_nat_address', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_nat_address('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_nat_address', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -147,7 +167,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeNatAddress do
     resource_type: :google_apigee_nat_address,
     method: :google_apigee_nat_address,
     required_attrs: { instance_id: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :ip_address, :state],
+    expected_outputs: [:id, :deletion_policy, :ip_address, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:activate]

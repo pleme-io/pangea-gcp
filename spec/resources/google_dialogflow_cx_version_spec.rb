@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxVersion do
 
         expect(ref.id).to eq("${google_dialogflow_cx_version.test.id}")
         expect(ref.create_time).to eq("${google_dialogflow_cx_version.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_dialogflow_cx_version.test.deletion_policy}")
         expect(ref.name).to eq("${google_dialogflow_cx_version.test.name}")
         expect(ref.nlu_settings).to eq("${google_dialogflow_cx_version.test.nlu_settings}")
         expect(ref.state).to eq("${google_dialogflow_cx_version.test.state}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxVersion do
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_version', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('nlu_settings')
         expect(config).not_to have_key('state')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxVersion do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', parent: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', parent: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,12 +72,30 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxVersion do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_version', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('parent')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_version('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_version', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_version('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_version', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -154,7 +174,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxVersion do
     resource_type: :google_dialogflow_cx_version,
     method: :google_dialogflow_cx_version,
     required_attrs: { display_name: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :nlu_settings, :state],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :nlu_settings, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

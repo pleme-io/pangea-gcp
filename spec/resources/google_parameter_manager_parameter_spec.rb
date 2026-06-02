@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleParameterManagerParameter do
 
         expect(ref.id).to eq("${google_parameter_manager_parameter.test.id}")
         expect(ref.create_time).to eq("${google_parameter_manager_parameter.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_parameter_manager_parameter.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_parameter_manager_parameter.test.effective_labels}")
         expect(ref.name).to eq("${google_parameter_manager_parameter.test.name}")
         expect(ref.policy_member).to eq("${google_parameter_manager_parameter.test.policy_member}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleParameterManagerParameter do
 
         config = validate_resource_structure(result, 'google_parameter_manager_parameter', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('policy_member')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleParameterManagerParameter do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ format: 'test-value', kms_key: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', format: 'test-value', kms_key: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,13 +78,32 @@ RSpec.describe Pangea::Resources::GoogleParameterManagerParameter do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_parameter_manager_parameter', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('format')
         expect(config).to have_key('kms_key')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_parameter_manager_parameter('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_parameter_manager_parameter', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_parameter_manager_parameter('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_parameter_manager_parameter', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes format when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -134,6 +155,23 @@ RSpec.describe Pangea::Resources::GoogleParameterManagerParameter do
         config = validate_resource_structure(result, 'google_parameter_manager_parameter', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_parameter_manager_parameter('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_parameter_manager_parameter', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_parameter_manager_parameter('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_parameter_manager_parameter', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -178,7 +216,7 @@ RSpec.describe Pangea::Resources::GoogleParameterManagerParameter do
     resource_type: :google_parameter_manager_parameter,
     method: :google_parameter_manager_parameter,
     required_attrs: { parameter_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :name, :policy_member, :project, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :name, :policy_member, :project, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

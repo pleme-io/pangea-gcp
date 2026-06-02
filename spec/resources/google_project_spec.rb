@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleProject do
         ref = synth.google_project('test', required_attrs)
 
         expect(ref.id).to eq("${google_project.test.id}")
+        expect(ref.deletion_policy).to eq("${google_project.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_project.test.effective_labels}")
         expect(ref.number).to eq("${google_project.test.number}")
         expect(ref.terraform_labels).to eq("${google_project.test.terraform_labels}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleProject do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_project', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('number')
         expect(config).not_to have_key('terraform_labels')
@@ -257,7 +259,7 @@ RSpec.describe Pangea::Resources::GoogleProject do
     resource_type: :google_project,
     method: :google_project,
     required_attrs: { name: 'test-value', project_id: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :number, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :number, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:auto_create_network]

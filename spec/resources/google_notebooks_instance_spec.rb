@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksInstance do
 
         expect(ref.id).to eq("${google_notebooks_instance.test.id}")
         expect(ref.create_time).to eq("${google_notebooks_instance.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_notebooks_instance.test.deletion_policy}")
         expect(ref.disk_encryption).to eq("${google_notebooks_instance.test.disk_encryption}")
         expect(ref.effective_labels).to eq("${google_notebooks_instance.test.effective_labels}")
         expect(ref.network).to eq("${google_notebooks_instance.test.network}")
@@ -63,6 +64,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksInstance do
 
         config = validate_resource_structure(result, 'google_notebooks_instance', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('disk_encryption')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('network')
@@ -79,7 +81,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ accelerator_config: [{ 'key1' => 'val1' }], boot_disk_size_gb: 3.14, boot_disk_type: 'test-value', container_image: [{ 'key1' => 'val1' }], custom_gpu_driver_path: 'test-value', data_disk_size_gb: 3.14, data_disk_type: 'test-value', desired_state: 'test-value', install_gpu_driver: true, instance_owners: ['test-value'], kms_key: 'test-value', labels: { 'key1' => 'val1' }, metadata: { 'key1' => 'val1' }, nic_type: 'test-value', no_proxy_access: true, no_public_ip: true, no_remove_data_disk: true, post_startup_script: 'test-value', reservation_affinity: [{ 'key1' => 'val1' }], shielded_instance_config: [{ 'key1' => 'val1' }], vm_image: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ accelerator_config: { 'key1' => 'val1' }, boot_disk_size_gb: 3.14, boot_disk_type: 'test-value', container_image: { 'key1' => 'val1' }, create_time: 'test-value', custom_gpu_driver_path: 'test-value', data_disk_size_gb: 3.14, data_disk_type: 'test-value', deletion_policy: 'test-value', desired_state: 'test-value', disk_encryption: 'test-value', install_gpu_driver: true, instance_owners: ['test-value'], kms_key: 'test-value', labels: { 'key1' => 'val1' }, metadata: { 'key1' => 'val1' }, network: 'test-value', nic_type: 'test-value', no_proxy_access: true, no_public_ip: true, no_remove_data_disk: true, post_startup_script: 'test-value', project: 'test-value', reservation_affinity: { 'key1' => 'val1' }, service_account: 'test-value', service_account_scopes: ['test-value'], shielded_instance_config: { 'key1' => 'val1' }, subnet: 'test-value', tags: ['test-value'], update_time: 'test-value', vm_image: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -92,22 +94,32 @@ RSpec.describe Pangea::Resources::GoogleNotebooksInstance do
         expect(config).to have_key('boot_disk_size_gb')
         expect(config).to have_key('boot_disk_type')
         expect(config).to have_key('container_image')
+        expect(config).to have_key('create_time')
         expect(config).to have_key('custom_gpu_driver_path')
         expect(config).to have_key('data_disk_size_gb')
         expect(config).to have_key('data_disk_type')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('desired_state')
+        expect(config).to have_key('disk_encryption')
         expect(config).to have_key('install_gpu_driver')
         expect(config).to have_key('instance_owners')
         expect(config).to have_key('kms_key')
         expect(config).to have_key('labels')
         expect(config).to have_key('metadata')
+        expect(config).to have_key('network')
         expect(config).to have_key('nic_type')
         expect(config).to have_key('no_proxy_access')
         expect(config).to have_key('no_public_ip')
         expect(config).to have_key('no_remove_data_disk')
         expect(config).to have_key('post_startup_script')
+        expect(config).to have_key('project')
         expect(config).to have_key('reservation_affinity')
+        expect(config).to have_key('service_account')
+        expect(config).to have_key('service_account_scopes')
         expect(config).to have_key('shielded_instance_config')
+        expect(config).to have_key('subnet')
+        expect(config).to have_key('tags')
+        expect(config).to have_key('update_time')
         expect(config).to have_key('vm_image')
       end
     end
@@ -116,7 +128,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksInstance do
       it 'includes accelerator_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_notebooks_instance('opt', required_attrs.merge(accelerator_config: [{ 'key1' => 'val1' }]))
+        synth.google_notebooks_instance('opt', required_attrs.merge(accelerator_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
         expect(config).to have_key('accelerator_config')
@@ -167,7 +179,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksInstance do
       it 'includes container_image when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_notebooks_instance('opt', required_attrs.merge(container_image: [{ 'key1' => 'val1' }]))
+        synth.google_notebooks_instance('opt', required_attrs.merge(container_image: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
         expect(config).to have_key('container_image')
@@ -180,6 +192,23 @@ RSpec.describe Pangea::Resources::GoogleNotebooksInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
         expect(config).not_to have_key('container_image')
+      end
+      it 'includes create_time when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('opt', required_attrs.merge(create_time: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
+        expect(config).to have_key('create_time')
+      end
+
+      it 'omits create_time when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
+        expect(config).not_to have_key('create_time')
       end
       it 'includes custom_gpu_driver_path when provided' do
         synth = create_synthesizer
@@ -232,6 +261,23 @@ RSpec.describe Pangea::Resources::GoogleNotebooksInstance do
         config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
         expect(config).not_to have_key('data_disk_type')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes desired_state when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -248,6 +294,23 @@ RSpec.describe Pangea::Resources::GoogleNotebooksInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
         expect(config).not_to have_key('desired_state')
+      end
+      it 'includes disk_encryption when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('opt', required_attrs.merge(disk_encryption: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
+        expect(config).to have_key('disk_encryption')
+      end
+
+      it 'omits disk_encryption when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
+        expect(config).not_to have_key('disk_encryption')
       end
       it 'includes install_gpu_driver when provided' do
         synth = create_synthesizer
@@ -334,6 +397,23 @@ RSpec.describe Pangea::Resources::GoogleNotebooksInstance do
         config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
         expect(config).not_to have_key('metadata')
       end
+      it 'includes network when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('opt', required_attrs.merge(network: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
+        expect(config).to have_key('network')
+      end
+
+      it 'omits network when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
+        expect(config).not_to have_key('network')
+      end
       it 'includes nic_type when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -419,10 +499,27 @@ RSpec.describe Pangea::Resources::GoogleNotebooksInstance do
         config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
         expect(config).not_to have_key('post_startup_script')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes reservation_affinity when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_notebooks_instance('opt', required_attrs.merge(reservation_affinity: [{ 'key1' => 'val1' }]))
+        synth.google_notebooks_instance('opt', required_attrs.merge(reservation_affinity: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
         expect(config).to have_key('reservation_affinity')
@@ -436,10 +533,44 @@ RSpec.describe Pangea::Resources::GoogleNotebooksInstance do
         config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
         expect(config).not_to have_key('reservation_affinity')
       end
+      it 'includes service_account when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('opt', required_attrs.merge(service_account: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
+        expect(config).to have_key('service_account')
+      end
+
+      it 'omits service_account when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
+        expect(config).not_to have_key('service_account')
+      end
+      it 'includes service_account_scopes when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('opt', required_attrs.merge(service_account_scopes: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
+        expect(config).to have_key('service_account_scopes')
+      end
+
+      it 'omits service_account_scopes when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
+        expect(config).not_to have_key('service_account_scopes')
+      end
       it 'includes shielded_instance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_notebooks_instance('opt', required_attrs.merge(shielded_instance_config: [{ 'key1' => 'val1' }]))
+        synth.google_notebooks_instance('opt', required_attrs.merge(shielded_instance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
         expect(config).to have_key('shielded_instance_config')
@@ -453,10 +584,61 @@ RSpec.describe Pangea::Resources::GoogleNotebooksInstance do
         config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
         expect(config).not_to have_key('shielded_instance_config')
       end
+      it 'includes subnet when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('opt', required_attrs.merge(subnet: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
+        expect(config).to have_key('subnet')
+      end
+
+      it 'omits subnet when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
+        expect(config).not_to have_key('subnet')
+      end
+      it 'includes tags when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('opt', required_attrs.merge(tags: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
+        expect(config).to have_key('tags')
+      end
+
+      it 'omits tags when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
+        expect(config).not_to have_key('tags')
+      end
+      it 'includes update_time when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('opt', required_attrs.merge(update_time: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
+        expect(config).to have_key('update_time')
+      end
+
+      it 'omits update_time when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_instance', 'minimal')
+        expect(config).not_to have_key('update_time')
+      end
       it 'includes vm_image when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_notebooks_instance('opt', required_attrs.merge(vm_image: [{ 'key1' => 'val1' }]))
+        synth.google_notebooks_instance('opt', required_attrs.merge(vm_image: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_notebooks_instance', 'opt')
         expect(config).to have_key('vm_image')
@@ -563,7 +745,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksInstance do
     resource_type: :google_notebooks_instance,
     method: :google_notebooks_instance,
     required_attrs: { location: 'test-value', machine_type: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :create_time, :disk_encryption, :effective_labels, :network, :project, :proxy_uri, :service_account, :service_account_scopes, :state, :subnet, :tags, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :disk_encryption, :effective_labels, :network, :project, :proxy_uri, :service_account, :service_account_scopes, :state, :subnet, :tags, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:install_gpu_driver, :no_proxy_access, :no_public_ip, :no_remove_data_disk]

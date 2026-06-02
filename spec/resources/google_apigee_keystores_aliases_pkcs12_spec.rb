@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesPkcs12 do
 
         expect(ref.id).to eq("${google_apigee_keystores_aliases_pkcs12.test.id}")
         expect(ref.certs_info).to eq("${google_apigee_keystores_aliases_pkcs12.test.certs_info}")
+        expect(ref.deletion_policy).to eq("${google_apigee_keystores_aliases_pkcs12.test.deletion_policy}")
         expect(ref.password).to eq("${google_apigee_keystores_aliases_pkcs12.test.password}")
         expect(ref.type).to eq("${google_apigee_keystores_aliases_pkcs12.test.type}")
       end
@@ -53,8 +54,61 @@ RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesPkcs12 do
 
         config = validate_resource_structure(result, 'google_apigee_keystores_aliases_pkcs12', 'test')
         expect(config).not_to have_key('certs_info')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('password')
         expect(config).not_to have_key('type')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', password: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_keystores_aliases_pkcs12('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_apigee_keystores_aliases_pkcs12', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('password')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_keystores_aliases_pkcs12('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_keystores_aliases_pkcs12', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_keystores_aliases_pkcs12('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_keystores_aliases_pkcs12', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes password when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_keystores_aliases_pkcs12('opt', required_attrs.merge(password: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_keystores_aliases_pkcs12', 'opt')
+        expect(config).to have_key('password')
+      end
+
+      it 'omits password when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_keystores_aliases_pkcs12('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_keystores_aliases_pkcs12', 'minimal')
+        expect(config).not_to have_key('password')
       end
     end
 
@@ -105,7 +159,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeKeystoresAliasesPkcs12 do
     resource_type: :google_apigee_keystores_aliases_pkcs12,
     method: :google_apigee_keystores_aliases_pkcs12,
     required_attrs: { alias: 'test-value', environment: 'test-value', file: 'test-value', filehash: 'test-value', keystore: 'test-value', org_id: 'test-value' },
-    expected_outputs: [:id, :certs_info, :password, :type],
+    expected_outputs: [:id, :certs_info, :deletion_policy, :password, :type],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

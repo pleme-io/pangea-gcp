@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleApigeeSecurityAction do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { condition_config: [{ 'key1' => 'val1' }], env_id: 'test-value', org_id: 'test-value', security_action_id: 'test-value', state: 'test-value' } }
+  let(:required_attrs) { { condition_config: { 'key1' => 'val1' }, env_id: 'test-value', org_id: 'test-value', security_action_id: 'test-value', state: 'test-value' } }
 
   describe ':google_apigee_security_action' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityAction do
 
         expect(ref.id).to eq("${google_apigee_security_action.test.id}")
         expect(ref.create_time).to eq("${google_apigee_security_action.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_apigee_security_action.test.deletion_policy}")
         expect(ref.update_time).to eq("${google_apigee_security_action.test.update_time}")
       end
     end
@@ -52,12 +53,13 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityAction do
 
         config = validate_resource_structure(result, 'google_apigee_security_action', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('update_time')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ allow: [{ 'key1' => 'val1' }], api_proxies: ['test-value'], deny: [{ 'key1' => 'val1' }], description: 'test-value', expire_time: 'test-value', flag: [{ 'key1' => 'val1' }], ttl: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ allow: { 'key1' => 'val1' }, api_proxies: ['test-value'], deletion_policy: 'test-value', deny: { 'key1' => 'val1' }, description: 'test-value', expire_time: 'test-value', flag: { 'key1' => 'val1' }, ttl: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,6 +70,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityAction do
         config = validate_resource_structure(result, 'google_apigee_security_action', 'full')
         expect(config).to have_key('allow')
         expect(config).to have_key('api_proxies')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deny')
         expect(config).to have_key('description')
         expect(config).to have_key('expire_time')
@@ -80,7 +83,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityAction do
       it 'includes allow when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_security_action('opt', required_attrs.merge(allow: [{ 'key1' => 'val1' }]))
+        synth.google_apigee_security_action('opt', required_attrs.merge(allow: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_security_action', 'opt')
         expect(config).to have_key('allow')
@@ -111,10 +114,27 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityAction do
         config = validate_resource_structure(result, 'google_apigee_security_action', 'minimal')
         expect(config).not_to have_key('api_proxies')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_security_action('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_security_action', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_security_action('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_security_action', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deny when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_security_action('opt', required_attrs.merge(deny: [{ 'key1' => 'val1' }]))
+        synth.google_apigee_security_action('opt', required_attrs.merge(deny: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_security_action', 'opt')
         expect(config).to have_key('deny')
@@ -165,7 +185,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityAction do
       it 'includes flag when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_security_action('opt', required_attrs.merge(flag: [{ 'key1' => 'val1' }]))
+        synth.google_apigee_security_action('opt', required_attrs.merge(flag: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_security_action', 'opt')
         expect(config).to have_key('flag')
@@ -206,7 +226,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityAction do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_security_action', 'typed')
-        expect(config['condition_config']).to be_a(Array)
+        expect(config['condition_config']).to be_a(Hash)
         expect(config['env_id']).to be_a(String)
         expect(config['org_id']).to be_a(String)
         expect(config['security_action_id']).to be_a(String)
@@ -243,8 +263,8 @@ RSpec.describe Pangea::Resources::GoogleApigeeSecurityAction do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_apigee_security_action,
     method: :google_apigee_security_action,
-    required_attrs: { condition_config: [{ 'key1' => 'val1' }], env_id: 'test-value', org_id: 'test-value', security_action_id: 'test-value', state: 'test-value' },
-    expected_outputs: [:id, :create_time, :update_time],
+    required_attrs: { condition_config: { 'key1' => 'val1' }, env_id: 'test-value', org_id: 'test-value', security_action_id: 'test-value', state: 'test-value' },
+    expected_outputs: [:id, :create_time, :deletion_policy, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

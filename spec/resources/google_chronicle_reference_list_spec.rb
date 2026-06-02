@@ -44,7 +44,6 @@ RSpec.describe Pangea::Resources::GoogleChronicleReferenceList do
         expect(ref.revision_create_time).to eq("${google_chronicle_reference_list.test.revision_create_time}")
         expect(ref.rule_associations_count).to eq("${google_chronicle_reference_list.test.rule_associations_count}")
         expect(ref.rules).to eq("${google_chronicle_reference_list.test.rules}")
-        expect(ref.scope_info).to eq("${google_chronicle_reference_list.test.scope_info}")
       end
     end
 
@@ -62,6 +61,57 @@ RSpec.describe Pangea::Resources::GoogleChronicleReferenceList do
         expect(config).not_to have_key('revision_create_time')
         expect(config).not_to have_key('rule_associations_count')
         expect(config).not_to have_key('rules')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ project: 'test-value', scope_info: { 'key1' => 'val1' } }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_reference_list('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_chronicle_reference_list', 'full')
+        expect(config).to have_key('project')
+        expect(config).to have_key('scope_info')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_reference_list('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_reference_list', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_reference_list('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_reference_list', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes scope_info when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_reference_list('opt', required_attrs.merge(scope_info: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_reference_list', 'opt')
+        expect(config).to have_key('scope_info')
+      end
+
+      it 'omits scope_info when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_reference_list('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_reference_list', 'minimal')
         expect(config).not_to have_key('scope_info')
       end
     end
@@ -113,7 +163,7 @@ RSpec.describe Pangea::Resources::GoogleChronicleReferenceList do
     resource_type: :google_chronicle_reference_list,
     method: :google_chronicle_reference_list,
     required_attrs: { description: 'test-value', entries: [{ 'key1' => 'val1' }], instance: 'test-value', location: 'test-value', reference_list_id: 'test-value', syntax_type: 'test-value' },
-    expected_outputs: [:id, :display_name, :name, :project, :revision_create_time, :rule_associations_count, :rules, :scope_info],
+    expected_outputs: [:id, :display_name, :name, :project, :revision_create_time, :rule_associations_count, :rules],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

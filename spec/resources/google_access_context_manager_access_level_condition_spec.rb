@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevelCondition
 
         expect(ref.id).to eq("${google_access_context_manager_access_level_condition.test.id}")
         expect(ref.access_policy_id).to eq("${google_access_context_manager_access_level_condition.test.access_policy_id}")
+        expect(ref.deletion_policy).to eq("${google_access_context_manager_access_level_condition.test.deletion_policy}")
       end
     end
 
@@ -51,11 +52,12 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevelCondition
 
         config = validate_resource_structure(result, 'google_access_context_manager_access_level_condition', 'test')
         expect(config).not_to have_key('access_policy_id')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ device_policy: [{ 'key1' => 'val1' }], ip_subnetworks: ['test-value'], members: ['test-value'], negate: true, regions: ['test-value'], required_access_levels: ['test-value'], vpc_network_sources: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', device_policy: { 'key1' => 'val1' }, ip_subnetworks: ['test-value'], members: ['test-value'], negate: true, regions: ['test-value'], required_access_levels: ['test-value'], vpc_network_sources: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,6 +66,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevelCondition
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_access_context_manager_access_level_condition', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('device_policy')
         expect(config).to have_key('ip_subnetworks')
         expect(config).to have_key('members')
@@ -75,10 +78,27 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevelCondition
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_access_level_condition('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_access_level_condition', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_access_level_condition('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_access_level_condition', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes device_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_access_context_manager_access_level_condition('opt', required_attrs.merge(device_policy: [{ 'key1' => 'val1' }]))
+        synth.google_access_context_manager_access_level_condition('opt', required_attrs.merge(device_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_access_context_manager_access_level_condition', 'opt')
         expect(config).to have_key('device_policy')
@@ -252,7 +272,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevelCondition
     resource_type: :google_access_context_manager_access_level_condition,
     method: :google_access_context_manager_access_level_condition,
     required_attrs: { access_level: 'test-value' },
-    expected_outputs: [:id, :access_policy_id],
+    expected_outputs: [:id, :access_policy_id, :deletion_policy],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:negate]

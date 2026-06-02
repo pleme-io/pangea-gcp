@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingLinkedDataset do
 
         expect(ref.id).to eq("${google_logging_linked_dataset.test.id}")
         expect(ref.create_time).to eq("${google_logging_linked_dataset.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_logging_linked_dataset.test.deletion_policy}")
         expect(ref.lifecycle_state).to eq("${google_logging_linked_dataset.test.lifecycle_state}")
         expect(ref.location).to eq("${google_logging_linked_dataset.test.location}")
         expect(ref.name).to eq("${google_logging_linked_dataset.test.name}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingLinkedDataset do
 
         config = validate_resource_structure(result, 'google_logging_linked_dataset', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('lifecycle_state')
         expect(config).not_to have_key('location')
         expect(config).not_to have_key('name')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingLinkedDataset do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ bigquery_dataset: [{ 'key1' => 'val1' }], description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ bigquery_dataset: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', description: 'test-value', location: 'test-value', parent: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,7 +75,10 @@ RSpec.describe Pangea::Resources::GoogleLoggingLinkedDataset do
 
         config = validate_resource_structure(result, 'google_logging_linked_dataset', 'full')
         expect(config).to have_key('bigquery_dataset')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('location')
+        expect(config).to have_key('parent')
       end
     end
 
@@ -95,6 +100,23 @@ RSpec.describe Pangea::Resources::GoogleLoggingLinkedDataset do
         config = validate_resource_structure(result, 'google_logging_linked_dataset', 'minimal')
         expect(config).not_to have_key('bigquery_dataset')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_linked_dataset('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_linked_dataset', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_linked_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_linked_dataset', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -111,6 +133,40 @@ RSpec.describe Pangea::Resources::GoogleLoggingLinkedDataset do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_logging_linked_dataset', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_linked_dataset('opt', required_attrs.merge(location: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_linked_dataset', 'opt')
+        expect(config).to have_key('location')
+      end
+
+      it 'omits location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_linked_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_linked_dataset', 'minimal')
+        expect(config).not_to have_key('location')
+      end
+      it 'includes parent when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_linked_dataset('opt', required_attrs.merge(parent: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_linked_dataset', 'opt')
+        expect(config).to have_key('parent')
+      end
+
+      it 'omits parent when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_linked_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_linked_dataset', 'minimal')
+        expect(config).not_to have_key('parent')
       end
     end
 
@@ -157,7 +213,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingLinkedDataset do
     resource_type: :google_logging_linked_dataset,
     method: :google_logging_linked_dataset,
     required_attrs: { bucket: 'test-value', link_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :lifecycle_state, :location, :name, :parent],
+    expected_outputs: [:id, :create_time, :deletion_policy, :lifecycle_state, :location, :name, :parent],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

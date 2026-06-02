@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleIamOauthClient do
 
         expect(ref.id).to eq("${google_iam_oauth_client.test.id}")
         expect(ref.client_id).to eq("${google_iam_oauth_client.test.client_id}")
+        expect(ref.deletion_policy).to eq("${google_iam_oauth_client.test.deletion_policy}")
         expect(ref.expire_time).to eq("${google_iam_oauth_client.test.expire_time}")
         expect(ref.name).to eq("${google_iam_oauth_client.test.name}")
         expect(ref.project).to eq("${google_iam_oauth_client.test.project}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleIamOauthClient do
 
         config = validate_resource_structure(result, 'google_iam_oauth_client', 'test')
         expect(config).not_to have_key('client_id')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('expire_time')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleIamOauthClient do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ client_type: 'test-value', description: 'test-value', disabled: true, display_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ client_type: 'test-value', deletion_policy: 'test-value', description: 'test-value', disabled: true, display_name: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,9 +75,11 @@ RSpec.describe Pangea::Resources::GoogleIamOauthClient do
 
         config = validate_resource_structure(result, 'google_iam_oauth_client', 'full')
         expect(config).to have_key('client_type')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('disabled')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('project')
       end
     end
 
@@ -96,6 +100,23 @@ RSpec.describe Pangea::Resources::GoogleIamOauthClient do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_oauth_client', 'minimal')
         expect(config).not_to have_key('client_type')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_oauth_client('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_oauth_client', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_oauth_client('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_oauth_client', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -147,6 +168,23 @@ RSpec.describe Pangea::Resources::GoogleIamOauthClient do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_oauth_client', 'minimal')
         expect(config).not_to have_key('display_name')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_oauth_client('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_oauth_client', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_oauth_client('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_oauth_client', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -210,7 +248,7 @@ RSpec.describe Pangea::Resources::GoogleIamOauthClient do
     resource_type: :google_iam_oauth_client,
     method: :google_iam_oauth_client,
     required_attrs: { allowed_grant_types: ['test-value'], allowed_redirect_uris: ['test-value'], allowed_scopes: ['test-value'], location: 'test-value', oauth_client_id: 'test-value' },
-    expected_outputs: [:id, :client_id, :expire_time, :name, :project, :state],
+    expected_outputs: [:id, :client_id, :deletion_policy, :expire_time, :name, :project, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disabled]

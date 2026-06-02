@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseDataConnectService do
 
         expect(ref.id).to eq("${google_firebase_data_connect_service.test.id}")
         expect(ref.create_time).to eq("${google_firebase_data_connect_service.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_firebase_data_connect_service.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_firebase_data_connect_service.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_firebase_data_connect_service.test.effective_labels}")
         expect(ref.etag).to eq("${google_firebase_data_connect_service.test.etag}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseDataConnectService do
 
         config = validate_resource_structure(result, 'google_firebase_data_connect_service', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseDataConnectService do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, deletion_policy: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, deletion_policy: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -86,6 +88,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseDataConnectService do
         expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
@@ -158,6 +161,23 @@ RSpec.describe Pangea::Resources::GoogleFirebaseDataConnectService do
         config = validate_resource_structure(result, 'google_firebase_data_connect_service', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_data_connect_service('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_data_connect_service', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_data_connect_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_data_connect_service', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -203,7 +223,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseDataConnectService do
     resource_type: :google_firebase_data_connect_service,
     method: :google_firebase_data_connect_service,
     required_attrs: { location: 'test-value', service_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_annotations, :effective_labels, :etag, :name, :project, :reconciling, :terraform_labels, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_annotations, :effective_labels, :etag, :name, :project, :reconciling, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

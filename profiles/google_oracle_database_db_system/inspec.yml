@@ -1,0 +1,8 @@
+name: google_oracle_database_db_system
+title: Manages a google_oracle_database_db_system resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

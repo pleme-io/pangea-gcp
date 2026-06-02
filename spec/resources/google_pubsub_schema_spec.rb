@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GooglePubsubSchema do
         ref = synth.google_pubsub_schema('test', required_attrs)
 
         expect(ref.id).to eq("${google_pubsub_schema.test.id}")
+        expect(ref.deletion_policy).to eq("${google_pubsub_schema.test.deletion_policy}")
         expect(ref.project).to eq("${google_pubsub_schema.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GooglePubsubSchema do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_pubsub_schema', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ definition: 'test-value', type: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ definition: 'test-value', deletion_policy: 'test-value', project: 'test-value', type: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -65,6 +67,8 @@ RSpec.describe Pangea::Resources::GooglePubsubSchema do
 
         config = validate_resource_structure(result, 'google_pubsub_schema', 'full')
         expect(config).to have_key('definition')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
         expect(config).to have_key('type')
       end
     end
@@ -86,6 +90,40 @@ RSpec.describe Pangea::Resources::GooglePubsubSchema do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_schema', 'minimal')
         expect(config).not_to have_key('definition')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_schema('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_schema', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_schema('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_schema', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_schema('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_schema', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_schema('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_schema', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes type when provided' do
         synth = create_synthesizer
@@ -148,7 +186,7 @@ RSpec.describe Pangea::Resources::GooglePubsubSchema do
     resource_type: :google_pubsub_schema,
     method: :google_pubsub_schema,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleGeminiDataSharingWithGoogleSettingBindin
 
         expect(ref.id).to eq("${google_gemini_data_sharing_with_google_setting_binding.test.id}")
         expect(ref.create_time).to eq("${google_gemini_data_sharing_with_google_setting_binding.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_gemini_data_sharing_with_google_setting_binding.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_gemini_data_sharing_with_google_setting_binding.test.effective_labels}")
         expect(ref.name).to eq("${google_gemini_data_sharing_with_google_setting_binding.test.name}")
         expect(ref.product).to eq("${google_gemini_data_sharing_with_google_setting_binding.test.product}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleGeminiDataSharingWithGoogleSettingBindin
 
         config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting_binding', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('product')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleGeminiDataSharingWithGoogleSettingBindin
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ labels: { 'key1' => 'val1' }, location: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', product: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,12 +78,32 @@ RSpec.describe Pangea::Resources::GoogleGeminiDataSharingWithGoogleSettingBindin
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting_binding', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
+        expect(config).to have_key('product')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gemini_data_sharing_with_google_setting_binding('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting_binding', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gemini_data_sharing_with_google_setting_binding('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting_binding', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -115,6 +137,40 @@ RSpec.describe Pangea::Resources::GoogleGeminiDataSharingWithGoogleSettingBindin
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting_binding', 'minimal')
         expect(config).not_to have_key('location')
+      end
+      it 'includes product when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gemini_data_sharing_with_google_setting_binding('opt', required_attrs.merge(product: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting_binding', 'opt')
+        expect(config).to have_key('product')
+      end
+
+      it 'omits product when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gemini_data_sharing_with_google_setting_binding('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting_binding', 'minimal')
+        expect(config).not_to have_key('product')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gemini_data_sharing_with_google_setting_binding('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting_binding', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gemini_data_sharing_with_google_setting_binding('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting_binding', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -162,7 +218,7 @@ RSpec.describe Pangea::Resources::GoogleGeminiDataSharingWithGoogleSettingBindin
     resource_type: :google_gemini_data_sharing_with_google_setting_binding,
     method: :google_gemini_data_sharing_with_google_setting_binding,
     required_attrs: { data_sharing_with_google_setting_id: 'test-value', setting_binding_id: 'test-value', target: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :name, :product, :project, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :name, :product, :project, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

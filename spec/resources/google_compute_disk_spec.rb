@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
         expect(ref.id).to eq("${google_compute_disk.test.id}")
         expect(ref.access_mode).to eq("${google_compute_disk.test.access_mode}")
         expect(ref.creation_timestamp).to eq("${google_compute_disk.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_disk.test.deletion_policy}")
         expect(ref.disk_id).to eq("${google_compute_disk.test.disk_id}")
         expect(ref.effective_labels).to eq("${google_compute_disk.test.effective_labels}")
         expect(ref.enable_confidential_compute).to eq("${google_compute_disk.test.enable_confidential_compute}")
@@ -73,6 +74,7 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
         config = validate_resource_structure(result, 'google_compute_disk', 'test')
         expect(config).not_to have_key('access_mode')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('disk_id')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('enable_confidential_compute')
@@ -97,7 +99,7 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ architecture: 'test-value', async_primary_disk: [{ 'key1' => 'val1' }], create_snapshot_before_destroy: true, create_snapshot_before_destroy_prefix: 'test-value', description: 'test-value', disk_encryption_key: [{ 'key1' => 'val1' }], guest_os_features: [{ 'key1' => 'val1' }], image: 'test-value', labels: { 'key1' => 'val1' }, params: [{ 'key1' => 'val1' }], snapshot: 'test-value', source_disk: 'test-value', source_image_encryption_key: [{ 'key1' => 'val1' }], source_instant_snapshot: 'test-value', source_snapshot_encryption_key: [{ 'key1' => 'val1' }], source_storage_object: 'test-value', storage_pool: 'test-value', type: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ access_mode: 'test-value', architecture: 'test-value', async_primary_disk: { 'key1' => 'val1' }, create_snapshot_before_destroy: true, create_snapshot_before_destroy_prefix: 'test-value', deletion_policy: 'test-value', description: 'test-value', disk_encryption_key: { 'key1' => 'val1' }, enable_confidential_compute: true, guest_os_features: [{ 'key1' => 'val1' }], image: 'test-value', labels: { 'key1' => 'val1' }, licenses: ['test-value'], params: { 'key1' => 'val1' }, physical_block_size_bytes: 3.14, project: 'test-value', provisioned_iops: 3.14, provisioned_throughput: 3.14, size: 3.14, snapshot: 'test-value', source_disk: 'test-value', source_image_encryption_key: { 'key1' => 'val1' }, source_instant_snapshot: 'test-value', source_snapshot_encryption_key: { 'key1' => 'val1' }, source_storage_object: 'test-value', storage_pool: 'test-value', type: 'test-value', zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -106,16 +108,25 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_disk', 'full')
+        expect(config).to have_key('access_mode')
         expect(config).to have_key('architecture')
         expect(config).to have_key('async_primary_disk')
         expect(config).to have_key('create_snapshot_before_destroy')
         expect(config).to have_key('create_snapshot_before_destroy_prefix')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('disk_encryption_key')
+        expect(config).to have_key('enable_confidential_compute')
         expect(config).to have_key('guest_os_features')
         expect(config).to have_key('image')
         expect(config).to have_key('labels')
+        expect(config).to have_key('licenses')
         expect(config).to have_key('params')
+        expect(config).to have_key('physical_block_size_bytes')
+        expect(config).to have_key('project')
+        expect(config).to have_key('provisioned_iops')
+        expect(config).to have_key('provisioned_throughput')
+        expect(config).to have_key('size')
         expect(config).to have_key('snapshot')
         expect(config).to have_key('source_disk')
         expect(config).to have_key('source_image_encryption_key')
@@ -124,10 +135,28 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
         expect(config).to have_key('source_storage_object')
         expect(config).to have_key('storage_pool')
         expect(config).to have_key('type')
+        expect(config).to have_key('zone')
       end
     end
 
     context 'optional attributes' do
+      it 'includes access_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('opt', required_attrs.merge(access_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'opt')
+        expect(config).to have_key('access_mode')
+      end
+
+      it 'omits access_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
+        expect(config).not_to have_key('access_mode')
+      end
       it 'includes architecture when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -148,7 +177,7 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
       it 'includes async_primary_disk when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_disk('opt', required_attrs.merge(async_primary_disk: [{ 'key1' => 'val1' }]))
+        synth.google_compute_disk('opt', required_attrs.merge(async_primary_disk: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_disk', 'opt')
         expect(config).to have_key('async_primary_disk')
@@ -196,6 +225,23 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
         config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
         expect(config).not_to have_key('create_snapshot_before_destroy_prefix')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -216,7 +262,7 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
       it 'includes disk_encryption_key when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_disk('opt', required_attrs.merge(disk_encryption_key: [{ 'key1' => 'val1' }]))
+        synth.google_compute_disk('opt', required_attrs.merge(disk_encryption_key: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_disk', 'opt')
         expect(config).to have_key('disk_encryption_key')
@@ -229,6 +275,23 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
         expect(config).not_to have_key('disk_encryption_key')
+      end
+      it 'includes enable_confidential_compute when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('opt', required_attrs.merge(enable_confidential_compute: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'opt')
+        expect(config).to have_key('enable_confidential_compute')
+      end
+
+      it 'omits enable_confidential_compute when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
+        expect(config).not_to have_key('enable_confidential_compute')
       end
       it 'includes guest_os_features when provided' do
         synth = create_synthesizer
@@ -281,10 +344,27 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
         config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes licenses when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('opt', required_attrs.merge(licenses: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'opt')
+        expect(config).to have_key('licenses')
+      end
+
+      it 'omits licenses when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
+        expect(config).not_to have_key('licenses')
+      end
       it 'includes params when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_disk('opt', required_attrs.merge(params: [{ 'key1' => 'val1' }]))
+        synth.google_compute_disk('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_disk', 'opt')
         expect(config).to have_key('params')
@@ -297,6 +377,91 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
         expect(config).not_to have_key('params')
+      end
+      it 'includes physical_block_size_bytes when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('opt', required_attrs.merge(physical_block_size_bytes: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'opt')
+        expect(config).to have_key('physical_block_size_bytes')
+      end
+
+      it 'omits physical_block_size_bytes when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
+        expect(config).not_to have_key('physical_block_size_bytes')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes provisioned_iops when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('opt', required_attrs.merge(provisioned_iops: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'opt')
+        expect(config).to have_key('provisioned_iops')
+      end
+
+      it 'omits provisioned_iops when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
+        expect(config).not_to have_key('provisioned_iops')
+      end
+      it 'includes provisioned_throughput when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('opt', required_attrs.merge(provisioned_throughput: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'opt')
+        expect(config).to have_key('provisioned_throughput')
+      end
+
+      it 'omits provisioned_throughput when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
+        expect(config).not_to have_key('provisioned_throughput')
+      end
+      it 'includes size when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('opt', required_attrs.merge(size: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'opt')
+        expect(config).to have_key('size')
+      end
+
+      it 'omits size when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
+        expect(config).not_to have_key('size')
       end
       it 'includes snapshot when provided' do
         synth = create_synthesizer
@@ -335,7 +500,7 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
       it 'includes source_image_encryption_key when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_disk('opt', required_attrs.merge(source_image_encryption_key: [{ 'key1' => 'val1' }]))
+        synth.google_compute_disk('opt', required_attrs.merge(source_image_encryption_key: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_disk', 'opt')
         expect(config).to have_key('source_image_encryption_key')
@@ -369,7 +534,7 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
       it 'includes source_snapshot_encryption_key when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_disk('opt', required_attrs.merge(source_snapshot_encryption_key: [{ 'key1' => 'val1' }]))
+        synth.google_compute_disk('opt', required_attrs.merge(source_snapshot_encryption_key: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_disk', 'opt')
         expect(config).to have_key('source_snapshot_encryption_key')
@@ -434,6 +599,23 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
         config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
         expect(config).not_to have_key('type')
       end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_disk('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_disk', 'minimal')
+        expect(config).not_to have_key('zone')
+      end
     end
 
     context 'boolean fields' do
@@ -446,6 +628,17 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
           result = normalize_synthesis(synth.synthesis)
           config = validate_resource_structure(result, 'google_compute_disk', "bool_#{val}")
           expect(config['create_snapshot_before_destroy']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts enable_confidential_compute=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(enable_confidential_compute: val)
+          synth.google_compute_disk("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_disk', "bool_#{val}")
+          expect(config['enable_confidential_compute']).to eq(val)
         end
       end
     end
@@ -492,8 +685,8 @@ RSpec.describe Pangea::Resources::GoogleComputeDisk do
     resource_type: :google_compute_disk,
     method: :google_compute_disk,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :access_mode, :creation_timestamp, :disk_id, :effective_labels, :enable_confidential_compute, :label_fingerprint, :last_attach_timestamp, :last_detach_timestamp, :licenses, :physical_block_size_bytes, :project, :provisioned_iops, :provisioned_throughput, :self_link, :size, :source_disk_id, :source_image_id, :source_instant_snapshot_id, :source_snapshot_id, :terraform_labels, :users, :zone],
+    expected_outputs: [:id, :access_mode, :creation_timestamp, :deletion_policy, :disk_id, :effective_labels, :enable_confidential_compute, :label_fingerprint, :last_attach_timestamp, :last_detach_timestamp, :licenses, :physical_block_size_bytes, :project, :provisioned_iops, :provisioned_throughput, :self_link, :size, :source_disk_id, :source_image_id, :source_instant_snapshot_id, :source_snapshot_id, :terraform_labels, :users, :zone],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:create_snapshot_before_destroy]
+    boolean_fields: [:create_snapshot_before_destroy, :enable_confidential_compute]
 end

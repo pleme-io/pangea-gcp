@@ -41,6 +41,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppHostingDomain do
         expect(ref.create_time).to eq("${google_firebase_app_hosting_domain.test.create_time}")
         expect(ref.custom_domain_status).to eq("${google_firebase_app_hosting_domain.test.custom_domain_status}")
         expect(ref.delete_time).to eq("${google_firebase_app_hosting_domain.test.delete_time}")
+        expect(ref.deletion_policy).to eq("${google_firebase_app_hosting_domain.test.deletion_policy}")
         expect(ref.etag).to eq("${google_firebase_app_hosting_domain.test.etag}")
         expect(ref.name).to eq("${google_firebase_app_hosting_domain.test.name}")
         expect(ref.project).to eq("${google_firebase_app_hosting_domain.test.project}")
@@ -61,6 +62,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppHostingDomain do
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('custom_domain_status')
         expect(config).not_to have_key('delete_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppHostingDomain do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ serve: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value', serve: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -80,15 +82,51 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppHostingDomain do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_firebase_app_hosting_domain', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
         expect(config).to have_key('serve')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_hosting_domain('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_hosting_domain', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_hosting_domain('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_hosting_domain', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_hosting_domain('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_hosting_domain', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_hosting_domain('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_hosting_domain', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes serve when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_firebase_app_hosting_domain('opt', required_attrs.merge(serve: [{ 'key1' => 'val1' }]))
+        synth.google_firebase_app_hosting_domain('opt', required_attrs.merge(serve: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_firebase_app_hosting_domain', 'opt')
         expect(config).to have_key('serve')
@@ -148,7 +186,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppHostingDomain do
     resource_type: :google_firebase_app_hosting_domain,
     method: :google_firebase_app_hosting_domain,
     required_attrs: { backend: 'test-value', domain_id: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :create_time, :custom_domain_status, :delete_time, :etag, :name, :project, :purge_time, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :custom_domain_status, :delete_time, :deletion_policy, :etag, :name, :project, :purge_time, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

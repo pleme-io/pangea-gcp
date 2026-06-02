@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleNetworkServicesAuthzExtension do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { authority: 'test-value', load_balancing_scheme: 'test-value', location: 'test-value', name: 'test-value', service: 'test-value', timeout: 'test-value' } }
+  let(:required_attrs) { { location: 'test-value', name: 'test-value', service: 'test-value', timeout: 'test-value' } }
 
   describe ':google_network_services_authz_extension' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesAuthzExtension do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_network_services_authz_extension', 'test')
-        validate_required_attributes(config, [:authority, :load_balancing_scheme, :location, :name, :service, :timeout])
+        validate_required_attributes(config, [:location, :name, :service, :timeout])
       end
 
       it 'returns a ResourceReference' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesAuthzExtension do
 
         expect(ref.id).to eq("${google_network_services_authz_extension.test.id}")
         expect(ref.create_time).to eq("${google_network_services_authz_extension.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_services_authz_extension.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_services_authz_extension.test.effective_labels}")
         expect(ref.fail_open).to eq("${google_network_services_authz_extension.test.fail_open}")
         expect(ref.project).to eq("${google_network_services_authz_extension.test.project}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesAuthzExtension do
 
         config = validate_resource_structure(result, 'google_network_services_authz_extension', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('fail_open')
         expect(config).not_to have_key('project')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesAuthzExtension do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', forward_headers: ['test-value'], labels: { 'key1' => 'val1' }, metadata: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ authority: 'test-value', deletion_policy: 'test-value', description: 'test-value', fail_open: true, forward_headers: ['test-value'], labels: { 'key1' => 'val1' }, load_balancing_scheme: 'test-value', metadata: { 'key1' => 'val1' }, project: 'test-value', wire_format: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,14 +78,54 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesAuthzExtension do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_services_authz_extension', 'full')
+        expect(config).to have_key('authority')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('fail_open')
         expect(config).to have_key('forward_headers')
         expect(config).to have_key('labels')
+        expect(config).to have_key('load_balancing_scheme')
         expect(config).to have_key('metadata')
+        expect(config).to have_key('project')
+        expect(config).to have_key('wire_format')
       end
     end
 
     context 'optional attributes' do
+      it 'includes authority when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_authz_extension('opt', required_attrs.merge(authority: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_authz_extension', 'opt')
+        expect(config).to have_key('authority')
+      end
+
+      it 'omits authority when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_authz_extension('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_authz_extension', 'minimal')
+        expect(config).not_to have_key('authority')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_authz_extension('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_authz_extension', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_authz_extension('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_authz_extension', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -100,6 +142,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesAuthzExtension do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_authz_extension', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes fail_open when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_authz_extension('opt', required_attrs.merge(fail_open: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_authz_extension', 'opt')
+        expect(config).to have_key('fail_open')
+      end
+
+      it 'omits fail_open when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_authz_extension('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_authz_extension', 'minimal')
+        expect(config).not_to have_key('fail_open')
       end
       it 'includes forward_headers when provided' do
         synth = create_synthesizer
@@ -135,6 +194,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesAuthzExtension do
         config = validate_resource_structure(result, 'google_network_services_authz_extension', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes load_balancing_scheme when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_authz_extension('opt', required_attrs.merge(load_balancing_scheme: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_authz_extension', 'opt')
+        expect(config).to have_key('load_balancing_scheme')
+      end
+
+      it 'omits load_balancing_scheme when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_authz_extension('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_authz_extension', 'minimal')
+        expect(config).not_to have_key('load_balancing_scheme')
+      end
       it 'includes metadata when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -152,6 +228,54 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesAuthzExtension do
         config = validate_resource_structure(result, 'google_network_services_authz_extension', 'minimal')
         expect(config).not_to have_key('metadata')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_authz_extension('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_authz_extension', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_authz_extension('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_authz_extension', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes wire_format when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_authz_extension('opt', required_attrs.merge(wire_format: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_authz_extension', 'opt')
+        expect(config).to have_key('wire_format')
+      end
+
+      it 'omits wire_format when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_authz_extension('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_authz_extension', 'minimal')
+        expect(config).not_to have_key('wire_format')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts fail_open=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(fail_open: val)
+          synth.google_network_services_authz_extension("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_network_services_authz_extension', "bool_#{val}")
+          expect(config['fail_open']).to eq(val)
+        end
+      end
     end
 
     context 'attribute types' do
@@ -162,8 +286,6 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesAuthzExtension do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_services_authz_extension', 'typed')
-        expect(config['authority']).to be_a(String)
-        expect(config['load_balancing_scheme']).to be_a(String)
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
         expect(config['service']).to be_a(String)
@@ -200,9 +322,9 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesAuthzExtension do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_network_services_authz_extension,
     method: :google_network_services_authz_extension,
-    required_attrs: { authority: 'test-value', load_balancing_scheme: 'test-value', location: 'test-value', name: 'test-value', service: 'test-value', timeout: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :fail_open, :project, :terraform_labels, :update_time, :wire_format],
+    required_attrs: { location: 'test-value', name: 'test-value', service: 'test-value', timeout: 'test-value' },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :fail_open, :project, :terraform_labels, :update_time, :wire_format],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:fail_open]
 end

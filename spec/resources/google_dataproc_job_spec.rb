@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleDataprocJob do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { placement: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { placement: { 'key1' => 'val1' } } }
 
   describe ':google_dataproc_job' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
         ref = synth.google_dataproc_job('test', required_attrs)
 
         expect(ref.id).to eq("${google_dataproc_job.test.id}")
+        expect(ref.deletion_policy).to eq("${google_dataproc_job.test.deletion_policy}")
         expect(ref.driver_controls_files_uri).to eq("${google_dataproc_job.test.driver_controls_files_uri}")
         expect(ref.driver_output_resource_uri).to eq("${google_dataproc_job.test.driver_output_resource_uri}")
         expect(ref.effective_labels).to eq("${google_dataproc_job.test.effective_labels}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dataproc_job', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('driver_controls_files_uri')
         expect(config).not_to have_key('driver_output_resource_uri')
         expect(config).not_to have_key('effective_labels')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ force_delete: true, hadoop_config: [{ 'key1' => 'val1' }], hive_config: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, pig_config: [{ 'key1' => 'val1' }], presto_config: [{ 'key1' => 'val1' }], pyspark_config: [{ 'key1' => 'val1' }], reference: [{ 'key1' => 'val1' }], region: 'test-value', scheduling: [{ 'key1' => 'val1' }], spark_config: [{ 'key1' => 'val1' }], sparksql_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', force_delete: true, hadoop_config: { 'key1' => 'val1' }, hive_config: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, pig_config: { 'key1' => 'val1' }, presto_config: { 'key1' => 'val1' }, project: 'test-value', pyspark_config: { 'key1' => 'val1' }, reference: { 'key1' => 'val1' }, region: 'test-value', scheduling: { 'key1' => 'val1' }, spark_config: { 'key1' => 'val1' }, sparksql_config: { 'key1' => 'val1' }, wait_for_completion: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,22 +76,42 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dataproc_job', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('force_delete')
         expect(config).to have_key('hadoop_config')
         expect(config).to have_key('hive_config')
         expect(config).to have_key('labels')
         expect(config).to have_key('pig_config')
         expect(config).to have_key('presto_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('pyspark_config')
         expect(config).to have_key('reference')
         expect(config).to have_key('region')
         expect(config).to have_key('scheduling')
         expect(config).to have_key('spark_config')
         expect(config).to have_key('sparksql_config')
+        expect(config).to have_key('wait_for_completion')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_job('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_job', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_job', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes force_delete when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -110,7 +132,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
       it 'includes hadoop_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_job('opt', required_attrs.merge(hadoop_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_job('opt', required_attrs.merge(hadoop_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_job', 'opt')
         expect(config).to have_key('hadoop_config')
@@ -127,7 +149,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
       it 'includes hive_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_job('opt', required_attrs.merge(hive_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_job('opt', required_attrs.merge(hive_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_job', 'opt')
         expect(config).to have_key('hive_config')
@@ -161,7 +183,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
       it 'includes pig_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_job('opt', required_attrs.merge(pig_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_job('opt', required_attrs.merge(pig_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_job', 'opt')
         expect(config).to have_key('pig_config')
@@ -178,7 +200,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
       it 'includes presto_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_job('opt', required_attrs.merge(presto_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_job('opt', required_attrs.merge(presto_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_job', 'opt')
         expect(config).to have_key('presto_config')
@@ -192,10 +214,27 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
         config = validate_resource_structure(result, 'google_dataproc_job', 'minimal')
         expect(config).not_to have_key('presto_config')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_job('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_job', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_job', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes pyspark_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_job('opt', required_attrs.merge(pyspark_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_job('opt', required_attrs.merge(pyspark_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_job', 'opt')
         expect(config).to have_key('pyspark_config')
@@ -212,7 +251,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
       it 'includes reference when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_job('opt', required_attrs.merge(reference: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_job('opt', required_attrs.merge(reference: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_job', 'opt')
         expect(config).to have_key('reference')
@@ -246,7 +285,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
       it 'includes scheduling when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_job('opt', required_attrs.merge(scheduling: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_job('opt', required_attrs.merge(scheduling: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_job', 'opt')
         expect(config).to have_key('scheduling')
@@ -263,7 +302,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
       it 'includes spark_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_job('opt', required_attrs.merge(spark_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_job('opt', required_attrs.merge(spark_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_job', 'opt')
         expect(config).to have_key('spark_config')
@@ -280,7 +319,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
       it 'includes sparksql_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_job('opt', required_attrs.merge(sparksql_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_job('opt', required_attrs.merge(sparksql_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_job', 'opt')
         expect(config).to have_key('sparksql_config')
@@ -293,6 +332,23 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_job', 'minimal')
         expect(config).not_to have_key('sparksql_config')
+      end
+      it 'includes wait_for_completion when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_job('opt', required_attrs.merge(wait_for_completion: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_job', 'opt')
+        expect(config).to have_key('wait_for_completion')
+      end
+
+      it 'omits wait_for_completion when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_job', 'minimal')
+        expect(config).not_to have_key('wait_for_completion')
       end
     end
 
@@ -308,6 +364,17 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
           expect(config['force_delete']).to eq(val)
         end
       end
+      [true, false].each do |val|
+        it "accepts wait_for_completion=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(wait_for_completion: val)
+          synth.google_dataproc_job("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_dataproc_job', "bool_#{val}")
+          expect(config['wait_for_completion']).to eq(val)
+        end
+      end
     end
 
     context 'attribute types' do
@@ -318,7 +385,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dataproc_job', 'typed')
-        expect(config['placement']).to be_a(Array)
+        expect(config['placement']).to be_a(Hash)
       end
     end
 
@@ -351,9 +418,9 @@ RSpec.describe Pangea::Resources::GoogleDataprocJob do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_dataproc_job,
     method: :google_dataproc_job,
-    required_attrs: { placement: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :driver_controls_files_uri, :driver_output_resource_uri, :effective_labels, :project, :status, :terraform_labels],
+    required_attrs: { placement: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :deletion_policy, :driver_controls_files_uri, :driver_output_resource_uri, :effective_labels, :project, :status, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:force_delete]
+    boolean_fields: [:force_delete, :wait_for_completion]
 end

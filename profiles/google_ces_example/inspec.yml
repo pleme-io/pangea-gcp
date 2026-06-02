@@ -1,0 +1,8 @@
+name: google_ces_example
+title: Manages a google_ces_example resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleApikeysKey do
         ref = synth.google_apikeys_key('test', required_attrs)
 
         expect(ref.id).to eq("${google_apikeys_key.test.id}")
+        expect(ref.deletion_policy).to eq("${google_apikeys_key.test.deletion_policy}")
         expect(ref.key_string).to eq("${google_apikeys_key.test.key_string}")
         expect(ref.project).to eq("${google_apikeys_key.test.project}")
         expect(ref.uid).to eq("${google_apikeys_key.test.uid}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleApikeysKey do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apikeys_key', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('key_string')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('uid')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleApikeysKey do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ display_name: 'test-value', restrictions: [{ 'key1' => 'val1' }], service_account_email: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', display_name: 'test-value', project: 'test-value', restrictions: { 'key1' => 'val1' }, service_account_email: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,13 +70,32 @@ RSpec.describe Pangea::Resources::GoogleApikeysKey do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apikeys_key', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('project')
         expect(config).to have_key('restrictions')
         expect(config).to have_key('service_account_email')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apikeys_key('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apikeys_key', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apikeys_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apikeys_key', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes display_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -92,10 +113,27 @@ RSpec.describe Pangea::Resources::GoogleApikeysKey do
         config = validate_resource_structure(result, 'google_apikeys_key', 'minimal')
         expect(config).not_to have_key('display_name')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apikeys_key('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apikeys_key', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apikeys_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apikeys_key', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes restrictions when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apikeys_key('opt', required_attrs.merge(restrictions: [{ 'key1' => 'val1' }]))
+        synth.google_apikeys_key('opt', required_attrs.merge(restrictions: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apikeys_key', 'opt')
         expect(config).to have_key('restrictions')
@@ -177,7 +215,7 @@ RSpec.describe Pangea::Resources::GoogleApikeysKey do
     resource_type: :google_apikeys_key,
     method: :google_apikeys_key,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :key_string, :project, :uid],
+    expected_outputs: [:id, :deletion_policy, :key_string, :project, :uid],
     sensitive_fields: [:key_string],
     immutable_fields: [],
     boolean_fields: []

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeaturestore do
 
         expect(ref.id).to eq("${google_vertex_ai_featurestore.test.id}")
         expect(ref.create_time).to eq("${google_vertex_ai_featurestore.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_vertex_ai_featurestore.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_vertex_ai_featurestore.test.effective_labels}")
         expect(ref.etag).to eq("${google_vertex_ai_featurestore.test.etag}")
         expect(ref.project).to eq("${google_vertex_ai_featurestore.test.project}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeaturestore do
 
         config = validate_resource_structure(result, 'google_vertex_ai_featurestore', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('project')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeaturestore do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ encryption_spec: [{ 'key1' => 'val1' }], force_destroy: true, labels: { 'key1' => 'val1' }, name: 'test-value', online_serving_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', encryption_spec: { 'key1' => 'val1' }, force_destroy: true, labels: { 'key1' => 'val1' }, name: 'test-value', online_serving_config: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,19 +78,39 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeaturestore do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vertex_ai_featurestore', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('encryption_spec')
         expect(config).to have_key('force_destroy')
         expect(config).to have_key('labels')
         expect(config).to have_key('name')
         expect(config).to have_key('online_serving_config')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_featurestore('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_featurestore', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_featurestore('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_featurestore', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes encryption_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_featurestore('opt', required_attrs.merge(encryption_spec: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_featurestore('opt', required_attrs.merge(encryption_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_featurestore', 'opt')
         expect(config).to have_key('encryption_spec')
@@ -156,7 +178,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeaturestore do
       it 'includes online_serving_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_featurestore('opt', required_attrs.merge(online_serving_config: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_featurestore('opt', required_attrs.merge(online_serving_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_featurestore', 'opt')
         expect(config).to have_key('online_serving_config')
@@ -169,6 +191,40 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeaturestore do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_featurestore', 'minimal')
         expect(config).not_to have_key('online_serving_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_featurestore('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_featurestore', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_featurestore('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_featurestore', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_featurestore('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_featurestore', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_featurestore('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_featurestore', 'minimal')
+        expect(config).not_to have_key('region')
       end
     end
 
@@ -227,7 +283,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeaturestore do
     resource_type: :google_vertex_ai_featurestore,
     method: :google_vertex_ai_featurestore,
     required_attrs: {},
-    expected_outputs: [:id, :create_time, :effective_labels, :etag, :project, :region, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :etag, :project, :region, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:force_destroy]

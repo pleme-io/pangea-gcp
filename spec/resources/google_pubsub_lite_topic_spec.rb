@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GooglePubsubLiteTopic do
         ref = synth.google_pubsub_lite_topic('test', required_attrs)
 
         expect(ref.id).to eq("${google_pubsub_lite_topic.test.id}")
+        expect(ref.deletion_policy).to eq("${google_pubsub_lite_topic.test.deletion_policy}")
         expect(ref.project).to eq("${google_pubsub_lite_topic.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GooglePubsubLiteTopic do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_pubsub_lite_topic', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ partition_config: [{ 'key1' => 'val1' }], region: 'test-value', reservation_config: [{ 'key1' => 'val1' }], retention_config: [{ 'key1' => 'val1' }], zone: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', partition_config: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value', reservation_config: { 'key1' => 'val1' }, retention_config: { 'key1' => 'val1' }, zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,7 +66,9 @@ RSpec.describe Pangea::Resources::GooglePubsubLiteTopic do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_pubsub_lite_topic', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('partition_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('region')
         expect(config).to have_key('reservation_config')
         expect(config).to have_key('retention_config')
@@ -73,10 +77,27 @@ RSpec.describe Pangea::Resources::GooglePubsubLiteTopic do
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_lite_topic('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_lite_topic', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_lite_topic('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_lite_topic', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes partition_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_pubsub_lite_topic('opt', required_attrs.merge(partition_config: [{ 'key1' => 'val1' }]))
+        synth.google_pubsub_lite_topic('opt', required_attrs.merge(partition_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_lite_topic', 'opt')
         expect(config).to have_key('partition_config')
@@ -89,6 +110,23 @@ RSpec.describe Pangea::Resources::GooglePubsubLiteTopic do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_lite_topic', 'minimal')
         expect(config).not_to have_key('partition_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_lite_topic('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_lite_topic', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_lite_topic('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_lite_topic', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes region when provided' do
         synth = create_synthesizer
@@ -110,7 +148,7 @@ RSpec.describe Pangea::Resources::GooglePubsubLiteTopic do
       it 'includes reservation_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_pubsub_lite_topic('opt', required_attrs.merge(reservation_config: [{ 'key1' => 'val1' }]))
+        synth.google_pubsub_lite_topic('opt', required_attrs.merge(reservation_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_lite_topic', 'opt')
         expect(config).to have_key('reservation_config')
@@ -127,7 +165,7 @@ RSpec.describe Pangea::Resources::GooglePubsubLiteTopic do
       it 'includes retention_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_pubsub_lite_topic('opt', required_attrs.merge(retention_config: [{ 'key1' => 'val1' }]))
+        synth.google_pubsub_lite_topic('opt', required_attrs.merge(retention_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_lite_topic', 'opt')
         expect(config).to have_key('retention_config')
@@ -202,7 +240,7 @@ RSpec.describe Pangea::Resources::GooglePubsubLiteTopic do
     resource_type: :google_pubsub_lite_topic,
     method: :google_pubsub_lite_topic,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

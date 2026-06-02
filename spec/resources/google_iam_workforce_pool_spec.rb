@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePool do
         ref = synth.google_iam_workforce_pool('test', required_attrs)
 
         expect(ref.id).to eq("${google_iam_workforce_pool.test.id}")
+        expect(ref.deletion_policy).to eq("${google_iam_workforce_pool.test.deletion_policy}")
         expect(ref.name).to eq("${google_iam_workforce_pool.test.name}")
         expect(ref.state).to eq("${google_iam_workforce_pool.test.state}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePool do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_iam_workforce_pool', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('state')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ access_restrictions: [{ 'key1' => 'val1' }], description: 'test-value', disabled: true, display_name: 'test-value', session_duration: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ access_restrictions: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', disabled: true, display_name: 'test-value', session_duration: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,6 +69,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePool do
 
         config = validate_resource_structure(result, 'google_iam_workforce_pool', 'full')
         expect(config).to have_key('access_restrictions')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('disabled')
         expect(config).to have_key('display_name')
@@ -78,7 +81,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePool do
       it 'includes access_restrictions when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_iam_workforce_pool('opt', required_attrs.merge(access_restrictions: [{ 'key1' => 'val1' }]))
+        synth.google_iam_workforce_pool('opt', required_attrs.merge(access_restrictions: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_workforce_pool', 'opt')
         expect(config).to have_key('access_restrictions')
@@ -91,6 +94,23 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePool do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_workforce_pool', 'minimal')
         expect(config).not_to have_key('access_restrictions')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -220,7 +240,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePool do
     resource_type: :google_iam_workforce_pool,
     method: :google_iam_workforce_pool,
     required_attrs: { location: 'test-value', parent: 'test-value', workforce_pool_id: 'test-value' },
-    expected_outputs: [:id, :name, :state],
+    expected_outputs: [:id, :deletion_policy, :name, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disabled]

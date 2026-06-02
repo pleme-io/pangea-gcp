@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineRecommendationEngine do
 
         expect(ref.id).to eq("${google_discovery_engine_recommendation_engine.test.id}")
         expect(ref.create_time).to eq("${google_discovery_engine_recommendation_engine.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_discovery_engine_recommendation_engine.test.deletion_policy}")
         expect(ref.name).to eq("${google_discovery_engine_recommendation_engine.test.name}")
         expect(ref.project).to eq("${google_discovery_engine_recommendation_engine.test.project}")
         expect(ref.update_time).to eq("${google_discovery_engine_recommendation_engine.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineRecommendationEngine do
 
         config = validate_resource_structure(result, 'google_discovery_engine_recommendation_engine', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineRecommendationEngine do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ common_config: [{ 'key1' => 'val1' }], industry_vertical: 'test-value', media_recommendation_engine_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ common_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', industry_vertical: 'test-value', media_recommendation_engine_config: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,8 +73,10 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineRecommendationEngine do
 
         config = validate_resource_structure(result, 'google_discovery_engine_recommendation_engine', 'full')
         expect(config).to have_key('common_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('industry_vertical')
         expect(config).to have_key('media_recommendation_engine_config')
+        expect(config).to have_key('project')
       end
     end
 
@@ -80,7 +84,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineRecommendationEngine do
       it 'includes common_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_discovery_engine_recommendation_engine('opt', required_attrs.merge(common_config: [{ 'key1' => 'val1' }]))
+        synth.google_discovery_engine_recommendation_engine('opt', required_attrs.merge(common_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_discovery_engine_recommendation_engine', 'opt')
         expect(config).to have_key('common_config')
@@ -93,6 +97,23 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineRecommendationEngine do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_discovery_engine_recommendation_engine', 'minimal')
         expect(config).not_to have_key('common_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_recommendation_engine('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_recommendation_engine', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_recommendation_engine('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_recommendation_engine', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes industry_vertical when provided' do
         synth = create_synthesizer
@@ -114,7 +135,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineRecommendationEngine do
       it 'includes media_recommendation_engine_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_discovery_engine_recommendation_engine('opt', required_attrs.merge(media_recommendation_engine_config: [{ 'key1' => 'val1' }]))
+        synth.google_discovery_engine_recommendation_engine('opt', required_attrs.merge(media_recommendation_engine_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_discovery_engine_recommendation_engine', 'opt')
         expect(config).to have_key('media_recommendation_engine_config')
@@ -127,6 +148,23 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineRecommendationEngine do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_discovery_engine_recommendation_engine', 'minimal')
         expect(config).not_to have_key('media_recommendation_engine_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_recommendation_engine('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_recommendation_engine', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_recommendation_engine('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_recommendation_engine', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -175,7 +213,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineRecommendationEngine do
     resource_type: :google_discovery_engine_recommendation_engine,
     method: :google_discovery_engine_recommendation_engine,
     required_attrs: { data_store_ids: ['test-value'], display_name: 'test-value', engine_id: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :project, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :project, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

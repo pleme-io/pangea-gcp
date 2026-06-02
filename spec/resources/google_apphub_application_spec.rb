@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleApphubApplication do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { application_id: 'test-value', location: 'test-value', scope: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { application_id: 'test-value', location: 'test-value', scope: { 'key1' => 'val1' } } }
 
   describe ':google_apphub_application' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleApphubApplication do
 
         expect(ref.id).to eq("${google_apphub_application.test.id}")
         expect(ref.create_time).to eq("${google_apphub_application.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_apphub_application.test.deletion_policy}")
         expect(ref.name).to eq("${google_apphub_application.test.name}")
         expect(ref.project).to eq("${google_apphub_application.test.project}")
         expect(ref.state).to eq("${google_apphub_application.test.state}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleApphubApplication do
 
         config = validate_resource_structure(result, 'google_apphub_application', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleApphubApplication do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ attributes: [{ 'key1' => 'val1' }], description: 'test-value', display_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ attributes: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -75,8 +77,10 @@ RSpec.describe Pangea::Resources::GoogleApphubApplication do
 
         config = validate_resource_structure(result, 'google_apphub_application', 'full')
         expect(config).to have_key('attributes')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('project')
       end
     end
 
@@ -84,7 +88,7 @@ RSpec.describe Pangea::Resources::GoogleApphubApplication do
       it 'includes attributes when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apphub_application('opt', required_attrs.merge(attributes: [{ 'key1' => 'val1' }]))
+        synth.google_apphub_application('opt', required_attrs.merge(attributes: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apphub_application', 'opt')
         expect(config).to have_key('attributes')
@@ -97,6 +101,23 @@ RSpec.describe Pangea::Resources::GoogleApphubApplication do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apphub_application', 'minimal')
         expect(config).not_to have_key('attributes')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apphub_application('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apphub_application', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apphub_application('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apphub_application', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -132,6 +153,23 @@ RSpec.describe Pangea::Resources::GoogleApphubApplication do
         config = validate_resource_structure(result, 'google_apphub_application', 'minimal')
         expect(config).not_to have_key('display_name')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apphub_application('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apphub_application', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apphub_application('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apphub_application', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -144,7 +182,7 @@ RSpec.describe Pangea::Resources::GoogleApphubApplication do
         config = validate_resource_structure(result, 'google_apphub_application', 'typed')
         expect(config['application_id']).to be_a(String)
         expect(config['location']).to be_a(String)
-        expect(config['scope']).to be_a(Array)
+        expect(config['scope']).to be_a(Hash)
       end
     end
 
@@ -177,8 +215,8 @@ RSpec.describe Pangea::Resources::GoogleApphubApplication do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_apphub_application,
     method: :google_apphub_application,
-    required_attrs: { application_id: 'test-value', location: 'test-value', scope: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :name, :project, :state, :uid, :update_time],
+    required_attrs: { application_id: 'test-value', location: 'test-value', scope: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :project, :state, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

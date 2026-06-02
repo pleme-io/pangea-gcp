@@ -55,7 +55,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingProjectExclusion do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', disabled: true }) }
+      let(:all_attrs) { required_attrs.merge({ description: 'test-value', disabled: true, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,6 +66,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingProjectExclusion do
         config = validate_resource_structure(result, 'google_logging_project_exclusion', 'full')
         expect(config).to have_key('description')
         expect(config).to have_key('disabled')
+        expect(config).to have_key('project')
       end
     end
 
@@ -103,6 +104,23 @@ RSpec.describe Pangea::Resources::GoogleLoggingProjectExclusion do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_logging_project_exclusion', 'minimal')
         expect(config).not_to have_key('disabled')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_project_exclusion('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_project_exclusion', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_project_exclusion('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_project_exclusion', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 

@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterInterface do
         ref = synth.google_compute_router_interface('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_router_interface.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_router_interface.test.deletion_policy}")
         expect(ref.ip_range).to eq("${google_compute_router_interface.test.ip_range}")
         expect(ref.ip_version).to eq("${google_compute_router_interface.test.ip_version}")
         expect(ref.project).to eq("${google_compute_router_interface.test.project}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterInterface do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_router_interface', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('ip_range')
         expect(config).not_to have_key('ip_version')
         expect(config).not_to have_key('project')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterInterface do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ interconnect_attachment: 'test-value', private_ip_address: 'test-value', subnetwork: 'test-value', vpn_tunnel: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', interconnect_attachment: 'test-value', ip_range: 'test-value', ip_version: 'test-value', private_ip_address: 'test-value', project: 'test-value', redundant_interface: 'test-value', region: 'test-value', subnetwork: 'test-value', vpn_tunnel: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,14 +74,37 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterInterface do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_router_interface', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('interconnect_attachment')
+        expect(config).to have_key('ip_range')
+        expect(config).to have_key('ip_version')
         expect(config).to have_key('private_ip_address')
+        expect(config).to have_key('project')
+        expect(config).to have_key('redundant_interface')
+        expect(config).to have_key('region')
         expect(config).to have_key('subnetwork')
         expect(config).to have_key('vpn_tunnel')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_interface('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_interface', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_interface('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_interface', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes interconnect_attachment when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -97,6 +122,40 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterInterface do
         config = validate_resource_structure(result, 'google_compute_router_interface', 'minimal')
         expect(config).not_to have_key('interconnect_attachment')
       end
+      it 'includes ip_range when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_interface('opt', required_attrs.merge(ip_range: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_interface', 'opt')
+        expect(config).to have_key('ip_range')
+      end
+
+      it 'omits ip_range when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_interface('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_interface', 'minimal')
+        expect(config).not_to have_key('ip_range')
+      end
+      it 'includes ip_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_interface('opt', required_attrs.merge(ip_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_interface', 'opt')
+        expect(config).to have_key('ip_version')
+      end
+
+      it 'omits ip_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_interface('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_interface', 'minimal')
+        expect(config).not_to have_key('ip_version')
+      end
       it 'includes private_ip_address when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -113,6 +172,57 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterInterface do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_router_interface', 'minimal')
         expect(config).not_to have_key('private_ip_address')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_interface('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_interface', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_interface('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_interface', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes redundant_interface when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_interface('opt', required_attrs.merge(redundant_interface: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_interface', 'opt')
+        expect(config).to have_key('redundant_interface')
+      end
+
+      it 'omits redundant_interface when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_interface('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_interface', 'minimal')
+        expect(config).not_to have_key('redundant_interface')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_interface('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_interface', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router_interface('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router_interface', 'minimal')
+        expect(config).not_to have_key('region')
       end
       it 'includes subnetwork when provided' do
         synth = create_synthesizer
@@ -193,7 +303,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouterInterface do
     resource_type: :google_compute_router_interface,
     method: :google_compute_router_interface,
     required_attrs: { name: 'test-value', router: 'test-value' },
-    expected_outputs: [:id, :ip_range, :ip_version, :project, :redundant_interface, :region],
+    expected_outputs: [:id, :deletion_policy, :ip_range, :ip_version, :project, :redundant_interface, :region],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

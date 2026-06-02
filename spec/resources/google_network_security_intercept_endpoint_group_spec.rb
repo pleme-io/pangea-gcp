@@ -41,6 +41,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityInterceptEndpointGroup do
         expect(ref.associations).to eq("${google_network_security_intercept_endpoint_group.test.associations}")
         expect(ref.connected_deployment_group).to eq("${google_network_security_intercept_endpoint_group.test.connected_deployment_group}")
         expect(ref.create_time).to eq("${google_network_security_intercept_endpoint_group.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_security_intercept_endpoint_group.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_security_intercept_endpoint_group.test.effective_labels}")
         expect(ref.name).to eq("${google_network_security_intercept_endpoint_group.test.name}")
         expect(ref.project).to eq("${google_network_security_intercept_endpoint_group.test.project}")
@@ -62,6 +63,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityInterceptEndpointGroup do
         expect(config).not_to have_key('associations')
         expect(config).not_to have_key('connected_deployment_group')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityInterceptEndpointGroup do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -82,12 +84,31 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityInterceptEndpointGroup do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_security_intercept_endpoint_group', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_intercept_endpoint_group('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_intercept_endpoint_group', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_intercept_endpoint_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_intercept_endpoint_group', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -121,6 +142,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityInterceptEndpointGroup do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_security_intercept_endpoint_group', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_intercept_endpoint_group('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_intercept_endpoint_group', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_intercept_endpoint_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_intercept_endpoint_group', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -168,7 +206,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityInterceptEndpointGroup do
     resource_type: :google_network_security_intercept_endpoint_group,
     method: :google_network_security_intercept_endpoint_group,
     required_attrs: { intercept_deployment_group: 'test-value', intercept_endpoint_group_id: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :associations, :connected_deployment_group, :create_time, :effective_labels, :name, :project, :reconciling, :state, :terraform_labels, :update_time],
+    expected_outputs: [:id, :associations, :connected_deployment_group, :create_time, :deletion_policy, :effective_labels, :name, :project, :reconciling, :state, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

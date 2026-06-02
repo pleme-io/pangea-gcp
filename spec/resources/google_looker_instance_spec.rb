@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleLookerInstance do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { name: 'test-value', oauth_config: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { name: 'test-value', oauth_config: { 'key1' => 'val1' } } }
 
   describe ':google_looker_instance' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
 
         expect(ref.id).to eq("${google_looker_instance.test.id}")
         expect(ref.create_time).to eq("${google_looker_instance.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_looker_instance.test.deletion_policy}")
         expect(ref.egress_public_ip).to eq("${google_looker_instance.test.egress_public_ip}")
         expect(ref.ingress_private_ip).to eq("${google_looker_instance.test.ingress_private_ip}")
         expect(ref.ingress_public_ip).to eq("${google_looker_instance.test.ingress_public_ip}")
@@ -59,6 +60,7 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
 
         config = validate_resource_structure(result, 'google_looker_instance', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('egress_public_ip')
         expect(config).not_to have_key('ingress_private_ip')
         expect(config).not_to have_key('ingress_public_ip')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ admin_settings: [{ 'key1' => 'val1' }], consumer_network: 'test-value', custom_domain: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', deny_maintenance_period: [{ 'key1' => 'val1' }], encryption_config: [{ 'key1' => 'val1' }], fips_enabled: true, maintenance_window: [{ 'key1' => 'val1' }], platform_edition: 'test-value', private_ip_enabled: true, psc_config: [{ 'key1' => 'val1' }], psc_enabled: true, public_ip_enabled: true, reserved_range: 'test-value', user_metadata: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ admin_settings: { 'key1' => 'val1' }, consumer_network: 'test-value', controlled_egress_config: { 'key1' => 'val1' }, controlled_egress_enabled: true, custom_domain: { 'key1' => 'val1' }, deletion_policy: 'test-value', deny_maintenance_period: { 'key1' => 'val1' }, encryption_config: { 'key1' => 'val1' }, fips_enabled: true, gemini_enabled: true, maintenance_window: { 'key1' => 'val1' }, periodic_export_config: { 'key1' => 'val1' }, platform_edition: 'test-value', private_ip_enabled: true, project: 'test-value', psc_config: { 'key1' => 'val1' }, psc_enabled: true, public_ip_enabled: true, region: 'test-value', reserved_range: 'test-value', user_metadata: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -82,17 +84,23 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
         config = validate_resource_structure(result, 'google_looker_instance', 'full')
         expect(config).to have_key('admin_settings')
         expect(config).to have_key('consumer_network')
+        expect(config).to have_key('controlled_egress_config')
+        expect(config).to have_key('controlled_egress_enabled')
         expect(config).to have_key('custom_domain')
         expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deny_maintenance_period')
         expect(config).to have_key('encryption_config')
         expect(config).to have_key('fips_enabled')
+        expect(config).to have_key('gemini_enabled')
         expect(config).to have_key('maintenance_window')
+        expect(config).to have_key('periodic_export_config')
         expect(config).to have_key('platform_edition')
         expect(config).to have_key('private_ip_enabled')
+        expect(config).to have_key('project')
         expect(config).to have_key('psc_config')
         expect(config).to have_key('psc_enabled')
         expect(config).to have_key('public_ip_enabled')
+        expect(config).to have_key('region')
         expect(config).to have_key('reserved_range')
         expect(config).to have_key('user_metadata')
       end
@@ -102,7 +110,7 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
       it 'includes admin_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_looker_instance('opt', required_attrs.merge(admin_settings: [{ 'key1' => 'val1' }]))
+        synth.google_looker_instance('opt', required_attrs.merge(admin_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_looker_instance', 'opt')
         expect(config).to have_key('admin_settings')
@@ -133,10 +141,44 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
         config = validate_resource_structure(result, 'google_looker_instance', 'minimal')
         expect(config).not_to have_key('consumer_network')
       end
+      it 'includes controlled_egress_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_looker_instance('opt', required_attrs.merge(controlled_egress_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_looker_instance', 'opt')
+        expect(config).to have_key('controlled_egress_config')
+      end
+
+      it 'omits controlled_egress_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_looker_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_looker_instance', 'minimal')
+        expect(config).not_to have_key('controlled_egress_config')
+      end
+      it 'includes controlled_egress_enabled when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_looker_instance('opt', required_attrs.merge(controlled_egress_enabled: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_looker_instance', 'opt')
+        expect(config).to have_key('controlled_egress_enabled')
+      end
+
+      it 'omits controlled_egress_enabled when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_looker_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_looker_instance', 'minimal')
+        expect(config).not_to have_key('controlled_egress_enabled')
+      end
       it 'includes custom_domain when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_looker_instance('opt', required_attrs.merge(custom_domain: [{ 'key1' => 'val1' }]))
+        synth.google_looker_instance('opt', required_attrs.merge(custom_domain: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_looker_instance', 'opt')
         expect(config).to have_key('custom_domain')
@@ -170,7 +212,7 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
       it 'includes deny_maintenance_period when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_looker_instance('opt', required_attrs.merge(deny_maintenance_period: [{ 'key1' => 'val1' }]))
+        synth.google_looker_instance('opt', required_attrs.merge(deny_maintenance_period: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_looker_instance', 'opt')
         expect(config).to have_key('deny_maintenance_period')
@@ -187,7 +229,7 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
       it 'includes encryption_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_looker_instance('opt', required_attrs.merge(encryption_config: [{ 'key1' => 'val1' }]))
+        synth.google_looker_instance('opt', required_attrs.merge(encryption_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_looker_instance', 'opt')
         expect(config).to have_key('encryption_config')
@@ -218,10 +260,27 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
         config = validate_resource_structure(result, 'google_looker_instance', 'minimal')
         expect(config).not_to have_key('fips_enabled')
       end
+      it 'includes gemini_enabled when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_looker_instance('opt', required_attrs.merge(gemini_enabled: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_looker_instance', 'opt')
+        expect(config).to have_key('gemini_enabled')
+      end
+
+      it 'omits gemini_enabled when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_looker_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_looker_instance', 'minimal')
+        expect(config).not_to have_key('gemini_enabled')
+      end
       it 'includes maintenance_window when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_looker_instance('opt', required_attrs.merge(maintenance_window: [{ 'key1' => 'val1' }]))
+        synth.google_looker_instance('opt', required_attrs.merge(maintenance_window: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_looker_instance', 'opt')
         expect(config).to have_key('maintenance_window')
@@ -234,6 +293,23 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_looker_instance', 'minimal')
         expect(config).not_to have_key('maintenance_window')
+      end
+      it 'includes periodic_export_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_looker_instance('opt', required_attrs.merge(periodic_export_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_looker_instance', 'opt')
+        expect(config).to have_key('periodic_export_config')
+      end
+
+      it 'omits periodic_export_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_looker_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_looker_instance', 'minimal')
+        expect(config).not_to have_key('periodic_export_config')
       end
       it 'includes platform_edition when provided' do
         synth = create_synthesizer
@@ -269,10 +345,27 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
         config = validate_resource_structure(result, 'google_looker_instance', 'minimal')
         expect(config).not_to have_key('private_ip_enabled')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_looker_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_looker_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_looker_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_looker_instance', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes psc_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_looker_instance('opt', required_attrs.merge(psc_config: [{ 'key1' => 'val1' }]))
+        synth.google_looker_instance('opt', required_attrs.merge(psc_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_looker_instance', 'opt')
         expect(config).to have_key('psc_config')
@@ -320,6 +413,23 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
         config = validate_resource_structure(result, 'google_looker_instance', 'minimal')
         expect(config).not_to have_key('public_ip_enabled')
       end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_looker_instance('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_looker_instance', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_looker_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_looker_instance', 'minimal')
+        expect(config).not_to have_key('region')
+      end
       it 'includes reserved_range when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -340,7 +450,7 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
       it 'includes user_metadata when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_looker_instance('opt', required_attrs.merge(user_metadata: [{ 'key1' => 'val1' }]))
+        synth.google_looker_instance('opt', required_attrs.merge(user_metadata: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_looker_instance', 'opt')
         expect(config).to have_key('user_metadata')
@@ -358,6 +468,17 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
 
     context 'boolean fields' do
       [true, false].each do |val|
+        it "accepts controlled_egress_enabled=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(controlled_egress_enabled: val)
+          synth.google_looker_instance("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_looker_instance', "bool_#{val}")
+          expect(config['controlled_egress_enabled']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
         it "accepts fips_enabled=#{val}" do
           synth = create_synthesizer
           synth.extend(described_class)
@@ -366,6 +487,17 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
           result = normalize_synthesis(synth.synthesis)
           config = validate_resource_structure(result, 'google_looker_instance', "bool_#{val}")
           expect(config['fips_enabled']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts gemini_enabled=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(gemini_enabled: val)
+          synth.google_looker_instance("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_looker_instance', "bool_#{val}")
+          expect(config['gemini_enabled']).to eq(val)
         end
       end
       [true, false].each do |val|
@@ -412,7 +544,7 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
 
         config = validate_resource_structure(result, 'google_looker_instance', 'typed')
         expect(config['name']).to be_a(String)
-        expect(config['oauth_config']).to be_a(Array)
+        expect(config['oauth_config']).to be_a(Hash)
       end
     end
 
@@ -445,9 +577,9 @@ RSpec.describe Pangea::Resources::GoogleLookerInstance do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_looker_instance,
     method: :google_looker_instance,
-    required_attrs: { name: 'test-value', oauth_config: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :egress_public_ip, :ingress_private_ip, :ingress_public_ip, :looker_uri, :looker_version, :project, :region, :update_time],
+    required_attrs: { name: 'test-value', oauth_config: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :create_time, :deletion_policy, :egress_public_ip, :ingress_private_ip, :ingress_public_ip, :looker_uri, :looker_version, :project, :region, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:fips_enabled, :private_ip_enabled, :psc_enabled, :public_ip_enabled]
+    boolean_fields: [:controlled_egress_enabled, :fips_enabled, :gemini_enabled, :private_ip_enabled, :psc_enabled, :public_ip_enabled]
 end

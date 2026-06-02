@@ -1,0 +1,8 @@
+name: google_logging_billing_account_sink
+title: Manages a google_logging_billing_account_sink resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

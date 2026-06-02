@@ -1,0 +1,8 @@
+name: google_iam_workload_identity_pool_managed_identity
+title: Manages a google_iam_workload_identity_pool_managed_identity resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

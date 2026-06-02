@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityClientTlsPolicy do
 
         expect(ref.id).to eq("${google_network_security_client_tls_policy.test.id}")
         expect(ref.create_time).to eq("${google_network_security_client_tls_policy.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_security_client_tls_policy.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_security_client_tls_policy.test.effective_labels}")
         expect(ref.project).to eq("${google_network_security_client_tls_policy.test.project}")
         expect(ref.terraform_labels).to eq("${google_network_security_client_tls_policy.test.terraform_labels}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityClientTlsPolicy do
 
         config = validate_resource_structure(result, 'google_network_security_client_tls_policy', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityClientTlsPolicy do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ client_certificate: [{ 'key1' => 'val1' }], description: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', server_validation_ca: [{ 'key1' => 'val1' }], sni: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ client_certificate: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', project: 'test-value', server_validation_ca: [{ 'key1' => 'val1' }], sni: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,9 +75,11 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityClientTlsPolicy do
 
         config = validate_resource_structure(result, 'google_network_security_client_tls_policy', 'full')
         expect(config).to have_key('client_certificate')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
         expect(config).to have_key('server_validation_ca')
         expect(config).to have_key('sni')
       end
@@ -85,7 +89,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityClientTlsPolicy do
       it 'includes client_certificate when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_network_security_client_tls_policy('opt', required_attrs.merge(client_certificate: [{ 'key1' => 'val1' }]))
+        synth.google_network_security_client_tls_policy('opt', required_attrs.merge(client_certificate: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_security_client_tls_policy', 'opt')
         expect(config).to have_key('client_certificate')
@@ -98,6 +102,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityClientTlsPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_security_client_tls_policy', 'minimal')
         expect(config).not_to have_key('client_certificate')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_client_tls_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_client_tls_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_client_tls_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_client_tls_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -149,6 +170,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityClientTlsPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_security_client_tls_policy', 'minimal')
         expect(config).not_to have_key('location')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_client_tls_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_client_tls_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_client_tls_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_client_tls_policy', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes server_validation_ca when provided' do
         synth = create_synthesizer
@@ -228,7 +266,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecurityClientTlsPolicy do
     resource_type: :google_network_security_client_tls_policy,
     method: :google_network_security_client_tls_policy,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :project, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :project, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

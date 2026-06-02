@@ -38,9 +38,13 @@ RSpec.describe Pangea::Resources::GoogleComputeSecurityPolicy do
         ref = synth.google_compute_security_policy('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_security_policy.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_security_policy.test.deletion_policy}")
+        expect(ref.effective_labels).to eq("${google_compute_security_policy.test.effective_labels}")
         expect(ref.fingerprint).to eq("${google_compute_security_policy.test.fingerprint}")
+        expect(ref.label_fingerprint).to eq("${google_compute_security_policy.test.label_fingerprint}")
         expect(ref.project).to eq("${google_compute_security_policy.test.project}")
         expect(ref.self_link).to eq("${google_compute_security_policy.test.self_link}")
+        expect(ref.terraform_labels).to eq("${google_compute_security_policy.test.terraform_labels}")
         expect(ref.type).to eq("${google_compute_security_policy.test.type}")
       end
     end
@@ -53,15 +57,19 @@ RSpec.describe Pangea::Resources::GoogleComputeSecurityPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_security_policy', 'test')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('fingerprint')
+        expect(config).not_to have_key('label_fingerprint')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
+        expect(config).not_to have_key('terraform_labels')
         expect(config).not_to have_key('type')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ adaptive_protection_config: [{ 'key1' => 'val1' }], advanced_options_config: [{ 'key1' => 'val1' }], description: 'test-value', recaptcha_options_config: [{ 'key1' => 'val1' }], rule: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ adaptive_protection_config: { 'key1' => 'val1' }, advanced_options_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', recaptcha_options_config: { 'key1' => 'val1' }, rule: [{ 'key1' => 'val1' }], type: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,9 +80,13 @@ RSpec.describe Pangea::Resources::GoogleComputeSecurityPolicy do
         config = validate_resource_structure(result, 'google_compute_security_policy', 'full')
         expect(config).to have_key('adaptive_protection_config')
         expect(config).to have_key('advanced_options_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('recaptcha_options_config')
         expect(config).to have_key('rule')
+        expect(config).to have_key('type')
       end
     end
 
@@ -82,7 +94,7 @@ RSpec.describe Pangea::Resources::GoogleComputeSecurityPolicy do
       it 'includes adaptive_protection_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_security_policy('opt', required_attrs.merge(adaptive_protection_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_security_policy('opt', required_attrs.merge(adaptive_protection_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_security_policy', 'opt')
         expect(config).to have_key('adaptive_protection_config')
@@ -99,7 +111,7 @@ RSpec.describe Pangea::Resources::GoogleComputeSecurityPolicy do
       it 'includes advanced_options_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_security_policy('opt', required_attrs.merge(advanced_options_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_security_policy('opt', required_attrs.merge(advanced_options_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_security_policy', 'opt')
         expect(config).to have_key('advanced_options_config')
@@ -112,6 +124,23 @@ RSpec.describe Pangea::Resources::GoogleComputeSecurityPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_security_policy', 'minimal')
         expect(config).not_to have_key('advanced_options_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_security_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_security_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_security_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_security_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -130,10 +159,44 @@ RSpec.describe Pangea::Resources::GoogleComputeSecurityPolicy do
         config = validate_resource_structure(result, 'google_compute_security_policy', 'minimal')
         expect(config).not_to have_key('description')
       end
+      it 'includes labels when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_security_policy('opt', required_attrs.merge(labels: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_security_policy', 'opt')
+        expect(config).to have_key('labels')
+      end
+
+      it 'omits labels when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_security_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_security_policy', 'minimal')
+        expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_security_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_security_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_security_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_security_policy', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes recaptcha_options_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_security_policy('opt', required_attrs.merge(recaptcha_options_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_security_policy('opt', required_attrs.merge(recaptcha_options_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_security_policy', 'opt')
         expect(config).to have_key('recaptcha_options_config')
@@ -163,6 +226,23 @@ RSpec.describe Pangea::Resources::GoogleComputeSecurityPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_security_policy', 'minimal')
         expect(config).not_to have_key('rule')
+      end
+      it 'includes type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_security_policy('opt', required_attrs.merge(type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_security_policy', 'opt')
+        expect(config).to have_key('type')
+      end
+
+      it 'omits type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_security_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_security_policy', 'minimal')
+        expect(config).not_to have_key('type')
       end
     end
 
@@ -208,7 +288,7 @@ RSpec.describe Pangea::Resources::GoogleComputeSecurityPolicy do
     resource_type: :google_compute_security_policy,
     method: :google_compute_security_policy,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :fingerprint, :project, :self_link, :type],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :fingerprint, :label_fingerprint, :project, :self_link, :terraform_labels, :type],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

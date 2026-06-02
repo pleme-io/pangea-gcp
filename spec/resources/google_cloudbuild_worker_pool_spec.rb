@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildWorkerPool do
         expect(ref.id).to eq("${google_cloudbuild_worker_pool.test.id}")
         expect(ref.create_time).to eq("${google_cloudbuild_worker_pool.test.create_time}")
         expect(ref.delete_time).to eq("${google_cloudbuild_worker_pool.test.delete_time}")
+        expect(ref.deletion_policy).to eq("${google_cloudbuild_worker_pool.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_cloudbuild_worker_pool.test.effective_annotations}")
         expect(ref.project).to eq("${google_cloudbuild_worker_pool.test.project}")
         expect(ref.state).to eq("${google_cloudbuild_worker_pool.test.state}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildWorkerPool do
         config = validate_resource_structure(result, 'google_cloudbuild_worker_pool', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('delete_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildWorkerPool do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, display_name: 'test-value', network_config: [{ 'key1' => 'val1' }], private_service_connect: [{ 'key1' => 'val1' }], worker_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, deletion_policy: 'test-value', display_name: 'test-value', network_config: { 'key1' => 'val1' }, private_service_connect: { 'key1' => 'val1' }, project: 'test-value', worker_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -77,9 +79,11 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildWorkerPool do
 
         config = validate_resource_structure(result, 'google_cloudbuild_worker_pool', 'full')
         expect(config).to have_key('annotations')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('network_config')
         expect(config).to have_key('private_service_connect')
+        expect(config).to have_key('project')
         expect(config).to have_key('worker_config')
       end
     end
@@ -102,6 +106,23 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildWorkerPool do
         config = validate_resource_structure(result, 'google_cloudbuild_worker_pool', 'minimal')
         expect(config).not_to have_key('annotations')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_worker_pool('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_worker_pool', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_worker_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_worker_pool', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes display_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -122,7 +143,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildWorkerPool do
       it 'includes network_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudbuild_worker_pool('opt', required_attrs.merge(network_config: [{ 'key1' => 'val1' }]))
+        synth.google_cloudbuild_worker_pool('opt', required_attrs.merge(network_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_worker_pool', 'opt')
         expect(config).to have_key('network_config')
@@ -139,7 +160,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildWorkerPool do
       it 'includes private_service_connect when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudbuild_worker_pool('opt', required_attrs.merge(private_service_connect: [{ 'key1' => 'val1' }]))
+        synth.google_cloudbuild_worker_pool('opt', required_attrs.merge(private_service_connect: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_worker_pool', 'opt')
         expect(config).to have_key('private_service_connect')
@@ -153,10 +174,27 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildWorkerPool do
         config = validate_resource_structure(result, 'google_cloudbuild_worker_pool', 'minimal')
         expect(config).not_to have_key('private_service_connect')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_worker_pool('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_worker_pool', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloudbuild_worker_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloudbuild_worker_pool', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes worker_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloudbuild_worker_pool('opt', required_attrs.merge(worker_config: [{ 'key1' => 'val1' }]))
+        synth.google_cloudbuild_worker_pool('opt', required_attrs.merge(worker_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloudbuild_worker_pool', 'opt')
         expect(config).to have_key('worker_config')
@@ -215,7 +253,7 @@ RSpec.describe Pangea::Resources::GoogleCloudbuildWorkerPool do
     resource_type: :google_cloudbuild_worker_pool,
     method: :google_cloudbuild_worker_pool,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :create_time, :delete_time, :effective_annotations, :project, :state, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :delete_time, :deletion_policy, :effective_annotations, :project, :state, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

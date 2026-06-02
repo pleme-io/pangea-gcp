@@ -1,0 +1,8 @@
+name: google_apigee_keystores_aliases_key_cert_file
+title: Manages a google_apigee_keystores_aliases_key_cert_file resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

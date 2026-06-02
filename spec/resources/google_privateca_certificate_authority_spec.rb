@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GooglePrivatecaCertificateAuthority do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { certificate_authority_id: 'test-value', config: [{ 'key1' => 'val1' }], key_spec: [{ 'key1' => 'val1' }], location: 'test-value', pool: 'test-value' } }
+  let(:required_attrs) { { certificate_authority_id: 'test-value', config: { 'key1' => 'val1' }, key_spec: { 'key1' => 'val1' }, location: 'test-value', pool: 'test-value' } }
 
   describe ':google_privateca_certificate_authority' do
     context 'with required attributes only' do
@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificateAuthority do
         expect(ref.id).to eq("${google_privateca_certificate_authority.test.id}")
         expect(ref.access_urls).to eq("${google_privateca_certificate_authority.test.access_urls}")
         expect(ref.create_time).to eq("${google_privateca_certificate_authority.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_privateca_certificate_authority.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_privateca_certificate_authority.test.effective_labels}")
         expect(ref.name).to eq("${google_privateca_certificate_authority.test.name}")
         expect(ref.pem_ca_certificates).to eq("${google_privateca_certificate_authority.test.pem_ca_certificates}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificateAuthority do
         config = validate_resource_structure(result, 'google_privateca_certificate_authority', 'test')
         expect(config).not_to have_key('access_urls')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('pem_ca_certificates')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificateAuthority do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deletion_protection: true, desired_state: 'test-value', gcs_bucket: 'test-value', ignore_active_certificates_on_deletion: true, labels: { 'key1' => 'val1' }, lifetime: 'test-value', pem_ca_certificate: 'test-value', skip_grace_period: true, subordinate_config: [{ 'key1' => 'val1' }], type: 'test-value', user_defined_access_urls: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', deletion_protection: true, desired_state: 'test-value', gcs_bucket: 'test-value', ignore_active_certificates_on_deletion: true, labels: { 'key1' => 'val1' }, lifetime: 'test-value', pem_ca_certificate: 'test-value', project: 'test-value', skip_grace_period: true, subordinate_config: { 'key1' => 'val1' }, type: 'test-value', user_defined_access_urls: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -80,6 +82,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificateAuthority do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_privateca_certificate_authority', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
         expect(config).to have_key('desired_state')
         expect(config).to have_key('gcs_bucket')
@@ -87,6 +90,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificateAuthority do
         expect(config).to have_key('labels')
         expect(config).to have_key('lifetime')
         expect(config).to have_key('pem_ca_certificate')
+        expect(config).to have_key('project')
         expect(config).to have_key('skip_grace_period')
         expect(config).to have_key('subordinate_config')
         expect(config).to have_key('type')
@@ -95,6 +99,23 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificateAuthority do
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privateca_certificate_authority('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privateca_certificate_authority', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privateca_certificate_authority('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privateca_certificate_authority', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -214,6 +235,23 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificateAuthority do
         config = validate_resource_structure(result, 'google_privateca_certificate_authority', 'minimal')
         expect(config).not_to have_key('pem_ca_certificate')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privateca_certificate_authority('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privateca_certificate_authority', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_privateca_certificate_authority('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_privateca_certificate_authority', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes skip_grace_period when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -234,7 +272,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificateAuthority do
       it 'includes subordinate_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_privateca_certificate_authority('opt', required_attrs.merge(subordinate_config: [{ 'key1' => 'val1' }]))
+        synth.google_privateca_certificate_authority('opt', required_attrs.merge(subordinate_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_privateca_certificate_authority', 'opt')
         expect(config).to have_key('subordinate_config')
@@ -268,7 +306,7 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificateAuthority do
       it 'includes user_defined_access_urls when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_privateca_certificate_authority('opt', required_attrs.merge(user_defined_access_urls: [{ 'key1' => 'val1' }]))
+        synth.google_privateca_certificate_authority('opt', required_attrs.merge(user_defined_access_urls: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_privateca_certificate_authority', 'opt')
         expect(config).to have_key('user_defined_access_urls')
@@ -329,8 +367,8 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificateAuthority do
 
         config = validate_resource_structure(result, 'google_privateca_certificate_authority', 'typed')
         expect(config['certificate_authority_id']).to be_a(String)
-        expect(config['config']).to be_a(Array)
-        expect(config['key_spec']).to be_a(Array)
+        expect(config['config']).to be_a(Hash)
+        expect(config['key_spec']).to be_a(Hash)
         expect(config['location']).to be_a(String)
         expect(config['pool']).to be_a(String)
       end
@@ -365,8 +403,8 @@ RSpec.describe Pangea::Resources::GooglePrivatecaCertificateAuthority do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_privateca_certificate_authority,
     method: :google_privateca_certificate_authority,
-    required_attrs: { certificate_authority_id: 'test-value', config: [{ 'key1' => 'val1' }], key_spec: [{ 'key1' => 'val1' }], location: 'test-value', pool: 'test-value' },
-    expected_outputs: [:id, :access_urls, :create_time, :effective_labels, :name, :pem_ca_certificates, :project, :state, :terraform_labels, :update_time],
+    required_attrs: { certificate_authority_id: 'test-value', config: { 'key1' => 'val1' }, key_spec: { 'key1' => 'val1' }, location: 'test-value', pool: 'test-value' },
+    expected_outputs: [:id, :access_urls, :create_time, :deletion_policy, :effective_labels, :name, :pem_ca_certificates, :project, :state, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection, :ignore_active_certificates_on_deletion, :skip_grace_period]

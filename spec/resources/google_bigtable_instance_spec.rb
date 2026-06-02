@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableInstance do
         ref = synth.google_bigtable_instance('test', required_attrs)
 
         expect(ref.id).to eq("${google_bigtable_instance.test.id}")
+        expect(ref.deletion_policy).to eq("${google_bigtable_instance.test.deletion_policy}")
         expect(ref.display_name).to eq("${google_bigtable_instance.test.display_name}")
         expect(ref.effective_labels).to eq("${google_bigtable_instance.test.effective_labels}")
         expect(ref.project).to eq("${google_bigtable_instance.test.project}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableInstance do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigtable_instance', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('display_name')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ cluster: [{ 'key1' => 'val1' }], deletion_protection: true, force_destroy: true, instance_type: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ cluster: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', deletion_protection: true, display_name: 'test-value', edition: 'test-value', force_destroy: true, instance_type: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', tags: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,10 +73,15 @@ RSpec.describe Pangea::Resources::GoogleBigtableInstance do
 
         config = validate_resource_structure(result, 'google_bigtable_instance', 'full')
         expect(config).to have_key('cluster')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
+        expect(config).to have_key('display_name')
+        expect(config).to have_key('edition')
         expect(config).to have_key('force_destroy')
         expect(config).to have_key('instance_type')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
+        expect(config).to have_key('tags')
       end
     end
 
@@ -96,6 +103,23 @@ RSpec.describe Pangea::Resources::GoogleBigtableInstance do
         config = validate_resource_structure(result, 'google_bigtable_instance', 'minimal')
         expect(config).not_to have_key('cluster')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -112,6 +136,40 @@ RSpec.describe Pangea::Resources::GoogleBigtableInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigtable_instance', 'minimal')
         expect(config).not_to have_key('deletion_protection')
+      end
+      it 'includes display_name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_instance('opt', required_attrs.merge(display_name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_instance', 'opt')
+        expect(config).to have_key('display_name')
+      end
+
+      it 'omits display_name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_instance', 'minimal')
+        expect(config).not_to have_key('display_name')
+      end
+      it 'includes edition when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_instance('opt', required_attrs.merge(edition: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_instance', 'opt')
+        expect(config).to have_key('edition')
+      end
+
+      it 'omits edition when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_instance', 'minimal')
+        expect(config).not_to have_key('edition')
       end
       it 'includes force_destroy when provided' do
         synth = create_synthesizer
@@ -163,6 +221,40 @@ RSpec.describe Pangea::Resources::GoogleBigtableInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigtable_instance', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_instance', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes tags when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_instance('opt', required_attrs.merge(tags: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_instance', 'opt')
+        expect(config).to have_key('tags')
+      end
+
+      it 'omits tags when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_instance', 'minimal')
+        expect(config).not_to have_key('tags')
       end
     end
 
@@ -233,7 +325,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableInstance do
     resource_type: :google_bigtable_instance,
     method: :google_bigtable_instance,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :display_name, :effective_labels, :project, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :display_name, :effective_labels, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection, :force_destroy]

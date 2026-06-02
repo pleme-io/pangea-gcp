@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleNetappVolume do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { capacity_gib: 'test-value', location: 'test-value', name: 'test-value', protocols: ['test-value'], share_name: 'test-value', storage_pool: 'test-value' } }
+  let(:required_attrs) { { capacity_gib: 'test-value', location: 'test-value', name: 'test-value', protocols: ['test-value'], storage_pool: 'test-value' } }
 
   describe ':google_netapp_volume' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_netapp_volume', 'test')
-        validate_required_attributes(config, [:capacity_gib, :location, :name, :protocols, :share_name, :storage_pool])
+        validate_required_attributes(config, [:capacity_gib, :location, :name, :protocols, :storage_pool])
       end
 
       it 'returns a ResourceReference' do
@@ -41,9 +41,11 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
         expect(ref.active_directory).to eq("${google_netapp_volume.test.active_directory}")
         expect(ref.cold_tier_size_gib).to eq("${google_netapp_volume.test.cold_tier_size_gib}")
         expect(ref.create_time).to eq("${google_netapp_volume.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_netapp_volume.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_netapp_volume.test.effective_labels}")
         expect(ref.encryption_type).to eq("${google_netapp_volume.test.encryption_type}")
         expect(ref.has_replication).to eq("${google_netapp_volume.test.has_replication}")
+        expect(ref.hot_tier_size_used_gib).to eq("${google_netapp_volume.test.hot_tier_size_used_gib}")
         expect(ref.kms_config).to eq("${google_netapp_volume.test.kms_config}")
         expect(ref.ldap_enabled).to eq("${google_netapp_volume.test.ldap_enabled}")
         expect(ref.mount_options).to eq("${google_netapp_volume.test.mount_options}")
@@ -57,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
         expect(ref.state).to eq("${google_netapp_volume.test.state}")
         expect(ref.state_details).to eq("${google_netapp_volume.test.state_details}")
         expect(ref.terraform_labels).to eq("${google_netapp_volume.test.terraform_labels}")
+        expect(ref.throughput_mibps).to eq("${google_netapp_volume.test.throughput_mibps}")
         expect(ref.unix_permissions).to eq("${google_netapp_volume.test.unix_permissions}")
         expect(ref.used_gib).to eq("${google_netapp_volume.test.used_gib}")
         expect(ref.zone).to eq("${google_netapp_volume.test.zone}")
@@ -74,9 +77,11 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
         expect(config).not_to have_key('active_directory')
         expect(config).not_to have_key('cold_tier_size_gib')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('encryption_type')
         expect(config).not_to have_key('has_replication')
+        expect(config).not_to have_key('hot_tier_size_used_gib')
         expect(config).not_to have_key('kms_config')
         expect(config).not_to have_key('ldap_enabled')
         expect(config).not_to have_key('mount_options')
@@ -90,6 +95,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('state_details')
         expect(config).not_to have_key('terraform_labels')
+        expect(config).not_to have_key('throughput_mibps')
         expect(config).not_to have_key('unix_permissions')
         expect(config).not_to have_key('used_gib')
         expect(config).not_to have_key('zone')
@@ -97,7 +103,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ backup_config: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', description: 'test-value', export_policy: [{ 'key1' => 'val1' }], hybrid_replication_parameters: [{ 'key1' => 'val1' }], kerberos_enabled: true, labels: { 'key1' => 'val1' }, large_capacity: true, multiple_endpoints: true, restore_parameters: [{ 'key1' => 'val1' }], restricted_actions: ['test-value'], snapshot_directory: true, snapshot_policy: [{ 'key1' => 'val1' }], tiering_policy: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ backup_config: { 'key1' => 'val1' }, block_devices: [{ 'key1' => 'val1' }], cache_parameters: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', export_policy: { 'key1' => 'val1' }, hybrid_replication_parameters: { 'key1' => 'val1' }, kerberos_enabled: true, labels: { 'key1' => 'val1' }, large_capacity: true, large_capacity_config: { 'key1' => 'val1' }, multiple_endpoints: true, project: 'test-value', restore_parameters: { 'key1' => 'val1' }, restricted_actions: ['test-value'], security_style: 'test-value', share_name: 'test-value', smb_settings: ['test-value'], snapshot_directory: true, snapshot_policy: { 'key1' => 'val1' }, throughput_mibps: 3.14, tiering_policy: { 'key1' => 'val1' }, unix_permissions: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -107,6 +113,8 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
 
         config = validate_resource_structure(result, 'google_netapp_volume', 'full')
         expect(config).to have_key('backup_config')
+        expect(config).to have_key('block_devices')
+        expect(config).to have_key('cache_parameters')
         expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('export_policy')
@@ -114,12 +122,19 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
         expect(config).to have_key('kerberos_enabled')
         expect(config).to have_key('labels')
         expect(config).to have_key('large_capacity')
+        expect(config).to have_key('large_capacity_config')
         expect(config).to have_key('multiple_endpoints')
+        expect(config).to have_key('project')
         expect(config).to have_key('restore_parameters')
         expect(config).to have_key('restricted_actions')
+        expect(config).to have_key('security_style')
+        expect(config).to have_key('share_name')
+        expect(config).to have_key('smb_settings')
         expect(config).to have_key('snapshot_directory')
         expect(config).to have_key('snapshot_policy')
+        expect(config).to have_key('throughput_mibps')
         expect(config).to have_key('tiering_policy')
+        expect(config).to have_key('unix_permissions')
       end
     end
 
@@ -127,7 +142,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
       it 'includes backup_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_netapp_volume('opt', required_attrs.merge(backup_config: [{ 'key1' => 'val1' }]))
+        synth.google_netapp_volume('opt', required_attrs.merge(backup_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
         expect(config).to have_key('backup_config')
@@ -140,6 +155,40 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
         expect(config).not_to have_key('backup_config')
+      end
+      it 'includes block_devices when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('opt', required_attrs.merge(block_devices: [{ 'key1' => 'val1' }]))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
+        expect(config).to have_key('block_devices')
+      end
+
+      it 'omits block_devices when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
+        expect(config).not_to have_key('block_devices')
+      end
+      it 'includes cache_parameters when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('opt', required_attrs.merge(cache_parameters: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
+        expect(config).to have_key('cache_parameters')
+      end
+
+      it 'omits cache_parameters when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
+        expect(config).not_to have_key('cache_parameters')
       end
       it 'includes deletion_policy when provided' do
         synth = create_synthesizer
@@ -178,7 +227,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
       it 'includes export_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_netapp_volume('opt', required_attrs.merge(export_policy: [{ 'key1' => 'val1' }]))
+        synth.google_netapp_volume('opt', required_attrs.merge(export_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
         expect(config).to have_key('export_policy')
@@ -195,7 +244,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
       it 'includes hybrid_replication_parameters when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_netapp_volume('opt', required_attrs.merge(hybrid_replication_parameters: [{ 'key1' => 'val1' }]))
+        synth.google_netapp_volume('opt', required_attrs.merge(hybrid_replication_parameters: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
         expect(config).to have_key('hybrid_replication_parameters')
@@ -260,6 +309,23 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
         config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
         expect(config).not_to have_key('large_capacity')
       end
+      it 'includes large_capacity_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('opt', required_attrs.merge(large_capacity_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
+        expect(config).to have_key('large_capacity_config')
+      end
+
+      it 'omits large_capacity_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
+        expect(config).not_to have_key('large_capacity_config')
+      end
       it 'includes multiple_endpoints when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -277,10 +343,27 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
         config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
         expect(config).not_to have_key('multiple_endpoints')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes restore_parameters when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_netapp_volume('opt', required_attrs.merge(restore_parameters: [{ 'key1' => 'val1' }]))
+        synth.google_netapp_volume('opt', required_attrs.merge(restore_parameters: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
         expect(config).to have_key('restore_parameters')
@@ -311,6 +394,57 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
         config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
         expect(config).not_to have_key('restricted_actions')
       end
+      it 'includes security_style when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('opt', required_attrs.merge(security_style: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
+        expect(config).to have_key('security_style')
+      end
+
+      it 'omits security_style when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
+        expect(config).not_to have_key('security_style')
+      end
+      it 'includes share_name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('opt', required_attrs.merge(share_name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
+        expect(config).to have_key('share_name')
+      end
+
+      it 'omits share_name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
+        expect(config).not_to have_key('share_name')
+      end
+      it 'includes smb_settings when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('opt', required_attrs.merge(smb_settings: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
+        expect(config).to have_key('smb_settings')
+      end
+
+      it 'omits smb_settings when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
+        expect(config).not_to have_key('smb_settings')
+      end
       it 'includes snapshot_directory when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -331,7 +465,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
       it 'includes snapshot_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_netapp_volume('opt', required_attrs.merge(snapshot_policy: [{ 'key1' => 'val1' }]))
+        synth.google_netapp_volume('opt', required_attrs.merge(snapshot_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
         expect(config).to have_key('snapshot_policy')
@@ -345,10 +479,27 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
         config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
         expect(config).not_to have_key('snapshot_policy')
       end
+      it 'includes throughput_mibps when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('opt', required_attrs.merge(throughput_mibps: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
+        expect(config).to have_key('throughput_mibps')
+      end
+
+      it 'omits throughput_mibps when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
+        expect(config).not_to have_key('throughput_mibps')
+      end
       it 'includes tiering_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_netapp_volume('opt', required_attrs.merge(tiering_policy: [{ 'key1' => 'val1' }]))
+        synth.google_netapp_volume('opt', required_attrs.merge(tiering_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
         expect(config).to have_key('tiering_policy')
@@ -361,6 +512,23 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
         expect(config).not_to have_key('tiering_policy')
+      end
+      it 'includes unix_permissions when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('opt', required_attrs.merge(unix_permissions: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'opt')
+        expect(config).to have_key('unix_permissions')
+      end
+
+      it 'omits unix_permissions when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume', 'minimal')
+        expect(config).not_to have_key('unix_permissions')
       end
     end
 
@@ -423,7 +591,6 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
         expect(config['protocols']).to be_a(Array)
-        expect(config['share_name']).to be_a(String)
         expect(config['storage_pool']).to be_a(String)
       end
     end
@@ -457,8 +624,8 @@ RSpec.describe Pangea::Resources::GoogleNetappVolume do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_netapp_volume,
     method: :google_netapp_volume,
-    required_attrs: { capacity_gib: 'test-value', location: 'test-value', name: 'test-value', protocols: ['test-value'], share_name: 'test-value', storage_pool: 'test-value' },
-    expected_outputs: [:id, :active_directory, :cold_tier_size_gib, :create_time, :effective_labels, :encryption_type, :has_replication, :kms_config, :ldap_enabled, :mount_options, :network, :project, :psa_range, :replica_zone, :security_style, :service_level, :smb_settings, :state, :state_details, :terraform_labels, :unix_permissions, :used_gib, :zone],
+    required_attrs: { capacity_gib: 'test-value', location: 'test-value', name: 'test-value', protocols: ['test-value'], storage_pool: 'test-value' },
+    expected_outputs: [:id, :active_directory, :cold_tier_size_gib, :create_time, :deletion_policy, :effective_labels, :encryption_type, :has_replication, :hot_tier_size_used_gib, :kms_config, :ldap_enabled, :mount_options, :network, :project, :psa_range, :replica_zone, :security_style, :service_level, :smb_settings, :state, :state_details, :terraform_labels, :throughput_mibps, :unix_permissions, :used_gib, :zone],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:kerberos_enabled, :large_capacity, :multiple_endpoints, :snapshot_directory]

@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolumeSnapshot do
         ref = synth.google_netapp_volume_snapshot('test', required_attrs)
 
         expect(ref.id).to eq("${google_netapp_volume_snapshot.test.id}")
+        expect(ref.deletion_policy).to eq("${google_netapp_volume_snapshot.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_netapp_volume_snapshot.test.effective_labels}")
         expect(ref.project).to eq("${google_netapp_volume_snapshot.test.project}")
         expect(ref.terraform_labels).to eq("${google_netapp_volume_snapshot.test.terraform_labels}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolumeSnapshot do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_netapp_volume_snapshot', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolumeSnapshot do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,12 +72,31 @@ RSpec.describe Pangea::Resources::GoogleNetappVolumeSnapshot do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_netapp_volume_snapshot', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume_snapshot('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume_snapshot', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume_snapshot('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume_snapshot', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -109,6 +130,23 @@ RSpec.describe Pangea::Resources::GoogleNetappVolumeSnapshot do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_volume_snapshot', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume_snapshot('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume_snapshot', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_volume_snapshot('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_volume_snapshot', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -156,7 +194,7 @@ RSpec.describe Pangea::Resources::GoogleNetappVolumeSnapshot do
     resource_type: :google_netapp_volume_snapshot,
     method: :google_netapp_volume_snapshot,
     required_attrs: { location: 'test-value', name: 'test-value', volume_name: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :project, :terraform_labels, :used_bytes],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :project, :terraform_labels, :used_bytes],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

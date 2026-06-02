@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeResizeRequest do
 
         expect(ref.id).to eq("${google_compute_resize_request.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_resize_request.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_resize_request.test.deletion_policy}")
         expect(ref.project).to eq("${google_compute_resize_request.test.project}")
         expect(ref.state).to eq("${google_compute_resize_request.test.state}")
         expect(ref.status).to eq("${google_compute_resize_request.test.status}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleComputeResizeRequest do
 
         config = validate_resource_structure(result, 'google_compute_resize_request', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('status')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleComputeResizeRequest do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', requested_run_duration: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', project: 'test-value', requested_run_duration: { 'key1' => 'val1' }, zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,12 +74,32 @@ RSpec.describe Pangea::Resources::GoogleComputeResizeRequest do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_resize_request', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('project')
         expect(config).to have_key('requested_run_duration')
+        expect(config).to have_key('zone')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_resize_request('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_resize_request', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_resize_request('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_resize_request', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -95,10 +117,27 @@ RSpec.describe Pangea::Resources::GoogleComputeResizeRequest do
         config = validate_resource_structure(result, 'google_compute_resize_request', 'minimal')
         expect(config).not_to have_key('description')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_resize_request('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_resize_request', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_resize_request('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_resize_request', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes requested_run_duration when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_resize_request('opt', required_attrs.merge(requested_run_duration: [{ 'key1' => 'val1' }]))
+        synth.google_compute_resize_request('opt', required_attrs.merge(requested_run_duration: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_resize_request', 'opt')
         expect(config).to have_key('requested_run_duration')
@@ -111,6 +150,23 @@ RSpec.describe Pangea::Resources::GoogleComputeResizeRequest do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_resize_request', 'minimal')
         expect(config).not_to have_key('requested_run_duration')
+      end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_resize_request('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_resize_request', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_resize_request('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_resize_request', 'minimal')
+        expect(config).not_to have_key('zone')
       end
     end
 
@@ -158,7 +214,7 @@ RSpec.describe Pangea::Resources::GoogleComputeResizeRequest do
     resource_type: :google_compute_resize_request,
     method: :google_compute_resize_request,
     required_attrs: { instance_group_manager: 'test-value', name: 'test-value', resize_by: 3.14 },
-    expected_outputs: [:id, :creation_timestamp, :project, :state, :status, :zone],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :project, :state, :status, :zone],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

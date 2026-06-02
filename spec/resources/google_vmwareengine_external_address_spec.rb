@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineExternalAddress do
 
         expect(ref.id).to eq("${google_vmwareengine_external_address.test.id}")
         expect(ref.create_time).to eq("${google_vmwareengine_external_address.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_vmwareengine_external_address.test.deletion_policy}")
         expect(ref.external_ip).to eq("${google_vmwareengine_external_address.test.external_ip}")
         expect(ref.state).to eq("${google_vmwareengine_external_address.test.state}")
         expect(ref.uid).to eq("${google_vmwareengine_external_address.test.uid}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineExternalAddress do
 
         config = validate_resource_structure(result, 'google_vmwareengine_external_address', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('external_ip')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('uid')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineExternalAddress do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,11 +74,29 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineExternalAddress do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vmwareengine_external_address', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_external_address('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_external_address', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_external_address('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_external_address', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -140,7 +160,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineExternalAddress do
     resource_type: :google_vmwareengine_external_address,
     method: :google_vmwareengine_external_address,
     required_attrs: { internal_ip: 'test-value', name: 'test-value', parent: 'test-value' },
-    expected_outputs: [:id, :create_time, :external_ip, :state, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :external_ip, :state, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

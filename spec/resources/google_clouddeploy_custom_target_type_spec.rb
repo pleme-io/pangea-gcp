@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployCustomTargetType do
         expect(ref.id).to eq("${google_clouddeploy_custom_target_type.test.id}")
         expect(ref.create_time).to eq("${google_clouddeploy_custom_target_type.test.create_time}")
         expect(ref.custom_target_type_id).to eq("${google_clouddeploy_custom_target_type.test.custom_target_type_id}")
+        expect(ref.deletion_policy).to eq("${google_clouddeploy_custom_target_type.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_clouddeploy_custom_target_type.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_clouddeploy_custom_target_type.test.effective_labels}")
         expect(ref.etag).to eq("${google_clouddeploy_custom_target_type.test.etag}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployCustomTargetType do
         config = validate_resource_structure(result, 'google_clouddeploy_custom_target_type', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('custom_target_type_id')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployCustomTargetType do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, custom_actions: [{ 'key1' => 'val1' }], description: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, custom_actions: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', tasks: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -82,8 +84,11 @@ RSpec.describe Pangea::Resources::GoogleClouddeployCustomTargetType do
         config = validate_resource_structure(result, 'google_clouddeploy_custom_target_type', 'full')
         expect(config).to have_key('annotations')
         expect(config).to have_key('custom_actions')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
+        expect(config).to have_key('tasks')
       end
     end
 
@@ -108,7 +113,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployCustomTargetType do
       it 'includes custom_actions when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_clouddeploy_custom_target_type('opt', required_attrs.merge(custom_actions: [{ 'key1' => 'val1' }]))
+        synth.google_clouddeploy_custom_target_type('opt', required_attrs.merge(custom_actions: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_clouddeploy_custom_target_type', 'opt')
         expect(config).to have_key('custom_actions')
@@ -121,6 +126,23 @@ RSpec.describe Pangea::Resources::GoogleClouddeployCustomTargetType do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_clouddeploy_custom_target_type', 'minimal')
         expect(config).not_to have_key('custom_actions')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddeploy_custom_target_type('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddeploy_custom_target_type', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddeploy_custom_target_type('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddeploy_custom_target_type', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -155,6 +177,40 @@ RSpec.describe Pangea::Resources::GoogleClouddeployCustomTargetType do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_clouddeploy_custom_target_type', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddeploy_custom_target_type('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddeploy_custom_target_type', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddeploy_custom_target_type('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddeploy_custom_target_type', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes tasks when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddeploy_custom_target_type('opt', required_attrs.merge(tasks: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddeploy_custom_target_type', 'opt')
+        expect(config).to have_key('tasks')
+      end
+
+      it 'omits tasks when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_clouddeploy_custom_target_type('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_clouddeploy_custom_target_type', 'minimal')
+        expect(config).not_to have_key('tasks')
       end
     end
 
@@ -201,7 +257,7 @@ RSpec.describe Pangea::Resources::GoogleClouddeployCustomTargetType do
     resource_type: :google_clouddeploy_custom_target_type,
     method: :google_clouddeploy_custom_target_type,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :create_time, :custom_target_type_id, :effective_annotations, :effective_labels, :etag, :project, :terraform_labels, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :custom_target_type_id, :deletion_policy, :effective_annotations, :effective_labels, :etag, :project, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

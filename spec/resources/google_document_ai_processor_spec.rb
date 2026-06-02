@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDocumentAiProcessor do
         ref = synth.google_document_ai_processor('test', required_attrs)
 
         expect(ref.id).to eq("${google_document_ai_processor.test.id}")
+        expect(ref.deletion_policy).to eq("${google_document_ai_processor.test.deletion_policy}")
         expect(ref.name).to eq("${google_document_ai_processor.test.name}")
         expect(ref.project).to eq("${google_document_ai_processor.test.project}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleDocumentAiProcessor do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_document_ai_processor', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ kms_key_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', kms_key_name: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,11 +68,30 @@ RSpec.describe Pangea::Resources::GoogleDocumentAiProcessor do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_document_ai_processor', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('kms_key_name')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_document_ai_processor('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_document_ai_processor', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_document_ai_processor('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_document_ai_processor', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes kms_key_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -87,6 +108,23 @@ RSpec.describe Pangea::Resources::GoogleDocumentAiProcessor do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_document_ai_processor', 'minimal')
         expect(config).not_to have_key('kms_key_name')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_document_ai_processor('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_document_ai_processor', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_document_ai_processor('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_document_ai_processor', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -134,7 +172,7 @@ RSpec.describe Pangea::Resources::GoogleDocumentAiProcessor do
     resource_type: :google_document_ai_processor,
     method: :google_document_ai_processor,
     required_attrs: { display_name: 'test-value', location: 'test-value', type: 'test-value' },
-    expected_outputs: [:id, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

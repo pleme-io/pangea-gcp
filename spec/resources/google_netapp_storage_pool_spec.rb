@@ -38,10 +38,21 @@ RSpec.describe Pangea::Resources::GoogleNetappStoragePool do
         ref = synth.google_netapp_storage_pool('test', required_attrs)
 
         expect(ref.id).to eq("${google_netapp_storage_pool.test.id}")
+        expect(ref.available_throughput_mibps).to eq("${google_netapp_storage_pool.test.available_throughput_mibps}")
+        expect(ref.cold_tier_size_used_gib).to eq("${google_netapp_storage_pool.test.cold_tier_size_used_gib}")
+        expect(ref.custom_performance_enabled).to eq("${google_netapp_storage_pool.test.custom_performance_enabled}")
+        expect(ref.deletion_policy).to eq("${google_netapp_storage_pool.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_netapp_storage_pool.test.effective_labels}")
         expect(ref.encryption_type).to eq("${google_netapp_storage_pool.test.encryption_type}")
+        expect(ref.hot_tier_size_used_gib).to eq("${google_netapp_storage_pool.test.hot_tier_size_used_gib}")
+        expect(ref.mode).to eq("${google_netapp_storage_pool.test.mode}")
         expect(ref.project).to eq("${google_netapp_storage_pool.test.project}")
+        expect(ref.qos_type).to eq("${google_netapp_storage_pool.test.qos_type}")
+        expect(ref.scale_type).to eq("${google_netapp_storage_pool.test.scale_type}")
         expect(ref.terraform_labels).to eq("${google_netapp_storage_pool.test.terraform_labels}")
+        expect(ref.total_iops).to eq("${google_netapp_storage_pool.test.total_iops}")
+        expect(ref.total_throughput_mibps).to eq("${google_netapp_storage_pool.test.total_throughput_mibps}")
+        expect(ref.type).to eq("${google_netapp_storage_pool.test.type}")
         expect(ref.volume_capacity_gib).to eq("${google_netapp_storage_pool.test.volume_capacity_gib}")
         expect(ref.volume_count).to eq("${google_netapp_storage_pool.test.volume_count}")
         expect(ref.zone).to eq("${google_netapp_storage_pool.test.zone}")
@@ -56,10 +67,21 @@ RSpec.describe Pangea::Resources::GoogleNetappStoragePool do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_netapp_storage_pool', 'test')
+        expect(config).not_to have_key('available_throughput_mibps')
+        expect(config).not_to have_key('cold_tier_size_used_gib')
+        expect(config).not_to have_key('custom_performance_enabled')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('encryption_type')
+        expect(config).not_to have_key('hot_tier_size_used_gib')
+        expect(config).not_to have_key('mode')
         expect(config).not_to have_key('project')
+        expect(config).not_to have_key('qos_type')
+        expect(config).not_to have_key('scale_type')
         expect(config).not_to have_key('terraform_labels')
+        expect(config).not_to have_key('total_iops')
+        expect(config).not_to have_key('total_throughput_mibps')
+        expect(config).not_to have_key('type')
         expect(config).not_to have_key('volume_capacity_gib')
         expect(config).not_to have_key('volume_count')
         expect(config).not_to have_key('zone')
@@ -67,7 +89,7 @@ RSpec.describe Pangea::Resources::GoogleNetappStoragePool do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ active_directory: 'test-value', allow_auto_tiering: true, custom_performance_enabled: true, description: 'test-value', kms_config: 'test-value', labels: { 'key1' => 'val1' }, ldap_enabled: true, replica_zone: 'test-value', total_iops: 'test-value', total_throughput_mibps: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ active_directory: 'test-value', allow_auto_tiering: true, custom_performance_enabled: true, deletion_policy: 'test-value', description: 'test-value', enable_hot_tier_auto_resize: true, hot_tier_size_gib: 'test-value', kms_config: 'test-value', labels: { 'key1' => 'val1' }, ldap_enabled: true, mode: 'test-value', project: 'test-value', qos_type: 'test-value', replica_zone: 'test-value', scale_type: 'test-value', total_iops: 'test-value', total_throughput_mibps: 'test-value', type: 'test-value', zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -79,13 +101,22 @@ RSpec.describe Pangea::Resources::GoogleNetappStoragePool do
         expect(config).to have_key('active_directory')
         expect(config).to have_key('allow_auto_tiering')
         expect(config).to have_key('custom_performance_enabled')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('enable_hot_tier_auto_resize')
+        expect(config).to have_key('hot_tier_size_gib')
         expect(config).to have_key('kms_config')
         expect(config).to have_key('labels')
         expect(config).to have_key('ldap_enabled')
+        expect(config).to have_key('mode')
+        expect(config).to have_key('project')
+        expect(config).to have_key('qos_type')
         expect(config).to have_key('replica_zone')
+        expect(config).to have_key('scale_type')
         expect(config).to have_key('total_iops')
         expect(config).to have_key('total_throughput_mibps')
+        expect(config).to have_key('type')
+        expect(config).to have_key('zone')
       end
     end
 
@@ -141,6 +172,23 @@ RSpec.describe Pangea::Resources::GoogleNetappStoragePool do
         config = validate_resource_structure(result, 'google_netapp_storage_pool', 'minimal')
         expect(config).not_to have_key('custom_performance_enabled')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -157,6 +205,40 @@ RSpec.describe Pangea::Resources::GoogleNetappStoragePool do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_storage_pool', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes enable_hot_tier_auto_resize when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('opt', required_attrs.merge(enable_hot_tier_auto_resize: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'opt')
+        expect(config).to have_key('enable_hot_tier_auto_resize')
+      end
+
+      it 'omits enable_hot_tier_auto_resize when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'minimal')
+        expect(config).not_to have_key('enable_hot_tier_auto_resize')
+      end
+      it 'includes hot_tier_size_gib when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('opt', required_attrs.merge(hot_tier_size_gib: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'opt')
+        expect(config).to have_key('hot_tier_size_gib')
+      end
+
+      it 'omits hot_tier_size_gib when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'minimal')
+        expect(config).not_to have_key('hot_tier_size_gib')
       end
       it 'includes kms_config when provided' do
         synth = create_synthesizer
@@ -209,6 +291,57 @@ RSpec.describe Pangea::Resources::GoogleNetappStoragePool do
         config = validate_resource_structure(result, 'google_netapp_storage_pool', 'minimal')
         expect(config).not_to have_key('ldap_enabled')
       end
+      it 'includes mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('opt', required_attrs.merge(mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'opt')
+        expect(config).to have_key('mode')
+      end
+
+      it 'omits mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'minimal')
+        expect(config).not_to have_key('mode')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes qos_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('opt', required_attrs.merge(qos_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'opt')
+        expect(config).to have_key('qos_type')
+      end
+
+      it 'omits qos_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'minimal')
+        expect(config).not_to have_key('qos_type')
+      end
       it 'includes replica_zone when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -225,6 +358,23 @@ RSpec.describe Pangea::Resources::GoogleNetappStoragePool do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_storage_pool', 'minimal')
         expect(config).not_to have_key('replica_zone')
+      end
+      it 'includes scale_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('opt', required_attrs.merge(scale_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'opt')
+        expect(config).to have_key('scale_type')
+      end
+
+      it 'omits scale_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'minimal')
+        expect(config).not_to have_key('scale_type')
       end
       it 'includes total_iops when provided' do
         synth = create_synthesizer
@@ -260,6 +410,40 @@ RSpec.describe Pangea::Resources::GoogleNetappStoragePool do
         config = validate_resource_structure(result, 'google_netapp_storage_pool', 'minimal')
         expect(config).not_to have_key('total_throughput_mibps')
       end
+      it 'includes type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('opt', required_attrs.merge(type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'opt')
+        expect(config).to have_key('type')
+      end
+
+      it 'omits type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'minimal')
+        expect(config).not_to have_key('type')
+      end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_storage_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_storage_pool', 'minimal')
+        expect(config).not_to have_key('zone')
+      end
     end
 
     context 'boolean fields' do
@@ -283,6 +467,17 @@ RSpec.describe Pangea::Resources::GoogleNetappStoragePool do
           result = normalize_synthesis(synth.synthesis)
           config = validate_resource_structure(result, 'google_netapp_storage_pool', "bool_#{val}")
           expect(config['custom_performance_enabled']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts enable_hot_tier_auto_resize=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(enable_hot_tier_auto_resize: val)
+          synth.google_netapp_storage_pool("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_netapp_storage_pool', "bool_#{val}")
+          expect(config['enable_hot_tier_auto_resize']).to eq(val)
         end
       end
       [true, false].each do |val|
@@ -344,8 +539,8 @@ RSpec.describe Pangea::Resources::GoogleNetappStoragePool do
     resource_type: :google_netapp_storage_pool,
     method: :google_netapp_storage_pool,
     required_attrs: { capacity_gib: 'test-value', location: 'test-value', name: 'test-value', network: 'test-value', service_level: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :encryption_type, :project, :terraform_labels, :volume_capacity_gib, :volume_count, :zone],
+    expected_outputs: [:id, :available_throughput_mibps, :cold_tier_size_used_gib, :custom_performance_enabled, :deletion_policy, :effective_labels, :encryption_type, :hot_tier_size_used_gib, :mode, :project, :qos_type, :scale_type, :terraform_labels, :total_iops, :total_throughput_mibps, :type, :volume_capacity_gib, :volume_count, :zone],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:allow_auto_tiering, :custom_performance_enabled, :ldap_enabled]
+    boolean_fields: [:allow_auto_tiering, :custom_performance_enabled, :enable_hot_tier_auto_resize, :ldap_enabled]
 end

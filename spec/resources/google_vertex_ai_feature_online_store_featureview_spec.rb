@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeatureOnlineStoreFeatureview do
 
         expect(ref.id).to eq("${google_vertex_ai_feature_online_store_featureview.test.id}")
         expect(ref.create_time).to eq("${google_vertex_ai_feature_online_store_featureview.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_vertex_ai_feature_online_store_featureview.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_vertex_ai_feature_online_store_featureview.test.effective_labels}")
         expect(ref.project).to eq("${google_vertex_ai_feature_online_store_featureview.test.project}")
         expect(ref.region).to eq("${google_vertex_ai_feature_online_store_featureview.test.region}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeatureOnlineStoreFeatureview do
 
         config = validate_resource_structure(result, 'google_vertex_ai_feature_online_store_featureview', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('region')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeatureOnlineStoreFeatureview do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ big_query_source: [{ 'key1' => 'val1' }], feature_registry_source: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, name: 'test-value', sync_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ big_query_source: { 'key1' => 'val1' }, deletion_policy: 'test-value', feature_registry_source: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, name: 'test-value', project: 'test-value', region: 'test-value', sync_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -75,9 +77,12 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeatureOnlineStoreFeatureview do
 
         config = validate_resource_structure(result, 'google_vertex_ai_feature_online_store_featureview', 'full')
         expect(config).to have_key('big_query_source')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('feature_registry_source')
         expect(config).to have_key('labels')
         expect(config).to have_key('name')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('sync_config')
       end
     end
@@ -86,7 +91,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeatureOnlineStoreFeatureview do
       it 'includes big_query_source when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_feature_online_store_featureview('opt', required_attrs.merge(big_query_source: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_feature_online_store_featureview('opt', required_attrs.merge(big_query_source: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_feature_online_store_featureview', 'opt')
         expect(config).to have_key('big_query_source')
@@ -100,10 +105,27 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeatureOnlineStoreFeatureview do
         config = validate_resource_structure(result, 'google_vertex_ai_feature_online_store_featureview', 'minimal')
         expect(config).not_to have_key('big_query_source')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_feature_online_store_featureview('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_feature_online_store_featureview', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_feature_online_store_featureview('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_feature_online_store_featureview', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes feature_registry_source when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_feature_online_store_featureview('opt', required_attrs.merge(feature_registry_source: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_feature_online_store_featureview('opt', required_attrs.merge(feature_registry_source: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_feature_online_store_featureview', 'opt')
         expect(config).to have_key('feature_registry_source')
@@ -151,10 +173,44 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeatureOnlineStoreFeatureview do
         config = validate_resource_structure(result, 'google_vertex_ai_feature_online_store_featureview', 'minimal')
         expect(config).not_to have_key('name')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_feature_online_store_featureview('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_feature_online_store_featureview', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_feature_online_store_featureview('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_feature_online_store_featureview', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_feature_online_store_featureview('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_feature_online_store_featureview', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_feature_online_store_featureview('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_feature_online_store_featureview', 'minimal')
+        expect(config).not_to have_key('region')
+      end
       it 'includes sync_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_feature_online_store_featureview('opt', required_attrs.merge(sync_config: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_feature_online_store_featureview('opt', required_attrs.merge(sync_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_feature_online_store_featureview', 'opt')
         expect(config).to have_key('sync_config')
@@ -212,7 +268,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiFeatureOnlineStoreFeatureview do
     resource_type: :google_vertex_ai_feature_online_store_featureview,
     method: :google_vertex_ai_feature_online_store_featureview,
     required_attrs: { feature_online_store: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :project, :region, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :project, :region, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

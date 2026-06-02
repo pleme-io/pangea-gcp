@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryRowAccessPolicy do
 
         expect(ref.id).to eq("${google_bigquery_row_access_policy.test.id}")
         expect(ref.creation_time).to eq("${google_bigquery_row_access_policy.test.creation_time}")
+        expect(ref.deletion_policy).to eq("${google_bigquery_row_access_policy.test.deletion_policy}")
         expect(ref.last_modified_time).to eq("${google_bigquery_row_access_policy.test.last_modified_time}")
         expect(ref.project).to eq("${google_bigquery_row_access_policy.test.project}")
       end
@@ -53,13 +54,14 @@ RSpec.describe Pangea::Resources::GoogleBigqueryRowAccessPolicy do
 
         config = validate_resource_structure(result, 'google_bigquery_row_access_policy', 'test')
         expect(config).not_to have_key('creation_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('last_modified_time')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ grantees: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', grantees: ['test-value'], project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,11 +70,30 @@ RSpec.describe Pangea::Resources::GoogleBigqueryRowAccessPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigquery_row_access_policy', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('grantees')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_row_access_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_row_access_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_row_access_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_row_access_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes grantees when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -89,6 +110,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryRowAccessPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_row_access_policy', 'minimal')
         expect(config).not_to have_key('grantees')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_row_access_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_row_access_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_row_access_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_row_access_policy', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -137,7 +175,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryRowAccessPolicy do
     resource_type: :google_bigquery_row_access_policy,
     method: :google_bigquery_row_access_policy,
     required_attrs: { dataset_id: 'test-value', filter_predicate: 'test-value', policy_id: 'test-value', table_id: 'test-value' },
-    expected_outputs: [:id, :creation_time, :last_modified_time, :project],
+    expected_outputs: [:id, :creation_time, :deletion_policy, :last_modified_time, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleComputeSnapshot do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { name: 'test-value', source_disk: 'test-value' } }
+  let(:required_attrs) { { name: 'test-value' } }
 
   describe ':google_compute_snapshot' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleComputeSnapshot do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_compute_snapshot', 'test')
-        validate_required_attributes(config, [:name, :source_disk])
+        validate_required_attributes(config, [:name])
       end
 
       it 'returns a ResourceReference' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeSnapshot do
 
         expect(ref.id).to eq("${google_compute_snapshot.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_snapshot.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_snapshot.test.deletion_policy}")
         expect(ref.disk_size_gb).to eq("${google_compute_snapshot.test.disk_size_gb}")
         expect(ref.effective_labels).to eq("${google_compute_snapshot.test.effective_labels}")
         expect(ref.label_fingerprint).to eq("${google_compute_snapshot.test.label_fingerprint}")
@@ -46,6 +47,7 @@ RSpec.describe Pangea::Resources::GoogleComputeSnapshot do
         expect(ref.project).to eq("${google_compute_snapshot.test.project}")
         expect(ref.self_link).to eq("${google_compute_snapshot.test.self_link}")
         expect(ref.snapshot_id).to eq("${google_compute_snapshot.test.snapshot_id}")
+        expect(ref.source_disk).to eq("${google_compute_snapshot.test.source_disk}")
         expect(ref.storage_bytes).to eq("${google_compute_snapshot.test.storage_bytes}")
         expect(ref.storage_locations).to eq("${google_compute_snapshot.test.storage_locations}")
         expect(ref.terraform_labels).to eq("${google_compute_snapshot.test.terraform_labels}")
@@ -62,6 +64,7 @@ RSpec.describe Pangea::Resources::GoogleComputeSnapshot do
 
         config = validate_resource_structure(result, 'google_compute_snapshot', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('disk_size_gb')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('label_fingerprint')
@@ -69,6 +72,7 @@ RSpec.describe Pangea::Resources::GoogleComputeSnapshot do
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
         expect(config).not_to have_key('snapshot_id')
+        expect(config).not_to have_key('source_disk')
         expect(config).not_to have_key('storage_bytes')
         expect(config).not_to have_key('storage_locations')
         expect(config).not_to have_key('terraform_labels')
@@ -77,7 +81,7 @@ RSpec.describe Pangea::Resources::GoogleComputeSnapshot do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ chain_name: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, snapshot_encryption_key: [{ 'key1' => 'val1' }], source_disk_encryption_key: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ chain_name: 'test-value', deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', snapshot_encryption_key: { 'key1' => 'val1' }, snapshot_type: 'test-value', source_disk: 'test-value', source_disk_encryption_key: { 'key1' => 'val1' }, source_instant_snapshot: 'test-value', storage_locations: ['test-value'], zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -87,10 +91,17 @@ RSpec.describe Pangea::Resources::GoogleComputeSnapshot do
 
         config = validate_resource_structure(result, 'google_compute_snapshot', 'full')
         expect(config).to have_key('chain_name')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('snapshot_encryption_key')
+        expect(config).to have_key('snapshot_type')
+        expect(config).to have_key('source_disk')
         expect(config).to have_key('source_disk_encryption_key')
+        expect(config).to have_key('source_instant_snapshot')
+        expect(config).to have_key('storage_locations')
+        expect(config).to have_key('zone')
       end
     end
 
@@ -111,6 +122,23 @@ RSpec.describe Pangea::Resources::GoogleComputeSnapshot do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_snapshot', 'minimal')
         expect(config).not_to have_key('chain_name')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_snapshot('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_snapshot', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_snapshot('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_snapshot', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -146,10 +174,27 @@ RSpec.describe Pangea::Resources::GoogleComputeSnapshot do
         config = validate_resource_structure(result, 'google_compute_snapshot', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_snapshot('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_snapshot', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_snapshot('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_snapshot', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes snapshot_encryption_key when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_snapshot('opt', required_attrs.merge(snapshot_encryption_key: [{ 'key1' => 'val1' }]))
+        synth.google_compute_snapshot('opt', required_attrs.merge(snapshot_encryption_key: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_snapshot', 'opt')
         expect(config).to have_key('snapshot_encryption_key')
@@ -163,10 +208,44 @@ RSpec.describe Pangea::Resources::GoogleComputeSnapshot do
         config = validate_resource_structure(result, 'google_compute_snapshot', 'minimal')
         expect(config).not_to have_key('snapshot_encryption_key')
       end
+      it 'includes snapshot_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_snapshot('opt', required_attrs.merge(snapshot_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_snapshot', 'opt')
+        expect(config).to have_key('snapshot_type')
+      end
+
+      it 'omits snapshot_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_snapshot('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_snapshot', 'minimal')
+        expect(config).not_to have_key('snapshot_type')
+      end
+      it 'includes source_disk when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_snapshot('opt', required_attrs.merge(source_disk: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_snapshot', 'opt')
+        expect(config).to have_key('source_disk')
+      end
+
+      it 'omits source_disk when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_snapshot('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_snapshot', 'minimal')
+        expect(config).not_to have_key('source_disk')
+      end
       it 'includes source_disk_encryption_key when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_snapshot('opt', required_attrs.merge(source_disk_encryption_key: [{ 'key1' => 'val1' }]))
+        synth.google_compute_snapshot('opt', required_attrs.merge(source_disk_encryption_key: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_snapshot', 'opt')
         expect(config).to have_key('source_disk_encryption_key')
@@ -180,6 +259,57 @@ RSpec.describe Pangea::Resources::GoogleComputeSnapshot do
         config = validate_resource_structure(result, 'google_compute_snapshot', 'minimal')
         expect(config).not_to have_key('source_disk_encryption_key')
       end
+      it 'includes source_instant_snapshot when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_snapshot('opt', required_attrs.merge(source_instant_snapshot: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_snapshot', 'opt')
+        expect(config).to have_key('source_instant_snapshot')
+      end
+
+      it 'omits source_instant_snapshot when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_snapshot('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_snapshot', 'minimal')
+        expect(config).not_to have_key('source_instant_snapshot')
+      end
+      it 'includes storage_locations when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_snapshot('opt', required_attrs.merge(storage_locations: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_snapshot', 'opt')
+        expect(config).to have_key('storage_locations')
+      end
+
+      it 'omits storage_locations when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_snapshot('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_snapshot', 'minimal')
+        expect(config).not_to have_key('storage_locations')
+      end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_snapshot('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_snapshot', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_snapshot('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_snapshot', 'minimal')
+        expect(config).not_to have_key('zone')
+      end
     end
 
     context 'attribute types' do
@@ -191,7 +321,6 @@ RSpec.describe Pangea::Resources::GoogleComputeSnapshot do
 
         config = validate_resource_structure(result, 'google_compute_snapshot', 'typed')
         expect(config['name']).to be_a(String)
-        expect(config['source_disk']).to be_a(String)
       end
     end
 
@@ -224,8 +353,8 @@ RSpec.describe Pangea::Resources::GoogleComputeSnapshot do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_compute_snapshot,
     method: :google_compute_snapshot,
-    required_attrs: { name: 'test-value', source_disk: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :disk_size_gb, :effective_labels, :label_fingerprint, :licenses, :project, :self_link, :snapshot_id, :storage_bytes, :storage_locations, :terraform_labels, :zone],
+    required_attrs: { name: 'test-value' },
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :disk_size_gb, :effective_labels, :label_fingerprint, :licenses, :project, :self_link, :snapshot_id, :source_disk, :storage_bytes, :storage_locations, :terraform_labels, :zone],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

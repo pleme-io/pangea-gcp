@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataset do
         expect(ref.id).to eq("${google_bigquery_dataset.test.id}")
         expect(ref.creation_time).to eq("${google_bigquery_dataset.test.creation_time}")
         expect(ref.default_collation).to eq("${google_bigquery_dataset.test.default_collation}")
+        expect(ref.deletion_policy).to eq("${google_bigquery_dataset.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_bigquery_dataset.test.effective_labels}")
         expect(ref.etag).to eq("${google_bigquery_dataset.test.etag}")
         expect(ref.is_case_insensitive).to eq("${google_bigquery_dataset.test.is_case_insensitive}")
@@ -62,6 +63,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataset do
         config = validate_resource_structure(result, 'google_bigquery_dataset', 'test')
         expect(config).not_to have_key('creation_time')
         expect(config).not_to have_key('default_collation')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('is_case_insensitive')
@@ -75,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataset do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ access: [{ 'key1' => 'val1' }], default_encryption_configuration: [{ 'key1' => 'val1' }], default_partition_expiration_ms: 3.14, default_table_expiration_ms: 3.14, delete_contents_on_destroy: true, description: 'test-value', external_catalog_dataset_options: [{ 'key1' => 'val1' }], external_dataset_reference: [{ 'key1' => 'val1' }], friendly_name: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', resource_tags: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ access: [{ 'key1' => 'val1' }], default_collation: 'test-value', default_encryption_configuration: { 'key1' => 'val1' }, default_partition_expiration_ms: 3.14, default_table_expiration_ms: 3.14, delete_contents_on_destroy: true, deletion_policy: 'test-value', description: 'test-value', external_catalog_dataset_options: { 'key1' => 'val1' }, external_dataset_reference: { 'key1' => 'val1' }, friendly_name: 'test-value', is_case_insensitive: true, labels: { 'key1' => 'val1' }, location: 'test-value', max_time_travel_hours: 'test-value', project: 'test-value', resource_tags: { 'key1' => 'val1' }, storage_billing_model: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -85,17 +87,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataset do
 
         config = validate_resource_structure(result, 'google_bigquery_dataset', 'full')
         expect(config).to have_key('access')
+        expect(config).to have_key('default_collation')
         expect(config).to have_key('default_encryption_configuration')
         expect(config).to have_key('default_partition_expiration_ms')
         expect(config).to have_key('default_table_expiration_ms')
         expect(config).to have_key('delete_contents_on_destroy')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('external_catalog_dataset_options')
         expect(config).to have_key('external_dataset_reference')
         expect(config).to have_key('friendly_name')
+        expect(config).to have_key('is_case_insensitive')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
+        expect(config).to have_key('max_time_travel_hours')
+        expect(config).to have_key('project')
         expect(config).to have_key('resource_tags')
+        expect(config).to have_key('storage_billing_model')
       end
     end
 
@@ -117,10 +125,27 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataset do
         config = validate_resource_structure(result, 'google_bigquery_dataset', 'minimal')
         expect(config).not_to have_key('access')
       end
+      it 'includes default_collation when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset('opt', required_attrs.merge(default_collation: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset', 'opt')
+        expect(config).to have_key('default_collation')
+      end
+
+      it 'omits default_collation when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset', 'minimal')
+        expect(config).not_to have_key('default_collation')
+      end
       it 'includes default_encryption_configuration when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_dataset('opt', required_attrs.merge(default_encryption_configuration: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_dataset('opt', required_attrs.merge(default_encryption_configuration: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_dataset', 'opt')
         expect(config).to have_key('default_encryption_configuration')
@@ -185,6 +210,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataset do
         config = validate_resource_structure(result, 'google_bigquery_dataset', 'minimal')
         expect(config).not_to have_key('delete_contents_on_destroy')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -205,7 +247,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataset do
       it 'includes external_catalog_dataset_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_dataset('opt', required_attrs.merge(external_catalog_dataset_options: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_dataset('opt', required_attrs.merge(external_catalog_dataset_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_dataset', 'opt')
         expect(config).to have_key('external_catalog_dataset_options')
@@ -222,7 +264,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataset do
       it 'includes external_dataset_reference when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_dataset('opt', required_attrs.merge(external_dataset_reference: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_dataset('opt', required_attrs.merge(external_dataset_reference: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_dataset', 'opt')
         expect(config).to have_key('external_dataset_reference')
@@ -252,6 +294,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataset do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_dataset', 'minimal')
         expect(config).not_to have_key('friendly_name')
+      end
+      it 'includes is_case_insensitive when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset('opt', required_attrs.merge(is_case_insensitive: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset', 'opt')
+        expect(config).to have_key('is_case_insensitive')
+      end
+
+      it 'omits is_case_insensitive when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset', 'minimal')
+        expect(config).not_to have_key('is_case_insensitive')
       end
       it 'includes labels when provided' do
         synth = create_synthesizer
@@ -287,6 +346,40 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataset do
         config = validate_resource_structure(result, 'google_bigquery_dataset', 'minimal')
         expect(config).not_to have_key('location')
       end
+      it 'includes max_time_travel_hours when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset('opt', required_attrs.merge(max_time_travel_hours: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset', 'opt')
+        expect(config).to have_key('max_time_travel_hours')
+      end
+
+      it 'omits max_time_travel_hours when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset', 'minimal')
+        expect(config).not_to have_key('max_time_travel_hours')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes resource_tags when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -304,6 +397,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataset do
         config = validate_resource_structure(result, 'google_bigquery_dataset', 'minimal')
         expect(config).not_to have_key('resource_tags')
       end
+      it 'includes storage_billing_model when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset('opt', required_attrs.merge(storage_billing_model: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset', 'opt')
+        expect(config).to have_key('storage_billing_model')
+      end
+
+      it 'omits storage_billing_model when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset', 'minimal')
+        expect(config).not_to have_key('storage_billing_model')
+      end
     end
 
     context 'boolean fields' do
@@ -316,6 +426,17 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataset do
           result = normalize_synthesis(synth.synthesis)
           config = validate_resource_structure(result, 'google_bigquery_dataset', "bool_#{val}")
           expect(config['delete_contents_on_destroy']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts is_case_insensitive=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(is_case_insensitive: val)
+          synth.google_bigquery_dataset("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_bigquery_dataset', "bool_#{val}")
+          expect(config['is_case_insensitive']).to eq(val)
         end
       end
     end
@@ -362,8 +483,8 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataset do
     resource_type: :google_bigquery_dataset,
     method: :google_bigquery_dataset,
     required_attrs: { dataset_id: 'test-value' },
-    expected_outputs: [:id, :creation_time, :default_collation, :effective_labels, :etag, :is_case_insensitive, :last_modified_time, :max_time_travel_hours, :project, :self_link, :storage_billing_model, :terraform_labels],
+    expected_outputs: [:id, :creation_time, :default_collation, :deletion_policy, :effective_labels, :etag, :is_case_insensitive, :last_modified_time, :max_time_travel_hours, :project, :self_link, :storage_billing_model, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:delete_contents_on_destroy]
+    boolean_fields: [:delete_contents_on_destroy, :is_case_insensitive]
 end

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleApigeeEnvKeystore do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { env_id: 'test-value' } }
+  let(:required_attrs) { { env_id: 'test-value', name: 'test-value' } }
 
   describe ':google_apigee_env_keystore' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvKeystore do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_apigee_env_keystore', 'test')
-        validate_required_attributes(config, [:env_id])
+        validate_required_attributes(config, [:env_id, :name])
       end
 
       it 'returns a ResourceReference' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvKeystore do
 
         expect(ref.id).to eq("${google_apigee_env_keystore.test.id}")
         expect(ref.aliases).to eq("${google_apigee_env_keystore.test.aliases}")
+        expect(ref.deletion_policy).to eq("${google_apigee_env_keystore.test.deletion_policy}")
       end
     end
 
@@ -51,11 +52,12 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvKeystore do
 
         config = validate_resource_structure(result, 'google_apigee_env_keystore', 'test')
         expect(config).not_to have_key('aliases')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,27 +66,27 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvKeystore do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_env_keystore', 'full')
-        expect(config).to have_key('name')
+        expect(config).to have_key('deletion_policy')
       end
     end
 
     context 'optional attributes' do
-      it 'includes name when provided' do
+      it 'includes deletion_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_env_keystore('opt', required_attrs.merge(name: 'test-value'))
+        synth.google_apigee_env_keystore('opt', required_attrs.merge(deletion_policy: 'test-value'))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_env_keystore', 'opt')
-        expect(config).to have_key('name')
+        expect(config).to have_key('deletion_policy')
       end
 
-      it 'omits name when not provided' do
+      it 'omits deletion_policy when not provided' do
         synth = create_synthesizer
         synth.extend(described_class)
         synth.google_apigee_env_keystore('minimal', required_attrs)
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_env_keystore', 'minimal')
-        expect(config).not_to have_key('name')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -97,6 +99,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvKeystore do
 
         config = validate_resource_structure(result, 'google_apigee_env_keystore', 'typed')
         expect(config['env_id']).to be_a(String)
+        expect(config['name']).to be_a(String)
       end
     end
 
@@ -129,8 +132,8 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvKeystore do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_apigee_env_keystore,
     method: :google_apigee_env_keystore,
-    required_attrs: { env_id: 'test-value' },
-    expected_outputs: [:id, :aliases],
+    required_attrs: { env_id: 'test-value', name: 'test-value' },
+    expected_outputs: [:id, :aliases, :deletion_policy],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

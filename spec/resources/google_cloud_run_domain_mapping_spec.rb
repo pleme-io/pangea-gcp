@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleCloudRunDomainMapping do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { location: 'test-value', name: 'test-value', spec: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { location: 'test-value', name: 'test-value', spec: { 'key1' => 'val1' } } }
 
   describe ':google_cloud_run_domain_mapping' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunDomainMapping do
         ref = synth.google_cloud_run_domain_mapping('test', required_attrs)
 
         expect(ref.id).to eq("${google_cloud_run_domain_mapping.test.id}")
+        expect(ref.deletion_policy).to eq("${google_cloud_run_domain_mapping.test.deletion_policy}")
         expect(ref.project).to eq("${google_cloud_run_domain_mapping.test.project}")
         expect(ref.status).to eq("${google_cloud_run_domain_mapping.test.status}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleCloudRunDomainMapping do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_cloud_run_domain_mapping', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('status')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ metadata: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', metadata: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,15 +68,34 @@ RSpec.describe Pangea::Resources::GoogleCloudRunDomainMapping do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_cloud_run_domain_mapping', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('metadata')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_domain_mapping('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_domain_mapping', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_domain_mapping('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_domain_mapping', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes metadata when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_run_domain_mapping('opt', required_attrs.merge(metadata: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_run_domain_mapping('opt', required_attrs.merge(metadata: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_run_domain_mapping', 'opt')
         expect(config).to have_key('metadata')
@@ -88,6 +109,23 @@ RSpec.describe Pangea::Resources::GoogleCloudRunDomainMapping do
         config = validate_resource_structure(result, 'google_cloud_run_domain_mapping', 'minimal')
         expect(config).not_to have_key('metadata')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_domain_mapping('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_domain_mapping', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_domain_mapping('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_domain_mapping', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -100,7 +138,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunDomainMapping do
         config = validate_resource_structure(result, 'google_cloud_run_domain_mapping', 'typed')
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
-        expect(config['spec']).to be_a(Array)
+        expect(config['spec']).to be_a(Hash)
       end
     end
 
@@ -133,8 +171,8 @@ RSpec.describe Pangea::Resources::GoogleCloudRunDomainMapping do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_cloud_run_domain_mapping,
     method: :google_cloud_run_domain_mapping,
-    required_attrs: { location: 'test-value', name: 'test-value', spec: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :project, :status],
+    required_attrs: { location: 'test-value', name: 'test-value', spec: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :deletion_policy, :project, :status],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

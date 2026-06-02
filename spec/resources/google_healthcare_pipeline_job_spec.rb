@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcarePipelineJob do
         ref = synth.google_healthcare_pipeline_job('test', required_attrs)
 
         expect(ref.id).to eq("${google_healthcare_pipeline_job.test.id}")
+        expect(ref.deletion_policy).to eq("${google_healthcare_pipeline_job.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_healthcare_pipeline_job.test.effective_labels}")
         expect(ref.self_link).to eq("${google_healthcare_pipeline_job.test.self_link}")
         expect(ref.terraform_labels).to eq("${google_healthcare_pipeline_job.test.terraform_labels}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcarePipelineJob do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_healthcare_pipeline_job', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('self_link')
         expect(config).not_to have_key('terraform_labels')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcarePipelineJob do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ backfill_pipeline_job: [{ 'key1' => 'val1' }], disable_lineage: true, labels: { 'key1' => 'val1' }, mapping_pipeline_job: [{ 'key1' => 'val1' }], reconciliation_pipeline_job: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ backfill_pipeline_job: { 'key1' => 'val1' }, deletion_policy: 'test-value', disable_lineage: true, labels: { 'key1' => 'val1' }, mapping_pipeline_job: { 'key1' => 'val1' }, reconciliation_pipeline_job: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,6 +71,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcarePipelineJob do
 
         config = validate_resource_structure(result, 'google_healthcare_pipeline_job', 'full')
         expect(config).to have_key('backfill_pipeline_job')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('disable_lineage')
         expect(config).to have_key('labels')
         expect(config).to have_key('mapping_pipeline_job')
@@ -80,7 +83,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcarePipelineJob do
       it 'includes backfill_pipeline_job when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_healthcare_pipeline_job('opt', required_attrs.merge(backfill_pipeline_job: [{ 'key1' => 'val1' }]))
+        synth.google_healthcare_pipeline_job('opt', required_attrs.merge(backfill_pipeline_job: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_healthcare_pipeline_job', 'opt')
         expect(config).to have_key('backfill_pipeline_job')
@@ -93,6 +96,23 @@ RSpec.describe Pangea::Resources::GoogleHealthcarePipelineJob do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_healthcare_pipeline_job', 'minimal')
         expect(config).not_to have_key('backfill_pipeline_job')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_pipeline_job('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_pipeline_job', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_pipeline_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_pipeline_job', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes disable_lineage when provided' do
         synth = create_synthesizer
@@ -131,7 +151,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcarePipelineJob do
       it 'includes mapping_pipeline_job when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_healthcare_pipeline_job('opt', required_attrs.merge(mapping_pipeline_job: [{ 'key1' => 'val1' }]))
+        synth.google_healthcare_pipeline_job('opt', required_attrs.merge(mapping_pipeline_job: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_healthcare_pipeline_job', 'opt')
         expect(config).to have_key('mapping_pipeline_job')
@@ -148,7 +168,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcarePipelineJob do
       it 'includes reconciliation_pipeline_job when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_healthcare_pipeline_job('opt', required_attrs.merge(reconciliation_pipeline_job: [{ 'key1' => 'val1' }]))
+        synth.google_healthcare_pipeline_job('opt', required_attrs.merge(reconciliation_pipeline_job: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_healthcare_pipeline_job', 'opt')
         expect(config).to have_key('reconciliation_pipeline_job')
@@ -222,7 +242,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcarePipelineJob do
     resource_type: :google_healthcare_pipeline_job,
     method: :google_healthcare_pipeline_job,
     required_attrs: { dataset: 'test-value', location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :self_link, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :self_link, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disable_lineage]

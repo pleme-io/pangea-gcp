@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsClient do
         ref = synth.google_integrations_client('test', required_attrs)
 
         expect(ref.id).to eq("${google_integrations_client.test.id}")
+        expect(ref.deletion_policy).to eq("${google_integrations_client.test.deletion_policy}")
         expect(ref.project).to eq("${google_integrations_client.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsClient do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_integrations_client', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ cloud_kms_config: [{ 'key1' => 'val1' }], create_sample_integrations: true, run_as_service_account: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ cloud_kms_config: { 'key1' => 'val1' }, create_sample_integrations: true, deletion_policy: 'test-value', project: 'test-value', run_as_service_account: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,6 +68,8 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsClient do
         config = validate_resource_structure(result, 'google_integrations_client', 'full')
         expect(config).to have_key('cloud_kms_config')
         expect(config).to have_key('create_sample_integrations')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
         expect(config).to have_key('run_as_service_account')
       end
     end
@@ -74,7 +78,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsClient do
       it 'includes cloud_kms_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_integrations_client('opt', required_attrs.merge(cloud_kms_config: [{ 'key1' => 'val1' }]))
+        synth.google_integrations_client('opt', required_attrs.merge(cloud_kms_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_integrations_client', 'opt')
         expect(config).to have_key('cloud_kms_config')
@@ -104,6 +108,40 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsClient do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_integrations_client', 'minimal')
         expect(config).not_to have_key('create_sample_integrations')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_integrations_client('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_integrations_client', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_integrations_client('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_integrations_client', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_integrations_client('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_integrations_client', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_integrations_client('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_integrations_client', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes run_as_service_account when provided' do
         synth = create_synthesizer
@@ -180,7 +218,7 @@ RSpec.describe Pangea::Resources::GoogleIntegrationsClient do
     resource_type: :google_integrations_client,
     method: :google_integrations_client,
     required_attrs: { location: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:create_sample_integrations]

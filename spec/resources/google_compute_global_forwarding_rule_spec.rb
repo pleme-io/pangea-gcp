@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalForwardingRule do
 
         expect(ref.id).to eq("${google_compute_global_forwarding_rule.test.id}")
         expect(ref.base_forwarding_rule).to eq("${google_compute_global_forwarding_rule.test.base_forwarding_rule}")
+        expect(ref.deletion_policy).to eq("${google_compute_global_forwarding_rule.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_compute_global_forwarding_rule.test.effective_labels}")
         expect(ref.forwarding_rule_id).to eq("${google_compute_global_forwarding_rule.test.forwarding_rule_id}")
         expect(ref.ip_address).to eq("${google_compute_global_forwarding_rule.test.ip_address}")
@@ -64,6 +65,7 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalForwardingRule do
 
         config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'test')
         expect(config).not_to have_key('base_forwarding_rule')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('forwarding_rule_id')
         expect(config).not_to have_key('ip_address')
@@ -81,7 +83,7 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalForwardingRule do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', external_managed_backend_bucket_migration_state: 'test-value', external_managed_backend_bucket_migration_testing_percentage: 3.14, ip_version: 'test-value', labels: { 'key1' => 'val1' }, load_balancing_scheme: 'test-value', metadata_filters: [{ 'key1' => 'val1' }], no_automate_dns_zone: true, port_range: 'test-value', service_directory_registrations: [{ 'key1' => 'val1' }], source_ip_ranges: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', external_managed_backend_bucket_migration_state: 'test-value', external_managed_backend_bucket_migration_testing_percentage: 3.14, ip_address: 'test-value', ip_protocol: 'test-value', ip_version: 'test-value', labels: { 'key1' => 'val1' }, load_balancing_scheme: 'test-value', metadata_filters: [{ 'key1' => 'val1' }], network: 'test-value', network_tier: 'test-value', no_automate_dns_zone: true, port_range: 'test-value', project: 'test-value', service_directory_registrations: { 'key1' => 'val1' }, source_ip_ranges: ['test-value'], subnetwork: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -90,21 +92,45 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalForwardingRule do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('external_managed_backend_bucket_migration_state')
         expect(config).to have_key('external_managed_backend_bucket_migration_testing_percentage')
+        expect(config).to have_key('ip_address')
+        expect(config).to have_key('ip_protocol')
         expect(config).to have_key('ip_version')
         expect(config).to have_key('labels')
         expect(config).to have_key('load_balancing_scheme')
         expect(config).to have_key('metadata_filters')
+        expect(config).to have_key('network')
+        expect(config).to have_key('network_tier')
         expect(config).to have_key('no_automate_dns_zone')
         expect(config).to have_key('port_range')
+        expect(config).to have_key('project')
         expect(config).to have_key('service_directory_registrations')
         expect(config).to have_key('source_ip_ranges')
+        expect(config).to have_key('subnetwork')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_forwarding_rule('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_forwarding_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -155,6 +181,40 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalForwardingRule do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'minimal')
         expect(config).not_to have_key('external_managed_backend_bucket_migration_testing_percentage')
+      end
+      it 'includes ip_address when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_forwarding_rule('opt', required_attrs.merge(ip_address: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'opt')
+        expect(config).to have_key('ip_address')
+      end
+
+      it 'omits ip_address when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_forwarding_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'minimal')
+        expect(config).not_to have_key('ip_address')
+      end
+      it 'includes ip_protocol when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_forwarding_rule('opt', required_attrs.merge(ip_protocol: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'opt')
+        expect(config).to have_key('ip_protocol')
+      end
+
+      it 'omits ip_protocol when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_forwarding_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'minimal')
+        expect(config).not_to have_key('ip_protocol')
       end
       it 'includes ip_version when provided' do
         synth = create_synthesizer
@@ -224,6 +284,40 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalForwardingRule do
         config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'minimal')
         expect(config).not_to have_key('metadata_filters')
       end
+      it 'includes network when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_forwarding_rule('opt', required_attrs.merge(network: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'opt')
+        expect(config).to have_key('network')
+      end
+
+      it 'omits network when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_forwarding_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'minimal')
+        expect(config).not_to have_key('network')
+      end
+      it 'includes network_tier when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_forwarding_rule('opt', required_attrs.merge(network_tier: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'opt')
+        expect(config).to have_key('network_tier')
+      end
+
+      it 'omits network_tier when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_forwarding_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'minimal')
+        expect(config).not_to have_key('network_tier')
+      end
       it 'includes no_automate_dns_zone when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -258,10 +352,27 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalForwardingRule do
         config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'minimal')
         expect(config).not_to have_key('port_range')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_forwarding_rule('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_forwarding_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes service_directory_registrations when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_global_forwarding_rule('opt', required_attrs.merge(service_directory_registrations: [{ 'key1' => 'val1' }]))
+        synth.google_compute_global_forwarding_rule('opt', required_attrs.merge(service_directory_registrations: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'opt')
         expect(config).to have_key('service_directory_registrations')
@@ -291,6 +402,23 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalForwardingRule do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'minimal')
         expect(config).not_to have_key('source_ip_ranges')
+      end
+      it 'includes subnetwork when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_forwarding_rule('opt', required_attrs.merge(subnetwork: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'opt')
+        expect(config).to have_key('subnetwork')
+      end
+
+      it 'omits subnetwork when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_forwarding_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_forwarding_rule', 'minimal')
+        expect(config).not_to have_key('subnetwork')
       end
     end
 
@@ -351,7 +479,7 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalForwardingRule do
     resource_type: :google_compute_global_forwarding_rule,
     method: :google_compute_global_forwarding_rule,
     required_attrs: { name: 'test-value', target: 'test-value' },
-    expected_outputs: [:id, :base_forwarding_rule, :effective_labels, :forwarding_rule_id, :ip_address, :ip_protocol, :label_fingerprint, :network, :network_tier, :project, :psc_connection_id, :psc_connection_status, :self_link, :subnetwork, :terraform_labels],
+    expected_outputs: [:id, :base_forwarding_rule, :deletion_policy, :effective_labels, :forwarding_rule_id, :ip_address, :ip_protocol, :label_fingerprint, :network, :network_tier, :project, :psc_connection_id, :psc_connection_status, :self_link, :subnetwork, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:no_automate_dns_zone]

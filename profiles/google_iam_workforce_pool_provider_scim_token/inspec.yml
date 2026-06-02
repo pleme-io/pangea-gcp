@@ -1,0 +1,8 @@
+name: google_iam_workforce_pool_provider_scim_token
+title: Manages a google_iam_workforce_pool_provider_scim_token resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

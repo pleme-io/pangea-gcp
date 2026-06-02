@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleComputeInstance do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { boot_disk: [{ 'key1' => 'val1' }], machine_type: 'test-value', name: 'test-value', network_interface: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { boot_disk: { 'key1' => 'val1' }, machine_type: 'test-value', name: 'test-value', network_interface: [{ 'key1' => 'val1' }] } }
 
   describe ':google_compute_instance' do
     context 'with required attributes only' do
@@ -41,6 +41,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
         expect(ref.cpu_platform).to eq("${google_compute_instance.test.cpu_platform}")
         expect(ref.creation_timestamp).to eq("${google_compute_instance.test.creation_timestamp}")
         expect(ref.current_status).to eq("${google_compute_instance.test.current_status}")
+        expect(ref.deletion_policy).to eq("${google_compute_instance.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_compute_instance.test.effective_labels}")
         expect(ref.instance_id).to eq("${google_compute_instance.test.instance_id}")
         expect(ref.label_fingerprint).to eq("${google_compute_instance.test.label_fingerprint}")
@@ -65,6 +66,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
         expect(config).not_to have_key('cpu_platform')
         expect(config).not_to have_key('creation_timestamp')
         expect(config).not_to have_key('current_status')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('instance_id')
         expect(config).not_to have_key('label_fingerprint')
@@ -79,7 +81,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ advanced_machine_features: [{ 'key1' => 'val1' }], allow_stopping_for_update: true, attached_disk: [{ 'key1' => 'val1' }], can_ip_forward: true, confidential_instance_config: [{ 'key1' => 'val1' }], deletion_protection: true, description: 'test-value', desired_status: 'test-value', enable_display: true, guest_accelerator: [{ 'key1' => 'val1' }], hostname: 'test-value', instance_encryption_key: [{ 'key1' => 'val1' }], key_revocation_action_type: 'test-value', labels: { 'key1' => 'val1' }, metadata: { 'key1' => 'val1' }, metadata_startup_script: 'test-value', network_performance_config: [{ 'key1' => 'val1' }], params: [{ 'key1' => 'val1' }], reservation_affinity: [{ 'key1' => 'val1' }], resource_policies: ['test-value'], scheduling: [{ 'key1' => 'val1' }], scratch_disk: [{ 'key1' => 'val1' }], service_account: [{ 'key1' => 'val1' }], shielded_instance_config: [{ 'key1' => 'val1' }], tags: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ advanced_machine_features: { 'key1' => 'val1' }, allow_stopping_for_update: true, attached_disk: [{ 'key1' => 'val1' }], can_ip_forward: true, confidential_instance_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', deletion_protection: true, description: 'test-value', desired_status: 'test-value', enable_display: true, guest_accelerator: [{ 'key1' => 'val1' }], hostname: 'test-value', instance_encryption_key: { 'key1' => 'val1' }, key_revocation_action_type: 'test-value', labels: { 'key1' => 'val1' }, metadata: { 'key1' => 'val1' }, metadata_startup_script: 'test-value', min_cpu_platform: 'test-value', network_performance_config: { 'key1' => 'val1' }, params: { 'key1' => 'val1' }, project: 'test-value', reservation_affinity: { 'key1' => 'val1' }, resource_policies: ['test-value'], scheduling: { 'key1' => 'val1' }, scratch_disk: [{ 'key1' => 'val1' }], service_account: { 'key1' => 'val1' }, shielded_instance_config: { 'key1' => 'val1' }, tags: ['test-value'], zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -93,6 +95,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
         expect(config).to have_key('attached_disk')
         expect(config).to have_key('can_ip_forward')
         expect(config).to have_key('confidential_instance_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
         expect(config).to have_key('description')
         expect(config).to have_key('desired_status')
@@ -104,8 +107,10 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
         expect(config).to have_key('labels')
         expect(config).to have_key('metadata')
         expect(config).to have_key('metadata_startup_script')
+        expect(config).to have_key('min_cpu_platform')
         expect(config).to have_key('network_performance_config')
         expect(config).to have_key('params')
+        expect(config).to have_key('project')
         expect(config).to have_key('reservation_affinity')
         expect(config).to have_key('resource_policies')
         expect(config).to have_key('scheduling')
@@ -113,6 +118,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
         expect(config).to have_key('service_account')
         expect(config).to have_key('shielded_instance_config')
         expect(config).to have_key('tags')
+        expect(config).to have_key('zone')
       end
     end
 
@@ -120,7 +126,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
       it 'includes advanced_machine_features when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance('opt', required_attrs.merge(advanced_machine_features: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance('opt', required_attrs.merge(advanced_machine_features: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance', 'opt')
         expect(config).to have_key('advanced_machine_features')
@@ -188,7 +194,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
       it 'includes confidential_instance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance('opt', required_attrs.merge(confidential_instance_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance('opt', required_attrs.merge(confidential_instance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance', 'opt')
         expect(config).to have_key('confidential_instance_config')
@@ -201,6 +207,23 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance', 'minimal')
         expect(config).not_to have_key('confidential_instance_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
@@ -307,7 +330,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
       it 'includes instance_encryption_key when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance('opt', required_attrs.merge(instance_encryption_key: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance('opt', required_attrs.merge(instance_encryption_key: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance', 'opt')
         expect(config).to have_key('instance_encryption_key')
@@ -389,10 +412,27 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
         config = validate_resource_structure(result, 'google_compute_instance', 'minimal')
         expect(config).not_to have_key('metadata_startup_script')
       end
+      it 'includes min_cpu_platform when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance('opt', required_attrs.merge(min_cpu_platform: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance', 'opt')
+        expect(config).to have_key('min_cpu_platform')
+      end
+
+      it 'omits min_cpu_platform when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance', 'minimal')
+        expect(config).not_to have_key('min_cpu_platform')
+      end
       it 'includes network_performance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance('opt', required_attrs.merge(network_performance_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance('opt', required_attrs.merge(network_performance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance', 'opt')
         expect(config).to have_key('network_performance_config')
@@ -409,7 +449,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
       it 'includes params when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance('opt', required_attrs.merge(params: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance', 'opt')
         expect(config).to have_key('params')
@@ -423,10 +463,27 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
         config = validate_resource_structure(result, 'google_compute_instance', 'minimal')
         expect(config).not_to have_key('params')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes reservation_affinity when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance('opt', required_attrs.merge(reservation_affinity: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance('opt', required_attrs.merge(reservation_affinity: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance', 'opt')
         expect(config).to have_key('reservation_affinity')
@@ -460,7 +517,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
       it 'includes scheduling when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance('opt', required_attrs.merge(scheduling: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance('opt', required_attrs.merge(scheduling: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance', 'opt')
         expect(config).to have_key('scheduling')
@@ -494,7 +551,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
       it 'includes service_account when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance('opt', required_attrs.merge(service_account: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance('opt', required_attrs.merge(service_account: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance', 'opt')
         expect(config).to have_key('service_account')
@@ -511,7 +568,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
       it 'includes shielded_instance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance('opt', required_attrs.merge(shielded_instance_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance('opt', required_attrs.merge(shielded_instance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance', 'opt')
         expect(config).to have_key('shielded_instance_config')
@@ -541,6 +598,23 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance', 'minimal')
         expect(config).not_to have_key('tags')
+      end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance', 'minimal')
+        expect(config).not_to have_key('zone')
       end
     end
 
@@ -599,7 +673,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_instance', 'typed')
-        expect(config['boot_disk']).to be_a(Array)
+        expect(config['boot_disk']).to be_a(Hash)
         expect(config['machine_type']).to be_a(String)
         expect(config['name']).to be_a(String)
         expect(config['network_interface']).to be_a(Array)
@@ -635,8 +709,8 @@ RSpec.describe Pangea::Resources::GoogleComputeInstance do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_compute_instance,
     method: :google_compute_instance,
-    required_attrs: { boot_disk: [{ 'key1' => 'val1' }], machine_type: 'test-value', name: 'test-value', network_interface: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :cpu_platform, :creation_timestamp, :current_status, :effective_labels, :instance_id, :label_fingerprint, :metadata_fingerprint, :min_cpu_platform, :project, :self_link, :tags_fingerprint, :terraform_labels, :zone],
+    required_attrs: { boot_disk: { 'key1' => 'val1' }, machine_type: 'test-value', name: 'test-value', network_interface: [{ 'key1' => 'val1' }] },
+    expected_outputs: [:id, :cpu_platform, :creation_timestamp, :current_status, :deletion_policy, :effective_labels, :instance_id, :label_fingerprint, :metadata_fingerprint, :min_cpu_platform, :project, :self_link, :tags_fingerprint, :terraform_labels, :zone],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:allow_stopping_for_update, :can_ip_forward, :deletion_protection, :enable_display]

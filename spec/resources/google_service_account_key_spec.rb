@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleServiceAccountKey do
         ref = synth.google_service_account_key('test', required_attrs)
 
         expect(ref.id).to eq("${google_service_account_key.test.id}")
+        expect(ref.deletion_policy).to eq("${google_service_account_key.test.deletion_policy}")
         expect(ref.name).to eq("${google_service_account_key.test.name}")
         expect(ref.private_key).to eq("${google_service_account_key.test.private_key}")
         expect(ref.public_key).to eq("${google_service_account_key.test.public_key}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleServiceAccountKey do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_service_account_key', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('private_key')
         expect(config).not_to have_key('public_key')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleServiceAccountKey do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ keepers: { 'key1' => 'val1' }, key_algorithm: 'test-value', private_key_type: 'test-value', public_key_data: 'test-value', public_key_type: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', keepers: { 'key1' => 'val1' }, key_algorithm: 'test-value', private_key_type: 'test-value', public_key_data: 'test-value', public_key_type: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,6 +74,7 @@ RSpec.describe Pangea::Resources::GoogleServiceAccountKey do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_service_account_key', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('keepers')
         expect(config).to have_key('key_algorithm')
         expect(config).to have_key('private_key_type')
@@ -81,6 +84,23 @@ RSpec.describe Pangea::Resources::GoogleServiceAccountKey do
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_service_account_key('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_service_account_key', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_service_account_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_service_account_key', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes keepers when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -217,7 +237,7 @@ RSpec.describe Pangea::Resources::GoogleServiceAccountKey do
     resource_type: :google_service_account_key,
     method: :google_service_account_key,
     required_attrs: { service_account_id: 'test-value' },
-    expected_outputs: [:id, :name, :private_key, :public_key, :valid_after, :valid_before],
+    expected_outputs: [:id, :deletion_policy, :name, :private_key, :public_key, :valid_after, :valid_before],
     sensitive_fields: [:private_key],
     immutable_fields: [],
     boolean_fields: []

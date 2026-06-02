@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { admin_cluster_membership: 'test-value', bare_metal_version: 'test-value', control_plane: [{ 'key1' => 'val1' }], load_balancer: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', network_config: [{ 'key1' => 'val1' }], storage: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { admin_cluster_membership: 'test-value', bare_metal_version: 'test-value', control_plane: { 'key1' => 'val1' }, load_balancer: { 'key1' => 'val1' }, location: 'test-value', name: 'test-value', network_config: { 'key1' => 'val1' }, storage: { 'key1' => 'val1' } } }
 
   describe ':google_gkeonprem_bare_metal_cluster' do
     context 'with required attributes only' do
@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
         expect(ref.id).to eq("${google_gkeonprem_bare_metal_cluster.test.id}")
         expect(ref.create_time).to eq("${google_gkeonprem_bare_metal_cluster.test.create_time}")
         expect(ref.delete_time).to eq("${google_gkeonprem_bare_metal_cluster.test.delete_time}")
+        expect(ref.deletion_policy).to eq("${google_gkeonprem_bare_metal_cluster.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_gkeonprem_bare_metal_cluster.test.effective_annotations}")
         expect(ref.endpoint).to eq("${google_gkeonprem_bare_metal_cluster.test.endpoint}")
         expect(ref.etag).to eq("${google_gkeonprem_bare_metal_cluster.test.etag}")
@@ -65,6 +66,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('delete_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('endpoint')
         expect(config).not_to have_key('etag')
@@ -81,7 +83,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, binary_authorization: [{ 'key1' => 'val1' }], cluster_operations: [{ 'key1' => 'val1' }], description: 'test-value', maintenance_config: [{ 'key1' => 'val1' }], node_access_config: [{ 'key1' => 'val1' }], node_config: [{ 'key1' => 'val1' }], os_environment_config: [{ 'key1' => 'val1' }], proxy: [{ 'key1' => 'val1' }], security_config: [{ 'key1' => 'val1' }], upgrade_policy: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, binary_authorization: { 'key1' => 'val1' }, cluster_operations: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', maintenance_config: { 'key1' => 'val1' }, node_access_config: { 'key1' => 'val1' }, node_config: { 'key1' => 'val1' }, os_environment_config: { 'key1' => 'val1' }, project: 'test-value', proxy: { 'key1' => 'val1' }, security_config: { 'key1' => 'val1' }, upgrade_policy: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -93,11 +95,13 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
         expect(config).to have_key('annotations')
         expect(config).to have_key('binary_authorization')
         expect(config).to have_key('cluster_operations')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('maintenance_config')
         expect(config).to have_key('node_access_config')
         expect(config).to have_key('node_config')
         expect(config).to have_key('os_environment_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('proxy')
         expect(config).to have_key('security_config')
         expect(config).to have_key('upgrade_policy')
@@ -125,7 +129,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
       it 'includes binary_authorization when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(binary_authorization: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(binary_authorization: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'opt')
         expect(config).to have_key('binary_authorization')
@@ -142,7 +146,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
       it 'includes cluster_operations when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(cluster_operations: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(cluster_operations: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'opt')
         expect(config).to have_key('cluster_operations')
@@ -155,6 +159,23 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'minimal')
         expect(config).not_to have_key('cluster_operations')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_bare_metal_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -176,7 +197,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
       it 'includes maintenance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(maintenance_config: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(maintenance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'opt')
         expect(config).to have_key('maintenance_config')
@@ -193,7 +214,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
       it 'includes node_access_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(node_access_config: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(node_access_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'opt')
         expect(config).to have_key('node_access_config')
@@ -210,7 +231,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
       it 'includes node_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(node_config: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(node_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'opt')
         expect(config).to have_key('node_config')
@@ -227,7 +248,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
       it 'includes os_environment_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(os_environment_config: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(os_environment_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'opt')
         expect(config).to have_key('os_environment_config')
@@ -241,10 +262,27 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'minimal')
         expect(config).not_to have_key('os_environment_config')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_bare_metal_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes proxy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(proxy: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(proxy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'opt')
         expect(config).to have_key('proxy')
@@ -261,7 +299,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
       it 'includes security_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(security_config: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(security_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'opt')
         expect(config).to have_key('security_config')
@@ -278,7 +316,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
       it 'includes upgrade_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(upgrade_policy: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_cluster('opt', required_attrs.merge(upgrade_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'opt')
         expect(config).to have_key('upgrade_policy')
@@ -304,12 +342,12 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_cluster', 'typed')
         expect(config['admin_cluster_membership']).to be_a(String)
         expect(config['bare_metal_version']).to be_a(String)
-        expect(config['control_plane']).to be_a(Array)
-        expect(config['load_balancer']).to be_a(Array)
+        expect(config['control_plane']).to be_a(Hash)
+        expect(config['load_balancer']).to be_a(Hash)
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
-        expect(config['network_config']).to be_a(Array)
-        expect(config['storage']).to be_a(Array)
+        expect(config['network_config']).to be_a(Hash)
+        expect(config['storage']).to be_a(Hash)
       end
     end
 
@@ -342,8 +380,8 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalCluster do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_gkeonprem_bare_metal_cluster,
     method: :google_gkeonprem_bare_metal_cluster,
-    required_attrs: { admin_cluster_membership: 'test-value', bare_metal_version: 'test-value', control_plane: [{ 'key1' => 'val1' }], load_balancer: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', network_config: [{ 'key1' => 'val1' }], storage: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :delete_time, :effective_annotations, :endpoint, :etag, :fleet, :local_name, :project, :reconciling, :state, :status, :uid, :update_time, :validation_check],
+    required_attrs: { admin_cluster_membership: 'test-value', bare_metal_version: 'test-value', control_plane: { 'key1' => 'val1' }, load_balancer: { 'key1' => 'val1' }, location: 'test-value', name: 'test-value', network_config: { 'key1' => 'val1' }, storage: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :create_time, :delete_time, :deletion_policy, :effective_annotations, :endpoint, :etag, :fleet, :local_name, :project, :reconciling, :state, :status, :uid, :update_time, :validation_check],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

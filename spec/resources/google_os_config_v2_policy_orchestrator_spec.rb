@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleOsConfigV2PolicyOrchestrator do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { action: 'test-value', orchestrated_resource: [{ 'key1' => 'val1' }], policy_orchestrator_id: 'test-value' } }
+  let(:required_attrs) { { action: 'test-value', orchestrated_resource: { 'key1' => 'val1' }, policy_orchestrator_id: 'test-value' } }
 
   describe ':google_os_config_v2_policy_orchestrator' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleOsConfigV2PolicyOrchestrator do
 
         expect(ref.id).to eq("${google_os_config_v2_policy_orchestrator.test.id}")
         expect(ref.create_time).to eq("${google_os_config_v2_policy_orchestrator.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_os_config_v2_policy_orchestrator.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_os_config_v2_policy_orchestrator.test.effective_labels}")
         expect(ref.name).to eq("${google_os_config_v2_policy_orchestrator.test.name}")
         expect(ref.orchestration_state).to eq("${google_os_config_v2_policy_orchestrator.test.orchestration_state}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleOsConfigV2PolicyOrchestrator do
 
         config = validate_resource_structure(result, 'google_os_config_v2_policy_orchestrator', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('orchestration_state')
@@ -69,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleOsConfigV2PolicyOrchestrator do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', labels: { 'key1' => 'val1' }, orchestration_scope: [{ 'key1' => 'val1' }], state: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, orchestration_scope: { 'key1' => 'val1' }, project: 'test-value', state: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,14 +80,33 @@ RSpec.describe Pangea::Resources::GoogleOsConfigV2PolicyOrchestrator do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_os_config_v2_policy_orchestrator', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
         expect(config).to have_key('orchestration_scope')
+        expect(config).to have_key('project')
         expect(config).to have_key('state')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_os_config_v2_policy_orchestrator('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_os_config_v2_policy_orchestrator', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_os_config_v2_policy_orchestrator('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_os_config_v2_policy_orchestrator', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -123,7 +144,7 @@ RSpec.describe Pangea::Resources::GoogleOsConfigV2PolicyOrchestrator do
       it 'includes orchestration_scope when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_os_config_v2_policy_orchestrator('opt', required_attrs.merge(orchestration_scope: [{ 'key1' => 'val1' }]))
+        synth.google_os_config_v2_policy_orchestrator('opt', required_attrs.merge(orchestration_scope: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_os_config_v2_policy_orchestrator', 'opt')
         expect(config).to have_key('orchestration_scope')
@@ -136,6 +157,23 @@ RSpec.describe Pangea::Resources::GoogleOsConfigV2PolicyOrchestrator do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_os_config_v2_policy_orchestrator', 'minimal')
         expect(config).not_to have_key('orchestration_scope')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_os_config_v2_policy_orchestrator('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_os_config_v2_policy_orchestrator', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_os_config_v2_policy_orchestrator('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_os_config_v2_policy_orchestrator', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes state when provided' do
         synth = create_synthesizer
@@ -165,7 +203,7 @@ RSpec.describe Pangea::Resources::GoogleOsConfigV2PolicyOrchestrator do
 
         config = validate_resource_structure(result, 'google_os_config_v2_policy_orchestrator', 'typed')
         expect(config['action']).to be_a(String)
-        expect(config['orchestrated_resource']).to be_a(Array)
+        expect(config['orchestrated_resource']).to be_a(Hash)
         expect(config['policy_orchestrator_id']).to be_a(String)
       end
     end
@@ -199,8 +237,8 @@ RSpec.describe Pangea::Resources::GoogleOsConfigV2PolicyOrchestrator do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_os_config_v2_policy_orchestrator,
     method: :google_os_config_v2_policy_orchestrator,
-    required_attrs: { action: 'test-value', orchestrated_resource: [{ 'key1' => 'val1' }], policy_orchestrator_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :name, :orchestration_state, :project, :reconciling, :terraform_labels, :update_time],
+    required_attrs: { action: 'test-value', orchestrated_resource: { 'key1' => 'val1' }, policy_orchestrator_id: 'test-value' },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :name, :orchestration_state, :project, :reconciling, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

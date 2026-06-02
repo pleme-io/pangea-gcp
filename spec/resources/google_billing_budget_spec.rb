@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleBillingBudget do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { amount: [{ 'key1' => 'val1' }], billing_account: 'test-value' } }
+  let(:required_attrs) { { amount: { 'key1' => 'val1' }, billing_account: 'test-value' } }
 
   describe ':google_billing_budget' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleBillingBudget do
         ref = synth.google_billing_budget('test', required_attrs)
 
         expect(ref.id).to eq("${google_billing_budget.test.id}")
+        expect(ref.deletion_policy).to eq("${google_billing_budget.test.deletion_policy}")
         expect(ref.name).to eq("${google_billing_budget.test.name}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleBillingBudget do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_billing_budget', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ all_updates_rule: [{ 'key1' => 'val1' }], budget_filter: [{ 'key1' => 'val1' }], display_name: 'test-value', ownership_scope: 'test-value', threshold_rules: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ all_updates_rule: { 'key1' => 'val1' }, budget_filter: { 'key1' => 'val1' }, deletion_policy: 'test-value', display_name: 'test-value', ownership_scope: 'test-value', threshold_rules: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,6 +68,7 @@ RSpec.describe Pangea::Resources::GoogleBillingBudget do
         config = validate_resource_structure(result, 'google_billing_budget', 'full')
         expect(config).to have_key('all_updates_rule')
         expect(config).to have_key('budget_filter')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('ownership_scope')
         expect(config).to have_key('threshold_rules')
@@ -76,7 +79,7 @@ RSpec.describe Pangea::Resources::GoogleBillingBudget do
       it 'includes all_updates_rule when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_billing_budget('opt', required_attrs.merge(all_updates_rule: [{ 'key1' => 'val1' }]))
+        synth.google_billing_budget('opt', required_attrs.merge(all_updates_rule: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_billing_budget', 'opt')
         expect(config).to have_key('all_updates_rule')
@@ -93,7 +96,7 @@ RSpec.describe Pangea::Resources::GoogleBillingBudget do
       it 'includes budget_filter when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_billing_budget('opt', required_attrs.merge(budget_filter: [{ 'key1' => 'val1' }]))
+        synth.google_billing_budget('opt', required_attrs.merge(budget_filter: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_billing_budget', 'opt')
         expect(config).to have_key('budget_filter')
@@ -106,6 +109,23 @@ RSpec.describe Pangea::Resources::GoogleBillingBudget do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_billing_budget', 'minimal')
         expect(config).not_to have_key('budget_filter')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_billing_budget('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_billing_budget', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_billing_budget('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_billing_budget', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes display_name when provided' do
         synth = create_synthesizer
@@ -168,7 +188,7 @@ RSpec.describe Pangea::Resources::GoogleBillingBudget do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_billing_budget', 'typed')
-        expect(config['amount']).to be_a(Array)
+        expect(config['amount']).to be_a(Hash)
         expect(config['billing_account']).to be_a(String)
       end
     end
@@ -202,8 +222,8 @@ RSpec.describe Pangea::Resources::GoogleBillingBudget do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_billing_budget,
     method: :google_billing_budget,
-    required_attrs: { amount: [{ 'key1' => 'val1' }], billing_account: 'test-value' },
-    expected_outputs: [:id, :name],
+    required_attrs: { amount: { 'key1' => 'val1' }, billing_account: 'test-value' },
+    expected_outputs: [:id, :deletion_policy, :name],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

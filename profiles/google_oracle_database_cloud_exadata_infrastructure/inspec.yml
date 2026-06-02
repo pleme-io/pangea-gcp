@@ -1,0 +1,8 @@
+name: google_oracle_database_cloud_exadata_infrastructure
+title: Manages a google_oracle_database_cloud_exadata_infrastructure resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

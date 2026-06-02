@@ -41,6 +41,7 @@ RSpec.describe Pangea::Resources::GoogleSqlSslCert do
         expect(ref.cert).to eq("${google_sql_ssl_cert.test.cert}")
         expect(ref.cert_serial_number).to eq("${google_sql_ssl_cert.test.cert_serial_number}")
         expect(ref.create_time).to eq("${google_sql_ssl_cert.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_sql_ssl_cert.test.deletion_policy}")
         expect(ref.expiration_time).to eq("${google_sql_ssl_cert.test.expiration_time}")
         expect(ref.private_key).to eq("${google_sql_ssl_cert.test.private_key}")
         expect(ref.project).to eq("${google_sql_ssl_cert.test.project}")
@@ -60,11 +61,64 @@ RSpec.describe Pangea::Resources::GoogleSqlSslCert do
         expect(config).not_to have_key('cert')
         expect(config).not_to have_key('cert_serial_number')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('expiration_time')
         expect(config).not_to have_key('private_key')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('server_ca_cert')
         expect(config).not_to have_key('sha1_fingerprint')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_ssl_cert('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_sql_ssl_cert', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_ssl_cert('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_ssl_cert', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_ssl_cert('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_ssl_cert', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_ssl_cert('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_ssl_cert', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_ssl_cert('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_ssl_cert', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -120,7 +174,7 @@ RSpec.describe Pangea::Resources::GoogleSqlSslCert do
     resource_type: :google_sql_ssl_cert,
     method: :google_sql_ssl_cert,
     required_attrs: { common_name: 'test-value', instance: 'test-value' },
-    expected_outputs: [:id, :cert, :cert_serial_number, :create_time, :expiration_time, :private_key, :project, :server_ca_cert, :sha1_fingerprint],
+    expected_outputs: [:id, :cert, :cert_serial_number, :create_time, :deletion_policy, :expiration_time, :private_key, :project, :server_ca_cert, :sha1_fingerprint],
     sensitive_fields: [:cert, :private_key, :server_ca_cert],
     immutable_fields: [],
     boolean_fields: []

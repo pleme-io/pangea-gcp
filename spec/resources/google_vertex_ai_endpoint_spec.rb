@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpoint do
         expect(ref.id).to eq("${google_vertex_ai_endpoint.test.id}")
         expect(ref.create_time).to eq("${google_vertex_ai_endpoint.test.create_time}")
         expect(ref.dedicated_endpoint_dns).to eq("${google_vertex_ai_endpoint.test.dedicated_endpoint_dns}")
+        expect(ref.deletion_policy).to eq("${google_vertex_ai_endpoint.test.deletion_policy}")
         expect(ref.deployed_models).to eq("${google_vertex_ai_endpoint.test.deployed_models}")
         expect(ref.effective_labels).to eq("${google_vertex_ai_endpoint.test.effective_labels}")
         expect(ref.etag).to eq("${google_vertex_ai_endpoint.test.etag}")
@@ -61,6 +62,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpoint do
         config = validate_resource_structure(result, 'google_vertex_ai_endpoint', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('dedicated_endpoint_dns')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('deployed_models')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpoint do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ dedicated_endpoint_enabled: true, description: 'test-value', encryption_spec: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, network: 'test-value', predict_request_response_logging_config: [{ 'key1' => 'val1' }], private_service_connect_config: [{ 'key1' => 'val1' }], region: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ dedicated_endpoint_enabled: true, deletion_policy: 'test-value', description: 'test-value', encryption_spec: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, network: 'test-value', predict_request_response_logging_config: { 'key1' => 'val1' }, private_service_connect_config: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value', traffic_split: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -83,13 +85,16 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpoint do
 
         config = validate_resource_structure(result, 'google_vertex_ai_endpoint', 'full')
         expect(config).to have_key('dedicated_endpoint_enabled')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('encryption_spec')
         expect(config).to have_key('labels')
         expect(config).to have_key('network')
         expect(config).to have_key('predict_request_response_logging_config')
         expect(config).to have_key('private_service_connect_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('region')
+        expect(config).to have_key('traffic_split')
       end
     end
 
@@ -111,6 +116,23 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpoint do
         config = validate_resource_structure(result, 'google_vertex_ai_endpoint', 'minimal')
         expect(config).not_to have_key('dedicated_endpoint_enabled')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_endpoint('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_endpoint', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_endpoint', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -131,7 +153,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpoint do
       it 'includes encryption_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_endpoint('opt', required_attrs.merge(encryption_spec: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_endpoint('opt', required_attrs.merge(encryption_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_endpoint', 'opt')
         expect(config).to have_key('encryption_spec')
@@ -182,7 +204,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpoint do
       it 'includes predict_request_response_logging_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_endpoint('opt', required_attrs.merge(predict_request_response_logging_config: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_endpoint('opt', required_attrs.merge(predict_request_response_logging_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_endpoint', 'opt')
         expect(config).to have_key('predict_request_response_logging_config')
@@ -199,7 +221,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpoint do
       it 'includes private_service_connect_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_endpoint('opt', required_attrs.merge(private_service_connect_config: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_endpoint('opt', required_attrs.merge(private_service_connect_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_endpoint', 'opt')
         expect(config).to have_key('private_service_connect_config')
@@ -212,6 +234,23 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpoint do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_endpoint', 'minimal')
         expect(config).not_to have_key('private_service_connect_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_endpoint('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_endpoint', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_endpoint', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes region when provided' do
         synth = create_synthesizer
@@ -229,6 +268,23 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpoint do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_endpoint', 'minimal')
         expect(config).not_to have_key('region')
+      end
+      it 'includes traffic_split when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_endpoint('opt', required_attrs.merge(traffic_split: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_endpoint', 'opt')
+        expect(config).to have_key('traffic_split')
+      end
+
+      it 'omits traffic_split when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_endpoint', 'minimal')
+        expect(config).not_to have_key('traffic_split')
       end
     end
 
@@ -290,7 +346,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiEndpoint do
     resource_type: :google_vertex_ai_endpoint,
     method: :google_vertex_ai_endpoint,
     required_attrs: { display_name: 'test-value', location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :create_time, :dedicated_endpoint_dns, :deployed_models, :effective_labels, :etag, :model_deployment_monitoring_job, :project, :terraform_labels, :traffic_split, :update_time],
+    expected_outputs: [:id, :create_time, :dedicated_endpoint_dns, :deletion_policy, :deployed_models, :effective_labels, :etag, :model_deployment_monitoring_job, :project, :terraform_labels, :traffic_split, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:dedicated_endpoint_enabled]

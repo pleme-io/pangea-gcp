@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleComputePublicAdvertisedPrefix do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { dns_verification_ip: 'test-value', ip_cidr_range: 'test-value', name: 'test-value' } }
+  let(:required_attrs) { { ip_cidr_range: 'test-value', name: 'test-value' } }
 
   describe ':google_compute_public_advertised_prefix' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleComputePublicAdvertisedPrefix do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_compute_public_advertised_prefix', 'test')
-        validate_required_attributes(config, [:dns_verification_ip, :ip_cidr_range, :name])
+        validate_required_attributes(config, [:ip_cidr_range, :name])
       end
 
       it 'returns a ResourceReference' do
@@ -38,6 +38,8 @@ RSpec.describe Pangea::Resources::GoogleComputePublicAdvertisedPrefix do
         ref = synth.google_compute_public_advertised_prefix('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_public_advertised_prefix.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_public_advertised_prefix.test.deletion_policy}")
+        expect(ref.ipv6_access_type).to eq("${google_compute_public_advertised_prefix.test.ipv6_access_type}")
         expect(ref.project).to eq("${google_compute_public_advertised_prefix.test.project}")
         expect(ref.self_link).to eq("${google_compute_public_advertised_prefix.test.self_link}")
         expect(ref.shared_secret).to eq("${google_compute_public_advertised_prefix.test.shared_secret}")
@@ -52,6 +54,8 @@ RSpec.describe Pangea::Resources::GoogleComputePublicAdvertisedPrefix do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_public_advertised_prefix', 'test')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('ipv6_access_type')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
         expect(config).not_to have_key('shared_secret')
@@ -59,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleComputePublicAdvertisedPrefix do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', pdp_scope: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', dns_verification_ip: 'test-value', ipv6_access_type: 'test-value', pdp_scope: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,12 +72,33 @@ RSpec.describe Pangea::Resources::GoogleComputePublicAdvertisedPrefix do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_public_advertised_prefix', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('dns_verification_ip')
+        expect(config).to have_key('ipv6_access_type')
         expect(config).to have_key('pdp_scope')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_public_advertised_prefix('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_public_advertised_prefix', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_public_advertised_prefix('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_public_advertised_prefix', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -90,6 +115,40 @@ RSpec.describe Pangea::Resources::GoogleComputePublicAdvertisedPrefix do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_public_advertised_prefix', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes dns_verification_ip when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_public_advertised_prefix('opt', required_attrs.merge(dns_verification_ip: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_public_advertised_prefix', 'opt')
+        expect(config).to have_key('dns_verification_ip')
+      end
+
+      it 'omits dns_verification_ip when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_public_advertised_prefix('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_public_advertised_prefix', 'minimal')
+        expect(config).not_to have_key('dns_verification_ip')
+      end
+      it 'includes ipv6_access_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_public_advertised_prefix('opt', required_attrs.merge(ipv6_access_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_public_advertised_prefix', 'opt')
+        expect(config).to have_key('ipv6_access_type')
+      end
+
+      it 'omits ipv6_access_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_public_advertised_prefix('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_public_advertised_prefix', 'minimal')
+        expect(config).not_to have_key('ipv6_access_type')
       end
       it 'includes pdp_scope when provided' do
         synth = create_synthesizer
@@ -108,6 +167,23 @@ RSpec.describe Pangea::Resources::GoogleComputePublicAdvertisedPrefix do
         config = validate_resource_structure(result, 'google_compute_public_advertised_prefix', 'minimal')
         expect(config).not_to have_key('pdp_scope')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_public_advertised_prefix('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_public_advertised_prefix', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_public_advertised_prefix('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_public_advertised_prefix', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -118,7 +194,6 @@ RSpec.describe Pangea::Resources::GoogleComputePublicAdvertisedPrefix do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_public_advertised_prefix', 'typed')
-        expect(config['dns_verification_ip']).to be_a(String)
         expect(config['ip_cidr_range']).to be_a(String)
         expect(config['name']).to be_a(String)
       end
@@ -153,8 +228,8 @@ RSpec.describe Pangea::Resources::GoogleComputePublicAdvertisedPrefix do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_compute_public_advertised_prefix,
     method: :google_compute_public_advertised_prefix,
-    required_attrs: { dns_verification_ip: 'test-value', ip_cidr_range: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :project, :self_link, :shared_secret],
+    required_attrs: { ip_cidr_range: 'test-value', name: 'test-value' },
+    expected_outputs: [:id, :deletion_policy, :ipv6_access_type, :project, :self_link, :shared_secret],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

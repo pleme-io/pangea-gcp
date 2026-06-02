@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityGroup do
 
         expect(ref.id).to eq("${google_network_connectivity_group.test.id}")
         expect(ref.create_time).to eq("${google_network_connectivity_group.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_connectivity_group.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_connectivity_group.test.effective_labels}")
         expect(ref.project).to eq("${google_network_connectivity_group.test.project}")
         expect(ref.route_table).to eq("${google_network_connectivity_group.test.route_table}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityGroup do
 
         config = validate_resource_structure(result, 'google_network_connectivity_group', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('route_table')
@@ -69,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityGroup do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ auto_accept: [{ 'key1' => 'val1' }], description: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ auto_accept: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -79,8 +81,10 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityGroup do
 
         config = validate_resource_structure(result, 'google_network_connectivity_group', 'full')
         expect(config).to have_key('auto_accept')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
@@ -88,7 +92,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityGroup do
       it 'includes auto_accept when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_network_connectivity_group('opt', required_attrs.merge(auto_accept: [{ 'key1' => 'val1' }]))
+        synth.google_network_connectivity_group('opt', required_attrs.merge(auto_accept: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_connectivity_group', 'opt')
         expect(config).to have_key('auto_accept')
@@ -101,6 +105,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityGroup do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_connectivity_group', 'minimal')
         expect(config).not_to have_key('auto_accept')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_group('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_group', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_group', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -135,6 +156,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityGroup do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_connectivity_group', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_group('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_group', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_connectivity_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_connectivity_group', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -181,7 +219,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkConnectivityGroup do
     resource_type: :google_network_connectivity_group,
     method: :google_network_connectivity_group,
     required_attrs: { hub: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :project, :route_table, :state, :terraform_labels, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :project, :route_table, :state, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

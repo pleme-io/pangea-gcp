@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleSiteVerificationWebResource do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { site: [{ 'key1' => 'val1' }], verification_method: 'test-value' } }
+  let(:required_attrs) { { site: { 'key1' => 'val1' }, verification_method: 'test-value' } }
 
   describe ':google_site_verification_web_resource' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleSiteVerificationWebResource do
         ref = synth.google_site_verification_web_resource('test', required_attrs)
 
         expect(ref.id).to eq("${google_site_verification_web_resource.test.id}")
+        expect(ref.deletion_policy).to eq("${google_site_verification_web_resource.test.deletion_policy}")
         expect(ref.owners).to eq("${google_site_verification_web_resource.test.owners}")
         expect(ref.web_resource_id).to eq("${google_site_verification_web_resource.test.web_resource_id}")
       end
@@ -51,8 +52,43 @@ RSpec.describe Pangea::Resources::GoogleSiteVerificationWebResource do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_site_verification_web_resource', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('owners')
         expect(config).not_to have_key('web_resource_id')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_site_verification_web_resource('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_site_verification_web_resource', 'full')
+        expect(config).to have_key('deletion_policy')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_site_verification_web_resource('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_site_verification_web_resource', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_site_verification_web_resource('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_site_verification_web_resource', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -64,7 +100,7 @@ RSpec.describe Pangea::Resources::GoogleSiteVerificationWebResource do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_site_verification_web_resource', 'typed')
-        expect(config['site']).to be_a(Array)
+        expect(config['site']).to be_a(Hash)
         expect(config['verification_method']).to be_a(String)
       end
     end
@@ -98,8 +134,8 @@ RSpec.describe Pangea::Resources::GoogleSiteVerificationWebResource do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_site_verification_web_resource,
     method: :google_site_verification_web_resource,
-    required_attrs: { site: [{ 'key1' => 'val1' }], verification_method: 'test-value' },
-    expected_outputs: [:id, :owners, :web_resource_id],
+    required_attrs: { site: { 'key1' => 'val1' }, verification_method: 'test-value' },
+    expected_outputs: [:id, :deletion_policy, :owners, :web_resource_id],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

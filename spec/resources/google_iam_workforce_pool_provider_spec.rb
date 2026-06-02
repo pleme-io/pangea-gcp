@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProvider do
         ref = synth.google_iam_workforce_pool_provider('test', required_attrs)
 
         expect(ref.id).to eq("${google_iam_workforce_pool_provider.test.id}")
+        expect(ref.deletion_policy).to eq("${google_iam_workforce_pool_provider.test.deletion_policy}")
         expect(ref.name).to eq("${google_iam_workforce_pool_provider.test.name}")
         expect(ref.state).to eq("${google_iam_workforce_pool_provider.test.state}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProvider do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('state')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ attribute_condition: 'test-value', attribute_mapping: { 'key1' => 'val1' }, description: 'test-value', disabled: true, display_name: 'test-value', extra_attributes_oauth2_client: [{ 'key1' => 'val1' }], oidc: [{ 'key1' => 'val1' }], saml: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ attribute_condition: 'test-value', attribute_mapping: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', detailed_audit_logging: true, disabled: true, display_name: 'test-value', extended_attributes_oauth2_client: { 'key1' => 'val1' }, extra_attributes_oauth2_client: { 'key1' => 'val1' }, oidc: { 'key1' => 'val1' }, saml: { 'key1' => 'val1' }, scim_usage: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,12 +70,16 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProvider do
         config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'full')
         expect(config).to have_key('attribute_condition')
         expect(config).to have_key('attribute_mapping')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('detailed_audit_logging')
         expect(config).to have_key('disabled')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('extended_attributes_oauth2_client')
         expect(config).to have_key('extra_attributes_oauth2_client')
         expect(config).to have_key('oidc')
         expect(config).to have_key('saml')
+        expect(config).to have_key('scim_usage')
       end
     end
 
@@ -112,6 +118,23 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProvider do
         config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'minimal')
         expect(config).not_to have_key('attribute_mapping')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_provider('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_provider('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -128,6 +151,23 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProvider do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes detailed_audit_logging when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_provider('opt', required_attrs.merge(detailed_audit_logging: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'opt')
+        expect(config).to have_key('detailed_audit_logging')
+      end
+
+      it 'omits detailed_audit_logging when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_provider('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'minimal')
+        expect(config).not_to have_key('detailed_audit_logging')
       end
       it 'includes disabled when provided' do
         synth = create_synthesizer
@@ -163,10 +203,27 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProvider do
         config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'minimal')
         expect(config).not_to have_key('display_name')
       end
+      it 'includes extended_attributes_oauth2_client when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_provider('opt', required_attrs.merge(extended_attributes_oauth2_client: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'opt')
+        expect(config).to have_key('extended_attributes_oauth2_client')
+      end
+
+      it 'omits extended_attributes_oauth2_client when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_provider('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'minimal')
+        expect(config).not_to have_key('extended_attributes_oauth2_client')
+      end
       it 'includes extra_attributes_oauth2_client when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_iam_workforce_pool_provider('opt', required_attrs.merge(extra_attributes_oauth2_client: [{ 'key1' => 'val1' }]))
+        synth.google_iam_workforce_pool_provider('opt', required_attrs.merge(extra_attributes_oauth2_client: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'opt')
         expect(config).to have_key('extra_attributes_oauth2_client')
@@ -183,7 +240,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProvider do
       it 'includes oidc when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_iam_workforce_pool_provider('opt', required_attrs.merge(oidc: [{ 'key1' => 'val1' }]))
+        synth.google_iam_workforce_pool_provider('opt', required_attrs.merge(oidc: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'opt')
         expect(config).to have_key('oidc')
@@ -200,7 +257,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProvider do
       it 'includes saml when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_iam_workforce_pool_provider('opt', required_attrs.merge(saml: [{ 'key1' => 'val1' }]))
+        synth.google_iam_workforce_pool_provider('opt', required_attrs.merge(saml: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'opt')
         expect(config).to have_key('saml')
@@ -214,9 +271,37 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProvider do
         config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'minimal')
         expect(config).not_to have_key('saml')
       end
+      it 'includes scim_usage when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_provider('opt', required_attrs.merge(scim_usage: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'opt')
+        expect(config).to have_key('scim_usage')
+      end
+
+      it 'omits scim_usage when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_provider('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', 'minimal')
+        expect(config).not_to have_key('scim_usage')
+      end
     end
 
     context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts detailed_audit_logging=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(detailed_audit_logging: val)
+          synth.google_iam_workforce_pool_provider("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_iam_workforce_pool_provider', "bool_#{val}")
+          expect(config['detailed_audit_logging']).to eq(val)
+        end
+      end
       [true, false].each do |val|
         it "accepts disabled=#{val}" do
           synth = create_synthesizer
@@ -274,8 +359,8 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolProvider do
     resource_type: :google_iam_workforce_pool_provider,
     method: :google_iam_workforce_pool_provider,
     required_attrs: { location: 'test-value', provider_id: 'test-value', workforce_pool_id: 'test-value' },
-    expected_outputs: [:id, :name, :state],
+    expected_outputs: [:id, :deletion_policy, :name, :state],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:disabled]
+    boolean_fields: [:detailed_audit_logging, :disabled]
 end

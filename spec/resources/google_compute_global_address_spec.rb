@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalAddress do
         expect(ref.id).to eq("${google_compute_global_address.test.id}")
         expect(ref.address).to eq("${google_compute_global_address.test.address}")
         expect(ref.creation_timestamp).to eq("${google_compute_global_address.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_global_address.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_compute_global_address.test.effective_labels}")
         expect(ref.label_fingerprint).to eq("${google_compute_global_address.test.label_fingerprint}")
         expect(ref.prefix_length).to eq("${google_compute_global_address.test.prefix_length}")
@@ -59,6 +60,7 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalAddress do
         config = validate_resource_structure(result, 'google_compute_global_address', 'test')
         expect(config).not_to have_key('address')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('label_fingerprint')
         expect(config).not_to have_key('prefix_length')
@@ -69,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalAddress do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ address_type: 'test-value', description: 'test-value', ip_version: 'test-value', labels: { 'key1' => 'val1' }, network: 'test-value', purpose: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ address: 'test-value', address_type: 'test-value', deletion_policy: 'test-value', description: 'test-value', ip_version: 'test-value', labels: { 'key1' => 'val1' }, network: 'test-value', prefix_length: 3.14, project: 'test-value', purpose: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,16 +80,37 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalAddress do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_global_address', 'full')
+        expect(config).to have_key('address')
         expect(config).to have_key('address_type')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('ip_version')
         expect(config).to have_key('labels')
         expect(config).to have_key('network')
+        expect(config).to have_key('prefix_length')
+        expect(config).to have_key('project')
         expect(config).to have_key('purpose')
       end
     end
 
     context 'optional attributes' do
+      it 'includes address when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_address('opt', required_attrs.merge(address: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_address', 'opt')
+        expect(config).to have_key('address')
+      end
+
+      it 'omits address when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_address('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_address', 'minimal')
+        expect(config).not_to have_key('address')
+      end
       it 'includes address_type when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -104,6 +127,23 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalAddress do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_global_address', 'minimal')
         expect(config).not_to have_key('address_type')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_address('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_address', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_address('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_address', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -173,6 +213,40 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalAddress do
         config = validate_resource_structure(result, 'google_compute_global_address', 'minimal')
         expect(config).not_to have_key('network')
       end
+      it 'includes prefix_length when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_address('opt', required_attrs.merge(prefix_length: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_address', 'opt')
+        expect(config).to have_key('prefix_length')
+      end
+
+      it 'omits prefix_length when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_address('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_address', 'minimal')
+        expect(config).not_to have_key('prefix_length')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_address('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_address', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_global_address('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_global_address', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes purpose when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -234,7 +308,7 @@ RSpec.describe Pangea::Resources::GoogleComputeGlobalAddress do
     resource_type: :google_compute_global_address,
     method: :google_compute_global_address,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :address, :creation_timestamp, :effective_labels, :label_fingerprint, :prefix_length, :project, :self_link, :terraform_labels],
+    expected_outputs: [:id, :address, :creation_timestamp, :deletion_policy, :effective_labels, :label_fingerprint, :prefix_length, :project, :self_link, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

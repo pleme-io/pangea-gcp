@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleDataplexTask do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { execution_spec: [{ 'key1' => 'val1' }], trigger_spec: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { execution_spec: { 'key1' => 'val1' }, trigger_spec: { 'key1' => 'val1' } } }
 
   describe ':google_dataplex_task' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexTask do
 
         expect(ref.id).to eq("${google_dataplex_task.test.id}")
         expect(ref.create_time).to eq("${google_dataplex_task.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_dataplex_task.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_dataplex_task.test.effective_labels}")
         expect(ref.execution_status).to eq("${google_dataplex_task.test.execution_status}")
         expect(ref.name).to eq("${google_dataplex_task.test.name}")
@@ -59,6 +60,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexTask do
 
         config = validate_resource_structure(result, 'google_dataplex_task', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('execution_status')
         expect(config).not_to have_key('name')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexTask do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' }, lake: 'test-value', location: 'test-value', notebook: [{ 'key1' => 'val1' }], spark: [{ 'key1' => 'val1' }], task_id: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' }, lake: 'test-value', location: 'test-value', notebook: { 'key1' => 'val1' }, project: 'test-value', spark: { 'key1' => 'val1' }, task_id: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -80,18 +82,37 @@ RSpec.describe Pangea::Resources::GoogleDataplexTask do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dataplex_task', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
         expect(config).to have_key('lake')
         expect(config).to have_key('location')
         expect(config).to have_key('notebook')
+        expect(config).to have_key('project')
         expect(config).to have_key('spark')
         expect(config).to have_key('task_id')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_task('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_task', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_task('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_task', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -180,7 +201,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexTask do
       it 'includes notebook when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataplex_task('opt', required_attrs.merge(notebook: [{ 'key1' => 'val1' }]))
+        synth.google_dataplex_task('opt', required_attrs.merge(notebook: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataplex_task', 'opt')
         expect(config).to have_key('notebook')
@@ -194,10 +215,27 @@ RSpec.describe Pangea::Resources::GoogleDataplexTask do
         config = validate_resource_structure(result, 'google_dataplex_task', 'minimal')
         expect(config).not_to have_key('notebook')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_task('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_task', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_task('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_task', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes spark when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataplex_task('opt', required_attrs.merge(spark: [{ 'key1' => 'val1' }]))
+        synth.google_dataplex_task('opt', required_attrs.merge(spark: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataplex_task', 'opt')
         expect(config).to have_key('spark')
@@ -238,8 +276,8 @@ RSpec.describe Pangea::Resources::GoogleDataplexTask do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dataplex_task', 'typed')
-        expect(config['execution_spec']).to be_a(Array)
-        expect(config['trigger_spec']).to be_a(Array)
+        expect(config['execution_spec']).to be_a(Hash)
+        expect(config['trigger_spec']).to be_a(Hash)
       end
     end
 
@@ -272,8 +310,8 @@ RSpec.describe Pangea::Resources::GoogleDataplexTask do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_dataplex_task,
     method: :google_dataplex_task,
-    required_attrs: { execution_spec: [{ 'key1' => 'val1' }], trigger_spec: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :effective_labels, :execution_status, :name, :project, :state, :terraform_labels, :uid, :update_time],
+    required_attrs: { execution_spec: { 'key1' => 'val1' }, trigger_spec: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :execution_status, :name, :project, :state, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

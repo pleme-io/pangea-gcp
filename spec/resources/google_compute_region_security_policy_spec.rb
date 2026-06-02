@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicy do
         ref = synth.google_compute_region_security_policy('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_region_security_policy.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_region_security_policy.test.deletion_policy}")
         expect(ref.fingerprint).to eq("${google_compute_region_security_policy.test.fingerprint}")
         expect(ref.policy_id).to eq("${google_compute_region_security_policy.test.policy_id}")
         expect(ref.project).to eq("${google_compute_region_security_policy.test.project}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_region_security_policy', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('fingerprint')
         expect(config).not_to have_key('policy_id')
         expect(config).not_to have_key('project')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicy do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ advanced_options_config: [{ 'key1' => 'val1' }], ddos_protection_config: [{ 'key1' => 'val1' }], description: 'test-value', rules: [{ 'key1' => 'val1' }], type: 'test-value', user_defined_fields: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ advanced_options_config: { 'key1' => 'val1' }, ddos_protection_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', project: 'test-value', region: 'test-value', rules: [{ 'key1' => 'val1' }], type: 'test-value', user_defined_fields: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,7 +78,10 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicy do
         config = validate_resource_structure(result, 'google_compute_region_security_policy', 'full')
         expect(config).to have_key('advanced_options_config')
         expect(config).to have_key('ddos_protection_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('rules')
         expect(config).to have_key('type')
         expect(config).to have_key('user_defined_fields')
@@ -87,7 +92,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicy do
       it 'includes advanced_options_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_security_policy('opt', required_attrs.merge(advanced_options_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_security_policy('opt', required_attrs.merge(advanced_options_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_security_policy', 'opt')
         expect(config).to have_key('advanced_options_config')
@@ -104,7 +109,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicy do
       it 'includes ddos_protection_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_security_policy('opt', required_attrs.merge(ddos_protection_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_security_policy('opt', required_attrs.merge(ddos_protection_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_security_policy', 'opt')
         expect(config).to have_key('ddos_protection_config')
@@ -117,6 +122,23 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_security_policy', 'minimal')
         expect(config).not_to have_key('ddos_protection_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_security_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_security_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_security_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_security_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -134,6 +156,40 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_security_policy', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_security_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_security_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_security_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_security_policy', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_security_policy('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_security_policy', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_security_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_security_policy', 'minimal')
+        expect(config).not_to have_key('region')
       end
       it 'includes rules when provided' do
         synth = create_synthesizer
@@ -230,7 +286,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicy do
     resource_type: :google_compute_region_security_policy,
     method: :google_compute_region_security_policy,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :fingerprint, :policy_id, :project, :region, :self_link, :self_link_with_policy_id],
+    expected_outputs: [:id, :deletion_policy, :fingerprint, :policy_id, :project, :region, :self_link, :self_link_with_policy_id],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

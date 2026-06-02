@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineDomainMapping do
         ref = synth.google_app_engine_domain_mapping('test', required_attrs)
 
         expect(ref.id).to eq("${google_app_engine_domain_mapping.test.id}")
+        expect(ref.deletion_policy).to eq("${google_app_engine_domain_mapping.test.deletion_policy}")
         expect(ref.name).to eq("${google_app_engine_domain_mapping.test.name}")
         expect(ref.project).to eq("${google_app_engine_domain_mapping.test.project}")
         expect(ref.resource_records).to eq("${google_app_engine_domain_mapping.test.resource_records}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineDomainMapping do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_app_engine_domain_mapping', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('resource_records')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineDomainMapping do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ override_strategy: 'test-value', ssl_settings: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', override_strategy: 'test-value', project: 'test-value', ssl_settings: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,12 +70,31 @@ RSpec.describe Pangea::Resources::GoogleAppEngineDomainMapping do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_app_engine_domain_mapping', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('override_strategy')
+        expect(config).to have_key('project')
         expect(config).to have_key('ssl_settings')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_domain_mapping('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_domain_mapping', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_domain_mapping('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_domain_mapping', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes override_strategy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -91,10 +112,27 @@ RSpec.describe Pangea::Resources::GoogleAppEngineDomainMapping do
         config = validate_resource_structure(result, 'google_app_engine_domain_mapping', 'minimal')
         expect(config).not_to have_key('override_strategy')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_domain_mapping('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_domain_mapping', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_domain_mapping('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_domain_mapping', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes ssl_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_app_engine_domain_mapping('opt', required_attrs.merge(ssl_settings: [{ 'key1' => 'val1' }]))
+        synth.google_app_engine_domain_mapping('opt', required_attrs.merge(ssl_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_domain_mapping', 'opt')
         expect(config).to have_key('ssl_settings')
@@ -152,7 +190,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineDomainMapping do
     resource_type: :google_app_engine_domain_mapping,
     method: :google_app_engine_domain_mapping,
     required_attrs: { domain_name: 'test-value' },
-    expected_outputs: [:id, :name, :project, :resource_records],
+    expected_outputs: [:id, :deletion_policy, :name, :project, :resource_records],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

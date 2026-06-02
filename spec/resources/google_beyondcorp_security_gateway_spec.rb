@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGateway do
         expect(ref.id).to eq("${google_beyondcorp_security_gateway.test.id}")
         expect(ref.create_time).to eq("${google_beyondcorp_security_gateway.test.create_time}")
         expect(ref.delegating_service_account).to eq("${google_beyondcorp_security_gateway.test.delegating_service_account}")
+        expect(ref.deletion_policy).to eq("${google_beyondcorp_security_gateway.test.deletion_policy}")
         expect(ref.external_ips).to eq("${google_beyondcorp_security_gateway.test.external_ips}")
         expect(ref.name).to eq("${google_beyondcorp_security_gateway.test.name}")
         expect(ref.project).to eq("${google_beyondcorp_security_gateway.test.project}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGateway do
         config = validate_resource_structure(result, 'google_beyondcorp_security_gateway', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('delegating_service_account')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('external_ips')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGateway do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ display_name: 'test-value', hubs: [{ 'key1' => 'val1' }], location: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', display_name: 'test-value', hubs: [{ 'key1' => 'val1' }], location: 'test-value', logging: { 'key1' => 'val1' }, project: 'test-value', proxy_protocol_config: { 'key1' => 'val1' }, service_discovery: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,13 +78,35 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGateway do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_beyondcorp_security_gateway', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('hubs')
         expect(config).to have_key('location')
+        expect(config).to have_key('logging')
+        expect(config).to have_key('project')
+        expect(config).to have_key('proxy_protocol_config')
+        expect(config).to have_key('service_discovery')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes display_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -134,6 +158,74 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGateway do
         config = validate_resource_structure(result, 'google_beyondcorp_security_gateway', 'minimal')
         expect(config).not_to have_key('location')
       end
+      it 'includes logging when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway('opt', required_attrs.merge(logging: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway', 'opt')
+        expect(config).to have_key('logging')
+      end
+
+      it 'omits logging when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway', 'minimal')
+        expect(config).not_to have_key('logging')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes proxy_protocol_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway('opt', required_attrs.merge(proxy_protocol_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway', 'opt')
+        expect(config).to have_key('proxy_protocol_config')
+      end
+
+      it 'omits proxy_protocol_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway', 'minimal')
+        expect(config).not_to have_key('proxy_protocol_config')
+      end
+      it 'includes service_discovery when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway('opt', required_attrs.merge(service_discovery: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway', 'opt')
+        expect(config).to have_key('service_discovery')
+      end
+
+      it 'omits service_discovery when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_security_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_security_gateway', 'minimal')
+        expect(config).not_to have_key('service_discovery')
+      end
     end
 
     context 'attribute types' do
@@ -178,7 +270,7 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpSecurityGateway do
     resource_type: :google_beyondcorp_security_gateway,
     method: :google_beyondcorp_security_gateway,
     required_attrs: { security_gateway_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :delegating_service_account, :external_ips, :name, :project, :state, :update_time],
+    expected_outputs: [:id, :create_time, :delegating_service_account, :deletion_policy, :external_ips, :name, :project, :state, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

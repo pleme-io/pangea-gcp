@@ -1,0 +1,8 @@
+name: google_chronicle_watchlist
+title: Manages a google_chronicle_watchlist resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

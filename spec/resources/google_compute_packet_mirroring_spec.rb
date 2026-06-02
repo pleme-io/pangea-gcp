@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleComputePacketMirroring do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { collector_ilb: [{ 'key1' => 'val1' }], mirrored_resources: [{ 'key1' => 'val1' }], name: 'test-value', network: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { collector_ilb: { 'key1' => 'val1' }, mirrored_resources: { 'key1' => 'val1' }, name: 'test-value', network: { 'key1' => 'val1' } } }
 
   describe ':google_compute_packet_mirroring' do
     context 'with required attributes only' do
@@ -38,6 +38,8 @@ RSpec.describe Pangea::Resources::GoogleComputePacketMirroring do
         ref = synth.google_compute_packet_mirroring('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_packet_mirroring.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_packet_mirroring.test.deletion_policy}")
+        expect(ref.enable).to eq("${google_compute_packet_mirroring.test.enable}")
         expect(ref.priority).to eq("${google_compute_packet_mirroring.test.priority}")
         expect(ref.project).to eq("${google_compute_packet_mirroring.test.project}")
         expect(ref.region).to eq("${google_compute_packet_mirroring.test.region}")
@@ -52,6 +54,8 @@ RSpec.describe Pangea::Resources::GoogleComputePacketMirroring do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'test')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('enable')
         expect(config).not_to have_key('priority')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('region')
@@ -59,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleComputePacketMirroring do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', filter: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', enable: 'test-value', filter: { 'key1' => 'val1' }, priority: 3.14, project: 'test-value', region: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,12 +72,34 @@ RSpec.describe Pangea::Resources::GoogleComputePacketMirroring do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('enable')
         expect(config).to have_key('filter')
+        expect(config).to have_key('priority')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_packet_mirroring('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_packet_mirroring('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -91,10 +117,27 @@ RSpec.describe Pangea::Resources::GoogleComputePacketMirroring do
         config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'minimal')
         expect(config).not_to have_key('description')
       end
+      it 'includes enable when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_packet_mirroring('opt', required_attrs.merge(enable: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'opt')
+        expect(config).to have_key('enable')
+      end
+
+      it 'omits enable when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_packet_mirroring('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'minimal')
+        expect(config).not_to have_key('enable')
+      end
       it 'includes filter when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_packet_mirroring('opt', required_attrs.merge(filter: [{ 'key1' => 'val1' }]))
+        synth.google_compute_packet_mirroring('opt', required_attrs.merge(filter: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'opt')
         expect(config).to have_key('filter')
@@ -108,6 +151,57 @@ RSpec.describe Pangea::Resources::GoogleComputePacketMirroring do
         config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'minimal')
         expect(config).not_to have_key('filter')
       end
+      it 'includes priority when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_packet_mirroring('opt', required_attrs.merge(priority: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'opt')
+        expect(config).to have_key('priority')
+      end
+
+      it 'omits priority when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_packet_mirroring('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'minimal')
+        expect(config).not_to have_key('priority')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_packet_mirroring('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_packet_mirroring('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_packet_mirroring('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_packet_mirroring('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'minimal')
+        expect(config).not_to have_key('region')
+      end
     end
 
     context 'attribute types' do
@@ -118,10 +212,10 @@ RSpec.describe Pangea::Resources::GoogleComputePacketMirroring do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_packet_mirroring', 'typed')
-        expect(config['collector_ilb']).to be_a(Array)
-        expect(config['mirrored_resources']).to be_a(Array)
+        expect(config['collector_ilb']).to be_a(Hash)
+        expect(config['mirrored_resources']).to be_a(Hash)
         expect(config['name']).to be_a(String)
-        expect(config['network']).to be_a(Array)
+        expect(config['network']).to be_a(Hash)
       end
     end
 
@@ -154,8 +248,8 @@ RSpec.describe Pangea::Resources::GoogleComputePacketMirroring do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_compute_packet_mirroring,
     method: :google_compute_packet_mirroring,
-    required_attrs: { collector_ilb: [{ 'key1' => 'val1' }], mirrored_resources: [{ 'key1' => 'val1' }], name: 'test-value', network: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :priority, :project, :region],
+    required_attrs: { collector_ilb: { 'key1' => 'val1' }, mirrored_resources: { 'key1' => 'val1' }, name: 'test-value', network: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :deletion_policy, :enable, :priority, :project, :region],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

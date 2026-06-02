@@ -1,0 +1,8 @@
+name: google_iam_workforce_pool_provider_key
+title: Manages a google_iam_workforce_pool_provider_key resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

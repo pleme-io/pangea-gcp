@@ -38,6 +38,53 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvironmentKeyvaluemaps do
         ref = synth.google_apigee_environment_keyvaluemaps('test', required_attrs)
 
         expect(ref.id).to eq("${google_apigee_environment_keyvaluemaps.test.id}")
+        expect(ref.deletion_policy).to eq("${google_apigee_environment_keyvaluemaps.test.deletion_policy}")
+      end
+    end
+
+    context 'computed-only attributes' do
+      it 'excludes computed-only attributes from the resource block' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_environment_keyvaluemaps('test', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_apigee_environment_keyvaluemaps', 'test')
+        expect(config).not_to have_key('deletion_policy')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_environment_keyvaluemaps('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_apigee_environment_keyvaluemaps', 'full')
+        expect(config).to have_key('deletion_policy')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_environment_keyvaluemaps('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_environment_keyvaluemaps', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_environment_keyvaluemaps('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_environment_keyvaluemaps', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -84,7 +131,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvironmentKeyvaluemaps do
     resource_type: :google_apigee_environment_keyvaluemaps,
     method: :google_apigee_environment_keyvaluemaps,
     required_attrs: { env_id: 'test-value', name: 'test-value' },
-    expected_outputs: [:id],
+    expected_outputs: [:id, :deletion_policy],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GooglePubsubSubscription do
 
         expect(ref.id).to eq("${google_pubsub_subscription.test.id}")
         expect(ref.ack_deadline_seconds).to eq("${google_pubsub_subscription.test.ack_deadline_seconds}")
+        expect(ref.deletion_policy).to eq("${google_pubsub_subscription.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_pubsub_subscription.test.effective_labels}")
         expect(ref.project).to eq("${google_pubsub_subscription.test.project}")
         expect(ref.terraform_labels).to eq("${google_pubsub_subscription.test.terraform_labels}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GooglePubsubSubscription do
 
         config = validate_resource_structure(result, 'google_pubsub_subscription', 'test')
         expect(config).not_to have_key('ack_deadline_seconds')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GooglePubsubSubscription do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ bigquery_config: [{ 'key1' => 'val1' }], cloud_storage_config: [{ 'key1' => 'val1' }], dead_letter_policy: [{ 'key1' => 'val1' }], enable_exactly_once_delivery: true, enable_message_ordering: true, expiration_policy: [{ 'key1' => 'val1' }], filter: 'test-value', labels: { 'key1' => 'val1' }, message_retention_duration: 'test-value', message_transforms: [{ 'key1' => 'val1' }], push_config: [{ 'key1' => 'val1' }], retain_acked_messages: true, retry_policy: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ ack_deadline_seconds: 3.14, bigquery_config: { 'key1' => 'val1' }, cloud_storage_config: { 'key1' => 'val1' }, dead_letter_policy: { 'key1' => 'val1' }, deletion_policy: 'test-value', enable_exactly_once_delivery: true, enable_message_ordering: true, expiration_policy: { 'key1' => 'val1' }, filter: 'test-value', labels: { 'key1' => 'val1' }, message_retention_duration: 'test-value', message_transforms: [{ 'key1' => 'val1' }], project: 'test-value', push_config: { 'key1' => 'val1' }, retain_acked_messages: true, retry_policy: { 'key1' => 'val1' }, tags: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,9 +72,11 @@ RSpec.describe Pangea::Resources::GooglePubsubSubscription do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_pubsub_subscription', 'full')
+        expect(config).to have_key('ack_deadline_seconds')
         expect(config).to have_key('bigquery_config')
         expect(config).to have_key('cloud_storage_config')
         expect(config).to have_key('dead_letter_policy')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('enable_exactly_once_delivery')
         expect(config).to have_key('enable_message_ordering')
         expect(config).to have_key('expiration_policy')
@@ -80,17 +84,36 @@ RSpec.describe Pangea::Resources::GooglePubsubSubscription do
         expect(config).to have_key('labels')
         expect(config).to have_key('message_retention_duration')
         expect(config).to have_key('message_transforms')
+        expect(config).to have_key('project')
         expect(config).to have_key('push_config')
         expect(config).to have_key('retain_acked_messages')
         expect(config).to have_key('retry_policy')
+        expect(config).to have_key('tags')
       end
     end
 
     context 'optional attributes' do
+      it 'includes ack_deadline_seconds when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_subscription('opt', required_attrs.merge(ack_deadline_seconds: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_subscription', 'opt')
+        expect(config).to have_key('ack_deadline_seconds')
+      end
+
+      it 'omits ack_deadline_seconds when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_subscription('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_subscription', 'minimal')
+        expect(config).not_to have_key('ack_deadline_seconds')
+      end
       it 'includes bigquery_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_pubsub_subscription('opt', required_attrs.merge(bigquery_config: [{ 'key1' => 'val1' }]))
+        synth.google_pubsub_subscription('opt', required_attrs.merge(bigquery_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_subscription', 'opt')
         expect(config).to have_key('bigquery_config')
@@ -107,7 +130,7 @@ RSpec.describe Pangea::Resources::GooglePubsubSubscription do
       it 'includes cloud_storage_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_pubsub_subscription('opt', required_attrs.merge(cloud_storage_config: [{ 'key1' => 'val1' }]))
+        synth.google_pubsub_subscription('opt', required_attrs.merge(cloud_storage_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_subscription', 'opt')
         expect(config).to have_key('cloud_storage_config')
@@ -124,7 +147,7 @@ RSpec.describe Pangea::Resources::GooglePubsubSubscription do
       it 'includes dead_letter_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_pubsub_subscription('opt', required_attrs.merge(dead_letter_policy: [{ 'key1' => 'val1' }]))
+        synth.google_pubsub_subscription('opt', required_attrs.merge(dead_letter_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_subscription', 'opt')
         expect(config).to have_key('dead_letter_policy')
@@ -137,6 +160,23 @@ RSpec.describe Pangea::Resources::GooglePubsubSubscription do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_subscription', 'minimal')
         expect(config).not_to have_key('dead_letter_policy')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_subscription('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_subscription', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_subscription('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_subscription', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes enable_exactly_once_delivery when provided' do
         synth = create_synthesizer
@@ -175,7 +215,7 @@ RSpec.describe Pangea::Resources::GooglePubsubSubscription do
       it 'includes expiration_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_pubsub_subscription('opt', required_attrs.merge(expiration_policy: [{ 'key1' => 'val1' }]))
+        synth.google_pubsub_subscription('opt', required_attrs.merge(expiration_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_subscription', 'opt')
         expect(config).to have_key('expiration_policy')
@@ -257,10 +297,27 @@ RSpec.describe Pangea::Resources::GooglePubsubSubscription do
         config = validate_resource_structure(result, 'google_pubsub_subscription', 'minimal')
         expect(config).not_to have_key('message_transforms')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_subscription('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_subscription', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_subscription('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_subscription', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes push_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_pubsub_subscription('opt', required_attrs.merge(push_config: [{ 'key1' => 'val1' }]))
+        synth.google_pubsub_subscription('opt', required_attrs.merge(push_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_subscription', 'opt')
         expect(config).to have_key('push_config')
@@ -294,7 +351,7 @@ RSpec.describe Pangea::Resources::GooglePubsubSubscription do
       it 'includes retry_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_pubsub_subscription('opt', required_attrs.merge(retry_policy: [{ 'key1' => 'val1' }]))
+        synth.google_pubsub_subscription('opt', required_attrs.merge(retry_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_subscription', 'opt')
         expect(config).to have_key('retry_policy')
@@ -307,6 +364,23 @@ RSpec.describe Pangea::Resources::GooglePubsubSubscription do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_subscription', 'minimal')
         expect(config).not_to have_key('retry_policy')
+      end
+      it 'includes tags when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_subscription('opt', required_attrs.merge(tags: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_subscription', 'opt')
+        expect(config).to have_key('tags')
+      end
+
+      it 'omits tags when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_subscription('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_subscription', 'minimal')
+        expect(config).not_to have_key('tags')
       end
     end
 
@@ -389,7 +463,7 @@ RSpec.describe Pangea::Resources::GooglePubsubSubscription do
     resource_type: :google_pubsub_subscription,
     method: :google_pubsub_subscription,
     required_attrs: { name: 'test-value', topic: 'test-value' },
-    expected_outputs: [:id, :ack_deadline_seconds, :effective_labels, :project, :terraform_labels],
+    expected_outputs: [:id, :ack_deadline_seconds, :deletion_policy, :effective_labels, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:enable_exactly_once_delivery, :enable_message_ordering, :retain_acked_messages]

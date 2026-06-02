@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingProjectSink do
         ref = synth.google_logging_project_sink('test', required_attrs)
 
         expect(ref.id).to eq("${google_logging_project_sink.test.id}")
+        expect(ref.deletion_policy).to eq("${google_logging_project_sink.test.deletion_policy}")
         expect(ref.project).to eq("${google_logging_project_sink.test.project}")
         expect(ref.writer_identity).to eq("${google_logging_project_sink.test.writer_identity}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleLoggingProjectSink do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_logging_project_sink', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('writer_identity')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ bigquery_options: [{ 'key1' => 'val1' }], custom_writer_identity: 'test-value', description: 'test-value', disabled: true, exclusions: [{ 'key1' => 'val1' }], filter: 'test-value', unique_writer_identity: true }) }
+      let(:all_attrs) { required_attrs.merge({ bigquery_options: { 'key1' => 'val1' }, custom_writer_identity: 'test-value', deletion_policy: 'test-value', description: 'test-value', disabled: true, exclusions: [{ 'key1' => 'val1' }], filter: 'test-value', project: 'test-value', unique_writer_identity: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,10 +70,12 @@ RSpec.describe Pangea::Resources::GoogleLoggingProjectSink do
         config = validate_resource_structure(result, 'google_logging_project_sink', 'full')
         expect(config).to have_key('bigquery_options')
         expect(config).to have_key('custom_writer_identity')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('disabled')
         expect(config).to have_key('exclusions')
         expect(config).to have_key('filter')
+        expect(config).to have_key('project')
         expect(config).to have_key('unique_writer_identity')
       end
     end
@@ -80,7 +84,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingProjectSink do
       it 'includes bigquery_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_logging_project_sink('opt', required_attrs.merge(bigquery_options: [{ 'key1' => 'val1' }]))
+        synth.google_logging_project_sink('opt', required_attrs.merge(bigquery_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_logging_project_sink', 'opt')
         expect(config).to have_key('bigquery_options')
@@ -110,6 +114,23 @@ RSpec.describe Pangea::Resources::GoogleLoggingProjectSink do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_logging_project_sink', 'minimal')
         expect(config).not_to have_key('custom_writer_identity')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_project_sink('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_project_sink', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_project_sink('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_project_sink', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -178,6 +199,23 @@ RSpec.describe Pangea::Resources::GoogleLoggingProjectSink do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_logging_project_sink', 'minimal')
         expect(config).not_to have_key('filter')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_project_sink('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_project_sink', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_project_sink('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_project_sink', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes unique_writer_identity when provided' do
         synth = create_synthesizer
@@ -266,7 +304,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingProjectSink do
     resource_type: :google_logging_project_sink,
     method: :google_logging_project_sink,
     required_attrs: { destination: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :project, :writer_identity],
+    expected_outputs: [:id, :deletion_policy, :project, :writer_identity],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disabled, :unique_writer_identity]

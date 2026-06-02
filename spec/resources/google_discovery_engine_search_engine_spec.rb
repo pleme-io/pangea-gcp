@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleDiscoveryEngineSearchEngine do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { collection_id: 'test-value', data_store_ids: ['test-value'], display_name: 'test-value', engine_id: 'test-value', location: 'test-value', search_engine_config: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { collection_id: 'test-value', data_store_ids: ['test-value'], display_name: 'test-value', engine_id: 'test-value', location: 'test-value', search_engine_config: { 'key1' => 'val1' } } }
 
   describe ':google_discovery_engine_search_engine' do
     context 'with required attributes only' do
@@ -39,6 +39,8 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineSearchEngine do
 
         expect(ref.id).to eq("${google_discovery_engine_search_engine.test.id}")
         expect(ref.create_time).to eq("${google_discovery_engine_search_engine.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_discovery_engine_search_engine.test.deletion_policy}")
+        expect(ref.features).to eq("${google_discovery_engine_search_engine.test.features}")
         expect(ref.name).to eq("${google_discovery_engine_search_engine.test.name}")
         expect(ref.project).to eq("${google_discovery_engine_search_engine.test.project}")
         expect(ref.update_time).to eq("${google_discovery_engine_search_engine.test.update_time}")
@@ -54,6 +56,8 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineSearchEngine do
 
         config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('features')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('update_time')
@@ -61,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineSearchEngine do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ common_config: [{ 'key1' => 'val1' }], industry_vertical: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ app_type: 'test-value', common_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', disable_analytics: true, features: { 'key1' => 'val1' }, industry_vertical: 'test-value', kms_key_name: 'test-value', knowledge_graph_config: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,16 +74,40 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineSearchEngine do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'full')
+        expect(config).to have_key('app_type')
         expect(config).to have_key('common_config')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('disable_analytics')
+        expect(config).to have_key('features')
         expect(config).to have_key('industry_vertical')
+        expect(config).to have_key('kms_key_name')
+        expect(config).to have_key('knowledge_graph_config')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes app_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_search_engine('opt', required_attrs.merge(app_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'opt')
+        expect(config).to have_key('app_type')
+      end
+
+      it 'omits app_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_search_engine('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'minimal')
+        expect(config).not_to have_key('app_type')
+      end
       it 'includes common_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_discovery_engine_search_engine('opt', required_attrs.merge(common_config: [{ 'key1' => 'val1' }]))
+        synth.google_discovery_engine_search_engine('opt', required_attrs.merge(common_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'opt')
         expect(config).to have_key('common_config')
@@ -92,6 +120,57 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineSearchEngine do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'minimal')
         expect(config).not_to have_key('common_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_search_engine('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_search_engine('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes disable_analytics when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_search_engine('opt', required_attrs.merge(disable_analytics: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'opt')
+        expect(config).to have_key('disable_analytics')
+      end
+
+      it 'omits disable_analytics when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_search_engine('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'minimal')
+        expect(config).not_to have_key('disable_analytics')
+      end
+      it 'includes features when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_search_engine('opt', required_attrs.merge(features: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'opt')
+        expect(config).to have_key('features')
+      end
+
+      it 'omits features when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_search_engine('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'minimal')
+        expect(config).not_to have_key('features')
       end
       it 'includes industry_vertical when provided' do
         synth = create_synthesizer
@@ -110,6 +189,71 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineSearchEngine do
         config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'minimal')
         expect(config).not_to have_key('industry_vertical')
       end
+      it 'includes kms_key_name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_search_engine('opt', required_attrs.merge(kms_key_name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'opt')
+        expect(config).to have_key('kms_key_name')
+      end
+
+      it 'omits kms_key_name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_search_engine('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'minimal')
+        expect(config).not_to have_key('kms_key_name')
+      end
+      it 'includes knowledge_graph_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_search_engine('opt', required_attrs.merge(knowledge_graph_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'opt')
+        expect(config).to have_key('knowledge_graph_config')
+      end
+
+      it 'omits knowledge_graph_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_search_engine('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'minimal')
+        expect(config).not_to have_key('knowledge_graph_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_search_engine('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_search_engine('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_search_engine', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts disable_analytics=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(disable_analytics: val)
+          synth.google_discovery_engine_search_engine("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_discovery_engine_search_engine', "bool_#{val}")
+          expect(config['disable_analytics']).to eq(val)
+        end
+      end
     end
 
     context 'attribute types' do
@@ -125,7 +269,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineSearchEngine do
         expect(config['display_name']).to be_a(String)
         expect(config['engine_id']).to be_a(String)
         expect(config['location']).to be_a(String)
-        expect(config['search_engine_config']).to be_a(Array)
+        expect(config['search_engine_config']).to be_a(Hash)
       end
     end
 
@@ -158,9 +302,9 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineSearchEngine do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_discovery_engine_search_engine,
     method: :google_discovery_engine_search_engine,
-    required_attrs: { collection_id: 'test-value', data_store_ids: ['test-value'], display_name: 'test-value', engine_id: 'test-value', location: 'test-value', search_engine_config: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :name, :project, :update_time],
+    required_attrs: { collection_id: 'test-value', data_store_ids: ['test-value'], display_name: 'test-value', engine_id: 'test-value', location: 'test-value', search_engine_config: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :create_time, :deletion_policy, :features, :name, :project, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:disable_analytics]
 end

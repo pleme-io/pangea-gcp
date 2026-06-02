@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleIamProjectsPolicyBinding do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { location: 'test-value', policy: 'test-value', policy_binding_id: 'test-value', target: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { location: 'test-value', policy: 'test-value', policy_binding_id: 'test-value', target: { 'key1' => 'val1' } } }
 
   describe ':google_iam_projects_policy_binding' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleIamProjectsPolicyBinding do
 
         expect(ref.id).to eq("${google_iam_projects_policy_binding.test.id}")
         expect(ref.create_time).to eq("${google_iam_projects_policy_binding.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_iam_projects_policy_binding.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_iam_projects_policy_binding.test.effective_annotations}")
         expect(ref.etag).to eq("${google_iam_projects_policy_binding.test.etag}")
         expect(ref.name).to eq("${google_iam_projects_policy_binding.test.name}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleIamProjectsPolicyBinding do
 
         config = validate_resource_structure(result, 'google_iam_projects_policy_binding', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('name')
@@ -69,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleIamProjectsPolicyBinding do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, condition: [{ 'key1' => 'val1' }], display_name: 'test-value', policy_kind: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, condition: { 'key1' => 'val1' }, deletion_policy: 'test-value', display_name: 'test-value', policy_kind: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -80,8 +82,10 @@ RSpec.describe Pangea::Resources::GoogleIamProjectsPolicyBinding do
         config = validate_resource_structure(result, 'google_iam_projects_policy_binding', 'full')
         expect(config).to have_key('annotations')
         expect(config).to have_key('condition')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('policy_kind')
+        expect(config).to have_key('project')
       end
     end
 
@@ -106,7 +110,7 @@ RSpec.describe Pangea::Resources::GoogleIamProjectsPolicyBinding do
       it 'includes condition when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_iam_projects_policy_binding('opt', required_attrs.merge(condition: [{ 'key1' => 'val1' }]))
+        synth.google_iam_projects_policy_binding('opt', required_attrs.merge(condition: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_projects_policy_binding', 'opt')
         expect(config).to have_key('condition')
@@ -119,6 +123,23 @@ RSpec.describe Pangea::Resources::GoogleIamProjectsPolicyBinding do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_projects_policy_binding', 'minimal')
         expect(config).not_to have_key('condition')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_projects_policy_binding('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_projects_policy_binding', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_projects_policy_binding('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_projects_policy_binding', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes display_name when provided' do
         synth = create_synthesizer
@@ -154,6 +175,23 @@ RSpec.describe Pangea::Resources::GoogleIamProjectsPolicyBinding do
         config = validate_resource_structure(result, 'google_iam_projects_policy_binding', 'minimal')
         expect(config).not_to have_key('policy_kind')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_projects_policy_binding('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_projects_policy_binding', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_projects_policy_binding('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_projects_policy_binding', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -167,7 +205,7 @@ RSpec.describe Pangea::Resources::GoogleIamProjectsPolicyBinding do
         expect(config['location']).to be_a(String)
         expect(config['policy']).to be_a(String)
         expect(config['policy_binding_id']).to be_a(String)
-        expect(config['target']).to be_a(Array)
+        expect(config['target']).to be_a(Hash)
       end
     end
 
@@ -200,8 +238,8 @@ RSpec.describe Pangea::Resources::GoogleIamProjectsPolicyBinding do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_iam_projects_policy_binding,
     method: :google_iam_projects_policy_binding,
-    required_attrs: { location: 'test-value', policy: 'test-value', policy_binding_id: 'test-value', target: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :effective_annotations, :etag, :name, :policy_uid, :project, :uid, :update_time],
+    required_attrs: { location: 'test-value', policy: 'test-value', policy_binding_id: 'test-value', target: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_annotations, :etag, :name, :policy_uid, :project, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

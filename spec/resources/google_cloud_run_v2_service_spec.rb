@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleCloudRunV2Service do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { location: 'test-value', name: 'test-value', template: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { location: 'test-value', name: 'test-value', template: { 'key1' => 'val1' } } }
 
   describe ':google_cloud_run_v2_service' do
     context 'with required attributes only' do
@@ -42,6 +42,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Service do
         expect(ref.create_time).to eq("${google_cloud_run_v2_service.test.create_time}")
         expect(ref.creator).to eq("${google_cloud_run_v2_service.test.creator}")
         expect(ref.delete_time).to eq("${google_cloud_run_v2_service.test.delete_time}")
+        expect(ref.deletion_policy).to eq("${google_cloud_run_v2_service.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_cloud_run_v2_service.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_cloud_run_v2_service.test.effective_labels}")
         expect(ref.etag).to eq("${google_cloud_run_v2_service.test.etag}")
@@ -77,6 +78,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Service do
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('creator')
         expect(config).not_to have_key('delete_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
@@ -101,7 +103,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Service do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, binary_authorization: [{ 'key1' => 'val1' }], build_config: [{ 'key1' => 'val1' }], client: 'test-value', client_version: 'test-value', custom_audiences: ['test-value'], deletion_protection: true, description: 'test-value', invoker_iam_disabled: true, labels: { 'key1' => 'val1' }, scaling: [{ 'key1' => 'val1' }], traffic: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, binary_authorization: { 'key1' => 'val1' }, build_config: { 'key1' => 'val1' }, client: 'test-value', client_version: 'test-value', custom_audiences: ['test-value'], default_uri_disabled: true, deletion_policy: 'test-value', deletion_protection: true, description: 'test-value', iap_enabled: true, ingress: 'test-value', invoker_iam_disabled: true, labels: { 'key1' => 'val1' }, launch_stage: 'test-value', multi_region_settings: { 'key1' => 'val1' }, project: 'test-value', scaling: { 'key1' => 'val1' }, traffic: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -116,10 +118,17 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Service do
         expect(config).to have_key('client')
         expect(config).to have_key('client_version')
         expect(config).to have_key('custom_audiences')
+        expect(config).to have_key('default_uri_disabled')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
         expect(config).to have_key('description')
+        expect(config).to have_key('iap_enabled')
+        expect(config).to have_key('ingress')
         expect(config).to have_key('invoker_iam_disabled')
         expect(config).to have_key('labels')
+        expect(config).to have_key('launch_stage')
+        expect(config).to have_key('multi_region_settings')
+        expect(config).to have_key('project')
         expect(config).to have_key('scaling')
         expect(config).to have_key('traffic')
       end
@@ -146,7 +155,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Service do
       it 'includes binary_authorization when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_run_v2_service('opt', required_attrs.merge(binary_authorization: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_run_v2_service('opt', required_attrs.merge(binary_authorization: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'opt')
         expect(config).to have_key('binary_authorization')
@@ -163,7 +172,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Service do
       it 'includes build_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_run_v2_service('opt', required_attrs.merge(build_config: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_run_v2_service('opt', required_attrs.merge(build_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'opt')
         expect(config).to have_key('build_config')
@@ -228,6 +237,40 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Service do
         config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'minimal')
         expect(config).not_to have_key('custom_audiences')
       end
+      it 'includes default_uri_disabled when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_service('opt', required_attrs.merge(default_uri_disabled: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'opt')
+        expect(config).to have_key('default_uri_disabled')
+      end
+
+      it 'omits default_uri_disabled when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'minimal')
+        expect(config).not_to have_key('default_uri_disabled')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_service('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -261,6 +304,40 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Service do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes iap_enabled when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_service('opt', required_attrs.merge(iap_enabled: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'opt')
+        expect(config).to have_key('iap_enabled')
+      end
+
+      it 'omits iap_enabled when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'minimal')
+        expect(config).not_to have_key('iap_enabled')
+      end
+      it 'includes ingress when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_service('opt', required_attrs.merge(ingress: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'opt')
+        expect(config).to have_key('ingress')
+      end
+
+      it 'omits ingress when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'minimal')
+        expect(config).not_to have_key('ingress')
       end
       it 'includes invoker_iam_disabled when provided' do
         synth = create_synthesizer
@@ -296,10 +373,61 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Service do
         config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes launch_stage when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_service('opt', required_attrs.merge(launch_stage: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'opt')
+        expect(config).to have_key('launch_stage')
+      end
+
+      it 'omits launch_stage when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'minimal')
+        expect(config).not_to have_key('launch_stage')
+      end
+      it 'includes multi_region_settings when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_service('opt', required_attrs.merge(multi_region_settings: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'opt')
+        expect(config).to have_key('multi_region_settings')
+      end
+
+      it 'omits multi_region_settings when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'minimal')
+        expect(config).not_to have_key('multi_region_settings')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_service('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes scaling when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_run_v2_service('opt', required_attrs.merge(scaling: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_run_v2_service('opt', required_attrs.merge(scaling: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'opt')
         expect(config).to have_key('scaling')
@@ -334,6 +462,17 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Service do
 
     context 'boolean fields' do
       [true, false].each do |val|
+        it "accepts default_uri_disabled=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(default_uri_disabled: val)
+          synth.google_cloud_run_v2_service("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_cloud_run_v2_service', "bool_#{val}")
+          expect(config['default_uri_disabled']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
         it "accepts deletion_protection=#{val}" do
           synth = create_synthesizer
           synth.extend(described_class)
@@ -342,6 +481,17 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Service do
           result = normalize_synthesis(synth.synthesis)
           config = validate_resource_structure(result, 'google_cloud_run_v2_service', "bool_#{val}")
           expect(config['deletion_protection']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts iap_enabled=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(iap_enabled: val)
+          synth.google_cloud_run_v2_service("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_cloud_run_v2_service', "bool_#{val}")
+          expect(config['iap_enabled']).to eq(val)
         end
       end
       [true, false].each do |val|
@@ -367,7 +517,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Service do
         config = validate_resource_structure(result, 'google_cloud_run_v2_service', 'typed')
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
-        expect(config['template']).to be_a(Array)
+        expect(config['template']).to be_a(Hash)
       end
     end
 
@@ -400,9 +550,9 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Service do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_cloud_run_v2_service,
     method: :google_cloud_run_v2_service,
-    required_attrs: { location: 'test-value', name: 'test-value', template: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :conditions, :create_time, :creator, :delete_time, :effective_annotations, :effective_labels, :etag, :expire_time, :generation, :ingress, :last_modifier, :latest_created_revision, :latest_ready_revision, :launch_stage, :observed_generation, :project, :reconciling, :terminal_condition, :terraform_labels, :traffic_statuses, :uid, :update_time, :uri, :urls],
+    required_attrs: { location: 'test-value', name: 'test-value', template: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :conditions, :create_time, :creator, :delete_time, :deletion_policy, :effective_annotations, :effective_labels, :etag, :expire_time, :generation, :ingress, :last_modifier, :latest_created_revision, :latest_ready_revision, :launch_stage, :observed_generation, :project, :reconciling, :terminal_condition, :terraform_labels, :traffic_statuses, :uid, :update_time, :uri, :urls],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:deletion_protection, :invoker_iam_disabled]
+    boolean_fields: [:default_uri_disabled, :deletion_protection, :iap_enabled, :invoker_iam_disabled]
 end

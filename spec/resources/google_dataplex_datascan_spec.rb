@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleDataplexDatascan do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { data: [{ 'key1' => 'val1' }], data_scan_id: 'test-value', execution_spec: [{ 'key1' => 'val1' }], location: 'test-value' } }
+  let(:required_attrs) { { data: { 'key1' => 'val1' }, data_scan_id: 'test-value', execution_spec: { 'key1' => 'val1' }, location: 'test-value' } }
 
   describe ':google_dataplex_datascan' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexDatascan do
 
         expect(ref.id).to eq("${google_dataplex_datascan.test.id}")
         expect(ref.create_time).to eq("${google_dataplex_datascan.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_dataplex_datascan.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_dataplex_datascan.test.effective_labels}")
         expect(ref.execution_status).to eq("${google_dataplex_datascan.test.execution_status}")
         expect(ref.name).to eq("${google_dataplex_datascan.test.name}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexDatascan do
 
         config = validate_resource_structure(result, 'google_dataplex_datascan', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('execution_status')
         expect(config).not_to have_key('name')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexDatascan do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ data_discovery_spec: [{ 'key1' => 'val1' }], data_profile_spec: [{ 'key1' => 'val1' }], data_quality_spec: [{ 'key1' => 'val1' }], description: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ data_discovery_spec: { 'key1' => 'val1' }, data_documentation_spec: { 'key1' => 'val1' }, data_profile_spec: { 'key1' => 'val1' }, data_quality_spec: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', execution_identity: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -83,11 +85,15 @@ RSpec.describe Pangea::Resources::GoogleDataplexDatascan do
 
         config = validate_resource_structure(result, 'google_dataplex_datascan', 'full')
         expect(config).to have_key('data_discovery_spec')
+        expect(config).to have_key('data_documentation_spec')
         expect(config).to have_key('data_profile_spec')
         expect(config).to have_key('data_quality_spec')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('execution_identity')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
@@ -95,7 +101,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexDatascan do
       it 'includes data_discovery_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataplex_datascan('opt', required_attrs.merge(data_discovery_spec: [{ 'key1' => 'val1' }]))
+        synth.google_dataplex_datascan('opt', required_attrs.merge(data_discovery_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataplex_datascan', 'opt')
         expect(config).to have_key('data_discovery_spec')
@@ -109,10 +115,27 @@ RSpec.describe Pangea::Resources::GoogleDataplexDatascan do
         config = validate_resource_structure(result, 'google_dataplex_datascan', 'minimal')
         expect(config).not_to have_key('data_discovery_spec')
       end
+      it 'includes data_documentation_spec when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_datascan('opt', required_attrs.merge(data_documentation_spec: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_datascan', 'opt')
+        expect(config).to have_key('data_documentation_spec')
+      end
+
+      it 'omits data_documentation_spec when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_datascan('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_datascan', 'minimal')
+        expect(config).not_to have_key('data_documentation_spec')
+      end
       it 'includes data_profile_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataplex_datascan('opt', required_attrs.merge(data_profile_spec: [{ 'key1' => 'val1' }]))
+        synth.google_dataplex_datascan('opt', required_attrs.merge(data_profile_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataplex_datascan', 'opt')
         expect(config).to have_key('data_profile_spec')
@@ -129,7 +152,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexDatascan do
       it 'includes data_quality_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataplex_datascan('opt', required_attrs.merge(data_quality_spec: [{ 'key1' => 'val1' }]))
+        synth.google_dataplex_datascan('opt', required_attrs.merge(data_quality_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataplex_datascan', 'opt')
         expect(config).to have_key('data_quality_spec')
@@ -142,6 +165,23 @@ RSpec.describe Pangea::Resources::GoogleDataplexDatascan do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataplex_datascan', 'minimal')
         expect(config).not_to have_key('data_quality_spec')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_datascan('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_datascan', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_datascan('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_datascan', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -177,6 +217,23 @@ RSpec.describe Pangea::Resources::GoogleDataplexDatascan do
         config = validate_resource_structure(result, 'google_dataplex_datascan', 'minimal')
         expect(config).not_to have_key('display_name')
       end
+      it 'includes execution_identity when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_datascan('opt', required_attrs.merge(execution_identity: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_datascan', 'opt')
+        expect(config).to have_key('execution_identity')
+      end
+
+      it 'omits execution_identity when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_datascan('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_datascan', 'minimal')
+        expect(config).not_to have_key('execution_identity')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -194,6 +251,23 @@ RSpec.describe Pangea::Resources::GoogleDataplexDatascan do
         config = validate_resource_structure(result, 'google_dataplex_datascan', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_datascan('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_datascan', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_datascan('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_datascan', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -204,9 +278,9 @@ RSpec.describe Pangea::Resources::GoogleDataplexDatascan do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dataplex_datascan', 'typed')
-        expect(config['data']).to be_a(Array)
+        expect(config['data']).to be_a(Hash)
         expect(config['data_scan_id']).to be_a(String)
-        expect(config['execution_spec']).to be_a(Array)
+        expect(config['execution_spec']).to be_a(Hash)
         expect(config['location']).to be_a(String)
       end
     end
@@ -240,8 +314,8 @@ RSpec.describe Pangea::Resources::GoogleDataplexDatascan do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_dataplex_datascan,
     method: :google_dataplex_datascan,
-    required_attrs: { data: [{ 'key1' => 'val1' }], data_scan_id: 'test-value', execution_spec: [{ 'key1' => 'val1' }], location: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :execution_status, :name, :project, :state, :terraform_labels, :type, :uid, :update_time],
+    required_attrs: { data: { 'key1' => 'val1' }, data_scan_id: 'test-value', execution_spec: { 'key1' => 'val1' }, location: 'test-value' },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :execution_status, :name, :project, :state, :terraform_labels, :type, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

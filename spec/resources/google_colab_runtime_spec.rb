@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleColabRuntime do
         ref = synth.google_colab_runtime('test', required_attrs)
 
         expect(ref.id).to eq("${google_colab_runtime.test.id}")
+        expect(ref.deletion_policy).to eq("${google_colab_runtime.test.deletion_policy}")
         expect(ref.expiration_time).to eq("${google_colab_runtime.test.expiration_time}")
         expect(ref.is_upgradable).to eq("${google_colab_runtime.test.is_upgradable}")
         expect(ref.notebook_runtime_type).to eq("${google_colab_runtime.test.notebook_runtime_type}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleColabRuntime do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_colab_runtime', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('expiration_time')
         expect(config).not_to have_key('is_upgradable')
         expect(config).not_to have_key('notebook_runtime_type')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleColabRuntime do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ auto_upgrade: true, description: 'test-value', desired_state: 'test-value', name: 'test-value', notebook_runtime_template_ref: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ auto_upgrade: true, deletion_policy: 'test-value', description: 'test-value', desired_state: 'test-value', name: 'test-value', notebook_runtime_template_ref: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,10 +75,12 @@ RSpec.describe Pangea::Resources::GoogleColabRuntime do
 
         config = validate_resource_structure(result, 'google_colab_runtime', 'full')
         expect(config).to have_key('auto_upgrade')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('desired_state')
         expect(config).to have_key('name')
         expect(config).to have_key('notebook_runtime_template_ref')
+        expect(config).to have_key('project')
       end
     end
 
@@ -97,6 +101,23 @@ RSpec.describe Pangea::Resources::GoogleColabRuntime do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_runtime', 'minimal')
         expect(config).not_to have_key('auto_upgrade')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_runtime('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_runtime', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_runtime('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_runtime', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -152,7 +173,7 @@ RSpec.describe Pangea::Resources::GoogleColabRuntime do
       it 'includes notebook_runtime_template_ref when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_colab_runtime('opt', required_attrs.merge(notebook_runtime_template_ref: [{ 'key1' => 'val1' }]))
+        synth.google_colab_runtime('opt', required_attrs.merge(notebook_runtime_template_ref: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_runtime', 'opt')
         expect(config).to have_key('notebook_runtime_template_ref')
@@ -165,6 +186,23 @@ RSpec.describe Pangea::Resources::GoogleColabRuntime do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_runtime', 'minimal')
         expect(config).not_to have_key('notebook_runtime_template_ref')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_runtime('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_runtime', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_runtime('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_runtime', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -226,7 +264,7 @@ RSpec.describe Pangea::Resources::GoogleColabRuntime do
     resource_type: :google_colab_runtime,
     method: :google_colab_runtime,
     required_attrs: { display_name: 'test-value', location: 'test-value', runtime_user: 'test-value' },
-    expected_outputs: [:id, :expiration_time, :is_upgradable, :notebook_runtime_type, :project, :state],
+    expected_outputs: [:id, :deletion_policy, :expiration_time, :is_upgradable, :notebook_runtime_type, :project, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:auto_upgrade]

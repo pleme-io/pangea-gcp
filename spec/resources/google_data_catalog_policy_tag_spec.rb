@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogPolicyTag do
 
         expect(ref.id).to eq("${google_data_catalog_policy_tag.test.id}")
         expect(ref.child_policy_tags).to eq("${google_data_catalog_policy_tag.test.child_policy_tags}")
+        expect(ref.deletion_policy).to eq("${google_data_catalog_policy_tag.test.deletion_policy}")
         expect(ref.name).to eq("${google_data_catalog_policy_tag.test.name}")
       end
     end
@@ -52,12 +53,13 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogPolicyTag do
 
         config = validate_resource_structure(result, 'google_data_catalog_policy_tag', 'test')
         expect(config).not_to have_key('child_policy_tags')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', parent_policy_tag: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', parent_policy_tag: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,12 +68,30 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogPolicyTag do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_data_catalog_policy_tag', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('parent_policy_tag')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_catalog_policy_tag('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_catalog_policy_tag', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_catalog_policy_tag('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_catalog_policy_tag', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -151,7 +171,7 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogPolicyTag do
     resource_type: :google_data_catalog_policy_tag,
     method: :google_data_catalog_policy_tag,
     required_attrs: { display_name: 'test-value', taxonomy: 'test-value' },
-    expected_outputs: [:id, :child_policy_tags, :name],
+    expected_outputs: [:id, :child_policy_tags, :deletion_policy, :name],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

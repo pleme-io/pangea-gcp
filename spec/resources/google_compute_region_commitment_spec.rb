@@ -79,7 +79,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionCommitment do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', license_resource: [{ 'key1' => 'val1' }], resources: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ auto_renew: true, category: 'test-value', description: 'test-value', existing_reservations: 'test-value', license_resource: { 'key1' => 'val1' }, params: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value', resources: [{ 'key1' => 'val1' }], type: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -88,13 +88,54 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionCommitment do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_region_commitment', 'full')
+        expect(config).to have_key('auto_renew')
+        expect(config).to have_key('category')
         expect(config).to have_key('description')
+        expect(config).to have_key('existing_reservations')
         expect(config).to have_key('license_resource')
+        expect(config).to have_key('params')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('resources')
+        expect(config).to have_key('type')
       end
     end
 
     context 'optional attributes' do
+      it 'includes auto_renew when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_commitment('opt', required_attrs.merge(auto_renew: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_commitment', 'opt')
+        expect(config).to have_key('auto_renew')
+      end
+
+      it 'omits auto_renew when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_commitment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_commitment', 'minimal')
+        expect(config).not_to have_key('auto_renew')
+      end
+      it 'includes category when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_commitment('opt', required_attrs.merge(category: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_commitment', 'opt')
+        expect(config).to have_key('category')
+      end
+
+      it 'omits category when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_commitment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_commitment', 'minimal')
+        expect(config).not_to have_key('category')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -112,10 +153,27 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionCommitment do
         config = validate_resource_structure(result, 'google_compute_region_commitment', 'minimal')
         expect(config).not_to have_key('description')
       end
+      it 'includes existing_reservations when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_commitment('opt', required_attrs.merge(existing_reservations: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_commitment', 'opt')
+        expect(config).to have_key('existing_reservations')
+      end
+
+      it 'omits existing_reservations when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_commitment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_commitment', 'minimal')
+        expect(config).not_to have_key('existing_reservations')
+      end
       it 'includes license_resource when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_commitment('opt', required_attrs.merge(license_resource: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_commitment('opt', required_attrs.merge(license_resource: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_commitment', 'opt')
         expect(config).to have_key('license_resource')
@@ -128,6 +186,57 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionCommitment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_commitment', 'minimal')
         expect(config).not_to have_key('license_resource')
+      end
+      it 'includes params when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_commitment('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_commitment', 'opt')
+        expect(config).to have_key('params')
+      end
+
+      it 'omits params when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_commitment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_commitment', 'minimal')
+        expect(config).not_to have_key('params')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_commitment('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_commitment', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_commitment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_commitment', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_commitment('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_commitment', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_commitment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_commitment', 'minimal')
+        expect(config).not_to have_key('region')
       end
       it 'includes resources when provided' do
         synth = create_synthesizer
@@ -145,6 +254,37 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionCommitment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_commitment', 'minimal')
         expect(config).not_to have_key('resources')
+      end
+      it 'includes type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_commitment('opt', required_attrs.merge(type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_commitment', 'opt')
+        expect(config).to have_key('type')
+      end
+
+      it 'omits type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_commitment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_commitment', 'minimal')
+        expect(config).not_to have_key('type')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts auto_renew=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(auto_renew: val)
+          synth.google_compute_region_commitment("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_region_commitment', "bool_#{val}")
+          expect(config['auto_renew']).to eq(val)
+        end
       end
     end
 
@@ -194,5 +334,5 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionCommitment do
     expected_outputs: [:id, :auto_renew, :category, :commitment_id, :creation_timestamp, :end_timestamp, :existing_reservations, :project, :region, :self_link, :start_timestamp, :status, :status_message, :type],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:auto_renew]
 end

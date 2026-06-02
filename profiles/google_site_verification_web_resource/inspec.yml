@@ -1,0 +1,8 @@
+name: google_site_verification_web_resource
+title: Manages a google_site_verification_web_resource resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

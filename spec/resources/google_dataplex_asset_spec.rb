@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleDataplexAsset do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { dataplex_zone: 'test-value', discovery_spec: [{ 'key1' => 'val1' }], lake: 'test-value', location: 'test-value', name: 'test-value', resource_spec: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { dataplex_zone: 'test-value', discovery_spec: { 'key1' => 'val1' }, lake: 'test-value', location: 'test-value', name: 'test-value', resource_spec: { 'key1' => 'val1' } } }
 
   describe ':google_dataplex_asset' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexAsset do
 
         expect(ref.id).to eq("${google_dataplex_asset.test.id}")
         expect(ref.create_time).to eq("${google_dataplex_asset.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_dataplex_asset.test.deletion_policy}")
         expect(ref.discovery_status).to eq("${google_dataplex_asset.test.discovery_status}")
         expect(ref.effective_labels).to eq("${google_dataplex_asset.test.effective_labels}")
         expect(ref.project).to eq("${google_dataplex_asset.test.project}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexAsset do
 
         config = validate_resource_structure(result, 'google_dataplex_asset', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('discovery_status')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexAsset do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -82,13 +84,32 @@ RSpec.describe Pangea::Resources::GoogleDataplexAsset do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dataplex_asset', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_asset('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_asset', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_asset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_asset', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -140,6 +161,23 @@ RSpec.describe Pangea::Resources::GoogleDataplexAsset do
         config = validate_resource_structure(result, 'google_dataplex_asset', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_asset('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_asset', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_asset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_asset', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -151,11 +189,11 @@ RSpec.describe Pangea::Resources::GoogleDataplexAsset do
 
         config = validate_resource_structure(result, 'google_dataplex_asset', 'typed')
         expect(config['dataplex_zone']).to be_a(String)
-        expect(config['discovery_spec']).to be_a(Array)
+        expect(config['discovery_spec']).to be_a(Hash)
         expect(config['lake']).to be_a(String)
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
-        expect(config['resource_spec']).to be_a(Array)
+        expect(config['resource_spec']).to be_a(Hash)
       end
     end
 
@@ -188,8 +226,8 @@ RSpec.describe Pangea::Resources::GoogleDataplexAsset do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_dataplex_asset,
     method: :google_dataplex_asset,
-    required_attrs: { dataplex_zone: 'test-value', discovery_spec: [{ 'key1' => 'val1' }], lake: 'test-value', location: 'test-value', name: 'test-value', resource_spec: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :discovery_status, :effective_labels, :project, :resource_status, :security_status, :state, :terraform_labels, :uid, :update_time],
+    required_attrs: { dataplex_zone: 'test-value', discovery_spec: { 'key1' => 'val1' }, lake: 'test-value', location: 'test-value', name: 'test-value', resource_spec: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :create_time, :deletion_policy, :discovery_status, :effective_labels, :project, :resource_status, :security_status, :state, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

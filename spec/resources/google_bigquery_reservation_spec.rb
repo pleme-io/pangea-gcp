@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryReservation do
         ref = synth.google_bigquery_reservation('test', required_attrs)
 
         expect(ref.id).to eq("${google_bigquery_reservation.test.id}")
+        expect(ref.deletion_policy).to eq("${google_bigquery_reservation.test.deletion_policy}")
         expect(ref.edition).to eq("${google_bigquery_reservation.test.edition}")
         expect(ref.original_primary_location).to eq("${google_bigquery_reservation.test.original_primary_location}")
         expect(ref.primary_location).to eq("${google_bigquery_reservation.test.primary_location}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryReservation do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigquery_reservation', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('edition')
         expect(config).not_to have_key('original_primary_location')
         expect(config).not_to have_key('primary_location')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryReservation do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ autoscale: [{ 'key1' => 'val1' }], concurrency: 3.14, ignore_idle_slots: true, location: 'test-value', secondary_location: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ autoscale: { 'key1' => 'val1' }, concurrency: 3.14, deletion_policy: 'test-value', edition: 'test-value', ignore_idle_slots: true, location: 'test-value', project: 'test-value', reservation_group: 'test-value', secondary_location: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,8 +76,12 @@ RSpec.describe Pangea::Resources::GoogleBigqueryReservation do
         config = validate_resource_structure(result, 'google_bigquery_reservation', 'full')
         expect(config).to have_key('autoscale')
         expect(config).to have_key('concurrency')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('edition')
         expect(config).to have_key('ignore_idle_slots')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
+        expect(config).to have_key('reservation_group')
         expect(config).to have_key('secondary_location')
       end
     end
@@ -84,7 +90,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryReservation do
       it 'includes autoscale when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_reservation('opt', required_attrs.merge(autoscale: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_reservation('opt', required_attrs.merge(autoscale: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_reservation', 'opt')
         expect(config).to have_key('autoscale')
@@ -114,6 +120,40 @@ RSpec.describe Pangea::Resources::GoogleBigqueryReservation do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_reservation', 'minimal')
         expect(config).not_to have_key('concurrency')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_reservation('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_reservation', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_reservation('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_reservation', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes edition when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_reservation('opt', required_attrs.merge(edition: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_reservation', 'opt')
+        expect(config).to have_key('edition')
+      end
+
+      it 'omits edition when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_reservation('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_reservation', 'minimal')
+        expect(config).not_to have_key('edition')
       end
       it 'includes ignore_idle_slots when provided' do
         synth = create_synthesizer
@@ -148,6 +188,40 @@ RSpec.describe Pangea::Resources::GoogleBigqueryReservation do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_reservation', 'minimal')
         expect(config).not_to have_key('location')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_reservation('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_reservation', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_reservation('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_reservation', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes reservation_group when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_reservation('opt', required_attrs.merge(reservation_group: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_reservation', 'opt')
+        expect(config).to have_key('reservation_group')
+      end
+
+      it 'omits reservation_group when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_reservation('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_reservation', 'minimal')
+        expect(config).not_to have_key('reservation_group')
       end
       it 'includes secondary_location when provided' do
         synth = create_synthesizer
@@ -225,7 +299,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryReservation do
     resource_type: :google_bigquery_reservation,
     method: :google_bigquery_reservation,
     required_attrs: { name: 'test-value', slot_capacity: 3.14 },
-    expected_outputs: [:id, :edition, :original_primary_location, :primary_location, :project, :replication_status],
+    expected_outputs: [:id, :deletion_policy, :edition, :original_primary_location, :primary_location, :project, :replication_status],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:ignore_idle_slots]

@@ -1,0 +1,8 @@
+name: google_active_directory_domain
+title: Manages a google_active_directory_domain resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

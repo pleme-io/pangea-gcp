@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareNodePool do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { config: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', vmware_cluster: 'test-value' } }
+  let(:required_attrs) { { config: { 'key1' => 'val1' }, location: 'test-value', name: 'test-value', vmware_cluster: 'test-value' } }
 
   describe ':google_gkeonprem_vmware_node_pool' do
     context 'with required attributes only' do
@@ -40,9 +40,9 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareNodePool do
         expect(ref.id).to eq("${google_gkeonprem_vmware_node_pool.test.id}")
         expect(ref.create_time).to eq("${google_gkeonprem_vmware_node_pool.test.create_time}")
         expect(ref.delete_time).to eq("${google_gkeonprem_vmware_node_pool.test.delete_time}")
+        expect(ref.deletion_policy).to eq("${google_gkeonprem_vmware_node_pool.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_gkeonprem_vmware_node_pool.test.effective_annotations}")
         expect(ref.etag).to eq("${google_gkeonprem_vmware_node_pool.test.etag}")
-        expect(ref.on_prem_version).to eq("${google_gkeonprem_vmware_node_pool.test.on_prem_version}")
         expect(ref.project).to eq("${google_gkeonprem_vmware_node_pool.test.project}")
         expect(ref.reconciling).to eq("${google_gkeonprem_vmware_node_pool.test.reconciling}")
         expect(ref.state).to eq("${google_gkeonprem_vmware_node_pool.test.state}")
@@ -62,9 +62,9 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareNodePool do
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_node_pool', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('delete_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('etag')
-        expect(config).not_to have_key('on_prem_version')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('reconciling')
         expect(config).not_to have_key('state')
@@ -75,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareNodePool do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, display_name: 'test-value', node_pool_autoscaling: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, deletion_policy: 'test-value', display_name: 'test-value', node_pool_autoscaling: { 'key1' => 'val1' }, on_prem_version: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -85,8 +85,11 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareNodePool do
 
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_node_pool', 'full')
         expect(config).to have_key('annotations')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('node_pool_autoscaling')
+        expect(config).to have_key('on_prem_version')
+        expect(config).to have_key('project')
       end
     end
 
@@ -108,6 +111,23 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareNodePool do
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_node_pool', 'minimal')
         expect(config).not_to have_key('annotations')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_vmware_node_pool('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_vmware_node_pool', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_vmware_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_vmware_node_pool', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes display_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -128,7 +148,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareNodePool do
       it 'includes node_pool_autoscaling when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_vmware_node_pool('opt', required_attrs.merge(node_pool_autoscaling: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_vmware_node_pool('opt', required_attrs.merge(node_pool_autoscaling: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_node_pool', 'opt')
         expect(config).to have_key('node_pool_autoscaling')
@@ -142,6 +162,40 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareNodePool do
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_node_pool', 'minimal')
         expect(config).not_to have_key('node_pool_autoscaling')
       end
+      it 'includes on_prem_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_vmware_node_pool('opt', required_attrs.merge(on_prem_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_vmware_node_pool', 'opt')
+        expect(config).to have_key('on_prem_version')
+      end
+
+      it 'omits on_prem_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_vmware_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_vmware_node_pool', 'minimal')
+        expect(config).not_to have_key('on_prem_version')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_vmware_node_pool('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_vmware_node_pool', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_vmware_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_vmware_node_pool', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -152,7 +206,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareNodePool do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_gkeonprem_vmware_node_pool', 'typed')
-        expect(config['config']).to be_a(Array)
+        expect(config['config']).to be_a(Hash)
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
         expect(config['vmware_cluster']).to be_a(String)
@@ -188,8 +242,8 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremVmwareNodePool do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_gkeonprem_vmware_node_pool,
     method: :google_gkeonprem_vmware_node_pool,
-    required_attrs: { config: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', vmware_cluster: 'test-value' },
-    expected_outputs: [:id, :create_time, :delete_time, :effective_annotations, :etag, :on_prem_version, :project, :reconciling, :state, :status, :uid, :update_time],
+    required_attrs: { config: { 'key1' => 'val1' }, location: 'test-value', name: 'test-value', vmware_cluster: 'test-value' },
+    expected_outputs: [:id, :create_time, :delete_time, :deletion_policy, :effective_annotations, :etag, :project, :reconciling, :state, :status, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachmentGroup do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { intent: [{ 'key1' => 'val1' }], name: 'test-value' } }
+  let(:required_attrs) { { intent: { 'key1' => 'val1' }, name: 'test-value' } }
 
   describe ':google_compute_interconnect_attachment_group' do
     context 'with required attributes only' do
@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachmentGroup do
         expect(ref.id).to eq("${google_compute_interconnect_attachment_group.test.id}")
         expect(ref.configured).to eq("${google_compute_interconnect_attachment_group.test.configured}")
         expect(ref.creation_timestamp).to eq("${google_compute_interconnect_attachment_group.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_interconnect_attachment_group.test.deletion_policy}")
         expect(ref.logical_structure).to eq("${google_compute_interconnect_attachment_group.test.logical_structure}")
         expect(ref.project).to eq("${google_compute_interconnect_attachment_group.test.project}")
       end
@@ -55,13 +56,14 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachmentGroup do
         config = validate_resource_structure(result, 'google_compute_interconnect_attachment_group', 'test')
         expect(config).not_to have_key('configured')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('logical_structure')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ attachments: [{ 'key1' => 'val1' }], description: 'test-value', interconnect_group: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ attachments: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', description: 'test-value', interconnect_group: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,8 +73,10 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachmentGroup do
 
         config = validate_resource_structure(result, 'google_compute_interconnect_attachment_group', 'full')
         expect(config).to have_key('attachments')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('interconnect_group')
+        expect(config).to have_key('project')
       end
     end
 
@@ -93,6 +97,23 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachmentGroup do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_interconnect_attachment_group', 'minimal')
         expect(config).not_to have_key('attachments')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment_group('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment_group', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment_group', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -128,6 +149,23 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachmentGroup do
         config = validate_resource_structure(result, 'google_compute_interconnect_attachment_group', 'minimal')
         expect(config).not_to have_key('interconnect_group')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment_group('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment_group', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_interconnect_attachment_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_interconnect_attachment_group', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -138,7 +176,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachmentGroup do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_interconnect_attachment_group', 'typed')
-        expect(config['intent']).to be_a(Array)
+        expect(config['intent']).to be_a(Hash)
         expect(config['name']).to be_a(String)
       end
     end
@@ -172,8 +210,8 @@ RSpec.describe Pangea::Resources::GoogleComputeInterconnectAttachmentGroup do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_compute_interconnect_attachment_group,
     method: :google_compute_interconnect_attachment_group,
-    required_attrs: { intent: [{ 'key1' => 'val1' }], name: 'test-value' },
-    expected_outputs: [:id, :configured, :creation_timestamp, :logical_structure, :project],
+    required_attrs: { intent: { 'key1' => 'val1' }, name: 'test-value' },
+    expected_outputs: [:id, :configured, :creation_timestamp, :deletion_policy, :logical_structure, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketAcl do
         ref = synth.google_storage_bucket_acl('test', required_attrs)
 
         expect(ref.id).to eq("${google_storage_bucket_acl.test.id}")
+        expect(ref.deletion_policy).to eq("${google_storage_bucket_acl.test.deletion_policy}")
         expect(ref.role_entity).to eq("${google_storage_bucket_acl.test.role_entity}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketAcl do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_storage_bucket_acl', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('role_entity')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ default_acl: 'test-value', predefined_acl: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ default_acl: 'test-value', deletion_policy: 'test-value', predefined_acl: 'test-value', role_entity: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -65,7 +67,9 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketAcl do
 
         config = validate_resource_structure(result, 'google_storage_bucket_acl', 'full')
         expect(config).to have_key('default_acl')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('predefined_acl')
+        expect(config).to have_key('role_entity')
       end
     end
 
@@ -87,6 +91,23 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketAcl do
         config = validate_resource_structure(result, 'google_storage_bucket_acl', 'minimal')
         expect(config).not_to have_key('default_acl')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket_acl('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket_acl', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket_acl('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket_acl', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes predefined_acl when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -103,6 +124,23 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketAcl do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_bucket_acl', 'minimal')
         expect(config).not_to have_key('predefined_acl')
+      end
+      it 'includes role_entity when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket_acl('opt', required_attrs.merge(role_entity: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket_acl', 'opt')
+        expect(config).to have_key('role_entity')
+      end
+
+      it 'omits role_entity when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_bucket_acl('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_bucket_acl', 'minimal')
+        expect(config).not_to have_key('role_entity')
       end
     end
 
@@ -148,7 +186,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBucketAcl do
     resource_type: :google_storage_bucket_acl,
     method: :google_storage_bucket_acl,
     required_attrs: { bucket: 'test-value' },
-    expected_outputs: [:id, :role_entity],
+    expected_outputs: [:id, :deletion_policy, :role_entity],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

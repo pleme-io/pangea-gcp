@@ -1,0 +1,8 @@
+name: google_service_directory_namespace_iam_binding
+title: Manages a google_service_directory_namespace_iam_binding resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

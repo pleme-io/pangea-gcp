@@ -39,7 +39,11 @@ RSpec.describe Pangea::Resources::GoogleComputePublicDelegatedPrefix do
 
         expect(ref.id).to eq("${google_compute_public_delegated_prefix.test.id}")
         expect(ref.allocatable_prefix_length).to eq("${google_compute_public_delegated_prefix.test.allocatable_prefix_length}")
+        expect(ref.deletion_policy).to eq("${google_compute_public_delegated_prefix.test.deletion_policy}")
+        expect(ref.enable_enhanced_ipv4_allocation).to eq("${google_compute_public_delegated_prefix.test.enable_enhanced_ipv4_allocation}")
+        expect(ref.ipv6_access_type).to eq("${google_compute_public_delegated_prefix.test.ipv6_access_type}")
         expect(ref.project).to eq("${google_compute_public_delegated_prefix.test.project}")
+        expect(ref.public_delegated_sub_prefixs).to eq("${google_compute_public_delegated_prefix.test.public_delegated_sub_prefixs}")
         expect(ref.self_link).to eq("${google_compute_public_delegated_prefix.test.self_link}")
       end
     end
@@ -53,13 +57,17 @@ RSpec.describe Pangea::Resources::GoogleComputePublicDelegatedPrefix do
 
         config = validate_resource_structure(result, 'google_compute_public_delegated_prefix', 'test')
         expect(config).not_to have_key('allocatable_prefix_length')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('enable_enhanced_ipv4_allocation')
+        expect(config).not_to have_key('ipv6_access_type')
         expect(config).not_to have_key('project')
+        expect(config).not_to have_key('public_delegated_sub_prefixs')
         expect(config).not_to have_key('self_link')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', is_live_migration: true, mode: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ allocatable_prefix_length: 3.14, deletion_policy: 'test-value', description: 'test-value', is_live_migration: true, mode: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,13 +76,50 @@ RSpec.describe Pangea::Resources::GoogleComputePublicDelegatedPrefix do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_public_delegated_prefix', 'full')
+        expect(config).to have_key('allocatable_prefix_length')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('is_live_migration')
         expect(config).to have_key('mode')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes allocatable_prefix_length when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_public_delegated_prefix('opt', required_attrs.merge(allocatable_prefix_length: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_public_delegated_prefix', 'opt')
+        expect(config).to have_key('allocatable_prefix_length')
+      end
+
+      it 'omits allocatable_prefix_length when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_public_delegated_prefix('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_public_delegated_prefix', 'minimal')
+        expect(config).not_to have_key('allocatable_prefix_length')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_public_delegated_prefix('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_public_delegated_prefix', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_public_delegated_prefix('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_public_delegated_prefix', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -125,6 +170,23 @@ RSpec.describe Pangea::Resources::GoogleComputePublicDelegatedPrefix do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_public_delegated_prefix', 'minimal')
         expect(config).not_to have_key('mode')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_public_delegated_prefix('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_public_delegated_prefix', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_public_delegated_prefix('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_public_delegated_prefix', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -187,7 +249,7 @@ RSpec.describe Pangea::Resources::GoogleComputePublicDelegatedPrefix do
     resource_type: :google_compute_public_delegated_prefix,
     method: :google_compute_public_delegated_prefix,
     required_attrs: { ip_cidr_range: 'test-value', name: 'test-value', parent_prefix: 'test-value', region: 'test-value' },
-    expected_outputs: [:id, :allocatable_prefix_length, :project, :self_link],
+    expected_outputs: [:id, :allocatable_prefix_length, :deletion_policy, :enable_enhanced_ipv4_allocation, :ipv6_access_type, :project, :public_delegated_sub_prefixs, :self_link],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:is_live_migration]

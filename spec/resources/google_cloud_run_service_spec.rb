@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunService do
         ref = synth.google_cloud_run_service('test', required_attrs)
 
         expect(ref.id).to eq("${google_cloud_run_service.test.id}")
+        expect(ref.deletion_policy).to eq("${google_cloud_run_service.test.deletion_policy}")
         expect(ref.project).to eq("${google_cloud_run_service.test.project}")
         expect(ref.status).to eq("${google_cloud_run_service.test.status}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleCloudRunService do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_cloud_run_service', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('status')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ autogenerate_revision_name: true, metadata: [{ 'key1' => 'val1' }], template: [{ 'key1' => 'val1' }], traffic: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ autogenerate_revision_name: true, deletion_policy: 'test-value', metadata: { 'key1' => 'val1' }, project: 'test-value', template: { 'key1' => 'val1' }, traffic: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,7 +69,9 @@ RSpec.describe Pangea::Resources::GoogleCloudRunService do
 
         config = validate_resource_structure(result, 'google_cloud_run_service', 'full')
         expect(config).to have_key('autogenerate_revision_name')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('metadata')
+        expect(config).to have_key('project')
         expect(config).to have_key('template')
         expect(config).to have_key('traffic')
       end
@@ -91,10 +95,27 @@ RSpec.describe Pangea::Resources::GoogleCloudRunService do
         config = validate_resource_structure(result, 'google_cloud_run_service', 'minimal')
         expect(config).not_to have_key('autogenerate_revision_name')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_service('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_service', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_service', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes metadata when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_run_service('opt', required_attrs.merge(metadata: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_run_service('opt', required_attrs.merge(metadata: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_run_service', 'opt')
         expect(config).to have_key('metadata')
@@ -108,10 +129,27 @@ RSpec.describe Pangea::Resources::GoogleCloudRunService do
         config = validate_resource_structure(result, 'google_cloud_run_service', 'minimal')
         expect(config).not_to have_key('metadata')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_service('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_service', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_service', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes template when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_run_service('opt', required_attrs.merge(template: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_run_service('opt', required_attrs.merge(template: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_run_service', 'opt')
         expect(config).to have_key('template')
@@ -201,7 +239,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunService do
     resource_type: :google_cloud_run_service,
     method: :google_cloud_run_service,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :project, :status],
+    expected_outputs: [:id, :deletion_policy, :project, :status],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:autogenerate_revision_name]

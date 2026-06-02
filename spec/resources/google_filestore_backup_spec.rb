@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleFilestoreBackup do
         expect(ref.id).to eq("${google_filestore_backup.test.id}")
         expect(ref.capacity_gb).to eq("${google_filestore_backup.test.capacity_gb}")
         expect(ref.create_time).to eq("${google_filestore_backup.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_filestore_backup.test.deletion_policy}")
         expect(ref.download_bytes).to eq("${google_filestore_backup.test.download_bytes}")
         expect(ref.effective_labels).to eq("${google_filestore_backup.test.effective_labels}")
         expect(ref.kms_key_name).to eq("${google_filestore_backup.test.kms_key_name}")
@@ -61,6 +62,7 @@ RSpec.describe Pangea::Resources::GoogleFilestoreBackup do
         config = validate_resource_structure(result, 'google_filestore_backup', 'test')
         expect(config).not_to have_key('capacity_gb')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('download_bytes')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('kms_key_name')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleFilestoreBackup do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', labels: { 'key1' => 'val1' }, tags: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', tags: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -82,13 +84,32 @@ RSpec.describe Pangea::Resources::GoogleFilestoreBackup do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_filestore_backup', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('tags')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_backup('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_backup', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_backup('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_backup', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -122,6 +143,23 @@ RSpec.describe Pangea::Resources::GoogleFilestoreBackup do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_filestore_backup', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_backup('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_backup', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_filestore_backup('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_filestore_backup', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes tags when provided' do
         synth = create_synthesizer
@@ -187,7 +225,7 @@ RSpec.describe Pangea::Resources::GoogleFilestoreBackup do
     resource_type: :google_filestore_backup,
     method: :google_filestore_backup,
     required_attrs: { location: 'test-value', name: 'test-value', source_file_share: 'test-value', source_instance: 'test-value' },
-    expected_outputs: [:id, :capacity_gb, :create_time, :download_bytes, :effective_labels, :kms_key_name, :project, :source_instance_tier, :state, :storage_bytes, :terraform_labels],
+    expected_outputs: [:id, :capacity_gb, :create_time, :deletion_policy, :download_bytes, :effective_labels, :kms_key_name, :project, :source_instance_tier, :state, :storage_bytes, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

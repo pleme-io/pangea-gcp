@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogEntryGroup do
         ref = synth.google_data_catalog_entry_group('test', required_attrs)
 
         expect(ref.id).to eq("${google_data_catalog_entry_group.test.id}")
+        expect(ref.deletion_policy).to eq("${google_data_catalog_entry_group.test.deletion_policy}")
         expect(ref.name).to eq("${google_data_catalog_entry_group.test.name}")
         expect(ref.project).to eq("${google_data_catalog_entry_group.test.project}")
         expect(ref.region).to eq("${google_data_catalog_entry_group.test.region}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogEntryGroup do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_data_catalog_entry_group', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('region')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogEntryGroup do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', display_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', project: 'test-value', region: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,12 +70,32 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogEntryGroup do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_data_catalog_entry_group', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_catalog_entry_group('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_catalog_entry_group', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_catalog_entry_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_catalog_entry_group', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -107,6 +129,40 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogEntryGroup do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_catalog_entry_group', 'minimal')
         expect(config).not_to have_key('display_name')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_catalog_entry_group('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_catalog_entry_group', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_catalog_entry_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_catalog_entry_group', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_catalog_entry_group('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_catalog_entry_group', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_catalog_entry_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_catalog_entry_group', 'minimal')
+        expect(config).not_to have_key('region')
       end
     end
 
@@ -152,7 +208,7 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogEntryGroup do
     resource_type: :google_data_catalog_entry_group,
     method: :google_data_catalog_entry_group,
     required_attrs: { entry_group_id: 'test-value' },
-    expected_outputs: [:id, :name, :project, :region],
+    expected_outputs: [:id, :deletion_policy, :name, :project, :region],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

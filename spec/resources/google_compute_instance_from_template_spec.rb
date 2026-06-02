@@ -43,6 +43,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
         expect(ref.cpu_platform).to eq("${google_compute_instance_from_template.test.cpu_platform}")
         expect(ref.creation_timestamp).to eq("${google_compute_instance_from_template.test.creation_timestamp}")
         expect(ref.current_status).to eq("${google_compute_instance_from_template.test.current_status}")
+        expect(ref.deletion_policy).to eq("${google_compute_instance_from_template.test.deletion_policy}")
         expect(ref.deletion_protection).to eq("${google_compute_instance_from_template.test.deletion_protection}")
         expect(ref.description).to eq("${google_compute_instance_from_template.test.description}")
         expect(ref.desired_status).to eq("${google_compute_instance_from_template.test.desired_status}")
@@ -81,6 +82,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
         expect(config).not_to have_key('cpu_platform')
         expect(config).not_to have_key('creation_timestamp')
         expect(config).not_to have_key('current_status')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('deletion_protection')
         expect(config).not_to have_key('description')
         expect(config).not_to have_key('desired_status')
@@ -107,7 +109,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ advanced_machine_features: [{ 'key1' => 'val1' }], attached_disk: [{ 'key1' => 'val1' }], boot_disk: [{ 'key1' => 'val1' }], confidential_instance_config: [{ 'key1' => 'val1' }], guest_accelerator: [{ 'key1' => 'val1' }], instance_encryption_key: [{ 'key1' => 'val1' }], network_interface: [{ 'key1' => 'val1' }], network_performance_config: [{ 'key1' => 'val1' }], params: [{ 'key1' => 'val1' }], reservation_affinity: [{ 'key1' => 'val1' }], scheduling: [{ 'key1' => 'val1' }], scratch_disk: [{ 'key1' => 'val1' }], service_account: [{ 'key1' => 'val1' }], shielded_instance_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ advanced_machine_features: { 'key1' => 'val1' }, allow_stopping_for_update: true, attached_disk: [{ 'key1' => 'val1' }], boot_disk: { 'key1' => 'val1' }, can_ip_forward: true, confidential_instance_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', deletion_protection: true, description: 'test-value', desired_status: 'test-value', enable_display: true, guest_accelerator: [{ 'key1' => 'val1' }], hostname: 'test-value', instance_encryption_key: { 'key1' => 'val1' }, key_revocation_action_type: 'test-value', labels: { 'key1' => 'val1' }, machine_type: 'test-value', metadata: { 'key1' => 'val1' }, metadata_startup_script: 'test-value', min_cpu_platform: 'test-value', network_interface: [{ 'key1' => 'val1' }], network_performance_config: { 'key1' => 'val1' }, params: { 'key1' => 'val1' }, project: 'test-value', reservation_affinity: { 'key1' => 'val1' }, resource_policies: ['test-value'], scheduling: { 'key1' => 'val1' }, scratch_disk: [{ 'key1' => 'val1' }], service_account: { 'key1' => 'val1' }, shielded_instance_config: { 'key1' => 'val1' }, tags: ['test-value'], zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -117,19 +119,37 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
 
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'full')
         expect(config).to have_key('advanced_machine_features')
+        expect(config).to have_key('allow_stopping_for_update')
         expect(config).to have_key('attached_disk')
         expect(config).to have_key('boot_disk')
+        expect(config).to have_key('can_ip_forward')
         expect(config).to have_key('confidential_instance_config')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('deletion_protection')
+        expect(config).to have_key('description')
+        expect(config).to have_key('desired_status')
+        expect(config).to have_key('enable_display')
         expect(config).to have_key('guest_accelerator')
+        expect(config).to have_key('hostname')
         expect(config).to have_key('instance_encryption_key')
+        expect(config).to have_key('key_revocation_action_type')
+        expect(config).to have_key('labels')
+        expect(config).to have_key('machine_type')
+        expect(config).to have_key('metadata')
+        expect(config).to have_key('metadata_startup_script')
+        expect(config).to have_key('min_cpu_platform')
         expect(config).to have_key('network_interface')
         expect(config).to have_key('network_performance_config')
         expect(config).to have_key('params')
+        expect(config).to have_key('project')
         expect(config).to have_key('reservation_affinity')
+        expect(config).to have_key('resource_policies')
         expect(config).to have_key('scheduling')
         expect(config).to have_key('scratch_disk')
         expect(config).to have_key('service_account')
         expect(config).to have_key('shielded_instance_config')
+        expect(config).to have_key('tags')
+        expect(config).to have_key('zone')
       end
     end
 
@@ -137,7 +157,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
       it 'includes advanced_machine_features when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance_from_template('opt', required_attrs.merge(advanced_machine_features: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(advanced_machine_features: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
         expect(config).to have_key('advanced_machine_features')
@@ -150,6 +170,23 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
         expect(config).not_to have_key('advanced_machine_features')
+      end
+      it 'includes allow_stopping_for_update when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(allow_stopping_for_update: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('allow_stopping_for_update')
+      end
+
+      it 'omits allow_stopping_for_update when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('allow_stopping_for_update')
       end
       it 'includes attached_disk when provided' do
         synth = create_synthesizer
@@ -171,7 +208,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
       it 'includes boot_disk when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance_from_template('opt', required_attrs.merge(boot_disk: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(boot_disk: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
         expect(config).to have_key('boot_disk')
@@ -185,10 +222,27 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
         expect(config).not_to have_key('boot_disk')
       end
+      it 'includes can_ip_forward when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(can_ip_forward: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('can_ip_forward')
+      end
+
+      it 'omits can_ip_forward when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('can_ip_forward')
+      end
       it 'includes confidential_instance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance_from_template('opt', required_attrs.merge(confidential_instance_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(confidential_instance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
         expect(config).to have_key('confidential_instance_config')
@@ -201,6 +255,91 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
         expect(config).not_to have_key('confidential_instance_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes deletion_protection when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(deletion_protection: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('deletion_protection')
+      end
+
+      it 'omits deletion_protection when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('deletion_protection')
+      end
+      it 'includes description when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(description: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('description')
+      end
+
+      it 'omits description when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('description')
+      end
+      it 'includes desired_status when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(desired_status: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('desired_status')
+      end
+
+      it 'omits desired_status when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('desired_status')
+      end
+      it 'includes enable_display when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(enable_display: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('enable_display')
+      end
+
+      it 'omits enable_display when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('enable_display')
       end
       it 'includes guest_accelerator when provided' do
         synth = create_synthesizer
@@ -219,10 +358,27 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
         expect(config).not_to have_key('guest_accelerator')
       end
+      it 'includes hostname when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(hostname: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('hostname')
+      end
+
+      it 'omits hostname when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('hostname')
+      end
       it 'includes instance_encryption_key when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance_from_template('opt', required_attrs.merge(instance_encryption_key: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(instance_encryption_key: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
         expect(config).to have_key('instance_encryption_key')
@@ -235,6 +391,108 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
         expect(config).not_to have_key('instance_encryption_key')
+      end
+      it 'includes key_revocation_action_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(key_revocation_action_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('key_revocation_action_type')
+      end
+
+      it 'omits key_revocation_action_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('key_revocation_action_type')
+      end
+      it 'includes labels when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(labels: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('labels')
+      end
+
+      it 'omits labels when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('labels')
+      end
+      it 'includes machine_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(machine_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('machine_type')
+      end
+
+      it 'omits machine_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('machine_type')
+      end
+      it 'includes metadata when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(metadata: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('metadata')
+      end
+
+      it 'omits metadata when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('metadata')
+      end
+      it 'includes metadata_startup_script when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(metadata_startup_script: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('metadata_startup_script')
+      end
+
+      it 'omits metadata_startup_script when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('metadata_startup_script')
+      end
+      it 'includes min_cpu_platform when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(min_cpu_platform: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('min_cpu_platform')
+      end
+
+      it 'omits min_cpu_platform when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('min_cpu_platform')
       end
       it 'includes network_interface when provided' do
         synth = create_synthesizer
@@ -256,7 +514,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
       it 'includes network_performance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance_from_template('opt', required_attrs.merge(network_performance_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(network_performance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
         expect(config).to have_key('network_performance_config')
@@ -273,7 +531,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
       it 'includes params when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance_from_template('opt', required_attrs.merge(params: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
         expect(config).to have_key('params')
@@ -287,10 +545,27 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
         expect(config).not_to have_key('params')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes reservation_affinity when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance_from_template('opt', required_attrs.merge(reservation_affinity: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(reservation_affinity: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
         expect(config).to have_key('reservation_affinity')
@@ -304,10 +579,27 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
         expect(config).not_to have_key('reservation_affinity')
       end
+      it 'includes resource_policies when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(resource_policies: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('resource_policies')
+      end
+
+      it 'omits resource_policies when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('resource_policies')
+      end
       it 'includes scheduling when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance_from_template('opt', required_attrs.merge(scheduling: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(scheduling: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
         expect(config).to have_key('scheduling')
@@ -341,7 +633,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
       it 'includes service_account when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance_from_template('opt', required_attrs.merge(service_account: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(service_account: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
         expect(config).to have_key('service_account')
@@ -358,7 +650,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
       it 'includes shielded_instance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_instance_from_template('opt', required_attrs.merge(shielded_instance_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(shielded_instance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
         expect(config).to have_key('shielded_instance_config')
@@ -371,6 +663,87 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
         expect(config).not_to have_key('shielded_instance_config')
+      end
+      it 'includes tags when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(tags: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('tags')
+      end
+
+      it 'omits tags when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('tags')
+      end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_from_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_from_template', 'minimal')
+        expect(config).not_to have_key('zone')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts allow_stopping_for_update=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(allow_stopping_for_update: val)
+          synth.google_compute_instance_from_template("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_instance_from_template', "bool_#{val}")
+          expect(config['allow_stopping_for_update']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts can_ip_forward=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(can_ip_forward: val)
+          synth.google_compute_instance_from_template("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_instance_from_template', "bool_#{val}")
+          expect(config['can_ip_forward']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts deletion_protection=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(deletion_protection: val)
+          synth.google_compute_instance_from_template("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_instance_from_template', "bool_#{val}")
+          expect(config['deletion_protection']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts enable_display=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(enable_display: val)
+          synth.google_compute_instance_from_template("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_instance_from_template', "bool_#{val}")
+          expect(config['enable_display']).to eq(val)
+        end
       end
     end
 
@@ -417,8 +790,8 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceFromTemplate do
     resource_type: :google_compute_instance_from_template,
     method: :google_compute_instance_from_template,
     required_attrs: { name: 'test-value', source_instance_template: 'test-value' },
-    expected_outputs: [:id, :allow_stopping_for_update, :can_ip_forward, :cpu_platform, :creation_timestamp, :current_status, :deletion_protection, :description, :desired_status, :effective_labels, :enable_display, :hostname, :instance_id, :key_revocation_action_type, :label_fingerprint, :labels, :machine_type, :metadata, :metadata_fingerprint, :metadata_startup_script, :min_cpu_platform, :project, :resource_policies, :self_link, :tags, :tags_fingerprint, :terraform_labels, :zone],
+    expected_outputs: [:id, :allow_stopping_for_update, :can_ip_forward, :cpu_platform, :creation_timestamp, :current_status, :deletion_policy, :deletion_protection, :description, :desired_status, :effective_labels, :enable_display, :hostname, :instance_id, :key_revocation_action_type, :label_fingerprint, :labels, :machine_type, :metadata, :metadata_fingerprint, :metadata_startup_script, :min_cpu_platform, :project, :resource_policies, :self_link, :tags, :tags_fingerprint, :terraform_labels, :zone],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:allow_stopping_for_update, :can_ip_forward, :deletion_protection, :enable_display]
 end

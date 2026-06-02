@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingFolderBucketConfig do
         ref = synth.google_logging_folder_bucket_config('test', required_attrs)
 
         expect(ref.id).to eq("${google_logging_folder_bucket_config.test.id}")
+        expect(ref.deletion_policy).to eq("${google_logging_folder_bucket_config.test.deletion_policy}")
         expect(ref.description).to eq("${google_logging_folder_bucket_config.test.description}")
         expect(ref.lifecycle_state).to eq("${google_logging_folder_bucket_config.test.lifecycle_state}")
         expect(ref.name).to eq("${google_logging_folder_bucket_config.test.name}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingFolderBucketConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_logging_folder_bucket_config', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('description')
         expect(config).not_to have_key('lifecycle_state')
         expect(config).not_to have_key('name')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingFolderBucketConfig do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ cmek_settings: [{ 'key1' => 'val1' }], index_configs: [{ 'key1' => 'val1' }], retention_days: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ cmek_settings: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', index_configs: [{ 'key1' => 'val1' }], retention_days: 3.14 }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,6 +71,8 @@ RSpec.describe Pangea::Resources::GoogleLoggingFolderBucketConfig do
 
         config = validate_resource_structure(result, 'google_logging_folder_bucket_config', 'full')
         expect(config).to have_key('cmek_settings')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('description')
         expect(config).to have_key('index_configs')
         expect(config).to have_key('retention_days')
       end
@@ -78,7 +82,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingFolderBucketConfig do
       it 'includes cmek_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_logging_folder_bucket_config('opt', required_attrs.merge(cmek_settings: [{ 'key1' => 'val1' }]))
+        synth.google_logging_folder_bucket_config('opt', required_attrs.merge(cmek_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_logging_folder_bucket_config', 'opt')
         expect(config).to have_key('cmek_settings')
@@ -91,6 +95,40 @@ RSpec.describe Pangea::Resources::GoogleLoggingFolderBucketConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_logging_folder_bucket_config', 'minimal')
         expect(config).not_to have_key('cmek_settings')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_folder_bucket_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_folder_bucket_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_folder_bucket_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_folder_bucket_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes description when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_folder_bucket_config('opt', required_attrs.merge(description: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_folder_bucket_config', 'opt')
+        expect(config).to have_key('description')
+      end
+
+      it 'omits description when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_logging_folder_bucket_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_logging_folder_bucket_config', 'minimal')
+        expect(config).not_to have_key('description')
       end
       it 'includes index_configs when provided' do
         synth = create_synthesizer
@@ -172,7 +210,7 @@ RSpec.describe Pangea::Resources::GoogleLoggingFolderBucketConfig do
     resource_type: :google_logging_folder_bucket_config,
     method: :google_logging_folder_bucket_config,
     required_attrs: { bucket_id: 'test-value', folder: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :description, :lifecycle_state, :name],
+    expected_outputs: [:id, :deletion_policy, :description, :lifecycle_state, :name],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

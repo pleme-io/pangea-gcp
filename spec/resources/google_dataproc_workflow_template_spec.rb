@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleDataprocWorkflowTemplate do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { jobs: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', placement: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { jobs: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', placement: { 'key1' => 'val1' } } }
 
   describe ':google_dataproc_workflow_template' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocWorkflowTemplate do
 
         expect(ref.id).to eq("${google_dataproc_workflow_template.test.id}")
         expect(ref.create_time).to eq("${google_dataproc_workflow_template.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_dataproc_workflow_template.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_dataproc_workflow_template.test.effective_labels}")
         expect(ref.project).to eq("${google_dataproc_workflow_template.test.project}")
         expect(ref.terraform_labels).to eq("${google_dataproc_workflow_template.test.terraform_labels}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocWorkflowTemplate do
 
         config = validate_resource_structure(result, 'google_dataproc_workflow_template', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocWorkflowTemplate do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ dag_timeout: 'test-value', encryption_config: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, parameters: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ dag_timeout: 'test-value', deletion_policy: 'test-value', encryption_config: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, parameters: [{ 'key1' => 'val1' }], project: 'test-value', version: 3.14 }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -75,9 +77,12 @@ RSpec.describe Pangea::Resources::GoogleDataprocWorkflowTemplate do
 
         config = validate_resource_structure(result, 'google_dataproc_workflow_template', 'full')
         expect(config).to have_key('dag_timeout')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('encryption_config')
         expect(config).to have_key('labels')
         expect(config).to have_key('parameters')
+        expect(config).to have_key('project')
+        expect(config).to have_key('version')
       end
     end
 
@@ -99,10 +104,27 @@ RSpec.describe Pangea::Resources::GoogleDataprocWorkflowTemplate do
         config = validate_resource_structure(result, 'google_dataproc_workflow_template', 'minimal')
         expect(config).not_to have_key('dag_timeout')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_workflow_template('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_workflow_template', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_workflow_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_workflow_template', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes encryption_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_workflow_template('opt', required_attrs.merge(encryption_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_workflow_template('opt', required_attrs.merge(encryption_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_workflow_template', 'opt')
         expect(config).to have_key('encryption_config')
@@ -150,6 +172,40 @@ RSpec.describe Pangea::Resources::GoogleDataprocWorkflowTemplate do
         config = validate_resource_structure(result, 'google_dataproc_workflow_template', 'minimal')
         expect(config).not_to have_key('parameters')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_workflow_template('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_workflow_template', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_workflow_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_workflow_template', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_workflow_template('opt', required_attrs.merge(version: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_workflow_template', 'opt')
+        expect(config).to have_key('version')
+      end
+
+      it 'omits version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_workflow_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_workflow_template', 'minimal')
+        expect(config).not_to have_key('version')
+      end
     end
 
     context 'attribute types' do
@@ -163,7 +219,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocWorkflowTemplate do
         expect(config['jobs']).to be_a(Array)
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
-        expect(config['placement']).to be_a(Array)
+        expect(config['placement']).to be_a(Hash)
       end
     end
 
@@ -196,8 +252,8 @@ RSpec.describe Pangea::Resources::GoogleDataprocWorkflowTemplate do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_dataproc_workflow_template,
     method: :google_dataproc_workflow_template,
-    required_attrs: { jobs: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', placement: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :effective_labels, :project, :terraform_labels, :update_time, :version],
+    required_attrs: { jobs: [{ 'key1' => 'val1' }], location: 'test-value', name: 'test-value', placement: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :project, :terraform_labels, :update_time, :version],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

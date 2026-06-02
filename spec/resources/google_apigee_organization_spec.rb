@@ -41,6 +41,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeOrganization do
         expect(ref.apigee_project_id).to eq("${google_apigee_organization.test.apigee_project_id}")
         expect(ref.billing_type).to eq("${google_apigee_organization.test.billing_type}")
         expect(ref.ca_certificate).to eq("${google_apigee_organization.test.ca_certificate}")
+        expect(ref.deletion_policy).to eq("${google_apigee_organization.test.deletion_policy}")
         expect(ref.name).to eq("${google_apigee_organization.test.name}")
         expect(ref.subscription_type).to eq("${google_apigee_organization.test.subscription_type}")
       end
@@ -57,13 +58,14 @@ RSpec.describe Pangea::Resources::GoogleApigeeOrganization do
         expect(config).not_to have_key('apigee_project_id')
         expect(config).not_to have_key('billing_type')
         expect(config).not_to have_key('ca_certificate')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('subscription_type')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ analytics_region: 'test-value', api_consumer_data_encryption_key_name: 'test-value', api_consumer_data_location: 'test-value', authorized_network: 'test-value', control_plane_encryption_key_name: 'test-value', description: 'test-value', disable_vpc_peering: true, display_name: 'test-value', properties: [{ 'key1' => 'val1' }], retention: 'test-value', runtime_database_encryption_key_name: 'test-value', runtime_type: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ analytics_region: 'test-value', api_consumer_data_encryption_key_name: 'test-value', api_consumer_data_location: 'test-value', authorized_network: 'test-value', billing_type: 'test-value', control_plane_encryption_key_name: 'test-value', deletion_policy: 'test-value', description: 'test-value', disable_vpc_peering: true, display_name: 'test-value', properties: { 'key1' => 'val1' }, retention: 'test-value', runtime_database_encryption_key_name: 'test-value', runtime_type: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,7 +78,9 @@ RSpec.describe Pangea::Resources::GoogleApigeeOrganization do
         expect(config).to have_key('api_consumer_data_encryption_key_name')
         expect(config).to have_key('api_consumer_data_location')
         expect(config).to have_key('authorized_network')
+        expect(config).to have_key('billing_type')
         expect(config).to have_key('control_plane_encryption_key_name')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('disable_vpc_peering')
         expect(config).to have_key('display_name')
@@ -156,6 +160,23 @@ RSpec.describe Pangea::Resources::GoogleApigeeOrganization do
         config = validate_resource_structure(result, 'google_apigee_organization', 'minimal')
         expect(config).not_to have_key('authorized_network')
       end
+      it 'includes billing_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_organization('opt', required_attrs.merge(billing_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_organization', 'opt')
+        expect(config).to have_key('billing_type')
+      end
+
+      it 'omits billing_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_organization('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_organization', 'minimal')
+        expect(config).not_to have_key('billing_type')
+      end
       it 'includes control_plane_encryption_key_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -172,6 +193,23 @@ RSpec.describe Pangea::Resources::GoogleApigeeOrganization do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_organization', 'minimal')
         expect(config).not_to have_key('control_plane_encryption_key_name')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_organization('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_organization', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_organization('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_organization', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -227,7 +265,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeOrganization do
       it 'includes properties when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_organization('opt', required_attrs.merge(properties: [{ 'key1' => 'val1' }]))
+        synth.google_apigee_organization('opt', required_attrs.merge(properties: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_organization', 'opt')
         expect(config).to have_key('properties')
@@ -350,7 +388,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeOrganization do
     resource_type: :google_apigee_organization,
     method: :google_apigee_organization,
     required_attrs: { project_id: 'test-value' },
-    expected_outputs: [:id, :apigee_project_id, :billing_type, :ca_certificate, :name, :subscription_type],
+    expected_outputs: [:id, :apigee_project_id, :billing_type, :ca_certificate, :deletion_policy, :name, :subscription_type],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disable_vpc_peering]

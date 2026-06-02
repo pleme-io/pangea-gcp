@@ -38,7 +38,9 @@ RSpec.describe Pangea::Resources::GoogleCloudTasksQueue do
         ref = synth.google_cloud_tasks_queue('test', required_attrs)
 
         expect(ref.id).to eq("${google_cloud_tasks_queue.test.id}")
+        expect(ref.deletion_policy).to eq("${google_cloud_tasks_queue.test.deletion_policy}")
         expect(ref.project).to eq("${google_cloud_tasks_queue.test.project}")
+        expect(ref.state).to eq("${google_cloud_tasks_queue.test.state}")
       end
     end
 
@@ -50,12 +52,14 @@ RSpec.describe Pangea::Resources::GoogleCloudTasksQueue do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
+        expect(config).not_to have_key('state')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ app_engine_routing_override: [{ 'key1' => 'val1' }], http_target: [{ 'key1' => 'val1' }], rate_limits: [{ 'key1' => 'val1' }], retry_config: [{ 'key1' => 'val1' }], stackdriver_logging_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ app_engine_routing_override: { 'key1' => 'val1' }, deletion_policy: 'test-value', desired_state: 'test-value', http_target: { 'key1' => 'val1' }, project: 'test-value', rate_limits: { 'key1' => 'val1' }, retry_config: { 'key1' => 'val1' }, stackdriver_logging_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -65,7 +69,10 @@ RSpec.describe Pangea::Resources::GoogleCloudTasksQueue do
 
         config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'full')
         expect(config).to have_key('app_engine_routing_override')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('desired_state')
         expect(config).to have_key('http_target')
+        expect(config).to have_key('project')
         expect(config).to have_key('rate_limits')
         expect(config).to have_key('retry_config')
         expect(config).to have_key('stackdriver_logging_config')
@@ -76,7 +83,7 @@ RSpec.describe Pangea::Resources::GoogleCloudTasksQueue do
       it 'includes app_engine_routing_override when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_tasks_queue('opt', required_attrs.merge(app_engine_routing_override: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_tasks_queue('opt', required_attrs.merge(app_engine_routing_override: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'opt')
         expect(config).to have_key('app_engine_routing_override')
@@ -90,10 +97,44 @@ RSpec.describe Pangea::Resources::GoogleCloudTasksQueue do
         config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'minimal')
         expect(config).not_to have_key('app_engine_routing_override')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_tasks_queue('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_tasks_queue('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes desired_state when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_tasks_queue('opt', required_attrs.merge(desired_state: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'opt')
+        expect(config).to have_key('desired_state')
+      end
+
+      it 'omits desired_state when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_tasks_queue('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'minimal')
+        expect(config).not_to have_key('desired_state')
+      end
       it 'includes http_target when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_tasks_queue('opt', required_attrs.merge(http_target: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_tasks_queue('opt', required_attrs.merge(http_target: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'opt')
         expect(config).to have_key('http_target')
@@ -107,10 +148,27 @@ RSpec.describe Pangea::Resources::GoogleCloudTasksQueue do
         config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'minimal')
         expect(config).not_to have_key('http_target')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_tasks_queue('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_tasks_queue('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes rate_limits when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_tasks_queue('opt', required_attrs.merge(rate_limits: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_tasks_queue('opt', required_attrs.merge(rate_limits: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'opt')
         expect(config).to have_key('rate_limits')
@@ -127,7 +185,7 @@ RSpec.describe Pangea::Resources::GoogleCloudTasksQueue do
       it 'includes retry_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_tasks_queue('opt', required_attrs.merge(retry_config: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_tasks_queue('opt', required_attrs.merge(retry_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'opt')
         expect(config).to have_key('retry_config')
@@ -144,7 +202,7 @@ RSpec.describe Pangea::Resources::GoogleCloudTasksQueue do
       it 'includes stackdriver_logging_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_tasks_queue('opt', required_attrs.merge(stackdriver_logging_config: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_tasks_queue('opt', required_attrs.merge(stackdriver_logging_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_tasks_queue', 'opt')
         expect(config).to have_key('stackdriver_logging_config')
@@ -203,7 +261,7 @@ RSpec.describe Pangea::Resources::GoogleCloudTasksQueue do
     resource_type: :google_cloud_tasks_queue,
     method: :google_cloud_tasks_queue,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

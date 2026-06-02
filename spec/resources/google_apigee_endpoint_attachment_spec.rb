@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeEndpointAttachment do
 
         expect(ref.id).to eq("${google_apigee_endpoint_attachment.test.id}")
         expect(ref.connection_state).to eq("${google_apigee_endpoint_attachment.test.connection_state}")
+        expect(ref.deletion_policy).to eq("${google_apigee_endpoint_attachment.test.deletion_policy}")
         expect(ref.host).to eq("${google_apigee_endpoint_attachment.test.host}")
         expect(ref.name).to eq("${google_apigee_endpoint_attachment.test.name}")
       end
@@ -53,8 +54,43 @@ RSpec.describe Pangea::Resources::GoogleApigeeEndpointAttachment do
 
         config = validate_resource_structure(result, 'google_apigee_endpoint_attachment', 'test')
         expect(config).not_to have_key('connection_state')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('host')
         expect(config).not_to have_key('name')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_endpoint_attachment('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_apigee_endpoint_attachment', 'full')
+        expect(config).to have_key('deletion_policy')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_endpoint_attachment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_endpoint_attachment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_endpoint_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_endpoint_attachment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -103,7 +139,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeEndpointAttachment do
     resource_type: :google_apigee_endpoint_attachment,
     method: :google_apigee_endpoint_attachment,
     required_attrs: { endpoint_attachment_id: 'test-value', location: 'test-value', org_id: 'test-value', service_attachment: 'test-value' },
-    expected_outputs: [:id, :connection_state, :host, :name],
+    expected_outputs: [:id, :connection_state, :deletion_policy, :host, :name],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

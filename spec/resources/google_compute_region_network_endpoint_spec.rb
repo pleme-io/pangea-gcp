@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpoint do
         ref = synth.google_compute_region_network_endpoint('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_region_network_endpoint.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_region_network_endpoint.test.deletion_policy}")
         expect(ref.network_endpoint_id).to eq("${google_compute_region_network_endpoint.test.network_endpoint_id}")
         expect(ref.project).to eq("${google_compute_region_network_endpoint.test.project}")
         expect(ref.region).to eq("${google_compute_region_network_endpoint.test.region}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpoint do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_region_network_endpoint', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('network_endpoint_id')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('region')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpoint do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ fqdn: 'test-value', ip_address: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ client_destination_port: 3.14, deletion_policy: 'test-value', fqdn: 'test-value', instance: 'test-value', ip_address: 'test-value', project: 'test-value', region: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,12 +70,51 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpoint do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_region_network_endpoint', 'full')
+        expect(config).to have_key('client_destination_port')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('fqdn')
+        expect(config).to have_key('instance')
         expect(config).to have_key('ip_address')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
       end
     end
 
     context 'optional attributes' do
+      it 'includes client_destination_port when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_endpoint('opt', required_attrs.merge(client_destination_port: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_endpoint', 'opt')
+        expect(config).to have_key('client_destination_port')
+      end
+
+      it 'omits client_destination_port when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_endpoint', 'minimal')
+        expect(config).not_to have_key('client_destination_port')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_endpoint('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_endpoint', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_endpoint', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes fqdn when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -91,6 +132,23 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpoint do
         config = validate_resource_structure(result, 'google_compute_region_network_endpoint', 'minimal')
         expect(config).not_to have_key('fqdn')
       end
+      it 'includes instance when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_endpoint('opt', required_attrs.merge(instance: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_endpoint', 'opt')
+        expect(config).to have_key('instance')
+      end
+
+      it 'omits instance when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_endpoint', 'minimal')
+        expect(config).not_to have_key('instance')
+      end
       it 'includes ip_address when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -107,6 +165,40 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpoint do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_network_endpoint', 'minimal')
         expect(config).not_to have_key('ip_address')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_endpoint('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_endpoint', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_endpoint', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_endpoint('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_endpoint', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_endpoint', 'minimal')
+        expect(config).not_to have_key('region')
       end
     end
 
@@ -153,7 +245,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkEndpoint do
     resource_type: :google_compute_region_network_endpoint,
     method: :google_compute_region_network_endpoint,
     required_attrs: { port: 3.14, region_network_endpoint_group: 'test-value' },
-    expected_outputs: [:id, :network_endpoint_id, :project, :region],
+    expected_outputs: [:id, :deletion_policy, :network_endpoint_id, :project, :region],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

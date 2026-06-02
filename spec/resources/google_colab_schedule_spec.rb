@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleColabSchedule do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { create_notebook_execution_job_request: [{ 'key1' => 'val1' }], cron: 'test-value', display_name: 'test-value', location: 'test-value', max_concurrent_run_count: 'test-value' } }
+  let(:required_attrs) { { create_notebook_execution_job_request: { 'key1' => 'val1' }, cron: 'test-value', display_name: 'test-value', location: 'test-value', max_concurrent_run_count: 'test-value' } }
 
   describe ':google_colab_schedule' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleColabSchedule do
         ref = synth.google_colab_schedule('test', required_attrs)
 
         expect(ref.id).to eq("${google_colab_schedule.test.id}")
+        expect(ref.deletion_policy).to eq("${google_colab_schedule.test.deletion_policy}")
         expect(ref.name).to eq("${google_colab_schedule.test.name}")
         expect(ref.project).to eq("${google_colab_schedule.test.project}")
         expect(ref.start_time).to eq("${google_colab_schedule.test.start_time}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleColabSchedule do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_colab_schedule', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('start_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleColabSchedule do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ allow_queueing: true, desired_state: 'test-value', end_time: 'test-value', max_run_count: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ allow_queueing: true, deletion_policy: 'test-value', desired_state: 'test-value', end_time: 'test-value', max_run_count: 'test-value', project: 'test-value', start_time: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,9 +73,12 @@ RSpec.describe Pangea::Resources::GoogleColabSchedule do
 
         config = validate_resource_structure(result, 'google_colab_schedule', 'full')
         expect(config).to have_key('allow_queueing')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('desired_state')
         expect(config).to have_key('end_time')
         expect(config).to have_key('max_run_count')
+        expect(config).to have_key('project')
+        expect(config).to have_key('start_time')
       end
     end
 
@@ -94,6 +99,23 @@ RSpec.describe Pangea::Resources::GoogleColabSchedule do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_schedule', 'minimal')
         expect(config).not_to have_key('allow_queueing')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_schedule('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_schedule', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_schedule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_schedule', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes desired_state when provided' do
         synth = create_synthesizer
@@ -146,6 +168,40 @@ RSpec.describe Pangea::Resources::GoogleColabSchedule do
         config = validate_resource_structure(result, 'google_colab_schedule', 'minimal')
         expect(config).not_to have_key('max_run_count')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_schedule('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_schedule', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_schedule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_schedule', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes start_time when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_schedule('opt', required_attrs.merge(start_time: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_schedule', 'opt')
+        expect(config).to have_key('start_time')
+      end
+
+      it 'omits start_time when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_schedule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_schedule', 'minimal')
+        expect(config).not_to have_key('start_time')
+      end
     end
 
     context 'boolean fields' do
@@ -170,7 +226,7 @@ RSpec.describe Pangea::Resources::GoogleColabSchedule do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_colab_schedule', 'typed')
-        expect(config['create_notebook_execution_job_request']).to be_a(Array)
+        expect(config['create_notebook_execution_job_request']).to be_a(Hash)
         expect(config['cron']).to be_a(String)
         expect(config['display_name']).to be_a(String)
         expect(config['location']).to be_a(String)
@@ -207,8 +263,8 @@ RSpec.describe Pangea::Resources::GoogleColabSchedule do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_colab_schedule,
     method: :google_colab_schedule,
-    required_attrs: { create_notebook_execution_job_request: [{ 'key1' => 'val1' }], cron: 'test-value', display_name: 'test-value', location: 'test-value', max_concurrent_run_count: 'test-value' },
-    expected_outputs: [:id, :name, :project, :start_time, :state],
+    required_attrs: { create_notebook_execution_job_request: { 'key1' => 'val1' }, cron: 'test-value', display_name: 'test-value', location: 'test-value', max_concurrent_run_count: 'test-value' },
+    expected_outputs: [:id, :deletion_policy, :name, :project, :start_time, :state],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:allow_queueing]

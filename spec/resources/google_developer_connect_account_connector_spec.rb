@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectAccountConnector do
 
         expect(ref.id).to eq("${google_developer_connect_account_connector.test.id}")
         expect(ref.create_time).to eq("${google_developer_connect_account_connector.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_developer_connect_account_connector.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_developer_connect_account_connector.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_developer_connect_account_connector.test.effective_labels}")
         expect(ref.name).to eq("${google_developer_connect_account_connector.test.name}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectAccountConnector do
 
         config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
@@ -69,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectAccountConnector do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, provider_oauth_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, custom_oauth_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', etag: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', provider_oauth_config: { 'key1' => 'val1' }, proxy_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -79,8 +81,13 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectAccountConnector do
 
         config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'full')
         expect(config).to have_key('annotations')
+        expect(config).to have_key('custom_oauth_config')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('etag')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('provider_oauth_config')
+        expect(config).to have_key('proxy_config')
       end
     end
 
@@ -102,6 +109,57 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectAccountConnector do
         config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'minimal')
         expect(config).not_to have_key('annotations')
       end
+      it 'includes custom_oauth_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_account_connector('opt', required_attrs.merge(custom_oauth_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'opt')
+        expect(config).to have_key('custom_oauth_config')
+      end
+
+      it 'omits custom_oauth_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_account_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'minimal')
+        expect(config).not_to have_key('custom_oauth_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_account_connector('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_account_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes etag when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_account_connector('opt', required_attrs.merge(etag: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'opt')
+        expect(config).to have_key('etag')
+      end
+
+      it 'omits etag when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_account_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'minimal')
+        expect(config).not_to have_key('etag')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -119,10 +177,27 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectAccountConnector do
         config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_account_connector('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_account_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes provider_oauth_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_developer_connect_account_connector('opt', required_attrs.merge(provider_oauth_config: [{ 'key1' => 'val1' }]))
+        synth.google_developer_connect_account_connector('opt', required_attrs.merge(provider_oauth_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'opt')
         expect(config).to have_key('provider_oauth_config')
@@ -135,6 +210,23 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectAccountConnector do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'minimal')
         expect(config).not_to have_key('provider_oauth_config')
+      end
+      it 'includes proxy_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_account_connector('opt', required_attrs.merge(proxy_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'opt')
+        expect(config).to have_key('proxy_config')
+      end
+
+      it 'omits proxy_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_account_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_account_connector', 'minimal')
+        expect(config).not_to have_key('proxy_config')
       end
     end
 
@@ -181,7 +273,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectAccountConnector do
     resource_type: :google_developer_connect_account_connector,
     method: :google_developer_connect_account_connector,
     required_attrs: { account_connector_id: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_annotations, :effective_labels, :name, :oauth_start_uri, :project, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_annotations, :effective_labels, :name, :oauth_start_uri, :project, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

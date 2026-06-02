@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexAspectType do
 
         expect(ref.id).to eq("${google_dataplex_aspect_type.test.id}")
         expect(ref.create_time).to eq("${google_dataplex_aspect_type.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_dataplex_aspect_type.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_dataplex_aspect_type.test.effective_labels}")
         expect(ref.name).to eq("${google_dataplex_aspect_type.test.name}")
         expect(ref.project).to eq("${google_dataplex_aspect_type.test.project}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexAspectType do
 
         config = validate_resource_structure(result, 'google_dataplex_aspect_type', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -69,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexAspectType do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ aspect_type_id: 'test-value', description: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', metadata_template: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ aspect_type_id: 'test-value', data_classification: 'test-value', deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', metadata_template: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -79,11 +81,14 @@ RSpec.describe Pangea::Resources::GoogleDataplexAspectType do
 
         config = validate_resource_structure(result, 'google_dataplex_aspect_type', 'full')
         expect(config).to have_key('aspect_type_id')
+        expect(config).to have_key('data_classification')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
         expect(config).to have_key('metadata_template')
+        expect(config).to have_key('project')
       end
     end
 
@@ -104,6 +109,40 @@ RSpec.describe Pangea::Resources::GoogleDataplexAspectType do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataplex_aspect_type', 'minimal')
         expect(config).not_to have_key('aspect_type_id')
+      end
+      it 'includes data_classification when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_aspect_type('opt', required_attrs.merge(data_classification: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_aspect_type', 'opt')
+        expect(config).to have_key('data_classification')
+      end
+
+      it 'omits data_classification when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_aspect_type('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_aspect_type', 'minimal')
+        expect(config).not_to have_key('data_classification')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_aspect_type('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_aspect_type', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_aspect_type('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_aspect_type', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -190,6 +229,23 @@ RSpec.describe Pangea::Resources::GoogleDataplexAspectType do
         config = validate_resource_structure(result, 'google_dataplex_aspect_type', 'minimal')
         expect(config).not_to have_key('metadata_template')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_aspect_type('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_aspect_type', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_aspect_type('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_aspect_type', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -233,7 +289,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexAspectType do
     resource_type: :google_dataplex_aspect_type,
     method: :google_dataplex_aspect_type,
     required_attrs: {},
-    expected_outputs: [:id, :create_time, :effective_labels, :name, :project, :terraform_labels, :transfer_status, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :name, :project, :terraform_labels, :transfer_status, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

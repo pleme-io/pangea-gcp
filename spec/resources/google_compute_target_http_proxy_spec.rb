@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetHttpProxy do
 
         expect(ref.id).to eq("${google_compute_target_http_proxy.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_target_http_proxy.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_target_http_proxy.test.deletion_policy}")
         expect(ref.fingerprint).to eq("${google_compute_target_http_proxy.test.fingerprint}")
         expect(ref.project).to eq("${google_compute_target_http_proxy.test.project}")
         expect(ref.proxy_bind).to eq("${google_compute_target_http_proxy.test.proxy_bind}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetHttpProxy do
 
         config = validate_resource_structure(result, 'google_compute_target_http_proxy', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('fingerprint')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('proxy_bind')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetHttpProxy do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', http_keep_alive_timeout_sec: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', http_keep_alive_timeout_sec: 3.14, project: 'test-value', proxy_bind: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,12 +76,32 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetHttpProxy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_target_http_proxy', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('http_keep_alive_timeout_sec')
+        expect(config).to have_key('project')
+        expect(config).to have_key('proxy_bind')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_http_proxy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_http_proxy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_http_proxy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_http_proxy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -113,6 +135,54 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetHttpProxy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_target_http_proxy', 'minimal')
         expect(config).not_to have_key('http_keep_alive_timeout_sec')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_http_proxy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_http_proxy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_http_proxy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_http_proxy', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes proxy_bind when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_http_proxy('opt', required_attrs.merge(proxy_bind: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_http_proxy', 'opt')
+        expect(config).to have_key('proxy_bind')
+      end
+
+      it 'omits proxy_bind when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_http_proxy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_http_proxy', 'minimal')
+        expect(config).not_to have_key('proxy_bind')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts proxy_bind=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(proxy_bind: val)
+          synth.google_compute_target_http_proxy("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_target_http_proxy', "bool_#{val}")
+          expect(config['proxy_bind']).to eq(val)
+        end
       end
     end
 
@@ -159,8 +229,8 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetHttpProxy do
     resource_type: :google_compute_target_http_proxy,
     method: :google_compute_target_http_proxy,
     required_attrs: { name: 'test-value', url_map: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :fingerprint, :project, :proxy_bind, :proxy_id, :self_link],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :fingerprint, :project, :proxy_bind, :proxy_id, :self_link],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:proxy_bind]
 end

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecuritySecurityProfileGroup do
 
         expect(ref.id).to eq("${google_network_security_security_profile_group.test.id}")
         expect(ref.create_time).to eq("${google_network_security_security_profile_group.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_security_security_profile_group.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_network_security_security_profile_group.test.effective_labels}")
         expect(ref.etag).to eq("${google_network_security_security_profile_group.test.etag}")
         expect(ref.terraform_labels).to eq("${google_network_security_security_profile_group.test.terraform_labels}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecuritySecurityProfileGroup do
 
         config = validate_resource_structure(result, 'google_network_security_security_profile_group', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('terraform_labels')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecuritySecurityProfileGroup do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ custom_intercept_profile: 'test-value', custom_mirroring_profile: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', parent: 'test-value', threat_prevention_profile: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ custom_intercept_profile: 'test-value', custom_mirroring_profile: 'test-value', deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', parent: 'test-value', threat_prevention_profile: 'test-value', url_filtering_profile: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,11 +76,13 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecuritySecurityProfileGroup do
         config = validate_resource_structure(result, 'google_network_security_security_profile_group', 'full')
         expect(config).to have_key('custom_intercept_profile')
         expect(config).to have_key('custom_mirroring_profile')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
         expect(config).to have_key('parent')
         expect(config).to have_key('threat_prevention_profile')
+        expect(config).to have_key('url_filtering_profile')
       end
     end
 
@@ -116,6 +120,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecuritySecurityProfileGroup do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_security_security_profile_group', 'minimal')
         expect(config).not_to have_key('custom_mirroring_profile')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_security_profile_group('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_security_profile_group', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_security_profile_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_security_profile_group', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -202,6 +223,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecuritySecurityProfileGroup do
         config = validate_resource_structure(result, 'google_network_security_security_profile_group', 'minimal')
         expect(config).not_to have_key('threat_prevention_profile')
       end
+      it 'includes url_filtering_profile when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_security_profile_group('opt', required_attrs.merge(url_filtering_profile: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_security_profile_group', 'opt')
+        expect(config).to have_key('url_filtering_profile')
+      end
+
+      it 'omits url_filtering_profile when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_security_security_profile_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_security_security_profile_group', 'minimal')
+        expect(config).not_to have_key('url_filtering_profile')
+      end
     end
 
     context 'attribute types' do
@@ -246,7 +284,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkSecuritySecurityProfileGroup do
     resource_type: :google_network_security_security_profile_group,
     method: :google_network_security_security_profile_group,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :etag, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :etag, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

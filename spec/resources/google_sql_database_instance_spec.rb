@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabaseInstance do
         expect(ref.id).to eq("${google_sql_database_instance.test.id}")
         expect(ref.available_maintenance_versions).to eq("${google_sql_database_instance.test.available_maintenance_versions}")
         expect(ref.connection_name).to eq("${google_sql_database_instance.test.connection_name}")
+        expect(ref.deletion_policy).to eq("${google_sql_database_instance.test.deletion_policy}")
         expect(ref.dns_name).to eq("${google_sql_database_instance.test.dns_name}")
         expect(ref.dns_names).to eq("${google_sql_database_instance.test.dns_names}")
         expect(ref.encryption_key_name).to eq("${google_sql_database_instance.test.encryption_key_name}")
@@ -72,6 +73,7 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabaseInstance do
         config = validate_resource_structure(result, 'google_sql_database_instance', 'test')
         expect(config).not_to have_key('available_maintenance_versions')
         expect(config).not_to have_key('connection_name')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('dns_name')
         expect(config).not_to have_key('dns_names')
         expect(config).not_to have_key('encryption_key_name')
@@ -95,7 +97,7 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabaseInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ clone: [{ 'key1' => 'val1' }], deletion_protection: true, replica_configuration: [{ 'key1' => 'val1' }], replication_cluster: [{ 'key1' => 'val1' }], restore_backup_context: [{ 'key1' => 'val1' }], root_password: 'test-value', settings: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ backupdr_backup: 'test-value', clone: { 'key1' => 'val1' }, deletion_policy: 'test-value', deletion_protection: true, encryption_key_name: 'test-value', final_backup_description: 'test-value', instance_type: 'test-value', maintenance_version: 'test-value', master_instance_name: 'test-value', name: 'test-value', node_count: 3.14, point_in_time_restore_context: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value', replica_configuration: { 'key1' => 'val1' }, replica_names: ['test-value'], replication_cluster: { 'key1' => 'val1' }, restore_backup_context: { 'key1' => 'val1' }, root_password: 'test-value', root_password_wo: 'test-value', root_password_wo_version: 'test-value', settings: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -104,21 +106,53 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabaseInstance do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_sql_database_instance', 'full')
+        expect(config).to have_key('backupdr_backup')
         expect(config).to have_key('clone')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
+        expect(config).to have_key('encryption_key_name')
+        expect(config).to have_key('final_backup_description')
+        expect(config).to have_key('instance_type')
+        expect(config).to have_key('maintenance_version')
+        expect(config).to have_key('master_instance_name')
+        expect(config).to have_key('name')
+        expect(config).to have_key('node_count')
+        expect(config).to have_key('point_in_time_restore_context')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('replica_configuration')
+        expect(config).to have_key('replica_names')
         expect(config).to have_key('replication_cluster')
         expect(config).to have_key('restore_backup_context')
         expect(config).to have_key('root_password')
+        expect(config).to have_key('root_password_wo')
+        expect(config).to have_key('root_password_wo_version')
         expect(config).to have_key('settings')
       end
     end
 
     context 'optional attributes' do
+      it 'includes backupdr_backup when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(backupdr_backup: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('backupdr_backup')
+      end
+
+      it 'omits backupdr_backup when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('backupdr_backup')
+      end
       it 'includes clone when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_sql_database_instance('opt', required_attrs.merge(clone: [{ 'key1' => 'val1' }]))
+        synth.google_sql_database_instance('opt', required_attrs.merge(clone: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
         expect(config).to have_key('clone')
@@ -131,6 +165,23 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabaseInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
         expect(config).not_to have_key('clone')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
@@ -149,10 +200,180 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabaseInstance do
         config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
         expect(config).not_to have_key('deletion_protection')
       end
+      it 'includes encryption_key_name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(encryption_key_name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('encryption_key_name')
+      end
+
+      it 'omits encryption_key_name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('encryption_key_name')
+      end
+      it 'includes final_backup_description when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(final_backup_description: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('final_backup_description')
+      end
+
+      it 'omits final_backup_description when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('final_backup_description')
+      end
+      it 'includes instance_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(instance_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('instance_type')
+      end
+
+      it 'omits instance_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('instance_type')
+      end
+      it 'includes maintenance_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(maintenance_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('maintenance_version')
+      end
+
+      it 'omits maintenance_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('maintenance_version')
+      end
+      it 'includes master_instance_name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(master_instance_name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('master_instance_name')
+      end
+
+      it 'omits master_instance_name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('master_instance_name')
+      end
+      it 'includes name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('name')
+      end
+
+      it 'omits name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('name')
+      end
+      it 'includes node_count when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(node_count: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('node_count')
+      end
+
+      it 'omits node_count when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('node_count')
+      end
+      it 'includes point_in_time_restore_context when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(point_in_time_restore_context: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('point_in_time_restore_context')
+      end
+
+      it 'omits point_in_time_restore_context when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('point_in_time_restore_context')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('region')
+      end
       it 'includes replica_configuration when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_sql_database_instance('opt', required_attrs.merge(replica_configuration: [{ 'key1' => 'val1' }]))
+        synth.google_sql_database_instance('opt', required_attrs.merge(replica_configuration: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
         expect(config).to have_key('replica_configuration')
@@ -166,10 +387,27 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabaseInstance do
         config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
         expect(config).not_to have_key('replica_configuration')
       end
+      it 'includes replica_names when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(replica_names: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('replica_names')
+      end
+
+      it 'omits replica_names when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('replica_names')
+      end
       it 'includes replication_cluster when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_sql_database_instance('opt', required_attrs.merge(replication_cluster: [{ 'key1' => 'val1' }]))
+        synth.google_sql_database_instance('opt', required_attrs.merge(replication_cluster: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
         expect(config).to have_key('replication_cluster')
@@ -186,7 +424,7 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabaseInstance do
       it 'includes restore_backup_context when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_sql_database_instance('opt', required_attrs.merge(restore_backup_context: [{ 'key1' => 'val1' }]))
+        synth.google_sql_database_instance('opt', required_attrs.merge(restore_backup_context: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
         expect(config).to have_key('restore_backup_context')
@@ -217,10 +455,44 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabaseInstance do
         config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
         expect(config).not_to have_key('root_password')
       end
+      it 'includes root_password_wo when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(root_password_wo: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('root_password_wo')
+      end
+
+      it 'omits root_password_wo when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('root_password_wo')
+      end
+      it 'includes root_password_wo_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('opt', required_attrs.merge(root_password_wo_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
+        expect(config).to have_key('root_password_wo_version')
+      end
+
+      it 'omits root_password_wo_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_sql_database_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_sql_database_instance', 'minimal')
+        expect(config).not_to have_key('root_password_wo_version')
+      end
       it 'includes settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_sql_database_instance('opt', required_attrs.merge(settings: [{ 'key1' => 'val1' }]))
+        synth.google_sql_database_instance('opt', required_attrs.merge(settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_sql_database_instance', 'opt')
         expect(config).to have_key('settings')
@@ -300,7 +572,7 @@ RSpec.describe Pangea::Resources::GoogleSqlDatabaseInstance do
     resource_type: :google_sql_database_instance,
     method: :google_sql_database_instance,
     required_attrs: { database_version: 'test-value' },
-    expected_outputs: [:id, :available_maintenance_versions, :connection_name, :dns_name, :dns_names, :encryption_key_name, :first_ip_address, :instance_type, :ip_address, :maintenance_version, :master_instance_name, :name, :node_count, :private_ip_address, :project, :psc_service_attachment_link, :public_ip_address, :region, :replica_names, :self_link, :server_ca_cert, :service_account_email_address],
+    expected_outputs: [:id, :available_maintenance_versions, :connection_name, :deletion_policy, :dns_name, :dns_names, :encryption_key_name, :first_ip_address, :instance_type, :ip_address, :maintenance_version, :master_instance_name, :name, :node_count, :private_ip_address, :project, :psc_service_attachment_link, :public_ip_address, :region, :replica_names, :self_link, :server_ca_cert, :service_account_email_address],
     sensitive_fields: [:root_password, :server_ca_cert],
     immutable_fields: [],
     boolean_fields: [:deletion_protection]

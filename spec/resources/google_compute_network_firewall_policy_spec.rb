@@ -39,8 +39,10 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkFirewallPolicy do
 
         expect(ref.id).to eq("${google_compute_network_firewall_policy.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_network_firewall_policy.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_network_firewall_policy.test.deletion_policy}")
         expect(ref.fingerprint).to eq("${google_compute_network_firewall_policy.test.fingerprint}")
         expect(ref.network_firewall_policy_id).to eq("${google_compute_network_firewall_policy.test.network_firewall_policy_id}")
+        expect(ref.policy_type).to eq("${google_compute_network_firewall_policy.test.policy_type}")
         expect(ref.project).to eq("${google_compute_network_firewall_policy.test.project}")
         expect(ref.rule_tuple_count).to eq("${google_compute_network_firewall_policy.test.rule_tuple_count}")
         expect(ref.self_link).to eq("${google_compute_network_firewall_policy.test.self_link}")
@@ -57,8 +59,10 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkFirewallPolicy do
 
         config = validate_resource_structure(result, 'google_compute_network_firewall_policy', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('fingerprint')
         expect(config).not_to have_key('network_firewall_policy_id')
+        expect(config).not_to have_key('policy_type')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('rule_tuple_count')
         expect(config).not_to have_key('self_link')
@@ -67,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkFirewallPolicy do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', policy_type: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,11 +80,31 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkFirewallPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_network_firewall_policy', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('policy_type')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_firewall_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_firewall_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_firewall_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_firewall_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -97,6 +121,40 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkFirewallPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_network_firewall_policy', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes policy_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_firewall_policy('opt', required_attrs.merge(policy_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_firewall_policy', 'opt')
+        expect(config).to have_key('policy_type')
+      end
+
+      it 'omits policy_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_firewall_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_firewall_policy', 'minimal')
+        expect(config).not_to have_key('policy_type')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_firewall_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_firewall_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_firewall_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_firewall_policy', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -142,7 +200,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkFirewallPolicy do
     resource_type: :google_compute_network_firewall_policy,
     method: :google_compute_network_firewall_policy,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :fingerprint, :network_firewall_policy_id, :project, :rule_tuple_count, :self_link, :self_link_with_id],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :fingerprint, :network_firewall_policy_id, :policy_type, :project, :rule_tuple_count, :self_link, :self_link_with_id],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

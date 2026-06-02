@@ -38,11 +38,24 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevels do
         ref = synth.google_access_context_manager_access_levels('test', required_attrs)
 
         expect(ref.id).to eq("${google_access_context_manager_access_levels.test.id}")
+        expect(ref.deletion_policy).to eq("${google_access_context_manager_access_levels.test.deletion_policy}")
+      end
+    end
+
+    context 'computed-only attributes' do
+      it 'excludes computed-only attributes from the resource block' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_access_levels('test', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_access_context_manager_access_levels', 'test')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ access_levels: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ access_levels: [{ 'key1' => 'val1' }], deletion_policy: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -52,6 +65,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevels do
 
         config = validate_resource_structure(result, 'google_access_context_manager_access_levels', 'full')
         expect(config).to have_key('access_levels')
+        expect(config).to have_key('deletion_policy')
       end
     end
 
@@ -72,6 +86,23 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevels do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_access_context_manager_access_levels', 'minimal')
         expect(config).not_to have_key('access_levels')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_access_levels('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_access_levels', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_access_levels('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_access_levels', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -117,7 +148,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevels do
     resource_type: :google_access_context_manager_access_levels,
     method: :google_access_context_manager_access_levels,
     required_attrs: { parent: 'test-value' },
-    expected_outputs: [:id],
+    expected_outputs: [:id, :deletion_policy],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

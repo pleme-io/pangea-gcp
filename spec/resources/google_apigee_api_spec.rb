@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeApi do
         ref = synth.google_apigee_api('test', required_attrs)
 
         expect(ref.id).to eq("${google_apigee_api.test.id}")
+        expect(ref.deletion_policy).to eq("${google_apigee_api.test.deletion_policy}")
         expect(ref.latest_revision_id).to eq("${google_apigee_api.test.latest_revision_id}")
         expect(ref.md5hash).to eq("${google_apigee_api.test.md5hash}")
         expect(ref.meta_data).to eq("${google_apigee_api.test.meta_data}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeApi do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_api', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('latest_revision_id')
         expect(config).not_to have_key('md5hash')
         expect(config).not_to have_key('meta_data')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeApi do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ detect_md5hash: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', detect_md5hash: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,11 +72,29 @@ RSpec.describe Pangea::Resources::GoogleApigeeApi do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_api', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('detect_md5hash')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_api('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_api', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_api('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_api', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes detect_md5hash when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -138,7 +158,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeApi do
     resource_type: :google_apigee_api,
     method: :google_apigee_api,
     required_attrs: { config_bundle: 'test-value', name: 'test-value', org_id: 'test-value' },
-    expected_outputs: [:id, :latest_revision_id, :md5hash, :meta_data, :revision],
+    expected_outputs: [:id, :deletion_policy, :latest_revision_id, :md5hash, :meta_data, :revision],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

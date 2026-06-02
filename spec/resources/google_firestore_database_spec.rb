@@ -43,10 +43,14 @@ RSpec.describe Pangea::Resources::GoogleFirestoreDatabase do
         expect(ref.create_time).to eq("${google_firestore_database.test.create_time}")
         expect(ref.database_edition).to eq("${google_firestore_database.test.database_edition}")
         expect(ref.delete_protection_state).to eq("${google_firestore_database.test.delete_protection_state}")
+        expect(ref.deletion_policy).to eq("${google_firestore_database.test.deletion_policy}")
         expect(ref.earliest_version_time).to eq("${google_firestore_database.test.earliest_version_time}")
         expect(ref.etag).to eq("${google_firestore_database.test.etag}")
+        expect(ref.firestore_data_access_mode).to eq("${google_firestore_database.test.firestore_data_access_mode}")
         expect(ref.key_prefix).to eq("${google_firestore_database.test.key_prefix}")
+        expect(ref.mongodb_compatible_data_access_mode).to eq("${google_firestore_database.test.mongodb_compatible_data_access_mode}")
         expect(ref.project).to eq("${google_firestore_database.test.project}")
+        expect(ref.realtime_updates_mode).to eq("${google_firestore_database.test.realtime_updates_mode}")
         expect(ref.uid).to eq("${google_firestore_database.test.uid}")
         expect(ref.update_time).to eq("${google_firestore_database.test.update_time}")
         expect(ref.version_retention_period).to eq("${google_firestore_database.test.version_retention_period}")
@@ -66,10 +70,14 @@ RSpec.describe Pangea::Resources::GoogleFirestoreDatabase do
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('database_edition')
         expect(config).not_to have_key('delete_protection_state')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('earliest_version_time')
         expect(config).not_to have_key('etag')
+        expect(config).not_to have_key('firestore_data_access_mode')
         expect(config).not_to have_key('key_prefix')
+        expect(config).not_to have_key('mongodb_compatible_data_access_mode')
         expect(config).not_to have_key('project')
+        expect(config).not_to have_key('realtime_updates_mode')
         expect(config).not_to have_key('uid')
         expect(config).not_to have_key('update_time')
         expect(config).not_to have_key('version_retention_period')
@@ -77,7 +85,7 @@ RSpec.describe Pangea::Resources::GoogleFirestoreDatabase do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ cmek_config: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', point_in_time_recovery_enablement: 'test-value', tags: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ app_engine_integration_mode: 'test-value', cmek_config: { 'key1' => 'val1' }, concurrency_mode: 'test-value', database_edition: 'test-value', delete_protection_state: 'test-value', deletion_policy: 'test-value', firestore_data_access_mode: 'test-value', mongodb_compatible_data_access_mode: 'test-value', point_in_time_recovery_enablement: 'test-value', project: 'test-value', realtime_updates_mode: 'test-value', tags: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -86,18 +94,43 @@ RSpec.describe Pangea::Resources::GoogleFirestoreDatabase do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_firestore_database', 'full')
+        expect(config).to have_key('app_engine_integration_mode')
         expect(config).to have_key('cmek_config')
+        expect(config).to have_key('concurrency_mode')
+        expect(config).to have_key('database_edition')
+        expect(config).to have_key('delete_protection_state')
         expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('firestore_data_access_mode')
+        expect(config).to have_key('mongodb_compatible_data_access_mode')
         expect(config).to have_key('point_in_time_recovery_enablement')
+        expect(config).to have_key('project')
+        expect(config).to have_key('realtime_updates_mode')
         expect(config).to have_key('tags')
       end
     end
 
     context 'optional attributes' do
+      it 'includes app_engine_integration_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('opt', required_attrs.merge(app_engine_integration_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'opt')
+        expect(config).to have_key('app_engine_integration_mode')
+      end
+
+      it 'omits app_engine_integration_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'minimal')
+        expect(config).not_to have_key('app_engine_integration_mode')
+      end
       it 'includes cmek_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_firestore_database('opt', required_attrs.merge(cmek_config: [{ 'key1' => 'val1' }]))
+        synth.google_firestore_database('opt', required_attrs.merge(cmek_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_firestore_database', 'opt')
         expect(config).to have_key('cmek_config')
@@ -110,6 +143,57 @@ RSpec.describe Pangea::Resources::GoogleFirestoreDatabase do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_firestore_database', 'minimal')
         expect(config).not_to have_key('cmek_config')
+      end
+      it 'includes concurrency_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('opt', required_attrs.merge(concurrency_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'opt')
+        expect(config).to have_key('concurrency_mode')
+      end
+
+      it 'omits concurrency_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'minimal')
+        expect(config).not_to have_key('concurrency_mode')
+      end
+      it 'includes database_edition when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('opt', required_attrs.merge(database_edition: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'opt')
+        expect(config).to have_key('database_edition')
+      end
+
+      it 'omits database_edition when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'minimal')
+        expect(config).not_to have_key('database_edition')
+      end
+      it 'includes delete_protection_state when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('opt', required_attrs.merge(delete_protection_state: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'opt')
+        expect(config).to have_key('delete_protection_state')
+      end
+
+      it 'omits delete_protection_state when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'minimal')
+        expect(config).not_to have_key('delete_protection_state')
       end
       it 'includes deletion_policy when provided' do
         synth = create_synthesizer
@@ -128,6 +212,40 @@ RSpec.describe Pangea::Resources::GoogleFirestoreDatabase do
         config = validate_resource_structure(result, 'google_firestore_database', 'minimal')
         expect(config).not_to have_key('deletion_policy')
       end
+      it 'includes firestore_data_access_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('opt', required_attrs.merge(firestore_data_access_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'opt')
+        expect(config).to have_key('firestore_data_access_mode')
+      end
+
+      it 'omits firestore_data_access_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'minimal')
+        expect(config).not_to have_key('firestore_data_access_mode')
+      end
+      it 'includes mongodb_compatible_data_access_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('opt', required_attrs.merge(mongodb_compatible_data_access_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'opt')
+        expect(config).to have_key('mongodb_compatible_data_access_mode')
+      end
+
+      it 'omits mongodb_compatible_data_access_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'minimal')
+        expect(config).not_to have_key('mongodb_compatible_data_access_mode')
+      end
       it 'includes point_in_time_recovery_enablement when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -144,6 +262,40 @@ RSpec.describe Pangea::Resources::GoogleFirestoreDatabase do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_firestore_database', 'minimal')
         expect(config).not_to have_key('point_in_time_recovery_enablement')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes realtime_updates_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('opt', required_attrs.merge(realtime_updates_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'opt')
+        expect(config).to have_key('realtime_updates_mode')
+      end
+
+      it 'omits realtime_updates_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_database', 'minimal')
+        expect(config).not_to have_key('realtime_updates_mode')
       end
       it 'includes tags when provided' do
         synth = create_synthesizer
@@ -208,7 +360,7 @@ RSpec.describe Pangea::Resources::GoogleFirestoreDatabase do
     resource_type: :google_firestore_database,
     method: :google_firestore_database,
     required_attrs: { location_id: 'test-value', name: 'test-value', type: 'test-value' },
-    expected_outputs: [:id, :app_engine_integration_mode, :concurrency_mode, :create_time, :database_edition, :delete_protection_state, :earliest_version_time, :etag, :key_prefix, :project, :uid, :update_time, :version_retention_period],
+    expected_outputs: [:id, :app_engine_integration_mode, :concurrency_mode, :create_time, :database_edition, :delete_protection_state, :deletion_policy, :earliest_version_time, :etag, :firestore_data_access_mode, :key_prefix, :mongodb_compatible_data_access_mode, :project, :realtime_updates_mode, :uid, :update_time, :version_retention_period],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

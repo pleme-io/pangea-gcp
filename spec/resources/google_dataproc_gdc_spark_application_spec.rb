@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocGdcSparkApplication do
 
         expect(ref.id).to eq("${google_dataproc_gdc_spark_application.test.id}")
         expect(ref.create_time).to eq("${google_dataproc_gdc_spark_application.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_dataproc_gdc_spark_application.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_dataproc_gdc_spark_application.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_dataproc_gdc_spark_application.test.effective_labels}")
         expect(ref.monitoring_endpoint).to eq("${google_dataproc_gdc_spark_application.test.monitoring_endpoint}")
@@ -63,6 +64,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocGdcSparkApplication do
 
         config = validate_resource_structure(result, 'google_dataproc_gdc_spark_application', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('monitoring_endpoint')
@@ -79,7 +81,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocGdcSparkApplication do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, application_environment: 'test-value', dependency_images: ['test-value'], display_name: 'test-value', labels: { 'key1' => 'val1' }, namespace: 'test-value', properties: { 'key1' => 'val1' }, pyspark_application_config: [{ 'key1' => 'val1' }], spark_application_config: [{ 'key1' => 'val1' }], spark_r_application_config: [{ 'key1' => 'val1' }], spark_sql_application_config: [{ 'key1' => 'val1' }], version: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, application_environment: 'test-value', deletion_policy: 'test-value', dependency_images: ['test-value'], display_name: 'test-value', labels: { 'key1' => 'val1' }, namespace: 'test-value', project: 'test-value', properties: { 'key1' => 'val1' }, pyspark_application_config: { 'key1' => 'val1' }, spark_application_config: { 'key1' => 'val1' }, spark_r_application_config: { 'key1' => 'val1' }, spark_sql_application_config: { 'key1' => 'val1' }, version: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -90,10 +92,12 @@ RSpec.describe Pangea::Resources::GoogleDataprocGdcSparkApplication do
         config = validate_resource_structure(result, 'google_dataproc_gdc_spark_application', 'full')
         expect(config).to have_key('annotations')
         expect(config).to have_key('application_environment')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('dependency_images')
         expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
         expect(config).to have_key('namespace')
+        expect(config).to have_key('project')
         expect(config).to have_key('properties')
         expect(config).to have_key('pyspark_application_config')
         expect(config).to have_key('spark_application_config')
@@ -137,6 +141,23 @@ RSpec.describe Pangea::Resources::GoogleDataprocGdcSparkApplication do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_gdc_spark_application', 'minimal')
         expect(config).not_to have_key('application_environment')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_gdc_spark_application('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_gdc_spark_application', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_gdc_spark_application('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_gdc_spark_application', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes dependency_images when provided' do
         synth = create_synthesizer
@@ -206,6 +227,23 @@ RSpec.describe Pangea::Resources::GoogleDataprocGdcSparkApplication do
         config = validate_resource_structure(result, 'google_dataproc_gdc_spark_application', 'minimal')
         expect(config).not_to have_key('namespace')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_gdc_spark_application('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_gdc_spark_application', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_gdc_spark_application('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_gdc_spark_application', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes properties when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -226,7 +264,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocGdcSparkApplication do
       it 'includes pyspark_application_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_gdc_spark_application('opt', required_attrs.merge(pyspark_application_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_gdc_spark_application('opt', required_attrs.merge(pyspark_application_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_gdc_spark_application', 'opt')
         expect(config).to have_key('pyspark_application_config')
@@ -243,7 +281,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocGdcSparkApplication do
       it 'includes spark_application_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_gdc_spark_application('opt', required_attrs.merge(spark_application_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_gdc_spark_application('opt', required_attrs.merge(spark_application_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_gdc_spark_application', 'opt')
         expect(config).to have_key('spark_application_config')
@@ -260,7 +298,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocGdcSparkApplication do
       it 'includes spark_r_application_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_gdc_spark_application('opt', required_attrs.merge(spark_r_application_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_gdc_spark_application('opt', required_attrs.merge(spark_r_application_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_gdc_spark_application', 'opt')
         expect(config).to have_key('spark_r_application_config')
@@ -277,7 +315,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocGdcSparkApplication do
       it 'includes spark_sql_application_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_gdc_spark_application('opt', required_attrs.merge(spark_sql_application_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_gdc_spark_application('opt', required_attrs.merge(spark_sql_application_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_gdc_spark_application', 'opt')
         expect(config).to have_key('spark_sql_application_config')
@@ -354,7 +392,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocGdcSparkApplication do
     resource_type: :google_dataproc_gdc_spark_application,
     method: :google_dataproc_gdc_spark_application,
     required_attrs: { location: 'test-value', serviceinstance: 'test-value', spark_application_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_annotations, :effective_labels, :monitoring_endpoint, :name, :output_uri, :project, :reconciling, :state, :state_message, :terraform_labels, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_annotations, :effective_labels, :monitoring_endpoint, :name, :output_uri, :project, :reconciling, :state, :state_message, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleTagsTagKey do
 
         expect(ref.id).to eq("${google_tags_tag_key.test.id}")
         expect(ref.create_time).to eq("${google_tags_tag_key.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_tags_tag_key.test.deletion_policy}")
         expect(ref.name).to eq("${google_tags_tag_key.test.name}")
         expect(ref.namespaced_name).to eq("${google_tags_tag_key.test.namespaced_name}")
         expect(ref.update_time).to eq("${google_tags_tag_key.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleTagsTagKey do
 
         config = validate_resource_structure(result, 'google_tags_tag_key', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('namespaced_name')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleTagsTagKey do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', purpose: 'test-value', purpose_data: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ allowed_values_regex: 'test-value', deletion_policy: 'test-value', description: 'test-value', purpose: 'test-value', purpose_data: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,6 +72,8 @@ RSpec.describe Pangea::Resources::GoogleTagsTagKey do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_tags_tag_key', 'full')
+        expect(config).to have_key('allowed_values_regex')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('purpose')
         expect(config).to have_key('purpose_data')
@@ -77,6 +81,40 @@ RSpec.describe Pangea::Resources::GoogleTagsTagKey do
     end
 
     context 'optional attributes' do
+      it 'includes allowed_values_regex when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_tags_tag_key('opt', required_attrs.merge(allowed_values_regex: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_tags_tag_key', 'opt')
+        expect(config).to have_key('allowed_values_regex')
+      end
+
+      it 'omits allowed_values_regex when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_tags_tag_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_tags_tag_key', 'minimal')
+        expect(config).not_to have_key('allowed_values_regex')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_tags_tag_key('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_tags_tag_key', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_tags_tag_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_tags_tag_key', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -173,7 +211,7 @@ RSpec.describe Pangea::Resources::GoogleTagsTagKey do
     resource_type: :google_tags_tag_key,
     method: :google_tags_tag_key,
     required_attrs: { parent: 'test-value', short_name: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :namespaced_name, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :namespaced_name, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

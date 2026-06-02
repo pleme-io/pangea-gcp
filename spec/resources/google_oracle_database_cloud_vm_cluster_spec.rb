@@ -38,10 +38,15 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseCloudVmCluster do
         ref = synth.google_oracle_database_cloud_vm_cluster('test', required_attrs)
 
         expect(ref.id).to eq("${google_oracle_database_cloud_vm_cluster.test.id}")
+        expect(ref.backup_odb_subnet).to eq("${google_oracle_database_cloud_vm_cluster.test.backup_odb_subnet}")
         expect(ref.create_time).to eq("${google_oracle_database_cloud_vm_cluster.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_oracle_database_cloud_vm_cluster.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_oracle_database_cloud_vm_cluster.test.effective_labels}")
         expect(ref.gcp_oracle_zone).to eq("${google_oracle_database_cloud_vm_cluster.test.gcp_oracle_zone}")
+        expect(ref.identity_connector).to eq("${google_oracle_database_cloud_vm_cluster.test.identity_connector}")
         expect(ref.name).to eq("${google_oracle_database_cloud_vm_cluster.test.name}")
+        expect(ref.odb_network).to eq("${google_oracle_database_cloud_vm_cluster.test.odb_network}")
+        expect(ref.odb_subnet).to eq("${google_oracle_database_cloud_vm_cluster.test.odb_subnet}")
         expect(ref.project).to eq("${google_oracle_database_cloud_vm_cluster.test.project}")
         expect(ref.terraform_labels).to eq("${google_oracle_database_cloud_vm_cluster.test.terraform_labels}")
       end
@@ -55,17 +60,22 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseCloudVmCluster do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_oracle_database_cloud_vm_cluster', 'test')
+        expect(config).not_to have_key('backup_odb_subnet')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('gcp_oracle_zone')
+        expect(config).not_to have_key('identity_connector')
         expect(config).not_to have_key('name')
+        expect(config).not_to have_key('odb_network')
+        expect(config).not_to have_key('odb_subnet')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ backup_odb_subnet: 'test-value', backup_subnet_cidr: 'test-value', cidr: 'test-value', deletion_protection: true, display_name: 'test-value', labels: { 'key1' => 'val1' }, network: 'test-value', odb_network: 'test-value', odb_subnet: 'test-value', properties: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ backup_odb_subnet: 'test-value', backup_subnet_cidr: 'test-value', cidr: 'test-value', deletion_policy: 'test-value', deletion_protection: true, display_name: 'test-value', labels: { 'key1' => 'val1' }, network: 'test-value', odb_network: 'test-value', odb_subnet: 'test-value', project: 'test-value', properties: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -77,12 +87,14 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseCloudVmCluster do
         expect(config).to have_key('backup_odb_subnet')
         expect(config).to have_key('backup_subnet_cidr')
         expect(config).to have_key('cidr')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
         expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
         expect(config).to have_key('network')
         expect(config).to have_key('odb_network')
         expect(config).to have_key('odb_subnet')
+        expect(config).to have_key('project')
         expect(config).to have_key('properties')
       end
     end
@@ -138,6 +150,23 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseCloudVmCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_oracle_database_cloud_vm_cluster', 'minimal')
         expect(config).not_to have_key('cidr')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_cloud_vm_cluster('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_cloud_vm_cluster', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_cloud_vm_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_cloud_vm_cluster', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
@@ -241,10 +270,27 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseCloudVmCluster do
         config = validate_resource_structure(result, 'google_oracle_database_cloud_vm_cluster', 'minimal')
         expect(config).not_to have_key('odb_subnet')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_cloud_vm_cluster('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_cloud_vm_cluster', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_oracle_database_cloud_vm_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_oracle_database_cloud_vm_cluster', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes properties when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_oracle_database_cloud_vm_cluster('opt', required_attrs.merge(properties: [{ 'key1' => 'val1' }]))
+        synth.google_oracle_database_cloud_vm_cluster('opt', required_attrs.merge(properties: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_oracle_database_cloud_vm_cluster', 'opt')
         expect(config).to have_key('properties')
@@ -318,7 +364,7 @@ RSpec.describe Pangea::Resources::GoogleOracleDatabaseCloudVmCluster do
     resource_type: :google_oracle_database_cloud_vm_cluster,
     method: :google_oracle_database_cloud_vm_cluster,
     required_attrs: { cloud_vm_cluster_id: 'test-value', exadata_infrastructure: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :gcp_oracle_zone, :name, :project, :terraform_labels],
+    expected_outputs: [:id, :backup_odb_subnet, :create_time, :deletion_policy, :effective_labels, :gcp_oracle_zone, :identity_connector, :name, :odb_network, :odb_subnet, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection]

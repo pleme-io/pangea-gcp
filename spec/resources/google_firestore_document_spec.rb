@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleFirestoreDocument do
 
         expect(ref.id).to eq("${google_firestore_document.test.id}")
         expect(ref.create_time).to eq("${google_firestore_document.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_firestore_document.test.deletion_policy}")
         expect(ref.name).to eq("${google_firestore_document.test.name}")
         expect(ref.path).to eq("${google_firestore_document.test.path}")
         expect(ref.project).to eq("${google_firestore_document.test.project}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleFirestoreDocument do
 
         config = validate_resource_structure(result, 'google_firestore_document', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('path')
         expect(config).not_to have_key('project')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleFirestoreDocument do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ database: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ database: 'test-value', deletion_policy: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,6 +75,8 @@ RSpec.describe Pangea::Resources::GoogleFirestoreDocument do
 
         config = validate_resource_structure(result, 'google_firestore_document', 'full')
         expect(config).to have_key('database')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
       end
     end
 
@@ -93,6 +97,40 @@ RSpec.describe Pangea::Resources::GoogleFirestoreDocument do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_firestore_document', 'minimal')
         expect(config).not_to have_key('database')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_document('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_document', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_document('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_document', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_document('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_document', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_document('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_document', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -140,7 +178,7 @@ RSpec.describe Pangea::Resources::GoogleFirestoreDocument do
     resource_type: :google_firestore_document,
     method: :google_firestore_document,
     required_attrs: { collection: 'test-value', document_id: 'test-value', fields: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :path, :project, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :path, :project, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -38,11 +38,24 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevel do
         ref = synth.google_access_context_manager_access_level('test', required_attrs)
 
         expect(ref.id).to eq("${google_access_context_manager_access_level.test.id}")
+        expect(ref.deletion_policy).to eq("${google_access_context_manager_access_level.test.deletion_policy}")
+      end
+    end
+
+    context 'computed-only attributes' do
+      it 'excludes computed-only attributes from the resource block' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_access_level('test', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_access_context_manager_access_level', 'test')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ basic: [{ 'key1' => 'val1' }], custom: [{ 'key1' => 'val1' }], description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ basic: { 'key1' => 'val1' }, custom: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -53,6 +66,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevel do
         config = validate_resource_structure(result, 'google_access_context_manager_access_level', 'full')
         expect(config).to have_key('basic')
         expect(config).to have_key('custom')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
       end
     end
@@ -61,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevel do
       it 'includes basic when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_access_context_manager_access_level('opt', required_attrs.merge(basic: [{ 'key1' => 'val1' }]))
+        synth.google_access_context_manager_access_level('opt', required_attrs.merge(basic: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_access_context_manager_access_level', 'opt')
         expect(config).to have_key('basic')
@@ -78,7 +92,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevel do
       it 'includes custom when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_access_context_manager_access_level('opt', required_attrs.merge(custom: [{ 'key1' => 'val1' }]))
+        synth.google_access_context_manager_access_level('opt', required_attrs.merge(custom: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_access_context_manager_access_level', 'opt')
         expect(config).to have_key('custom')
@@ -91,6 +105,23 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevel do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_access_context_manager_access_level', 'minimal')
         expect(config).not_to have_key('custom')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_access_level('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_access_level', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_access_level('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_access_level', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -155,7 +186,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessLevel do
     resource_type: :google_access_context_manager_access_level,
     method: :google_access_context_manager_access_level,
     required_attrs: { name: 'test-value', parent: 'test-value', title: 'test-value' },
-    expected_outputs: [:id],
+    expected_outputs: [:id, :deletion_policy],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexEntryGroup do
 
         expect(ref.id).to eq("${google_dataplex_entry_group.test.id}")
         expect(ref.create_time).to eq("${google_dataplex_entry_group.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_dataplex_entry_group.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_dataplex_entry_group.test.effective_labels}")
         expect(ref.name).to eq("${google_dataplex_entry_group.test.name}")
         expect(ref.project).to eq("${google_dataplex_entry_group.test.project}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexEntryGroup do
 
         config = validate_resource_structure(result, 'google_dataplex_entry_group', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -69,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexEntryGroup do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', display_name: 'test-value', entry_group_id: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', entry_group_id: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,15 +80,34 @@ RSpec.describe Pangea::Resources::GoogleDataplexEntryGroup do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dataplex_entry_group', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
         expect(config).to have_key('entry_group_id')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_entry_group('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_entry_group', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_entry_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_entry_group', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -172,6 +193,23 @@ RSpec.describe Pangea::Resources::GoogleDataplexEntryGroup do
         config = validate_resource_structure(result, 'google_dataplex_entry_group', 'minimal')
         expect(config).not_to have_key('location')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_entry_group('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_entry_group', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_entry_group('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_entry_group', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -215,7 +253,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexEntryGroup do
     resource_type: :google_dataplex_entry_group,
     method: :google_dataplex_entry_group,
     required_attrs: {},
-    expected_outputs: [:id, :create_time, :effective_labels, :name, :project, :terraform_labels, :transfer_status, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :name, :project, :terraform_labels, :transfer_status, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

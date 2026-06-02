@@ -57,7 +57,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolIamMember do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ condition: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ condition: { 'key1' => 'val1' }, location: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,6 +67,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolIamMember do
 
         config = validate_resource_structure(result, 'google_iam_workforce_pool_iam_member', 'full')
         expect(config).to have_key('condition')
+        expect(config).to have_key('location')
       end
     end
 
@@ -74,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolIamMember do
       it 'includes condition when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_iam_workforce_pool_iam_member('opt', required_attrs.merge(condition: [{ 'key1' => 'val1' }]))
+        synth.google_iam_workforce_pool_iam_member('opt', required_attrs.merge(condition: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_workforce_pool_iam_member', 'opt')
         expect(config).to have_key('condition')
@@ -87,6 +88,23 @@ RSpec.describe Pangea::Resources::GoogleIamWorkforcePoolIamMember do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_iam_workforce_pool_iam_member', 'minimal')
         expect(config).not_to have_key('condition')
+      end
+      it 'includes location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_iam_member('opt', required_attrs.merge(location: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_iam_member', 'opt')
+        expect(config).to have_key('location')
+      end
+
+      it 'omits location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_iam_workforce_pool_iam_member('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_iam_workforce_pool_iam_member', 'minimal')
+        expect(config).not_to have_key('location')
       end
     end
 

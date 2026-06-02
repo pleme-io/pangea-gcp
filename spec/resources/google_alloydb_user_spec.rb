@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbUser do
         ref = synth.google_alloydb_user('test', required_attrs)
 
         expect(ref.id).to eq("${google_alloydb_user.test.id}")
+        expect(ref.deletion_policy).to eq("${google_alloydb_user.test.deletion_policy}")
         expect(ref.name).to eq("${google_alloydb_user.test.name}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleAlloydbUser do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_alloydb_user', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ database_roles: ['test-value'], password: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ database_roles: ['test-value'], deletion_policy: 'test-value', password: 'test-value', password_wo: 'test-value', password_wo_version: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -65,7 +67,10 @@ RSpec.describe Pangea::Resources::GoogleAlloydbUser do
 
         config = validate_resource_structure(result, 'google_alloydb_user', 'full')
         expect(config).to have_key('database_roles')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('password')
+        expect(config).to have_key('password_wo')
+        expect(config).to have_key('password_wo_version')
       end
     end
 
@@ -87,6 +92,23 @@ RSpec.describe Pangea::Resources::GoogleAlloydbUser do
         config = validate_resource_structure(result, 'google_alloydb_user', 'minimal')
         expect(config).not_to have_key('database_roles')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_user('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_user', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_user('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_user', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes password when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -103,6 +125,40 @@ RSpec.describe Pangea::Resources::GoogleAlloydbUser do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_alloydb_user', 'minimal')
         expect(config).not_to have_key('password')
+      end
+      it 'includes password_wo when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_user('opt', required_attrs.merge(password_wo: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_user', 'opt')
+        expect(config).to have_key('password_wo')
+      end
+
+      it 'omits password_wo when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_user('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_user', 'minimal')
+        expect(config).not_to have_key('password_wo')
+      end
+      it 'includes password_wo_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_user('opt', required_attrs.merge(password_wo_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_user', 'opt')
+        expect(config).to have_key('password_wo_version')
+      end
+
+      it 'omits password_wo_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_alloydb_user('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_alloydb_user', 'minimal')
+        expect(config).not_to have_key('password_wo_version')
       end
     end
 
@@ -157,7 +213,7 @@ RSpec.describe Pangea::Resources::GoogleAlloydbUser do
     resource_type: :google_alloydb_user,
     method: :google_alloydb_user,
     required_attrs: { cluster: 'test-value', user_id: 'test-value', user_type: 'test-value' },
-    expected_outputs: [:id, :name],
+    expected_outputs: [:id, :deletion_policy, :name],
     sensitive_fields: [:password],
     immutable_fields: [],
     boolean_fields: []

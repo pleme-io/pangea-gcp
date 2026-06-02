@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleAppEngineServiceSplitTraffic do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { service: 'test-value', split: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { service: 'test-value', split: { 'key1' => 'val1' } } }
 
   describe ':google_app_engine_service_split_traffic' do
     context 'with required attributes only' do
@@ -55,7 +55,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineServiceSplitTraffic do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ migrate_traffic: true }) }
+      let(:all_attrs) { required_attrs.merge({ migrate_traffic: true, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -65,6 +65,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineServiceSplitTraffic do
 
         config = validate_resource_structure(result, 'google_app_engine_service_split_traffic', 'full')
         expect(config).to have_key('migrate_traffic')
+        expect(config).to have_key('project')
       end
     end
 
@@ -85,6 +86,23 @@ RSpec.describe Pangea::Resources::GoogleAppEngineServiceSplitTraffic do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_service_split_traffic', 'minimal')
         expect(config).not_to have_key('migrate_traffic')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_service_split_traffic('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_service_split_traffic', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_service_split_traffic('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_service_split_traffic', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -111,7 +129,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineServiceSplitTraffic do
 
         config = validate_resource_structure(result, 'google_app_engine_service_split_traffic', 'typed')
         expect(config['service']).to be_a(String)
-        expect(config['split']).to be_a(Array)
+        expect(config['split']).to be_a(Hash)
       end
     end
 
@@ -144,7 +162,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineServiceSplitTraffic do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_app_engine_service_split_traffic,
     method: :google_app_engine_service_split_traffic,
-    required_attrs: { service: 'test-value', split: [{ 'key1' => 'val1' }] },
+    required_attrs: { service: 'test-value', split: { 'key1' => 'val1' } },
     expected_outputs: [:id, :project],
     sensitive_fields: [],
     immutable_fields: [],

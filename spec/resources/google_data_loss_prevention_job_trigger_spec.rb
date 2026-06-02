@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionJobTrigger do
 
         expect(ref.id).to eq("${google_data_loss_prevention_job_trigger.test.id}")
         expect(ref.create_time).to eq("${google_data_loss_prevention_job_trigger.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_data_loss_prevention_job_trigger.test.deletion_policy}")
         expect(ref.last_run_time).to eq("${google_data_loss_prevention_job_trigger.test.last_run_time}")
         expect(ref.name).to eq("${google_data_loss_prevention_job_trigger.test.name}")
         expect(ref.trigger_id).to eq("${google_data_loss_prevention_job_trigger.test.trigger_id}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionJobTrigger do
 
         config = validate_resource_structure(result, 'google_data_loss_prevention_job_trigger', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('last_run_time')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('trigger_id')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionJobTrigger do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', display_name: 'test-value', inspect_job: [{ 'key1' => 'val1' }], status: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', inspect_job: { 'key1' => 'val1' }, status: 'test-value', trigger_id: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,14 +74,33 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionJobTrigger do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_data_loss_prevention_job_trigger', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
         expect(config).to have_key('inspect_job')
         expect(config).to have_key('status')
+        expect(config).to have_key('trigger_id')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_job_trigger('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_job_trigger', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_job_trigger('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_job_trigger', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -117,7 +138,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionJobTrigger do
       it 'includes inspect_job when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_data_loss_prevention_job_trigger('opt', required_attrs.merge(inspect_job: [{ 'key1' => 'val1' }]))
+        synth.google_data_loss_prevention_job_trigger('opt', required_attrs.merge(inspect_job: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_loss_prevention_job_trigger', 'opt')
         expect(config).to have_key('inspect_job')
@@ -147,6 +168,23 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionJobTrigger do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_loss_prevention_job_trigger', 'minimal')
         expect(config).not_to have_key('status')
+      end
+      it 'includes trigger_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_job_trigger('opt', required_attrs.merge(trigger_id: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_job_trigger', 'opt')
+        expect(config).to have_key('trigger_id')
+      end
+
+      it 'omits trigger_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_job_trigger('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_job_trigger', 'minimal')
+        expect(config).not_to have_key('trigger_id')
       end
     end
 
@@ -193,7 +231,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionJobTrigger do
     resource_type: :google_data_loss_prevention_job_trigger,
     method: :google_data_loss_prevention_job_trigger,
     required_attrs: { parent: 'test-value', triggers: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :last_run_time, :name, :trigger_id, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :last_run_time, :name, :trigger_id, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

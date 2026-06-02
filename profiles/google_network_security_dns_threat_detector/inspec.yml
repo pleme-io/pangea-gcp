@@ -1,0 +1,8 @@
+name: google_network_security_dns_threat_detector
+title: Manages a google_network_security_dns_threat_detector resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

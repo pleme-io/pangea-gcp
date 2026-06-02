@@ -1,0 +1,8 @@
+name: google_gke_backup_restore_channel
+title: Manages a google_gke_backup_restore_channel resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

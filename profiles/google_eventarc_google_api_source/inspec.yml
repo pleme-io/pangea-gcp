@@ -1,0 +1,8 @@
+name: google_eventarc_google_api_source
+title: Manages a google_eventarc_google_api_source resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleEventarcTrigger do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { destination: [{ 'key1' => 'val1' }], location: 'test-value', matching_criteria: [{ 'key1' => 'val1' }], name: 'test-value' } }
+  let(:required_attrs) { { destination: { 'key1' => 'val1' }, location: 'test-value', matching_criteria: [{ 'key1' => 'val1' }], name: 'test-value' } }
 
   describe ':google_eventarc_trigger' do
     context 'with required attributes only' do
@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleEventarcTrigger do
         expect(ref.id).to eq("${google_eventarc_trigger.test.id}")
         expect(ref.conditions).to eq("${google_eventarc_trigger.test.conditions}")
         expect(ref.create_time).to eq("${google_eventarc_trigger.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_eventarc_trigger.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_eventarc_trigger.test.effective_labels}")
         expect(ref.etag).to eq("${google_eventarc_trigger.test.etag}")
         expect(ref.event_data_content_type).to eq("${google_eventarc_trigger.test.event_data_content_type}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleEventarcTrigger do
         config = validate_resource_structure(result, 'google_eventarc_trigger', 'test')
         expect(config).not_to have_key('conditions')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('event_data_content_type')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleEventarcTrigger do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ channel: 'test-value', labels: { 'key1' => 'val1' }, service_account: 'test-value', transport: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ channel: 'test-value', deletion_policy: 'test-value', event_data_content_type: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', retry_policy: { 'key1' => 'val1' }, service_account: 'test-value', transport: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -81,7 +83,11 @@ RSpec.describe Pangea::Resources::GoogleEventarcTrigger do
 
         config = validate_resource_structure(result, 'google_eventarc_trigger', 'full')
         expect(config).to have_key('channel')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('event_data_content_type')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
+        expect(config).to have_key('retry_policy')
         expect(config).to have_key('service_account')
         expect(config).to have_key('transport')
       end
@@ -105,6 +111,40 @@ RSpec.describe Pangea::Resources::GoogleEventarcTrigger do
         config = validate_resource_structure(result, 'google_eventarc_trigger', 'minimal')
         expect(config).not_to have_key('channel')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_trigger('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_trigger', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_trigger('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_trigger', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes event_data_content_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_trigger('opt', required_attrs.merge(event_data_content_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_trigger', 'opt')
+        expect(config).to have_key('event_data_content_type')
+      end
+
+      it 'omits event_data_content_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_trigger('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_trigger', 'minimal')
+        expect(config).not_to have_key('event_data_content_type')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -121,6 +161,40 @@ RSpec.describe Pangea::Resources::GoogleEventarcTrigger do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_eventarc_trigger', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_trigger('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_trigger', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_trigger('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_trigger', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes retry_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_trigger('opt', required_attrs.merge(retry_policy: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_trigger', 'opt')
+        expect(config).to have_key('retry_policy')
+      end
+
+      it 'omits retry_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_trigger('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_trigger', 'minimal')
+        expect(config).not_to have_key('retry_policy')
       end
       it 'includes service_account when provided' do
         synth = create_synthesizer
@@ -142,7 +216,7 @@ RSpec.describe Pangea::Resources::GoogleEventarcTrigger do
       it 'includes transport when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_eventarc_trigger('opt', required_attrs.merge(transport: [{ 'key1' => 'val1' }]))
+        synth.google_eventarc_trigger('opt', required_attrs.merge(transport: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_eventarc_trigger', 'opt')
         expect(config).to have_key('transport')
@@ -166,7 +240,7 @@ RSpec.describe Pangea::Resources::GoogleEventarcTrigger do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_eventarc_trigger', 'typed')
-        expect(config['destination']).to be_a(Array)
+        expect(config['destination']).to be_a(Hash)
         expect(config['location']).to be_a(String)
         expect(config['matching_criteria']).to be_a(Array)
         expect(config['name']).to be_a(String)
@@ -202,8 +276,8 @@ RSpec.describe Pangea::Resources::GoogleEventarcTrigger do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_eventarc_trigger,
     method: :google_eventarc_trigger,
-    required_attrs: { destination: [{ 'key1' => 'val1' }], location: 'test-value', matching_criteria: [{ 'key1' => 'val1' }], name: 'test-value' },
-    expected_outputs: [:id, :conditions, :create_time, :effective_labels, :etag, :event_data_content_type, :project, :terraform_labels, :uid, :update_time],
+    required_attrs: { destination: { 'key1' => 'val1' }, location: 'test-value', matching_criteria: [{ 'key1' => 'val1' }], name: 'test-value' },
+    expected_outputs: [:id, :conditions, :create_time, :deletion_policy, :effective_labels, :etag, :event_data_content_type, :project, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

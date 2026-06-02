@@ -1,0 +1,8 @@
+name: google_netapp_active_directory
+title: Manages a google_netapp_active_directory resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

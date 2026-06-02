@@ -43,6 +43,7 @@ RSpec.describe Pangea::Resources::GoogleRedisInstance do
         expect(ref.authorized_network).to eq("${google_redis_instance.test.authorized_network}")
         expect(ref.create_time).to eq("${google_redis_instance.test.create_time}")
         expect(ref.current_location_id).to eq("${google_redis_instance.test.current_location_id}")
+        expect(ref.deletion_policy).to eq("${google_redis_instance.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_redis_instance.test.effective_labels}")
         expect(ref.effective_reserved_ip_range).to eq("${google_redis_instance.test.effective_reserved_ip_range}")
         expect(ref.host).to eq("${google_redis_instance.test.host}")
@@ -79,6 +80,7 @@ RSpec.describe Pangea::Resources::GoogleRedisInstance do
         expect(config).not_to have_key('authorized_network')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('current_location_id')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('effective_reserved_ip_range')
         expect(config).not_to have_key('host')
@@ -103,7 +105,7 @@ RSpec.describe Pangea::Resources::GoogleRedisInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ auth_enabled: true, connect_mode: 'test-value', customer_managed_key: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' }, maintenance_policy: [{ 'key1' => 'val1' }], persistence_config: [{ 'key1' => 'val1' }], redis_configs: { 'key1' => 'val1' }, tier: 'test-value', transit_encryption_mode: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ alternative_location_id: 'test-value', auth_enabled: true, authorized_network: 'test-value', connect_mode: 'test-value', customer_managed_key: 'test-value', deletion_policy: 'test-value', deletion_protection: true, display_name: 'test-value', labels: { 'key1' => 'val1' }, location_id: 'test-value', maintenance_policy: { 'key1' => 'val1' }, maintenance_version: 'test-value', persistence_config: { 'key1' => 'val1' }, project: 'test-value', read_replicas_mode: 'test-value', redis_configs: { 'key1' => 'val1' }, redis_version: 'test-value', region: 'test-value', replica_count: 3.14, reserved_ip_range: 'test-value', secondary_ip_range: 'test-value', tier: 'test-value', transit_encryption_mode: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -112,20 +114,50 @@ RSpec.describe Pangea::Resources::GoogleRedisInstance do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_redis_instance', 'full')
+        expect(config).to have_key('alternative_location_id')
         expect(config).to have_key('auth_enabled')
+        expect(config).to have_key('authorized_network')
         expect(config).to have_key('connect_mode')
         expect(config).to have_key('customer_managed_key')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('deletion_protection')
         expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
+        expect(config).to have_key('location_id')
         expect(config).to have_key('maintenance_policy')
+        expect(config).to have_key('maintenance_version')
         expect(config).to have_key('persistence_config')
+        expect(config).to have_key('project')
+        expect(config).to have_key('read_replicas_mode')
         expect(config).to have_key('redis_configs')
+        expect(config).to have_key('redis_version')
+        expect(config).to have_key('region')
+        expect(config).to have_key('replica_count')
+        expect(config).to have_key('reserved_ip_range')
+        expect(config).to have_key('secondary_ip_range')
         expect(config).to have_key('tier')
         expect(config).to have_key('transit_encryption_mode')
       end
     end
 
     context 'optional attributes' do
+      it 'includes alternative_location_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('opt', required_attrs.merge(alternative_location_id: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'opt')
+        expect(config).to have_key('alternative_location_id')
+      end
+
+      it 'omits alternative_location_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
+        expect(config).not_to have_key('alternative_location_id')
+      end
       it 'includes auth_enabled when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -142,6 +174,23 @@ RSpec.describe Pangea::Resources::GoogleRedisInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
         expect(config).not_to have_key('auth_enabled')
+      end
+      it 'includes authorized_network when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('opt', required_attrs.merge(authorized_network: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'opt')
+        expect(config).to have_key('authorized_network')
+      end
+
+      it 'omits authorized_network when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
+        expect(config).not_to have_key('authorized_network')
       end
       it 'includes connect_mode when provided' do
         synth = create_synthesizer
@@ -177,6 +226,40 @@ RSpec.describe Pangea::Resources::GoogleRedisInstance do
         config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
         expect(config).not_to have_key('customer_managed_key')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes deletion_protection when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('opt', required_attrs.merge(deletion_protection: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'opt')
+        expect(config).to have_key('deletion_protection')
+      end
+
+      it 'omits deletion_protection when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
+        expect(config).not_to have_key('deletion_protection')
+      end
       it 'includes display_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -211,10 +294,27 @@ RSpec.describe Pangea::Resources::GoogleRedisInstance do
         config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes location_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('opt', required_attrs.merge(location_id: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'opt')
+        expect(config).to have_key('location_id')
+      end
+
+      it 'omits location_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
+        expect(config).not_to have_key('location_id')
+      end
       it 'includes maintenance_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_redis_instance('opt', required_attrs.merge(maintenance_policy: [{ 'key1' => 'val1' }]))
+        synth.google_redis_instance('opt', required_attrs.merge(maintenance_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_instance', 'opt')
         expect(config).to have_key('maintenance_policy')
@@ -228,10 +328,27 @@ RSpec.describe Pangea::Resources::GoogleRedisInstance do
         config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
         expect(config).not_to have_key('maintenance_policy')
       end
+      it 'includes maintenance_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('opt', required_attrs.merge(maintenance_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'opt')
+        expect(config).to have_key('maintenance_version')
+      end
+
+      it 'omits maintenance_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
+        expect(config).not_to have_key('maintenance_version')
+      end
       it 'includes persistence_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_redis_instance('opt', required_attrs.merge(persistence_config: [{ 'key1' => 'val1' }]))
+        synth.google_redis_instance('opt', required_attrs.merge(persistence_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_instance', 'opt')
         expect(config).to have_key('persistence_config')
@@ -244,6 +361,40 @@ RSpec.describe Pangea::Resources::GoogleRedisInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
         expect(config).not_to have_key('persistence_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes read_replicas_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('opt', required_attrs.merge(read_replicas_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'opt')
+        expect(config).to have_key('read_replicas_mode')
+      end
+
+      it 'omits read_replicas_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
+        expect(config).not_to have_key('read_replicas_mode')
       end
       it 'includes redis_configs when provided' do
         synth = create_synthesizer
@@ -261,6 +412,91 @@ RSpec.describe Pangea::Resources::GoogleRedisInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
         expect(config).not_to have_key('redis_configs')
+      end
+      it 'includes redis_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('opt', required_attrs.merge(redis_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'opt')
+        expect(config).to have_key('redis_version')
+      end
+
+      it 'omits redis_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
+        expect(config).not_to have_key('redis_version')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
+        expect(config).not_to have_key('region')
+      end
+      it 'includes replica_count when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('opt', required_attrs.merge(replica_count: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'opt')
+        expect(config).to have_key('replica_count')
+      end
+
+      it 'omits replica_count when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
+        expect(config).not_to have_key('replica_count')
+      end
+      it 'includes reserved_ip_range when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('opt', required_attrs.merge(reserved_ip_range: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'opt')
+        expect(config).to have_key('reserved_ip_range')
+      end
+
+      it 'omits reserved_ip_range when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
+        expect(config).not_to have_key('reserved_ip_range')
+      end
+      it 'includes secondary_ip_range when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('opt', required_attrs.merge(secondary_ip_range: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'opt')
+        expect(config).to have_key('secondary_ip_range')
+      end
+
+      it 'omits secondary_ip_range when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_redis_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_redis_instance', 'minimal')
+        expect(config).not_to have_key('secondary_ip_range')
       end
       it 'includes tier when provided' do
         synth = create_synthesizer
@@ -317,6 +553,17 @@ RSpec.describe Pangea::Resources::GoogleRedisInstance do
           expect(config['auth_enabled']).to eq(val)
         end
       end
+      [true, false].each do |val|
+        it "accepts deletion_protection=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(deletion_protection: val)
+          synth.google_redis_instance("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_redis_instance', "bool_#{val}")
+          expect(config['deletion_protection']).to eq(val)
+        end
+      end
     end
 
     context 'attribute types' do
@@ -362,8 +609,8 @@ RSpec.describe Pangea::Resources::GoogleRedisInstance do
     resource_type: :google_redis_instance,
     method: :google_redis_instance,
     required_attrs: { memory_size_gb: 3.14, name: 'test-value' },
-    expected_outputs: [:id, :alternative_location_id, :auth_string, :authorized_network, :create_time, :current_location_id, :effective_labels, :effective_reserved_ip_range, :host, :location_id, :maintenance_schedule, :maintenance_version, :nodes, :persistence_iam_identity, :port, :project, :read_endpoint, :read_endpoint_port, :read_replicas_mode, :redis_version, :region, :replica_count, :reserved_ip_range, :secondary_ip_range, :server_ca_certs, :terraform_labels],
+    expected_outputs: [:id, :alternative_location_id, :auth_string, :authorized_network, :create_time, :current_location_id, :deletion_policy, :effective_labels, :effective_reserved_ip_range, :host, :location_id, :maintenance_schedule, :maintenance_version, :nodes, :persistence_iam_identity, :port, :project, :read_endpoint, :read_endpoint_port, :read_replicas_mode, :redis_version, :region, :replica_count, :reserved_ip_range, :secondary_ip_range, :server_ca_certs, :terraform_labels],
     sensitive_fields: [:auth_string],
     immutable_fields: [],
-    boolean_fields: [:auth_enabled]
+    boolean_fields: [:auth_enabled, :deletion_protection]
 end

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListingSubscription do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { data_exchange_id: 'test-value', destination_dataset: [{ 'key1' => 'val1' }], listing_id: 'test-value', location: 'test-value' } }
+  let(:required_attrs) { { data_exchange_id: 'test-value', destination_dataset: { 'key1' => 'val1' }, listing_id: 'test-value', location: 'test-value' } }
 
   describe ':google_bigquery_analytics_hub_listing_subscription' do
     context 'with required attributes only' do
@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListingSubscription 
         expect(ref.id).to eq("${google_bigquery_analytics_hub_listing_subscription.test.id}")
         expect(ref.commercial_info).to eq("${google_bigquery_analytics_hub_listing_subscription.test.commercial_info}")
         expect(ref.creation_time).to eq("${google_bigquery_analytics_hub_listing_subscription.test.creation_time}")
+        expect(ref.deletion_policy).to eq("${google_bigquery_analytics_hub_listing_subscription.test.deletion_policy}")
         expect(ref.last_modify_time).to eq("${google_bigquery_analytics_hub_listing_subscription.test.last_modify_time}")
         expect(ref.linked_dataset_map).to eq("${google_bigquery_analytics_hub_listing_subscription.test.linked_dataset_map}")
         expect(ref.linked_resources).to eq("${google_bigquery_analytics_hub_listing_subscription.test.linked_resources}")
@@ -65,6 +66,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListingSubscription 
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing_subscription', 'test')
         expect(config).not_to have_key('commercial_info')
         expect(config).not_to have_key('creation_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('last_modify_time')
         expect(config).not_to have_key('linked_dataset_map')
         expect(config).not_to have_key('linked_resources')
@@ -80,6 +82,58 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListingSubscription 
       end
     end
 
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_listing_subscription('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing_subscription', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_listing_subscription('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing_subscription', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_listing_subscription('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing_subscription', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_listing_subscription('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing_subscription', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_listing_subscription('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing_subscription', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+    end
+
     context 'attribute types' do
       it 'validates expected attribute types' do
         synth = create_synthesizer
@@ -89,7 +143,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListingSubscription 
 
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_listing_subscription', 'typed')
         expect(config['data_exchange_id']).to be_a(String)
-        expect(config['destination_dataset']).to be_a(Array)
+        expect(config['destination_dataset']).to be_a(Hash)
         expect(config['listing_id']).to be_a(String)
         expect(config['location']).to be_a(String)
       end
@@ -124,8 +178,8 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubListingSubscription 
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_bigquery_analytics_hub_listing_subscription,
     method: :google_bigquery_analytics_hub_listing_subscription,
-    required_attrs: { data_exchange_id: 'test-value', destination_dataset: [{ 'key1' => 'val1' }], listing_id: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :commercial_info, :creation_time, :last_modify_time, :linked_dataset_map, :linked_resources, :log_linked_dataset_query_user_email, :name, :organization_display_name, :organization_id, :project, :resource_type, :state, :subscriber_contact, :subscription_id],
+    required_attrs: { data_exchange_id: 'test-value', destination_dataset: { 'key1' => 'val1' }, listing_id: 'test-value', location: 'test-value' },
+    expected_outputs: [:id, :commercial_info, :creation_time, :deletion_policy, :last_modify_time, :linked_dataset_map, :linked_resources, :log_linked_dataset_query_user_email, :name, :organization_display_name, :organization_id, :project, :resource_type, :state, :subscriber_contact, :subscription_id],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

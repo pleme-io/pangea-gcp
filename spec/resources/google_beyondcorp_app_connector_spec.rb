@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleBeyondcorpAppConnector do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { name: 'test-value', principal_info: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { name: 'test-value', principal_info: { 'key1' => 'val1' } } }
 
   describe ':google_beyondcorp_app_connector' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpAppConnector do
         ref = synth.google_beyondcorp_app_connector('test', required_attrs)
 
         expect(ref.id).to eq("${google_beyondcorp_app_connector.test.id}")
+        expect(ref.deletion_policy).to eq("${google_beyondcorp_app_connector.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_beyondcorp_app_connector.test.effective_labels}")
         expect(ref.project).to eq("${google_beyondcorp_app_connector.test.project}")
         expect(ref.state).to eq("${google_beyondcorp_app_connector.test.state}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpAppConnector do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_beyondcorp_app_connector', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpAppConnector do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ display_name: 'test-value', labels: { 'key1' => 'val1' }, region: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,13 +72,32 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpAppConnector do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_beyondcorp_app_connector', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('region')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_app_connector('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_app_connector', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_app_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_app_connector', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes display_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -111,6 +132,23 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpAppConnector do
         config = validate_resource_structure(result, 'google_beyondcorp_app_connector', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_app_connector('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_app_connector', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_beyondcorp_app_connector('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_beyondcorp_app_connector', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes region when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -139,7 +177,7 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpAppConnector do
 
         config = validate_resource_structure(result, 'google_beyondcorp_app_connector', 'typed')
         expect(config['name']).to be_a(String)
-        expect(config['principal_info']).to be_a(Array)
+        expect(config['principal_info']).to be_a(Hash)
       end
     end
 
@@ -172,8 +210,8 @@ RSpec.describe Pangea::Resources::GoogleBeyondcorpAppConnector do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_beyondcorp_app_connector,
     method: :google_beyondcorp_app_connector,
-    required_attrs: { name: 'test-value', principal_info: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :effective_labels, :project, :state, :terraform_labels],
+    required_attrs: { name: 'test-value', principal_info: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :project, :state, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

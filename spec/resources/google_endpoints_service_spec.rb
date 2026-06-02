@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleEndpointsService do
         expect(ref.id).to eq("${google_endpoints_service.test.id}")
         expect(ref.apis).to eq("${google_endpoints_service.test.apis}")
         expect(ref.config_id).to eq("${google_endpoints_service.test.config_id}")
+        expect(ref.deletion_policy).to eq("${google_endpoints_service.test.deletion_policy}")
         expect(ref.dns_address).to eq("${google_endpoints_service.test.dns_address}")
         expect(ref.endpoints).to eq("${google_endpoints_service.test.endpoints}")
         expect(ref.project).to eq("${google_endpoints_service.test.project}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleEndpointsService do
         config = validate_resource_structure(result, 'google_endpoints_service', 'test')
         expect(config).not_to have_key('apis')
         expect(config).not_to have_key('config_id')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('dns_address')
         expect(config).not_to have_key('endpoints')
         expect(config).not_to have_key('project')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleEndpointsService do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ grpc_config: 'test-value', openapi_config: 'test-value', protoc_output_base64: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', grpc_config: 'test-value', openapi_config: 'test-value', project: 'test-value', protoc_output_base64: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,13 +74,32 @@ RSpec.describe Pangea::Resources::GoogleEndpointsService do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_endpoints_service', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('grpc_config')
         expect(config).to have_key('openapi_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('protoc_output_base64')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_endpoints_service('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_endpoints_service', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_endpoints_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_endpoints_service', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes grpc_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -112,6 +133,23 @@ RSpec.describe Pangea::Resources::GoogleEndpointsService do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_endpoints_service', 'minimal')
         expect(config).not_to have_key('openapi_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_endpoints_service('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_endpoints_service', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_endpoints_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_endpoints_service', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes protoc_output_base64 when provided' do
         synth = create_synthesizer
@@ -174,7 +212,7 @@ RSpec.describe Pangea::Resources::GoogleEndpointsService do
     resource_type: :google_endpoints_service,
     method: :google_endpoints_service,
     required_attrs: { service_name: 'test-value' },
-    expected_outputs: [:id, :apis, :config_id, :dns_address, :endpoints, :project],
+    expected_outputs: [:id, :apis, :config_id, :deletion_policy, :dns_address, :endpoints, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

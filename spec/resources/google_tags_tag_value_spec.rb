@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleTagsTagValue do
 
         expect(ref.id).to eq("${google_tags_tag_value.test.id}")
         expect(ref.create_time).to eq("${google_tags_tag_value.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_tags_tag_value.test.deletion_policy}")
         expect(ref.name).to eq("${google_tags_tag_value.test.name}")
         expect(ref.namespaced_name).to eq("${google_tags_tag_value.test.namespaced_name}")
         expect(ref.update_time).to eq("${google_tags_tag_value.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleTagsTagValue do
 
         config = validate_resource_structure(result, 'google_tags_tag_value', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('namespaced_name')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleTagsTagValue do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,11 +72,29 @@ RSpec.describe Pangea::Resources::GoogleTagsTagValue do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_tags_tag_value', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_tags_tag_value('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_tags_tag_value', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_tags_tag_value('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_tags_tag_value', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -137,7 +157,7 @@ RSpec.describe Pangea::Resources::GoogleTagsTagValue do
     resource_type: :google_tags_tag_value,
     method: :google_tags_tag_value,
     required_attrs: { parent: 'test-value', short_name: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :namespaced_name, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :namespaced_name, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleSccV2OrganizationSccBigQueryExports do
 
         expect(ref.id).to eq("${google_scc_v2_organization_scc_big_query_exports.test.id}")
         expect(ref.create_time).to eq("${google_scc_v2_organization_scc_big_query_exports.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_scc_v2_organization_scc_big_query_exports.test.deletion_policy}")
         expect(ref.most_recent_editor).to eq("${google_scc_v2_organization_scc_big_query_exports.test.most_recent_editor}")
         expect(ref.principal).to eq("${google_scc_v2_organization_scc_big_query_exports.test.principal}")
         expect(ref.update_time).to eq("${google_scc_v2_organization_scc_big_query_exports.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleSccV2OrganizationSccBigQueryExports do
 
         config = validate_resource_structure(result, 'google_scc_v2_organization_scc_big_query_exports', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('most_recent_editor')
         expect(config).not_to have_key('principal')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleSccV2OrganizationSccBigQueryExports do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ dataset: 'test-value', description: 'test-value', filter: 'test-value', location: 'test-value', name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ dataset: 'test-value', deletion_policy: 'test-value', description: 'test-value', filter: 'test-value', location: 'test-value', name: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,6 +73,7 @@ RSpec.describe Pangea::Resources::GoogleSccV2OrganizationSccBigQueryExports do
 
         config = validate_resource_structure(result, 'google_scc_v2_organization_scc_big_query_exports', 'full')
         expect(config).to have_key('dataset')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('filter')
         expect(config).to have_key('location')
@@ -95,6 +98,23 @@ RSpec.describe Pangea::Resources::GoogleSccV2OrganizationSccBigQueryExports do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_scc_v2_organization_scc_big_query_exports', 'minimal')
         expect(config).not_to have_key('dataset')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_scc_v2_organization_scc_big_query_exports('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_scc_v2_organization_scc_big_query_exports', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_scc_v2_organization_scc_big_query_exports('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_scc_v2_organization_scc_big_query_exports', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -209,7 +229,7 @@ RSpec.describe Pangea::Resources::GoogleSccV2OrganizationSccBigQueryExports do
     resource_type: :google_scc_v2_organization_scc_big_query_exports,
     method: :google_scc_v2_organization_scc_big_query_exports,
     required_attrs: { big_query_export_id: 'test-value', organization: 'test-value' },
-    expected_outputs: [:id, :create_time, :most_recent_editor, :principal, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :most_recent_editor, :principal, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleFirebaserulesRuleset do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { source: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { source: { 'key1' => 'val1' } } }
 
   describe ':google_firebaserules_ruleset' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaserulesRuleset do
 
         expect(ref.id).to eq("${google_firebaserules_ruleset.test.id}")
         expect(ref.create_time).to eq("${google_firebaserules_ruleset.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_firebaserules_ruleset.test.deletion_policy}")
         expect(ref.metadata).to eq("${google_firebaserules_ruleset.test.metadata}")
         expect(ref.name).to eq("${google_firebaserules_ruleset.test.name}")
         expect(ref.project).to eq("${google_firebaserules_ruleset.test.project}")
@@ -54,8 +55,61 @@ RSpec.describe Pangea::Resources::GoogleFirebaserulesRuleset do
 
         config = validate_resource_structure(result, 'google_firebaserules_ruleset', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('metadata')
         expect(config).not_to have_key('name')
+        expect(config).not_to have_key('project')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebaserules_ruleset('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_firebaserules_ruleset', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebaserules_ruleset('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebaserules_ruleset', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebaserules_ruleset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebaserules_ruleset', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebaserules_ruleset('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebaserules_ruleset', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebaserules_ruleset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebaserules_ruleset', 'minimal')
         expect(config).not_to have_key('project')
       end
     end
@@ -68,7 +122,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaserulesRuleset do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_firebaserules_ruleset', 'typed')
-        expect(config['source']).to be_a(Array)
+        expect(config['source']).to be_a(Hash)
       end
     end
 
@@ -101,8 +155,8 @@ RSpec.describe Pangea::Resources::GoogleFirebaserulesRuleset do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_firebaserules_ruleset,
     method: :google_firebaserules_ruleset,
-    required_attrs: { source: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :metadata, :name, :project],
+    required_attrs: { source: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :create_time, :deletion_policy, :metadata, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxPlaybook do
 
         expect(ref.id).to eq("${google_dialogflow_cx_playbook.test.id}")
         expect(ref.create_time).to eq("${google_dialogflow_cx_playbook.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_dialogflow_cx_playbook.test.deletion_policy}")
         expect(ref.name).to eq("${google_dialogflow_cx_playbook.test.name}")
         expect(ref.referenced_flows).to eq("${google_dialogflow_cx_playbook.test.referenced_flows}")
         expect(ref.referenced_playbooks).to eq("${google_dialogflow_cx_playbook.test.referenced_playbooks}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxPlaybook do
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_playbook', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('referenced_flows')
         expect(config).not_to have_key('referenced_playbooks')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxPlaybook do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ instruction: [{ 'key1' => 'val1' }], llm_model_settings: [{ 'key1' => 'val1' }], parent: 'test-value', playbook_type: 'test-value', referenced_tools: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', instruction: { 'key1' => 'val1' }, llm_model_settings: { 'key1' => 'val1' }, parent: 'test-value', playbook_type: 'test-value', referenced_tools: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,6 +76,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxPlaybook do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_playbook', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('instruction')
         expect(config).to have_key('llm_model_settings')
         expect(config).to have_key('parent')
@@ -83,10 +86,27 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxPlaybook do
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_playbook('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_playbook', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_playbook('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_playbook', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes instruction when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_playbook('opt', required_attrs.merge(instruction: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_playbook('opt', required_attrs.merge(instruction: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_playbook', 'opt')
         expect(config).to have_key('instruction')
@@ -103,7 +123,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxPlaybook do
       it 'includes llm_model_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_playbook('opt', required_attrs.merge(llm_model_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_playbook('opt', required_attrs.merge(llm_model_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_playbook', 'opt')
         expect(config).to have_key('llm_model_settings')
@@ -213,7 +233,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxPlaybook do
     resource_type: :google_dialogflow_cx_playbook,
     method: :google_dialogflow_cx_playbook,
     required_attrs: { display_name: 'test-value', goal: 'test-value' },
-    expected_outputs: [:id, :create_time, :name, :referenced_flows, :referenced_playbooks, :token_count, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :name, :referenced_flows, :referenced_playbooks, :token_count, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

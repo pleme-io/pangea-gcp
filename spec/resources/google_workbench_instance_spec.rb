@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleWorkbenchInstance do
         expect(ref.id).to eq("${google_workbench_instance.test.id}")
         expect(ref.create_time).to eq("${google_workbench_instance.test.create_time}")
         expect(ref.creator).to eq("${google_workbench_instance.test.creator}")
+        expect(ref.deletion_policy).to eq("${google_workbench_instance.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_workbench_instance.test.effective_labels}")
         expect(ref.health_info).to eq("${google_workbench_instance.test.health_info}")
         expect(ref.health_state).to eq("${google_workbench_instance.test.health_state}")
@@ -62,6 +63,7 @@ RSpec.describe Pangea::Resources::GoogleWorkbenchInstance do
         config = validate_resource_structure(result, 'google_workbench_instance', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('creator')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('health_info')
         expect(config).not_to have_key('health_state')
@@ -75,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleWorkbenchInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ desired_state: 'test-value', disable_proxy_access: true, enable_managed_euc: true, enable_third_party_identity: true, gce_setup: [{ 'key1' => 'val1' }], instance_id: 'test-value', instance_owners: ['test-value'], labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', desired_state: 'test-value', disable_proxy_access: true, enable_managed_euc: true, enable_third_party_identity: true, gce_setup: { 'key1' => 'val1' }, instance_id: 'test-value', instance_owners: ['test-value'], labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -84,6 +86,7 @@ RSpec.describe Pangea::Resources::GoogleWorkbenchInstance do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_workbench_instance', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('desired_state')
         expect(config).to have_key('disable_proxy_access')
         expect(config).to have_key('enable_managed_euc')
@@ -92,10 +95,28 @@ RSpec.describe Pangea::Resources::GoogleWorkbenchInstance do
         expect(config).to have_key('instance_id')
         expect(config).to have_key('instance_owners')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workbench_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workbench_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workbench_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workbench_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes desired_state when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -167,7 +188,7 @@ RSpec.describe Pangea::Resources::GoogleWorkbenchInstance do
       it 'includes gce_setup when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_workbench_instance('opt', required_attrs.merge(gce_setup: [{ 'key1' => 'val1' }]))
+        synth.google_workbench_instance('opt', required_attrs.merge(gce_setup: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_workbench_instance', 'opt')
         expect(config).to have_key('gce_setup')
@@ -231,6 +252,23 @@ RSpec.describe Pangea::Resources::GoogleWorkbenchInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_workbench_instance', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workbench_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workbench_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_workbench_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_workbench_instance', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -313,7 +351,7 @@ RSpec.describe Pangea::Resources::GoogleWorkbenchInstance do
     resource_type: :google_workbench_instance,
     method: :google_workbench_instance,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :create_time, :creator, :effective_labels, :health_info, :health_state, :project, :proxy_uri, :state, :terraform_labels, :update_time, :upgrade_history],
+    expected_outputs: [:id, :create_time, :creator, :deletion_policy, :effective_labels, :health_info, :health_state, :project, :proxy_uri, :state, :terraform_labels, :update_time, :upgrade_history],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disable_proxy_access, :enable_managed_euc, :enable_third_party_identity]

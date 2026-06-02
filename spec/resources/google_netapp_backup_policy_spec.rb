@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupPolicy do
         expect(ref.id).to eq("${google_netapp_backup_policy.test.id}")
         expect(ref.assigned_volume_count).to eq("${google_netapp_backup_policy.test.assigned_volume_count}")
         expect(ref.create_time).to eq("${google_netapp_backup_policy.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_netapp_backup_policy.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_netapp_backup_policy.test.effective_labels}")
         expect(ref.project).to eq("${google_netapp_backup_policy.test.project}")
         expect(ref.state).to eq("${google_netapp_backup_policy.test.state}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupPolicy do
         config = validate_resource_structure(result, 'google_netapp_backup_policy', 'test')
         expect(config).not_to have_key('assigned_volume_count')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupPolicy do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', enabled: true, labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', enabled: true, labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,13 +76,32 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_netapp_backup_policy', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('enabled')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_backup_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_backup_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_backup_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_backup_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -131,6 +152,23 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_netapp_backup_policy', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_backup_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_backup_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_netapp_backup_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_netapp_backup_policy', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -194,7 +232,7 @@ RSpec.describe Pangea::Resources::GoogleNetappBackupPolicy do
     resource_type: :google_netapp_backup_policy,
     method: :google_netapp_backup_policy,
     required_attrs: { daily_backup_limit: 3.14, location: 'test-value', monthly_backup_limit: 3.14, name: 'test-value', weekly_backup_limit: 3.14 },
-    expected_outputs: [:id, :assigned_volume_count, :create_time, :effective_labels, :project, :state, :terraform_labels],
+    expected_outputs: [:id, :assigned_volume_count, :create_time, :deletion_policy, :effective_labels, :project, :state, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:enabled]

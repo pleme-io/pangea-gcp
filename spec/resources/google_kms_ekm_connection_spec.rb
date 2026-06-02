@@ -61,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleKmsEkmConnection do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ key_management_mode: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ crypto_space_path: 'test-value', etag: 'test-value', key_management_mode: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,11 +70,48 @@ RSpec.describe Pangea::Resources::GoogleKmsEkmConnection do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_kms_ekm_connection', 'full')
+        expect(config).to have_key('crypto_space_path')
+        expect(config).to have_key('etag')
         expect(config).to have_key('key_management_mode')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes crypto_space_path when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_ekm_connection('opt', required_attrs.merge(crypto_space_path: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_ekm_connection', 'opt')
+        expect(config).to have_key('crypto_space_path')
+      end
+
+      it 'omits crypto_space_path when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_ekm_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_ekm_connection', 'minimal')
+        expect(config).not_to have_key('crypto_space_path')
+      end
+      it 'includes etag when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_ekm_connection('opt', required_attrs.merge(etag: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_ekm_connection', 'opt')
+        expect(config).to have_key('etag')
+      end
+
+      it 'omits etag when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_ekm_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_ekm_connection', 'minimal')
+        expect(config).not_to have_key('etag')
+      end
       it 'includes key_management_mode when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -91,6 +128,23 @@ RSpec.describe Pangea::Resources::GoogleKmsEkmConnection do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_kms_ekm_connection', 'minimal')
         expect(config).not_to have_key('key_management_mode')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_ekm_connection('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_ekm_connection', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_ekm_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_ekm_connection', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 

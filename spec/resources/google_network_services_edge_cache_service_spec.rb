@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheService do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { name: 'test-value', routing: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { name: 'test-value', routing: { 'key1' => 'val1' } } }
 
   describe ':google_network_services_edge_cache_service' do
     context 'with required attributes only' do
@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheService do
         ref = synth.google_network_services_edge_cache_service('test', required_attrs)
 
         expect(ref.id).to eq("${google_network_services_edge_cache_service.test.id}")
+        expect(ref.deletion_policy).to eq("${google_network_services_edge_cache_service.test.deletion_policy}")
         expect(ref.disable_quic).to eq("${google_network_services_edge_cache_service.test.disable_quic}")
         expect(ref.effective_labels).to eq("${google_network_services_edge_cache_service.test.effective_labels}")
         expect(ref.ipv4_addresses).to eq("${google_network_services_edge_cache_service.test.ipv4_addresses}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheService do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_services_edge_cache_service', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('disable_quic')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('ipv4_addresses')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheService do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', disable_http2: true, edge_security_policy: 'test-value', edge_ssl_certificates: ['test-value'], labels: { 'key1' => 'val1' }, log_config: [{ 'key1' => 'val1' }], ssl_policy: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', disable_http2: true, disable_quic: true, edge_security_policy: 'test-value', edge_ssl_certificates: ['test-value'], labels: { 'key1' => 'val1' }, log_config: { 'key1' => 'val1' }, project: 'test-value', require_tls: true, ssl_policy: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,17 +78,38 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheService do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_services_edge_cache_service', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('disable_http2')
+        expect(config).to have_key('disable_quic')
         expect(config).to have_key('edge_security_policy')
         expect(config).to have_key('edge_ssl_certificates')
         expect(config).to have_key('labels')
         expect(config).to have_key('log_config')
+        expect(config).to have_key('project')
+        expect(config).to have_key('require_tls')
         expect(config).to have_key('ssl_policy')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_service('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_service', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_service', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -120,6 +143,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheService do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_edge_cache_service', 'minimal')
         expect(config).not_to have_key('disable_http2')
+      end
+      it 'includes disable_quic when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_service('opt', required_attrs.merge(disable_quic: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_service', 'opt')
+        expect(config).to have_key('disable_quic')
+      end
+
+      it 'omits disable_quic when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_service', 'minimal')
+        expect(config).not_to have_key('disable_quic')
       end
       it 'includes edge_security_policy when provided' do
         synth = create_synthesizer
@@ -175,7 +215,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheService do
       it 'includes log_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_network_services_edge_cache_service('opt', required_attrs.merge(log_config: [{ 'key1' => 'val1' }]))
+        synth.google_network_services_edge_cache_service('opt', required_attrs.merge(log_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_edge_cache_service', 'opt')
         expect(config).to have_key('log_config')
@@ -188,6 +228,40 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheService do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_edge_cache_service', 'minimal')
         expect(config).not_to have_key('log_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_service('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_service', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_service', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes require_tls when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_service('opt', required_attrs.merge(require_tls: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_service', 'opt')
+        expect(config).to have_key('require_tls')
+      end
+
+      it 'omits require_tls when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_edge_cache_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_edge_cache_service', 'minimal')
+        expect(config).not_to have_key('require_tls')
       end
       it 'includes ssl_policy when provided' do
         synth = create_synthesizer
@@ -220,6 +294,28 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheService do
           expect(config['disable_http2']).to eq(val)
         end
       end
+      [true, false].each do |val|
+        it "accepts disable_quic=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(disable_quic: val)
+          synth.google_network_services_edge_cache_service("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_network_services_edge_cache_service', "bool_#{val}")
+          expect(config['disable_quic']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts require_tls=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(require_tls: val)
+          synth.google_network_services_edge_cache_service("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_network_services_edge_cache_service', "bool_#{val}")
+          expect(config['require_tls']).to eq(val)
+        end
+      end
     end
 
     context 'attribute types' do
@@ -231,7 +327,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheService do
 
         config = validate_resource_structure(result, 'google_network_services_edge_cache_service', 'typed')
         expect(config['name']).to be_a(String)
-        expect(config['routing']).to be_a(Array)
+        expect(config['routing']).to be_a(Hash)
       end
     end
 
@@ -264,9 +360,9 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesEdgeCacheService do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_network_services_edge_cache_service,
     method: :google_network_services_edge_cache_service,
-    required_attrs: { name: 'test-value', routing: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :disable_quic, :effective_labels, :ipv4_addresses, :ipv6_addresses, :project, :require_tls, :terraform_labels],
+    required_attrs: { name: 'test-value', routing: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :deletion_policy, :disable_quic, :effective_labels, :ipv4_addresses, :ipv6_addresses, :project, :require_tls, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:disable_http2]
+    boolean_fields: [:disable_http2, :disable_quic, :require_tls]
 end

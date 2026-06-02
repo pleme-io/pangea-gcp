@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleOrganizationIamCustomRole do
 
         expect(ref.id).to eq("${google_organization_iam_custom_role.test.id}")
         expect(ref.deleted).to eq("${google_organization_iam_custom_role.test.deleted}")
+        expect(ref.deletion_policy).to eq("${google_organization_iam_custom_role.test.deletion_policy}")
         expect(ref.name).to eq("${google_organization_iam_custom_role.test.name}")
       end
     end
@@ -52,12 +53,13 @@ RSpec.describe Pangea::Resources::GoogleOrganizationIamCustomRole do
 
         config = validate_resource_structure(result, 'google_organization_iam_custom_role', 'test')
         expect(config).not_to have_key('deleted')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', stage: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', stage: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,12 +68,30 @@ RSpec.describe Pangea::Resources::GoogleOrganizationIamCustomRole do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_organization_iam_custom_role', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('stage')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_organization_iam_custom_role('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_organization_iam_custom_role', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_organization_iam_custom_role('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_organization_iam_custom_role', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -153,7 +173,7 @@ RSpec.describe Pangea::Resources::GoogleOrganizationIamCustomRole do
     resource_type: :google_organization_iam_custom_role,
     method: :google_organization_iam_custom_role,
     required_attrs: { org_id: 'test-value', permissions: ['test-value'], role_id: 'test-value', title: 'test-value' },
-    expected_outputs: [:id, :deleted, :name],
+    expected_outputs: [:id, :deleted, :deletion_policy, :name],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDatasetAccess do
 
         expect(ref.id).to eq("${google_bigquery_dataset_access.test.id}")
         expect(ref.api_updated_member).to eq("${google_bigquery_dataset_access.test.api_updated_member}")
+        expect(ref.deletion_policy).to eq("${google_bigquery_dataset_access.test.deletion_policy}")
         expect(ref.project).to eq("${google_bigquery_dataset_access.test.project}")
       end
     end
@@ -52,12 +53,13 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDatasetAccess do
 
         config = validate_resource_structure(result, 'google_bigquery_dataset_access', 'test')
         expect(config).not_to have_key('api_updated_member')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ condition: [{ 'key1' => 'val1' }], dataset: [{ 'key1' => 'val1' }], domain: 'test-value', group_by_email: 'test-value', iam_member: 'test-value', role: 'test-value', routine: [{ 'key1' => 'val1' }], special_group: 'test-value', user_by_email: 'test-value', view: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ condition: { 'key1' => 'val1' }, dataset: { 'key1' => 'val1' }, deletion_policy: 'test-value', domain: 'test-value', group_by_email: 'test-value', iam_member: 'test-value', project: 'test-value', role: 'test-value', routine: { 'key1' => 'val1' }, special_group: 'test-value', user_by_email: 'test-value', view: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,9 +70,11 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDatasetAccess do
         config = validate_resource_structure(result, 'google_bigquery_dataset_access', 'full')
         expect(config).to have_key('condition')
         expect(config).to have_key('dataset')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('domain')
         expect(config).to have_key('group_by_email')
         expect(config).to have_key('iam_member')
+        expect(config).to have_key('project')
         expect(config).to have_key('role')
         expect(config).to have_key('routine')
         expect(config).to have_key('special_group')
@@ -83,7 +87,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDatasetAccess do
       it 'includes condition when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_dataset_access('opt', required_attrs.merge(condition: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_dataset_access('opt', required_attrs.merge(condition: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_dataset_access', 'opt')
         expect(config).to have_key('condition')
@@ -100,7 +104,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDatasetAccess do
       it 'includes dataset when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_dataset_access('opt', required_attrs.merge(dataset: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_dataset_access('opt', required_attrs.merge(dataset: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_dataset_access', 'opt')
         expect(config).to have_key('dataset')
@@ -113,6 +117,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDatasetAccess do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_dataset_access', 'minimal')
         expect(config).not_to have_key('dataset')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset_access('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset_access', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset_access('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset_access', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes domain when provided' do
         synth = create_synthesizer
@@ -165,6 +186,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDatasetAccess do
         config = validate_resource_structure(result, 'google_bigquery_dataset_access', 'minimal')
         expect(config).not_to have_key('iam_member')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset_access('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset_access', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_dataset_access('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_dataset_access', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes role when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -185,7 +223,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDatasetAccess do
       it 'includes routine when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_dataset_access('opt', required_attrs.merge(routine: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_dataset_access('opt', required_attrs.merge(routine: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_dataset_access', 'opt')
         expect(config).to have_key('routine')
@@ -236,7 +274,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDatasetAccess do
       it 'includes view when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_dataset_access('opt', required_attrs.merge(view: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_dataset_access('opt', required_attrs.merge(view: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_dataset_access', 'opt')
         expect(config).to have_key('view')
@@ -294,7 +332,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDatasetAccess do
     resource_type: :google_bigquery_dataset_access,
     method: :google_bigquery_dataset_access,
     required_attrs: { dataset_id: 'test-value' },
-    expected_outputs: [:id, :api_updated_member, :project],
+    expected_outputs: [:id, :api_updated_member, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

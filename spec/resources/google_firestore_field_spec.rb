@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleFirestoreField do
         ref = synth.google_firestore_field('test', required_attrs)
 
         expect(ref.id).to eq("${google_firestore_field.test.id}")
+        expect(ref.deletion_policy).to eq("${google_firestore_field.test.deletion_policy}")
         expect(ref.name).to eq("${google_firestore_field.test.name}")
         expect(ref.project).to eq("${google_firestore_field.test.project}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleFirestoreField do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_firestore_field', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ database: 'test-value', index_config: [{ 'key1' => 'val1' }], ttl_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ database: 'test-value', deletion_policy: 'test-value', index_config: { 'key1' => 'val1' }, project: 'test-value', ttl_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,7 +69,9 @@ RSpec.describe Pangea::Resources::GoogleFirestoreField do
 
         config = validate_resource_structure(result, 'google_firestore_field', 'full')
         expect(config).to have_key('database')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('index_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('ttl_config')
       end
     end
@@ -90,10 +94,27 @@ RSpec.describe Pangea::Resources::GoogleFirestoreField do
         config = validate_resource_structure(result, 'google_firestore_field', 'minimal')
         expect(config).not_to have_key('database')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_field('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_field', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_field('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_field', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes index_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_firestore_field('opt', required_attrs.merge(index_config: [{ 'key1' => 'val1' }]))
+        synth.google_firestore_field('opt', required_attrs.merge(index_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_firestore_field', 'opt')
         expect(config).to have_key('index_config')
@@ -107,10 +128,27 @@ RSpec.describe Pangea::Resources::GoogleFirestoreField do
         config = validate_resource_structure(result, 'google_firestore_field', 'minimal')
         expect(config).not_to have_key('index_config')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_field('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_field', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firestore_field('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firestore_field', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes ttl_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_firestore_field('opt', required_attrs.merge(ttl_config: [{ 'key1' => 'val1' }]))
+        synth.google_firestore_field('opt', required_attrs.merge(ttl_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_firestore_field', 'opt')
         expect(config).to have_key('ttl_config')
@@ -169,7 +207,7 @@ RSpec.describe Pangea::Resources::GoogleFirestoreField do
     resource_type: :google_firestore_field,
     method: :google_firestore_field,
     required_attrs: { collection: 'test-value', field: 'test-value' },
-    expected_outputs: [:id, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

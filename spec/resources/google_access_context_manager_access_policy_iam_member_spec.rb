@@ -55,7 +55,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessPolicyIamMembe
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ condition: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ condition: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,7 +72,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerAccessPolicyIamMembe
       it 'includes condition when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_access_context_manager_access_policy_iam_member('opt', required_attrs.merge(condition: [{ 'key1' => 'val1' }]))
+        synth.google_access_context_manager_access_policy_iam_member('opt', required_attrs.merge(condition: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_access_context_manager_access_policy_iam_member', 'opt')
         expect(config).to have_key('condition')

@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleGeminiDataSharingWithGoogleSetting do
 
         expect(ref.id).to eq("${google_gemini_data_sharing_with_google_setting.test.id}")
         expect(ref.create_time).to eq("${google_gemini_data_sharing_with_google_setting.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_gemini_data_sharing_with_google_setting.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_gemini_data_sharing_with_google_setting.test.effective_labels}")
         expect(ref.name).to eq("${google_gemini_data_sharing_with_google_setting.test.name}")
         expect(ref.project).to eq("${google_gemini_data_sharing_with_google_setting.test.project}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleGeminiDataSharingWithGoogleSetting do
 
         config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleGeminiDataSharingWithGoogleSetting do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ enable_data_sharing: true, enable_preview_data_sharing: true, labels: { 'key1' => 'val1' }, location: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', enable_data_sharing: true, enable_preview_data_sharing: true, labels: { 'key1' => 'val1' }, location: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,14 +76,33 @@ RSpec.describe Pangea::Resources::GoogleGeminiDataSharingWithGoogleSetting do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('enable_data_sharing')
         expect(config).to have_key('enable_preview_data_sharing')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gemini_data_sharing_with_google_setting('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gemini_data_sharing_with_google_setting('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes enable_data_sharing when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -149,6 +170,23 @@ RSpec.describe Pangea::Resources::GoogleGeminiDataSharingWithGoogleSetting do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting', 'minimal')
         expect(config).not_to have_key('location')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gemini_data_sharing_with_google_setting('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gemini_data_sharing_with_google_setting('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gemini_data_sharing_with_google_setting', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -219,7 +257,7 @@ RSpec.describe Pangea::Resources::GoogleGeminiDataSharingWithGoogleSetting do
     resource_type: :google_gemini_data_sharing_with_google_setting,
     method: :google_gemini_data_sharing_with_google_setting,
     required_attrs: { data_sharing_with_google_setting_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :name, :project, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :name, :project, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:enable_data_sharing, :enable_preview_data_sharing]

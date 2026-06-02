@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleFirebaseAppHostingBuild do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { backend: 'test-value', build_id: 'test-value', location: 'test-value', source: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { backend: 'test-value', build_id: 'test-value', location: 'test-value', source: { 'key1' => 'val1' } } }
 
   describe ':google_firebase_app_hosting_build' do
     context 'with required attributes only' do
@@ -83,7 +83,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppHostingBuild do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, display_name: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, display_name: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -95,6 +95,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppHostingBuild do
         expect(config).to have_key('annotations')
         expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
@@ -150,6 +151,23 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppHostingBuild do
         config = validate_resource_structure(result, 'google_firebase_app_hosting_build', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_hosting_build('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_hosting_build', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_hosting_build('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_hosting_build', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -163,7 +181,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppHostingBuild do
         expect(config['backend']).to be_a(String)
         expect(config['build_id']).to be_a(String)
         expect(config['location']).to be_a(String)
-        expect(config['source']).to be_a(Array)
+        expect(config['source']).to be_a(Hash)
       end
     end
 
@@ -196,7 +214,7 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppHostingBuild do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_firebase_app_hosting_build,
     method: :google_firebase_app_hosting_build,
-    required_attrs: { backend: 'test-value', build_id: 'test-value', location: 'test-value', source: [{ 'key1' => 'val1' }] },
+    required_attrs: { backend: 'test-value', build_id: 'test-value', location: 'test-value', source: { 'key1' => 'val1' } },
     expected_outputs: [:id, :build_logs_uri, :create_time, :effective_annotations, :effective_labels, :environment, :error, :error_source, :etag, :image, :name, :project, :state, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],

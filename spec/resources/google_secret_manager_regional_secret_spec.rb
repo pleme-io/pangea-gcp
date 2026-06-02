@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerRegionalSecret do
 
         expect(ref.id).to eq("${google_secret_manager_regional_secret.test.id}")
         expect(ref.create_time).to eq("${google_secret_manager_regional_secret.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_secret_manager_regional_secret.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_secret_manager_regional_secret.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_secret_manager_regional_secret.test.effective_labels}")
         expect(ref.expire_time).to eq("${google_secret_manager_regional_secret.test.expire_time}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerRegionalSecret do
 
         config = validate_resource_structure(result, 'google_secret_manager_regional_secret', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('expire_time')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerRegionalSecret do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, customer_managed_encryption: [{ 'key1' => 'val1' }], deletion_protection: true, labels: { 'key1' => 'val1' }, rotation: [{ 'key1' => 'val1' }], tags: { 'key1' => 'val1' }, topics: [{ 'key1' => 'val1' }], ttl: 'test-value', version_aliases: { 'key1' => 'val1' }, version_destroy_ttl: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, customer_managed_encryption: { 'key1' => 'val1' }, deletion_policy: 'test-value', deletion_protection: true, expire_time: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', rotation: { 'key1' => 'val1' }, tags: { 'key1' => 'val1' }, topics: [{ 'key1' => 'val1' }], ttl: 'test-value', version_aliases: { 'key1' => 'val1' }, version_destroy_ttl: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,8 +80,11 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerRegionalSecret do
         config = validate_resource_structure(result, 'google_secret_manager_regional_secret', 'full')
         expect(config).to have_key('annotations')
         expect(config).to have_key('customer_managed_encryption')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
+        expect(config).to have_key('expire_time')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('rotation')
         expect(config).to have_key('tags')
         expect(config).to have_key('topics')
@@ -110,7 +115,7 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerRegionalSecret do
       it 'includes customer_managed_encryption when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_secret_manager_regional_secret('opt', required_attrs.merge(customer_managed_encryption: [{ 'key1' => 'val1' }]))
+        synth.google_secret_manager_regional_secret('opt', required_attrs.merge(customer_managed_encryption: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_secret_manager_regional_secret', 'opt')
         expect(config).to have_key('customer_managed_encryption')
@@ -123,6 +128,23 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerRegionalSecret do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_secret_manager_regional_secret', 'minimal')
         expect(config).not_to have_key('customer_managed_encryption')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_secret_manager_regional_secret('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_secret_manager_regional_secret', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_secret_manager_regional_secret('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_secret_manager_regional_secret', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
@@ -141,6 +163,23 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerRegionalSecret do
         config = validate_resource_structure(result, 'google_secret_manager_regional_secret', 'minimal')
         expect(config).not_to have_key('deletion_protection')
       end
+      it 'includes expire_time when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_secret_manager_regional_secret('opt', required_attrs.merge(expire_time: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_secret_manager_regional_secret', 'opt')
+        expect(config).to have_key('expire_time')
+      end
+
+      it 'omits expire_time when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_secret_manager_regional_secret('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_secret_manager_regional_secret', 'minimal')
+        expect(config).not_to have_key('expire_time')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -158,10 +197,27 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerRegionalSecret do
         config = validate_resource_structure(result, 'google_secret_manager_regional_secret', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_secret_manager_regional_secret('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_secret_manager_regional_secret', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_secret_manager_regional_secret('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_secret_manager_regional_secret', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes rotation when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_secret_manager_regional_secret('opt', required_attrs.merge(rotation: [{ 'key1' => 'val1' }]))
+        synth.google_secret_manager_regional_secret('opt', required_attrs.merge(rotation: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_secret_manager_regional_secret', 'opt')
         expect(config).to have_key('rotation')
@@ -319,7 +375,7 @@ RSpec.describe Pangea::Resources::GoogleSecretManagerRegionalSecret do
     resource_type: :google_secret_manager_regional_secret,
     method: :google_secret_manager_regional_secret,
     required_attrs: { location: 'test-value', secret_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_annotations, :effective_labels, :expire_time, :name, :project, :terraform_labels],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_annotations, :effective_labels, :expire_time, :name, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection]

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleDeveloperConnectInsightsConfig do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { app_hub_application: 'test-value', insights_config_id: 'test-value', location: 'test-value' } }
+  let(:required_attrs) { { insights_config_id: 'test-value', location: 'test-value' } }
 
   describe ':google_developer_connect_insights_config' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectInsightsConfig do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'test')
-        validate_required_attributes(config, [:app_hub_application, :insights_config_id, :location])
+        validate_required_attributes(config, [:insights_config_id, :location])
       end
 
       it 'returns a ResourceReference' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectInsightsConfig do
 
         expect(ref.id).to eq("${google_developer_connect_insights_config.test.id}")
         expect(ref.create_time).to eq("${google_developer_connect_insights_config.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_developer_connect_insights_config.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_developer_connect_insights_config.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_developer_connect_insights_config.test.effective_labels}")
         expect(ref.errors).to eq("${google_developer_connect_insights_config.test.errors}")
@@ -61,6 +62,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectInsightsConfig do
 
         config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('errors')
@@ -75,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectInsightsConfig do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, artifact_configs: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, app_hub_application: 'test-value', artifact_configs: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', target_projects: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -85,8 +87,12 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectInsightsConfig do
 
         config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'full')
         expect(config).to have_key('annotations')
+        expect(config).to have_key('app_hub_application')
         expect(config).to have_key('artifact_configs')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
+        expect(config).to have_key('target_projects')
       end
     end
 
@@ -108,6 +114,23 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectInsightsConfig do
         config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'minimal')
         expect(config).not_to have_key('annotations')
       end
+      it 'includes app_hub_application when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_insights_config('opt', required_attrs.merge(app_hub_application: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'opt')
+        expect(config).to have_key('app_hub_application')
+      end
+
+      it 'omits app_hub_application when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_insights_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'minimal')
+        expect(config).not_to have_key('app_hub_application')
+      end
       it 'includes artifact_configs when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -124,6 +147,23 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectInsightsConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'minimal')
         expect(config).not_to have_key('artifact_configs')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_insights_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_insights_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes labels when provided' do
         synth = create_synthesizer
@@ -142,6 +182,40 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectInsightsConfig do
         config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_insights_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_insights_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes target_projects when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_insights_config('opt', required_attrs.merge(target_projects: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'opt')
+        expect(config).to have_key('target_projects')
+      end
+
+      it 'omits target_projects when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_insights_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'minimal')
+        expect(config).not_to have_key('target_projects')
+      end
     end
 
     context 'attribute types' do
@@ -152,7 +226,6 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectInsightsConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_developer_connect_insights_config', 'typed')
-        expect(config['app_hub_application']).to be_a(String)
         expect(config['insights_config_id']).to be_a(String)
         expect(config['location']).to be_a(String)
       end
@@ -187,8 +260,8 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectInsightsConfig do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_developer_connect_insights_config,
     method: :google_developer_connect_insights_config,
-    required_attrs: { app_hub_application: 'test-value', insights_config_id: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_annotations, :effective_labels, :errors, :name, :project, :reconciling, :runtime_configs, :state, :terraform_labels, :update_time],
+    required_attrs: { insights_config_id: 'test-value', location: 'test-value' },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_annotations, :effective_labels, :errors, :name, :project, :reconciling, :runtime_configs, :state, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

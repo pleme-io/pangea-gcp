@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesTlsRoute do
 
         expect(ref.id).to eq("${google_network_services_tls_route.test.id}")
         expect(ref.create_time).to eq("${google_network_services_tls_route.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_network_services_tls_route.test.deletion_policy}")
         expect(ref.project).to eq("${google_network_services_tls_route.test.project}")
         expect(ref.self_link).to eq("${google_network_services_tls_route.test.self_link}")
         expect(ref.update_time).to eq("${google_network_services_tls_route.test.update_time}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesTlsRoute do
 
         config = validate_resource_structure(result, 'google_network_services_tls_route', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
         expect(config).not_to have_key('update_time')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesTlsRoute do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', gateways: ['test-value'], meshes: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', gateways: ['test-value'], location: 'test-value', meshes: ['test-value'], project: 'test-value', target_proxies: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,13 +72,34 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesTlsRoute do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_network_services_tls_route', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('gateways')
+        expect(config).to have_key('location')
         expect(config).to have_key('meshes')
+        expect(config).to have_key('project')
+        expect(config).to have_key('target_proxies')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_tls_route('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_tls_route', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_tls_route('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_tls_route', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -111,6 +134,23 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesTlsRoute do
         config = validate_resource_structure(result, 'google_network_services_tls_route', 'minimal')
         expect(config).not_to have_key('gateways')
       end
+      it 'includes location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_tls_route('opt', required_attrs.merge(location: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_tls_route', 'opt')
+        expect(config).to have_key('location')
+      end
+
+      it 'omits location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_tls_route('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_tls_route', 'minimal')
+        expect(config).not_to have_key('location')
+      end
       it 'includes meshes when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -127,6 +167,40 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesTlsRoute do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_network_services_tls_route', 'minimal')
         expect(config).not_to have_key('meshes')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_tls_route('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_tls_route', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_tls_route('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_tls_route', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes target_proxies when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_tls_route('opt', required_attrs.merge(target_proxies: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_tls_route', 'opt')
+        expect(config).to have_key('target_proxies')
+      end
+
+      it 'omits target_proxies when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_network_services_tls_route('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_network_services_tls_route', 'minimal')
+        expect(config).not_to have_key('target_proxies')
       end
     end
 
@@ -173,7 +247,7 @@ RSpec.describe Pangea::Resources::GoogleNetworkServicesTlsRoute do
     resource_type: :google_network_services_tls_route,
     method: :google_network_services_tls_route,
     required_attrs: { name: 'test-value', rules: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :create_time, :project, :self_link, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :project, :self_link, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

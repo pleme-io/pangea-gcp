@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareFhirStore do
 
         expect(ref.id).to eq("${google_healthcare_fhir_store.test.id}")
         expect(ref.complex_data_type_reference_parsing).to eq("${google_healthcare_fhir_store.test.complex_data_type_reference_parsing}")
+        expect(ref.deletion_policy).to eq("${google_healthcare_fhir_store.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_healthcare_fhir_store.test.effective_labels}")
         expect(ref.self_link).to eq("${google_healthcare_fhir_store.test.self_link}")
         expect(ref.terraform_labels).to eq("${google_healthcare_fhir_store.test.terraform_labels}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareFhirStore do
 
         config = validate_resource_structure(result, 'google_healthcare_fhir_store', 'test')
         expect(config).not_to have_key('complex_data_type_reference_parsing')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('self_link')
         expect(config).not_to have_key('terraform_labels')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareFhirStore do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ default_search_handling_strict: true, disable_referential_integrity: true, disable_resource_versioning: true, enable_history_import: true, enable_update_create: true, labels: { 'key1' => 'val1' }, notification_config: [{ 'key1' => 'val1' }], notification_configs: [{ 'key1' => 'val1' }], stream_configs: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ complex_data_type_reference_parsing: 'test-value', default_search_handling_strict: true, deletion_policy: 'test-value', disable_referential_integrity: true, disable_resource_versioning: true, enable_history_import: true, enable_update_create: true, labels: { 'key1' => 'val1' }, notification_config: { 'key1' => 'val1' }, notification_configs: [{ 'key1' => 'val1' }], stream_configs: [{ 'key1' => 'val1' }], validation_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,7 +72,9 @@ RSpec.describe Pangea::Resources::GoogleHealthcareFhirStore do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_healthcare_fhir_store', 'full')
+        expect(config).to have_key('complex_data_type_reference_parsing')
         expect(config).to have_key('default_search_handling_strict')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('disable_referential_integrity')
         expect(config).to have_key('disable_resource_versioning')
         expect(config).to have_key('enable_history_import')
@@ -79,10 +83,28 @@ RSpec.describe Pangea::Resources::GoogleHealthcareFhirStore do
         expect(config).to have_key('notification_config')
         expect(config).to have_key('notification_configs')
         expect(config).to have_key('stream_configs')
+        expect(config).to have_key('validation_config')
       end
     end
 
     context 'optional attributes' do
+      it 'includes complex_data_type_reference_parsing when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_fhir_store('opt', required_attrs.merge(complex_data_type_reference_parsing: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_fhir_store', 'opt')
+        expect(config).to have_key('complex_data_type_reference_parsing')
+      end
+
+      it 'omits complex_data_type_reference_parsing when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_fhir_store('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_fhir_store', 'minimal')
+        expect(config).not_to have_key('complex_data_type_reference_parsing')
+      end
       it 'includes default_search_handling_strict when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -99,6 +121,23 @@ RSpec.describe Pangea::Resources::GoogleHealthcareFhirStore do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_healthcare_fhir_store', 'minimal')
         expect(config).not_to have_key('default_search_handling_strict')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_fhir_store('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_fhir_store', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_fhir_store('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_fhir_store', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes disable_referential_integrity when provided' do
         synth = create_synthesizer
@@ -188,7 +227,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareFhirStore do
       it 'includes notification_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_healthcare_fhir_store('opt', required_attrs.merge(notification_config: [{ 'key1' => 'val1' }]))
+        synth.google_healthcare_fhir_store('opt', required_attrs.merge(notification_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_healthcare_fhir_store', 'opt')
         expect(config).to have_key('notification_config')
@@ -235,6 +274,23 @@ RSpec.describe Pangea::Resources::GoogleHealthcareFhirStore do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_healthcare_fhir_store', 'minimal')
         expect(config).not_to have_key('stream_configs')
+      end
+      it 'includes validation_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_fhir_store('opt', required_attrs.merge(validation_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_fhir_store', 'opt')
+        expect(config).to have_key('validation_config')
+      end
+
+      it 'omits validation_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_fhir_store('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_fhir_store', 'minimal')
+        expect(config).not_to have_key('validation_config')
       end
     end
 
@@ -340,7 +396,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareFhirStore do
     resource_type: :google_healthcare_fhir_store,
     method: :google_healthcare_fhir_store,
     required_attrs: { dataset: 'test-value', name: 'test-value', version: 'test-value' },
-    expected_outputs: [:id, :complex_data_type_reference_parsing, :effective_labels, :self_link, :terraform_labels],
+    expected_outputs: [:id, :complex_data_type_reference_parsing, :deletion_policy, :effective_labels, :self_link, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:default_search_handling_strict, :disable_referential_integrity, :disable_resource_versioning, :enable_history_import, :enable_update_create]

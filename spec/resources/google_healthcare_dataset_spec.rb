@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareDataset do
         ref = synth.google_healthcare_dataset('test', required_attrs)
 
         expect(ref.id).to eq("${google_healthcare_dataset.test.id}")
+        expect(ref.deletion_policy).to eq("${google_healthcare_dataset.test.deletion_policy}")
         expect(ref.project).to eq("${google_healthcare_dataset.test.project}")
         expect(ref.self_link).to eq("${google_healthcare_dataset.test.self_link}")
         expect(ref.time_zone).to eq("${google_healthcare_dataset.test.time_zone}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareDataset do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_healthcare_dataset', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('self_link')
         expect(config).not_to have_key('time_zone')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareDataset do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ encryption_spec: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', encryption_spec: { 'key1' => 'val1' }, project: 'test-value', time_zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,15 +70,35 @@ RSpec.describe Pangea::Resources::GoogleHealthcareDataset do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_healthcare_dataset', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('encryption_spec')
+        expect(config).to have_key('project')
+        expect(config).to have_key('time_zone')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_dataset('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_dataset', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_dataset', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes encryption_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_healthcare_dataset('opt', required_attrs.merge(encryption_spec: [{ 'key1' => 'val1' }]))
+        synth.google_healthcare_dataset('opt', required_attrs.merge(encryption_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_healthcare_dataset', 'opt')
         expect(config).to have_key('encryption_spec')
@@ -89,6 +111,40 @@ RSpec.describe Pangea::Resources::GoogleHealthcareDataset do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_healthcare_dataset', 'minimal')
         expect(config).not_to have_key('encryption_spec')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_dataset('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_dataset', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_dataset', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes time_zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_dataset('opt', required_attrs.merge(time_zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_dataset', 'opt')
+        expect(config).to have_key('time_zone')
+      end
+
+      it 'omits time_zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_healthcare_dataset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_healthcare_dataset', 'minimal')
+        expect(config).not_to have_key('time_zone')
       end
     end
 
@@ -135,7 +191,7 @@ RSpec.describe Pangea::Resources::GoogleHealthcareDataset do
     resource_type: :google_healthcare_dataset,
     method: :google_healthcare_dataset,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :project, :self_link, :time_zone],
+    expected_outputs: [:id, :deletion_policy, :project, :self_link, :time_zone],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

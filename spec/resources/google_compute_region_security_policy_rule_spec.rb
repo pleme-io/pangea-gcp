@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicyRule do
         ref = synth.google_compute_region_security_policy_rule('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_region_security_policy_rule.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_region_security_policy_rule.test.deletion_policy}")
         expect(ref.project).to eq("${google_compute_region_security_policy_rule.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicyRule do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_region_security_policy_rule', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', match: [{ 'key1' => 'val1' }], network_match: [{ 'key1' => 'val1' }], preconfigured_waf_config: [{ 'key1' => 'val1' }], preview: true, rate_limit_options: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', match: { 'key1' => 'val1' }, network_match: { 'key1' => 'val1' }, preconfigured_waf_config: { 'key1' => 'val1' }, preview: true, project: 'test-value', rate_limit_options: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,16 +66,35 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicyRule do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_region_security_policy_rule', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('match')
         expect(config).to have_key('network_match')
         expect(config).to have_key('preconfigured_waf_config')
         expect(config).to have_key('preview')
+        expect(config).to have_key('project')
         expect(config).to have_key('rate_limit_options')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_security_policy_rule('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_security_policy_rule', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_security_policy_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_security_policy_rule', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -94,7 +115,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicyRule do
       it 'includes match when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_security_policy_rule('opt', required_attrs.merge(match: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_security_policy_rule('opt', required_attrs.merge(match: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_security_policy_rule', 'opt')
         expect(config).to have_key('match')
@@ -111,7 +132,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicyRule do
       it 'includes network_match when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_security_policy_rule('opt', required_attrs.merge(network_match: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_security_policy_rule('opt', required_attrs.merge(network_match: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_security_policy_rule', 'opt')
         expect(config).to have_key('network_match')
@@ -128,7 +149,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicyRule do
       it 'includes preconfigured_waf_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_security_policy_rule('opt', required_attrs.merge(preconfigured_waf_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_security_policy_rule('opt', required_attrs.merge(preconfigured_waf_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_security_policy_rule', 'opt')
         expect(config).to have_key('preconfigured_waf_config')
@@ -159,10 +180,27 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicyRule do
         config = validate_resource_structure(result, 'google_compute_region_security_policy_rule', 'minimal')
         expect(config).not_to have_key('preview')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_security_policy_rule('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_security_policy_rule', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_security_policy_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_security_policy_rule', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes rate_limit_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_security_policy_rule('opt', required_attrs.merge(rate_limit_options: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_security_policy_rule('opt', required_attrs.merge(rate_limit_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_security_policy_rule', 'opt')
         expect(config).to have_key('rate_limit_options')
@@ -237,7 +275,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSecurityPolicyRule do
     resource_type: :google_compute_region_security_policy_rule,
     method: :google_compute_region_security_policy_rule,
     required_attrs: { action: 'test-value', priority: 3.14, region: 'test-value', security_policy: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:preview]

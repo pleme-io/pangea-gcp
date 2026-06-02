@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleComputeImage do
         expect(ref.id).to eq("${google_compute_image.test.id}")
         expect(ref.archive_size_bytes).to eq("${google_compute_image.test.archive_size_bytes}")
         expect(ref.creation_timestamp).to eq("${google_compute_image.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_image.test.deletion_policy}")
         expect(ref.disk_size_gb).to eq("${google_compute_image.test.disk_size_gb}")
         expect(ref.effective_labels).to eq("${google_compute_image.test.effective_labels}")
         expect(ref.label_fingerprint).to eq("${google_compute_image.test.label_fingerprint}")
@@ -61,6 +62,7 @@ RSpec.describe Pangea::Resources::GoogleComputeImage do
         config = validate_resource_structure(result, 'google_compute_image', 'test')
         expect(config).not_to have_key('archive_size_bytes')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('disk_size_gb')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('label_fingerprint')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleComputeImage do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', family: 'test-value', guest_os_features: [{ 'key1' => 'val1' }], image_encryption_key: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, raw_disk: [{ 'key1' => 'val1' }], shielded_instance_initial_state: [{ 'key1' => 'val1' }], source_disk: 'test-value', source_disk_encryption_key: [{ 'key1' => 'val1' }], source_image: 'test-value', source_image_encryption_key: [{ 'key1' => 'val1' }], source_snapshot: 'test-value', source_snapshot_encryption_key: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', disk_size_gb: 3.14, family: 'test-value', guest_os_features: [{ 'key1' => 'val1' }], image_encryption_key: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, licenses: ['test-value'], params: { 'key1' => 'val1' }, project: 'test-value', raw_disk: { 'key1' => 'val1' }, shielded_instance_initial_state: { 'key1' => 'val1' }, source_disk: 'test-value', source_disk_encryption_key: { 'key1' => 'val1' }, source_image: 'test-value', source_image_encryption_key: { 'key1' => 'val1' }, source_snapshot: 'test-value', source_snapshot_encryption_key: { 'key1' => 'val1' }, storage_locations: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -82,11 +84,16 @@ RSpec.describe Pangea::Resources::GoogleComputeImage do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_image', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('disk_size_gb')
         expect(config).to have_key('family')
         expect(config).to have_key('guest_os_features')
         expect(config).to have_key('image_encryption_key')
         expect(config).to have_key('labels')
+        expect(config).to have_key('licenses')
+        expect(config).to have_key('params')
+        expect(config).to have_key('project')
         expect(config).to have_key('raw_disk')
         expect(config).to have_key('shielded_instance_initial_state')
         expect(config).to have_key('source_disk')
@@ -95,10 +102,28 @@ RSpec.describe Pangea::Resources::GoogleComputeImage do
         expect(config).to have_key('source_image_encryption_key')
         expect(config).to have_key('source_snapshot')
         expect(config).to have_key('source_snapshot_encryption_key')
+        expect(config).to have_key('storage_locations')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_image('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_image', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_image('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_image', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -115,6 +140,23 @@ RSpec.describe Pangea::Resources::GoogleComputeImage do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_image', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes disk_size_gb when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_image('opt', required_attrs.merge(disk_size_gb: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_image', 'opt')
+        expect(config).to have_key('disk_size_gb')
+      end
+
+      it 'omits disk_size_gb when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_image('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_image', 'minimal')
+        expect(config).not_to have_key('disk_size_gb')
       end
       it 'includes family when provided' do
         synth = create_synthesizer
@@ -153,7 +195,7 @@ RSpec.describe Pangea::Resources::GoogleComputeImage do
       it 'includes image_encryption_key when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_image('opt', required_attrs.merge(image_encryption_key: [{ 'key1' => 'val1' }]))
+        synth.google_compute_image('opt', required_attrs.merge(image_encryption_key: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_image', 'opt')
         expect(config).to have_key('image_encryption_key')
@@ -184,10 +226,61 @@ RSpec.describe Pangea::Resources::GoogleComputeImage do
         config = validate_resource_structure(result, 'google_compute_image', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes licenses when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_image('opt', required_attrs.merge(licenses: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_image', 'opt')
+        expect(config).to have_key('licenses')
+      end
+
+      it 'omits licenses when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_image('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_image', 'minimal')
+        expect(config).not_to have_key('licenses')
+      end
+      it 'includes params when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_image('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_image', 'opt')
+        expect(config).to have_key('params')
+      end
+
+      it 'omits params when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_image('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_image', 'minimal')
+        expect(config).not_to have_key('params')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_image('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_image', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_image('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_image', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes raw_disk when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_image('opt', required_attrs.merge(raw_disk: [{ 'key1' => 'val1' }]))
+        synth.google_compute_image('opt', required_attrs.merge(raw_disk: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_image', 'opt')
         expect(config).to have_key('raw_disk')
@@ -204,7 +297,7 @@ RSpec.describe Pangea::Resources::GoogleComputeImage do
       it 'includes shielded_instance_initial_state when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_image('opt', required_attrs.merge(shielded_instance_initial_state: [{ 'key1' => 'val1' }]))
+        synth.google_compute_image('opt', required_attrs.merge(shielded_instance_initial_state: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_image', 'opt')
         expect(config).to have_key('shielded_instance_initial_state')
@@ -238,7 +331,7 @@ RSpec.describe Pangea::Resources::GoogleComputeImage do
       it 'includes source_disk_encryption_key when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_image('opt', required_attrs.merge(source_disk_encryption_key: [{ 'key1' => 'val1' }]))
+        synth.google_compute_image('opt', required_attrs.merge(source_disk_encryption_key: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_image', 'opt')
         expect(config).to have_key('source_disk_encryption_key')
@@ -272,7 +365,7 @@ RSpec.describe Pangea::Resources::GoogleComputeImage do
       it 'includes source_image_encryption_key when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_image('opt', required_attrs.merge(source_image_encryption_key: [{ 'key1' => 'val1' }]))
+        synth.google_compute_image('opt', required_attrs.merge(source_image_encryption_key: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_image', 'opt')
         expect(config).to have_key('source_image_encryption_key')
@@ -306,7 +399,7 @@ RSpec.describe Pangea::Resources::GoogleComputeImage do
       it 'includes source_snapshot_encryption_key when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_image('opt', required_attrs.merge(source_snapshot_encryption_key: [{ 'key1' => 'val1' }]))
+        synth.google_compute_image('opt', required_attrs.merge(source_snapshot_encryption_key: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_image', 'opt')
         expect(config).to have_key('source_snapshot_encryption_key')
@@ -319,6 +412,23 @@ RSpec.describe Pangea::Resources::GoogleComputeImage do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_image', 'minimal')
         expect(config).not_to have_key('source_snapshot_encryption_key')
+      end
+      it 'includes storage_locations when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_image('opt', required_attrs.merge(storage_locations: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_image', 'opt')
+        expect(config).to have_key('storage_locations')
+      end
+
+      it 'omits storage_locations when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_image('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_image', 'minimal')
+        expect(config).not_to have_key('storage_locations')
       end
     end
 
@@ -364,7 +474,7 @@ RSpec.describe Pangea::Resources::GoogleComputeImage do
     resource_type: :google_compute_image,
     method: :google_compute_image,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :archive_size_bytes, :creation_timestamp, :disk_size_gb, :effective_labels, :label_fingerprint, :licenses, :project, :self_link, :storage_locations, :terraform_labels],
+    expected_outputs: [:id, :archive_size_bytes, :creation_timestamp, :deletion_policy, :disk_size_gb, :effective_labels, :label_fingerprint, :licenses, :project, :self_link, :storage_locations, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

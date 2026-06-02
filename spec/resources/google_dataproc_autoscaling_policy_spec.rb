@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocAutoscalingPolicy do
         ref = synth.google_dataproc_autoscaling_policy('test', required_attrs)
 
         expect(ref.id).to eq("${google_dataproc_autoscaling_policy.test.id}")
+        expect(ref.deletion_policy).to eq("${google_dataproc_autoscaling_policy.test.deletion_policy}")
         expect(ref.name).to eq("${google_dataproc_autoscaling_policy.test.name}")
         expect(ref.project).to eq("${google_dataproc_autoscaling_policy.test.project}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleDataprocAutoscalingPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dataproc_autoscaling_policy', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ basic_algorithm: [{ 'key1' => 'val1' }], location: 'test-value', secondary_worker_config: [{ 'key1' => 'val1' }], worker_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ basic_algorithm: { 'key1' => 'val1' }, deletion_policy: 'test-value', location: 'test-value', project: 'test-value', secondary_worker_config: { 'key1' => 'val1' }, worker_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,7 +69,9 @@ RSpec.describe Pangea::Resources::GoogleDataprocAutoscalingPolicy do
 
         config = validate_resource_structure(result, 'google_dataproc_autoscaling_policy', 'full')
         expect(config).to have_key('basic_algorithm')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
         expect(config).to have_key('secondary_worker_config')
         expect(config).to have_key('worker_config')
       end
@@ -77,7 +81,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocAutoscalingPolicy do
       it 'includes basic_algorithm when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_autoscaling_policy('opt', required_attrs.merge(basic_algorithm: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_autoscaling_policy('opt', required_attrs.merge(basic_algorithm: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_autoscaling_policy', 'opt')
         expect(config).to have_key('basic_algorithm')
@@ -90,6 +94,23 @@ RSpec.describe Pangea::Resources::GoogleDataprocAutoscalingPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_autoscaling_policy', 'minimal')
         expect(config).not_to have_key('basic_algorithm')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_autoscaling_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_autoscaling_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_autoscaling_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_autoscaling_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes location when provided' do
         synth = create_synthesizer
@@ -108,10 +129,27 @@ RSpec.describe Pangea::Resources::GoogleDataprocAutoscalingPolicy do
         config = validate_resource_structure(result, 'google_dataproc_autoscaling_policy', 'minimal')
         expect(config).not_to have_key('location')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_autoscaling_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_autoscaling_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_autoscaling_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_autoscaling_policy', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes secondary_worker_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_autoscaling_policy('opt', required_attrs.merge(secondary_worker_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_autoscaling_policy('opt', required_attrs.merge(secondary_worker_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_autoscaling_policy', 'opt')
         expect(config).to have_key('secondary_worker_config')
@@ -128,7 +166,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocAutoscalingPolicy do
       it 'includes worker_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_autoscaling_policy('opt', required_attrs.merge(worker_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_autoscaling_policy('opt', required_attrs.merge(worker_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_autoscaling_policy', 'opt')
         expect(config).to have_key('worker_config')
@@ -186,7 +224,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocAutoscalingPolicy do
     resource_type: :google_dataproc_autoscaling_policy,
     method: :google_dataproc_autoscaling_policy,
     required_attrs: { policy_id: 'test-value' },
-    expected_outputs: [:id, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

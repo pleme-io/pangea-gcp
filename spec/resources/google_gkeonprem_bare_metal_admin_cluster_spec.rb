@@ -81,7 +81,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalAdminCluster do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, bare_metal_version: 'test-value', cluster_operations: [{ 'key1' => 'val1' }], control_plane: [{ 'key1' => 'val1' }], description: 'test-value', load_balancer: [{ 'key1' => 'val1' }], maintenance_config: [{ 'key1' => 'val1' }], network_config: [{ 'key1' => 'val1' }], node_access_config: [{ 'key1' => 'val1' }], node_config: [{ 'key1' => 'val1' }], proxy: [{ 'key1' => 'val1' }], security_config: [{ 'key1' => 'val1' }], storage: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, bare_metal_version: 'test-value', cluster_operations: { 'key1' => 'val1' }, control_plane: { 'key1' => 'val1' }, description: 'test-value', load_balancer: { 'key1' => 'val1' }, maintenance_config: { 'key1' => 'val1' }, network_config: { 'key1' => 'val1' }, node_access_config: { 'key1' => 'val1' }, node_config: { 'key1' => 'val1' }, project: 'test-value', proxy: { 'key1' => 'val1' }, security_config: { 'key1' => 'val1' }, storage: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -100,6 +100,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalAdminCluster do
         expect(config).to have_key('network_config')
         expect(config).to have_key('node_access_config')
         expect(config).to have_key('node_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('proxy')
         expect(config).to have_key('security_config')
         expect(config).to have_key('storage')
@@ -144,7 +145,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalAdminCluster do
       it 'includes cluster_operations when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(cluster_operations: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(cluster_operations: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_admin_cluster', 'opt')
         expect(config).to have_key('cluster_operations')
@@ -161,7 +162,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalAdminCluster do
       it 'includes control_plane when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(control_plane: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(control_plane: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_admin_cluster', 'opt')
         expect(config).to have_key('control_plane')
@@ -195,7 +196,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalAdminCluster do
       it 'includes load_balancer when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(load_balancer: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(load_balancer: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_admin_cluster', 'opt')
         expect(config).to have_key('load_balancer')
@@ -212,7 +213,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalAdminCluster do
       it 'includes maintenance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(maintenance_config: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(maintenance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_admin_cluster', 'opt')
         expect(config).to have_key('maintenance_config')
@@ -229,7 +230,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalAdminCluster do
       it 'includes network_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(network_config: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(network_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_admin_cluster', 'opt')
         expect(config).to have_key('network_config')
@@ -246,7 +247,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalAdminCluster do
       it 'includes node_access_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(node_access_config: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(node_access_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_admin_cluster', 'opt')
         expect(config).to have_key('node_access_config')
@@ -263,7 +264,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalAdminCluster do
       it 'includes node_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(node_config: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(node_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_admin_cluster', 'opt')
         expect(config).to have_key('node_config')
@@ -277,10 +278,27 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalAdminCluster do
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_admin_cluster', 'minimal')
         expect(config).not_to have_key('node_config')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_admin_cluster', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_gkeonprem_bare_metal_admin_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_admin_cluster', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes proxy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(proxy: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(proxy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_admin_cluster', 'opt')
         expect(config).to have_key('proxy')
@@ -297,7 +315,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalAdminCluster do
       it 'includes security_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(security_config: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(security_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_admin_cluster', 'opt')
         expect(config).to have_key('security_config')
@@ -314,7 +332,7 @@ RSpec.describe Pangea::Resources::GoogleGkeonpremBareMetalAdminCluster do
       it 'includes storage when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(storage: [{ 'key1' => 'val1' }]))
+        synth.google_gkeonprem_bare_metal_admin_cluster('opt', required_attrs.merge(storage: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_gkeonprem_bare_metal_admin_cluster', 'opt')
         expect(config).to have_key('storage')

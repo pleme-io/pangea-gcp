@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksEnvironment do
 
         expect(ref.id).to eq("${google_notebooks_environment.test.id}")
         expect(ref.create_time).to eq("${google_notebooks_environment.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_notebooks_environment.test.deletion_policy}")
         expect(ref.project).to eq("${google_notebooks_environment.test.project}")
       end
     end
@@ -52,12 +53,13 @@ RSpec.describe Pangea::Resources::GoogleNotebooksEnvironment do
 
         config = validate_resource_structure(result, 'google_notebooks_environment', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ container_image: [{ 'key1' => 'val1' }], description: 'test-value', display_name: 'test-value', post_startup_script: 'test-value', vm_image: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ container_image: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', post_startup_script: 'test-value', project: 'test-value', vm_image: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,9 +69,11 @@ RSpec.describe Pangea::Resources::GoogleNotebooksEnvironment do
 
         config = validate_resource_structure(result, 'google_notebooks_environment', 'full')
         expect(config).to have_key('container_image')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
         expect(config).to have_key('post_startup_script')
+        expect(config).to have_key('project')
         expect(config).to have_key('vm_image')
       end
     end
@@ -78,7 +82,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksEnvironment do
       it 'includes container_image when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_notebooks_environment('opt', required_attrs.merge(container_image: [{ 'key1' => 'val1' }]))
+        synth.google_notebooks_environment('opt', required_attrs.merge(container_image: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_notebooks_environment', 'opt')
         expect(config).to have_key('container_image')
@@ -91,6 +95,23 @@ RSpec.describe Pangea::Resources::GoogleNotebooksEnvironment do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_notebooks_environment', 'minimal')
         expect(config).not_to have_key('container_image')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_environment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_environment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_environment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_environment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -143,10 +164,27 @@ RSpec.describe Pangea::Resources::GoogleNotebooksEnvironment do
         config = validate_resource_structure(result, 'google_notebooks_environment', 'minimal')
         expect(config).not_to have_key('post_startup_script')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_environment('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_environment', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_notebooks_environment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_notebooks_environment', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes vm_image when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_notebooks_environment('opt', required_attrs.merge(vm_image: [{ 'key1' => 'val1' }]))
+        synth.google_notebooks_environment('opt', required_attrs.merge(vm_image: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_notebooks_environment', 'opt')
         expect(config).to have_key('vm_image')
@@ -205,7 +243,7 @@ RSpec.describe Pangea::Resources::GoogleNotebooksEnvironment do
     resource_type: :google_notebooks_environment,
     method: :google_notebooks_environment,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :create_time, :project],
+    expected_outputs: [:id, :create_time, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

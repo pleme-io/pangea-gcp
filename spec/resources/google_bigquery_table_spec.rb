@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
 
         expect(ref.id).to eq("${google_bigquery_table.test.id}")
         expect(ref.creation_time).to eq("${google_bigquery_table.test.creation_time}")
+        expect(ref.deletion_policy).to eq("${google_bigquery_table.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_bigquery_table.test.effective_labels}")
         expect(ref.etag).to eq("${google_bigquery_table.test.etag}")
         expect(ref.expiration_time).to eq("${google_bigquery_table.test.expiration_time}")
@@ -66,6 +67,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
 
         config = validate_resource_structure(result, 'google_bigquery_table', 'test')
         expect(config).not_to have_key('creation_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('expiration_time')
@@ -85,7 +87,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ biglake_configuration: [{ 'key1' => 'val1' }], clustering: ['test-value'], deletion_protection: true, description: 'test-value', encryption_configuration: [{ 'key1' => 'val1' }], external_catalog_table_options: [{ 'key1' => 'val1' }], external_data_configuration: [{ 'key1' => 'val1' }], friendly_name: 'test-value', ignore_auto_generated_schema: true, ignore_schema_changes: ['test-value'], labels: { 'key1' => 'val1' }, materialized_view: [{ 'key1' => 'val1' }], range_partitioning: [{ 'key1' => 'val1' }], require_partition_filter: true, resource_tags: { 'key1' => 'val1' }, schema_foreign_type_info: [{ 'key1' => 'val1' }], table_constraints: [{ 'key1' => 'val1' }], table_metadata_view: 'test-value', table_replication_info: [{ 'key1' => 'val1' }], time_partitioning: [{ 'key1' => 'val1' }], view: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ biglake_configuration: { 'key1' => 'val1' }, clustering: ['test-value'], deletion_policy: 'test-value', deletion_protection: true, description: 'test-value', encryption_configuration: { 'key1' => 'val1' }, expiration_time: 3.14, external_catalog_table_options: { 'key1' => 'val1' }, external_data_configuration: { 'key1' => 'val1' }, friendly_name: 'test-value', ignore_auto_generated_schema: true, ignore_schema_changes: ['test-value'], labels: { 'key1' => 'val1' }, materialized_view: { 'key1' => 'val1' }, max_staleness: 'test-value', project: 'test-value', range_partitioning: { 'key1' => 'val1' }, require_partition_filter: true, resource_tags: { 'key1' => 'val1' }, schema: 'test-value', schema_foreign_type_info: { 'key1' => 'val1' }, table_constraints: { 'key1' => 'val1' }, table_metadata_view: 'test-value', table_replication_info: { 'key1' => 'val1' }, time_partitioning: { 'key1' => 'val1' }, view: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -96,9 +98,11 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
         config = validate_resource_structure(result, 'google_bigquery_table', 'full')
         expect(config).to have_key('biglake_configuration')
         expect(config).to have_key('clustering')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
         expect(config).to have_key('description')
         expect(config).to have_key('encryption_configuration')
+        expect(config).to have_key('expiration_time')
         expect(config).to have_key('external_catalog_table_options')
         expect(config).to have_key('external_data_configuration')
         expect(config).to have_key('friendly_name')
@@ -106,9 +110,12 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
         expect(config).to have_key('ignore_schema_changes')
         expect(config).to have_key('labels')
         expect(config).to have_key('materialized_view')
+        expect(config).to have_key('max_staleness')
+        expect(config).to have_key('project')
         expect(config).to have_key('range_partitioning')
         expect(config).to have_key('require_partition_filter')
         expect(config).to have_key('resource_tags')
+        expect(config).to have_key('schema')
         expect(config).to have_key('schema_foreign_type_info')
         expect(config).to have_key('table_constraints')
         expect(config).to have_key('table_metadata_view')
@@ -122,7 +129,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
       it 'includes biglake_configuration when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_table('opt', required_attrs.merge(biglake_configuration: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_table('opt', required_attrs.merge(biglake_configuration: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
         expect(config).to have_key('biglake_configuration')
@@ -152,6 +159,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_table', 'minimal')
         expect(config).not_to have_key('clustering')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_table('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_table('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_table', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
@@ -190,7 +214,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
       it 'includes encryption_configuration when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_table('opt', required_attrs.merge(encryption_configuration: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_table('opt', required_attrs.merge(encryption_configuration: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
         expect(config).to have_key('encryption_configuration')
@@ -204,10 +228,27 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
         config = validate_resource_structure(result, 'google_bigquery_table', 'minimal')
         expect(config).not_to have_key('encryption_configuration')
       end
+      it 'includes expiration_time when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_table('opt', required_attrs.merge(expiration_time: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
+        expect(config).to have_key('expiration_time')
+      end
+
+      it 'omits expiration_time when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_table('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_table', 'minimal')
+        expect(config).not_to have_key('expiration_time')
+      end
       it 'includes external_catalog_table_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_table('opt', required_attrs.merge(external_catalog_table_options: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_table('opt', required_attrs.merge(external_catalog_table_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
         expect(config).to have_key('external_catalog_table_options')
@@ -224,7 +265,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
       it 'includes external_data_configuration when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_table('opt', required_attrs.merge(external_data_configuration: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_table('opt', required_attrs.merge(external_data_configuration: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
         expect(config).to have_key('external_data_configuration')
@@ -309,7 +350,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
       it 'includes materialized_view when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_table('opt', required_attrs.merge(materialized_view: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_table('opt', required_attrs.merge(materialized_view: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
         expect(config).to have_key('materialized_view')
@@ -323,10 +364,44 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
         config = validate_resource_structure(result, 'google_bigquery_table', 'minimal')
         expect(config).not_to have_key('materialized_view')
       end
+      it 'includes max_staleness when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_table('opt', required_attrs.merge(max_staleness: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
+        expect(config).to have_key('max_staleness')
+      end
+
+      it 'omits max_staleness when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_table('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_table', 'minimal')
+        expect(config).not_to have_key('max_staleness')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_table('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_table('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_table', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes range_partitioning when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_table('opt', required_attrs.merge(range_partitioning: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_table('opt', required_attrs.merge(range_partitioning: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
         expect(config).to have_key('range_partitioning')
@@ -374,10 +449,27 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
         config = validate_resource_structure(result, 'google_bigquery_table', 'minimal')
         expect(config).not_to have_key('resource_tags')
       end
+      it 'includes schema when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_table('opt', required_attrs.merge(schema: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
+        expect(config).to have_key('schema')
+      end
+
+      it 'omits schema when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_table('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_table', 'minimal')
+        expect(config).not_to have_key('schema')
+      end
       it 'includes schema_foreign_type_info when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_table('opt', required_attrs.merge(schema_foreign_type_info: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_table('opt', required_attrs.merge(schema_foreign_type_info: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
         expect(config).to have_key('schema_foreign_type_info')
@@ -394,7 +486,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
       it 'includes table_constraints when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_table('opt', required_attrs.merge(table_constraints: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_table('opt', required_attrs.merge(table_constraints: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
         expect(config).to have_key('table_constraints')
@@ -428,7 +520,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
       it 'includes table_replication_info when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_table('opt', required_attrs.merge(table_replication_info: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_table('opt', required_attrs.merge(table_replication_info: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
         expect(config).to have_key('table_replication_info')
@@ -445,7 +537,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
       it 'includes time_partitioning when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_table('opt', required_attrs.merge(time_partitioning: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_table('opt', required_attrs.merge(time_partitioning: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
         expect(config).to have_key('time_partitioning')
@@ -462,7 +554,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
       it 'includes view when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_table('opt', required_attrs.merge(view: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_table('opt', required_attrs.merge(view: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_table', 'opt')
         expect(config).to have_key('view')
@@ -557,7 +649,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryTable do
     resource_type: :google_bigquery_table,
     method: :google_bigquery_table,
     required_attrs: { dataset_id: 'test-value', table_id: 'test-value' },
-    expected_outputs: [:id, :creation_time, :effective_labels, :etag, :expiration_time, :generated_schema_columns, :last_modified_time, :location, :max_staleness, :num_bytes, :num_long_term_bytes, :num_rows, :project, :schema, :self_link, :terraform_labels, :type],
+    expected_outputs: [:id, :creation_time, :deletion_policy, :effective_labels, :etag, :expiration_time, :generated_schema_columns, :last_modified_time, :location, :max_staleness, :num_bytes, :num_long_term_bytes, :num_rows, :project, :schema, :self_link, :terraform_labels, :type],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection, :ignore_auto_generated_schema, :require_partition_filter]

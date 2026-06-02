@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataTransferConfig do
         ref = synth.google_bigquery_data_transfer_config('test', required_attrs)
 
         expect(ref.id).to eq("${google_bigquery_data_transfer_config.test.id}")
+        expect(ref.deletion_policy).to eq("${google_bigquery_data_transfer_config.test.deletion_policy}")
         expect(ref.name).to eq("${google_bigquery_data_transfer_config.test.name}")
         expect(ref.project).to eq("${google_bigquery_data_transfer_config.test.project}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataTransferConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigquery_data_transfer_config', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ data_refresh_window_days: 3.14, destination_dataset_id: 'test-value', disabled: true, email_preferences: [{ 'key1' => 'val1' }], encryption_configuration: [{ 'key1' => 'val1' }], location: 'test-value', notification_pubsub_topic: 'test-value', schedule: 'test-value', schedule_options: [{ 'key1' => 'val1' }], sensitive_params: [{ 'key1' => 'val1' }], service_account_name: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ data_refresh_window_days: 3.14, deletion_policy: 'test-value', destination_dataset_id: 'test-value', disabled: true, email_preferences: { 'key1' => 'val1' }, encryption_configuration: { 'key1' => 'val1' }, location: 'test-value', notification_pubsub_topic: 'test-value', project: 'test-value', schedule: 'test-value', schedule_options: { 'key1' => 'val1' }, sensitive_params: { 'key1' => 'val1' }, service_account_name: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,12 +69,14 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataTransferConfig do
 
         config = validate_resource_structure(result, 'google_bigquery_data_transfer_config', 'full')
         expect(config).to have_key('data_refresh_window_days')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('destination_dataset_id')
         expect(config).to have_key('disabled')
         expect(config).to have_key('email_preferences')
         expect(config).to have_key('encryption_configuration')
         expect(config).to have_key('location')
         expect(config).to have_key('notification_pubsub_topic')
+        expect(config).to have_key('project')
         expect(config).to have_key('schedule')
         expect(config).to have_key('schedule_options')
         expect(config).to have_key('sensitive_params')
@@ -97,6 +101,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataTransferConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_data_transfer_config', 'minimal')
         expect(config).not_to have_key('data_refresh_window_days')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_data_transfer_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_data_transfer_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_data_transfer_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_data_transfer_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes destination_dataset_id when provided' do
         synth = create_synthesizer
@@ -135,7 +156,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataTransferConfig do
       it 'includes email_preferences when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_data_transfer_config('opt', required_attrs.merge(email_preferences: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_data_transfer_config('opt', required_attrs.merge(email_preferences: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_data_transfer_config', 'opt')
         expect(config).to have_key('email_preferences')
@@ -152,7 +173,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataTransferConfig do
       it 'includes encryption_configuration when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_data_transfer_config('opt', required_attrs.merge(encryption_configuration: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_data_transfer_config('opt', required_attrs.merge(encryption_configuration: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_data_transfer_config', 'opt')
         expect(config).to have_key('encryption_configuration')
@@ -200,6 +221,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataTransferConfig do
         config = validate_resource_structure(result, 'google_bigquery_data_transfer_config', 'minimal')
         expect(config).not_to have_key('notification_pubsub_topic')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_data_transfer_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_data_transfer_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_data_transfer_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_data_transfer_config', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes schedule when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -220,7 +258,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataTransferConfig do
       it 'includes schedule_options when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_data_transfer_config('opt', required_attrs.merge(schedule_options: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_data_transfer_config('opt', required_attrs.merge(schedule_options: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_data_transfer_config', 'opt')
         expect(config).to have_key('schedule_options')
@@ -237,7 +275,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataTransferConfig do
       it 'includes sensitive_params when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_data_transfer_config('opt', required_attrs.merge(sensitive_params: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_data_transfer_config('opt', required_attrs.merge(sensitive_params: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_data_transfer_config', 'opt')
         expect(config).to have_key('sensitive_params')
@@ -328,7 +366,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryDataTransferConfig do
     resource_type: :google_bigquery_data_transfer_config,
     method: :google_bigquery_data_transfer_config,
     required_attrs: { data_source_id: 'test-value', display_name: 'test-value', params: { 'key1' => 'val1' } },
-    expected_outputs: [:id, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disabled]

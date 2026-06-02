@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleDataPipelinePipeline do
 
         expect(ref.id).to eq("${google_data_pipeline_pipeline.test.id}")
         expect(ref.create_time).to eq("${google_data_pipeline_pipeline.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_data_pipeline_pipeline.test.deletion_policy}")
         expect(ref.job_count).to eq("${google_data_pipeline_pipeline.test.job_count}")
         expect(ref.last_update_time).to eq("${google_data_pipeline_pipeline.test.last_update_time}")
         expect(ref.project).to eq("${google_data_pipeline_pipeline.test.project}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleDataPipelinePipeline do
 
         config = validate_resource_structure(result, 'google_data_pipeline_pipeline', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('job_count')
         expect(config).not_to have_key('last_update_time')
         expect(config).not_to have_key('project')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleDataPipelinePipeline do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ display_name: 'test-value', pipeline_sources: { 'key1' => 'val1' }, region: 'test-value', schedule_info: [{ 'key1' => 'val1' }], workload: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', display_name: 'test-value', pipeline_sources: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value', schedule_info: { 'key1' => 'val1' }, scheduler_service_account_email: 'test-value', workload: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,15 +74,35 @@ RSpec.describe Pangea::Resources::GoogleDataPipelinePipeline do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_data_pipeline_pipeline', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
         expect(config).to have_key('pipeline_sources')
+        expect(config).to have_key('project')
         expect(config).to have_key('region')
         expect(config).to have_key('schedule_info')
+        expect(config).to have_key('scheduler_service_account_email')
         expect(config).to have_key('workload')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_pipeline_pipeline('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_pipeline_pipeline', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_pipeline_pipeline('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_pipeline_pipeline', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes display_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -115,6 +137,23 @@ RSpec.describe Pangea::Resources::GoogleDataPipelinePipeline do
         config = validate_resource_structure(result, 'google_data_pipeline_pipeline', 'minimal')
         expect(config).not_to have_key('pipeline_sources')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_pipeline_pipeline('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_pipeline_pipeline', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_pipeline_pipeline('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_pipeline_pipeline', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes region when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -135,7 +174,7 @@ RSpec.describe Pangea::Resources::GoogleDataPipelinePipeline do
       it 'includes schedule_info when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_data_pipeline_pipeline('opt', required_attrs.merge(schedule_info: [{ 'key1' => 'val1' }]))
+        synth.google_data_pipeline_pipeline('opt', required_attrs.merge(schedule_info: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_pipeline_pipeline', 'opt')
         expect(config).to have_key('schedule_info')
@@ -149,10 +188,27 @@ RSpec.describe Pangea::Resources::GoogleDataPipelinePipeline do
         config = validate_resource_structure(result, 'google_data_pipeline_pipeline', 'minimal')
         expect(config).not_to have_key('schedule_info')
       end
+      it 'includes scheduler_service_account_email when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_pipeline_pipeline('opt', required_attrs.merge(scheduler_service_account_email: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_pipeline_pipeline', 'opt')
+        expect(config).to have_key('scheduler_service_account_email')
+      end
+
+      it 'omits scheduler_service_account_email when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_pipeline_pipeline('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_pipeline_pipeline', 'minimal')
+        expect(config).not_to have_key('scheduler_service_account_email')
+      end
       it 'includes workload when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_data_pipeline_pipeline('opt', required_attrs.merge(workload: [{ 'key1' => 'val1' }]))
+        synth.google_data_pipeline_pipeline('opt', required_attrs.merge(workload: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_pipeline_pipeline', 'opt')
         expect(config).to have_key('workload')
@@ -212,7 +268,7 @@ RSpec.describe Pangea::Resources::GoogleDataPipelinePipeline do
     resource_type: :google_data_pipeline_pipeline,
     method: :google_data_pipeline_pipeline,
     required_attrs: { name: 'test-value', state: 'test-value', type: 'test-value' },
-    expected_outputs: [:id, :create_time, :job_count, :last_update_time, :project, :scheduler_service_account_email],
+    expected_outputs: [:id, :create_time, :deletion_policy, :job_count, :last_update_time, :project, :scheduler_service_account_email],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

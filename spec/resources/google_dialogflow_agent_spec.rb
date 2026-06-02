@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowAgent do
         expect(ref.id).to eq("${google_dialogflow_agent.test.id}")
         expect(ref.api_version).to eq("${google_dialogflow_agent.test.api_version}")
         expect(ref.avatar_uri_backend).to eq("${google_dialogflow_agent.test.avatar_uri_backend}")
+        expect(ref.deletion_policy).to eq("${google_dialogflow_agent.test.deletion_policy}")
         expect(ref.match_mode).to eq("${google_dialogflow_agent.test.match_mode}")
         expect(ref.project).to eq("${google_dialogflow_agent.test.project}")
       end
@@ -55,13 +56,14 @@ RSpec.describe Pangea::Resources::GoogleDialogflowAgent do
         config = validate_resource_structure(result, 'google_dialogflow_agent', 'test')
         expect(config).not_to have_key('api_version')
         expect(config).not_to have_key('avatar_uri_backend')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('match_mode')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ avatar_uri: 'test-value', classification_threshold: 3.14, description: 'test-value', enable_logging: true, supported_language_codes: ['test-value'], tier: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ api_version: 'test-value', avatar_uri: 'test-value', classification_threshold: 3.14, deletion_policy: 'test-value', description: 'test-value', enable_logging: true, match_mode: 'test-value', project: 'test-value', supported_language_codes: ['test-value'], tier: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,16 +72,37 @@ RSpec.describe Pangea::Resources::GoogleDialogflowAgent do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_agent', 'full')
+        expect(config).to have_key('api_version')
         expect(config).to have_key('avatar_uri')
         expect(config).to have_key('classification_threshold')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('enable_logging')
+        expect(config).to have_key('match_mode')
+        expect(config).to have_key('project')
         expect(config).to have_key('supported_language_codes')
         expect(config).to have_key('tier')
       end
     end
 
     context 'optional attributes' do
+      it 'includes api_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_agent('opt', required_attrs.merge(api_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_agent', 'opt')
+        expect(config).to have_key('api_version')
+      end
+
+      it 'omits api_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_agent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_agent', 'minimal')
+        expect(config).not_to have_key('api_version')
+      end
       it 'includes avatar_uri when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -114,6 +137,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowAgent do
         config = validate_resource_structure(result, 'google_dialogflow_agent', 'minimal')
         expect(config).not_to have_key('classification_threshold')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_agent('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_agent', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_agent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_agent', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -147,6 +187,40 @@ RSpec.describe Pangea::Resources::GoogleDialogflowAgent do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_agent', 'minimal')
         expect(config).not_to have_key('enable_logging')
+      end
+      it 'includes match_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_agent('opt', required_attrs.merge(match_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_agent', 'opt')
+        expect(config).to have_key('match_mode')
+      end
+
+      it 'omits match_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_agent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_agent', 'minimal')
+        expect(config).not_to have_key('match_mode')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_agent('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_agent', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_agent('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_agent', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes supported_language_codes when provided' do
         synth = create_synthesizer
@@ -242,7 +316,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowAgent do
     resource_type: :google_dialogflow_agent,
     method: :google_dialogflow_agent,
     required_attrs: { default_language_code: 'test-value', display_name: 'test-value', time_zone: 'test-value' },
-    expected_outputs: [:id, :api_version, :avatar_uri_backend, :match_mode, :project],
+    expected_outputs: [:id, :api_version, :avatar_uri_backend, :deletion_policy, :match_mode, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:enable_logging]

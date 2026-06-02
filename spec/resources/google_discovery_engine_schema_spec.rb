@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineSchema do
         ref = synth.google_discovery_engine_schema('test', required_attrs)
 
         expect(ref.id).to eq("${google_discovery_engine_schema.test.id}")
+        expect(ref.deletion_policy).to eq("${google_discovery_engine_schema.test.deletion_policy}")
         expect(ref.name).to eq("${google_discovery_engine_schema.test.name}")
         expect(ref.project).to eq("${google_discovery_engine_schema.test.project}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineSchema do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_discovery_engine_schema', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ json_schema: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', json_schema: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,11 +68,30 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineSchema do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_discovery_engine_schema', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('json_schema')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_schema('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_schema', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_schema('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_schema', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes json_schema when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -87,6 +108,23 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineSchema do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_discovery_engine_schema', 'minimal')
         expect(config).not_to have_key('json_schema')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_schema('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_schema', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_discovery_engine_schema('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_discovery_engine_schema', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -134,7 +172,7 @@ RSpec.describe Pangea::Resources::GoogleDiscoveryEngineSchema do
     resource_type: :google_discovery_engine_schema,
     method: :google_discovery_engine_schema,
     required_attrs: { data_store_id: 'test-value', location: 'test-value', schema_id: 'test-value' },
-    expected_outputs: [:id, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

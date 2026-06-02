@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeApiProduct do
 
         expect(ref.id).to eq("${google_apigee_api_product.test.id}")
         expect(ref.created_at).to eq("${google_apigee_api_product.test.created_at}")
+        expect(ref.deletion_policy).to eq("${google_apigee_api_product.test.deletion_policy}")
         expect(ref.last_modified_at).to eq("${google_apigee_api_product.test.last_modified_at}")
       end
     end
@@ -52,12 +53,13 @@ RSpec.describe Pangea::Resources::GoogleApigeeApiProduct do
 
         config = validate_resource_structure(result, 'google_apigee_api_product', 'test')
         expect(config).not_to have_key('created_at')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('last_modified_at')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ api_resources: ['test-value'], approval_type: 'test-value', attributes: [{ 'key1' => 'val1' }], description: 'test-value', environments: ['test-value'], graphql_operation_group: [{ 'key1' => 'val1' }], grpc_operation_group: [{ 'key1' => 'val1' }], operation_group: [{ 'key1' => 'val1' }], proxies: ['test-value'], quota: 'test-value', quota_counter_scope: 'test-value', quota_interval: 'test-value', quota_time_unit: 'test-value', scopes: ['test-value'], space: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ api_resources: ['test-value'], approval_type: 'test-value', attributes: [{ 'key1' => 'val1' }], deletion_policy: 'test-value', description: 'test-value', environments: ['test-value'], graphql_operation_group: { 'key1' => 'val1' }, grpc_operation_group: { 'key1' => 'val1' }, operation_group: { 'key1' => 'val1' }, proxies: ['test-value'], quota: 'test-value', quota_counter_scope: 'test-value', quota_interval: 'test-value', quota_time_unit: 'test-value', scopes: ['test-value'], space: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,6 +71,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeApiProduct do
         expect(config).to have_key('api_resources')
         expect(config).to have_key('approval_type')
         expect(config).to have_key('attributes')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('environments')
         expect(config).to have_key('graphql_operation_group')
@@ -136,6 +139,23 @@ RSpec.describe Pangea::Resources::GoogleApigeeApiProduct do
         config = validate_resource_structure(result, 'google_apigee_api_product', 'minimal')
         expect(config).not_to have_key('attributes')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_api_product('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_api_product', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_api_product('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_api_product', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -173,7 +193,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeApiProduct do
       it 'includes graphql_operation_group when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_api_product('opt', required_attrs.merge(graphql_operation_group: [{ 'key1' => 'val1' }]))
+        synth.google_apigee_api_product('opt', required_attrs.merge(graphql_operation_group: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_api_product', 'opt')
         expect(config).to have_key('graphql_operation_group')
@@ -190,7 +210,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeApiProduct do
       it 'includes grpc_operation_group when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_api_product('opt', required_attrs.merge(grpc_operation_group: [{ 'key1' => 'val1' }]))
+        synth.google_apigee_api_product('opt', required_attrs.merge(grpc_operation_group: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_api_product', 'opt')
         expect(config).to have_key('grpc_operation_group')
@@ -207,7 +227,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeApiProduct do
       it 'includes operation_group when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apigee_api_product('opt', required_attrs.merge(operation_group: [{ 'key1' => 'val1' }]))
+        synth.google_apigee_api_product('opt', required_attrs.merge(operation_group: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apigee_api_product', 'opt')
         expect(config).to have_key('operation_group')
@@ -386,7 +406,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeApiProduct do
     resource_type: :google_apigee_api_product,
     method: :google_apigee_api_product,
     required_attrs: { display_name: 'test-value', name: 'test-value', org_id: 'test-value' },
-    expected_outputs: [:id, :created_at, :last_modified_at],
+    expected_outputs: [:id, :created_at, :deletion_policy, :last_modified_at],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

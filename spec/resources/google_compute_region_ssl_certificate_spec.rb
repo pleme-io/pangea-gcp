@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleComputeRegionSslCertificate do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { certificate: 'test-value', private_key: 'test-value' } }
+  let(:required_attrs) { { certificate: 'test-value' } }
 
   describe ':google_compute_region_ssl_certificate' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSslCertificate do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'test')
-        validate_required_attributes(config, [:certificate, :private_key])
+        validate_required_attributes(config, [:certificate])
       end
 
       it 'returns a ResourceReference' do
@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSslCertificate do
         expect(ref.id).to eq("${google_compute_region_ssl_certificate.test.id}")
         expect(ref.certificate_id).to eq("${google_compute_region_ssl_certificate.test.certificate_id}")
         expect(ref.creation_timestamp).to eq("${google_compute_region_ssl_certificate.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_region_ssl_certificate.test.deletion_policy}")
         expect(ref.expire_time).to eq("${google_compute_region_ssl_certificate.test.expire_time}")
         expect(ref.name).to eq("${google_compute_region_ssl_certificate.test.name}")
         expect(ref.name_prefix).to eq("${google_compute_region_ssl_certificate.test.name_prefix}")
@@ -59,6 +60,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSslCertificate do
         config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'test')
         expect(config).not_to have_key('certificate_id')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('expire_time')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('name_prefix')
@@ -69,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSslCertificate do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', name: 'test-value', name_prefix: 'test-value', private_key: 'test-value', private_key_wo: 'test-value', private_key_wo_version: 'test-value', project: 'test-value', region: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,11 +80,36 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSslCertificate do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('name')
+        expect(config).to have_key('name_prefix')
+        expect(config).to have_key('private_key')
+        expect(config).to have_key('private_key_wo')
+        expect(config).to have_key('private_key_wo_version')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -99,6 +126,125 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSslCertificate do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('opt', required_attrs.merge(name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'opt')
+        expect(config).to have_key('name')
+      end
+
+      it 'omits name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'minimal')
+        expect(config).not_to have_key('name')
+      end
+      it 'includes name_prefix when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('opt', required_attrs.merge(name_prefix: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'opt')
+        expect(config).to have_key('name_prefix')
+      end
+
+      it 'omits name_prefix when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'minimal')
+        expect(config).not_to have_key('name_prefix')
+      end
+      it 'includes private_key when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('opt', required_attrs.merge(private_key: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'opt')
+        expect(config).to have_key('private_key')
+      end
+
+      it 'omits private_key when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'minimal')
+        expect(config).not_to have_key('private_key')
+      end
+      it 'includes private_key_wo when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('opt', required_attrs.merge(private_key_wo: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'opt')
+        expect(config).to have_key('private_key_wo')
+      end
+
+      it 'omits private_key_wo when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'minimal')
+        expect(config).not_to have_key('private_key_wo')
+      end
+      it 'includes private_key_wo_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('opt', required_attrs.merge(private_key_wo_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'opt')
+        expect(config).to have_key('private_key_wo_version')
+      end
+
+      it 'omits private_key_wo_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'minimal')
+        expect(config).not_to have_key('private_key_wo_version')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_ssl_certificate('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'minimal')
+        expect(config).not_to have_key('region')
       end
     end
 
@@ -119,7 +265,6 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSslCertificate do
 
         config = validate_resource_structure(result, 'google_compute_region_ssl_certificate', 'typed')
         expect(config['certificate']).to be_a(String)
-        expect(config['private_key']).to be_a(String)
       end
     end
 
@@ -152,8 +297,8 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionSslCertificate do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_compute_region_ssl_certificate,
     method: :google_compute_region_ssl_certificate,
-    required_attrs: { certificate: 'test-value', private_key: 'test-value' },
-    expected_outputs: [:id, :certificate_id, :creation_timestamp, :expire_time, :name, :name_prefix, :project, :region, :self_link],
+    required_attrs: { certificate: 'test-value' },
+    expected_outputs: [:id, :certificate_id, :creation_timestamp, :deletion_policy, :expire_time, :name, :name_prefix, :project, :region, :self_link],
     sensitive_fields: [:certificate, :private_key],
     immutable_fields: [],
     boolean_fields: []

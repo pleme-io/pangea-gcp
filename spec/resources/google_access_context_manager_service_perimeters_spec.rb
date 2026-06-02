@@ -38,11 +38,24 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeters do
         ref = synth.google_access_context_manager_service_perimeters('test', required_attrs)
 
         expect(ref.id).to eq("${google_access_context_manager_service_perimeters.test.id}")
+        expect(ref.deletion_policy).to eq("${google_access_context_manager_service_perimeters.test.deletion_policy}")
+      end
+    end
+
+    context 'computed-only attributes' do
+      it 'excludes computed-only attributes from the resource block' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_service_perimeters('test', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_access_context_manager_service_perimeters', 'test')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ service_perimeters: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', service_perimeters: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -51,11 +64,29 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeters do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_access_context_manager_service_perimeters', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('service_perimeters')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_service_perimeters('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_service_perimeters', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_access_context_manager_service_perimeters('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_access_context_manager_service_perimeters', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes service_perimeters when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -117,7 +148,7 @@ RSpec.describe Pangea::Resources::GoogleAccessContextManagerServicePerimeters do
     resource_type: :google_access_context_manager_service_perimeters,
     method: :google_access_context_manager_service_perimeters,
     required_attrs: { parent: 'test-value' },
-    expected_outputs: [:id],
+    expected_outputs: [:id, :deletion_policy],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

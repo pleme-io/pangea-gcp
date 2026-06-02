@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleManagedKafkaCluster do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { capacity_config: [{ 'key1' => 'val1' }], cluster_id: 'test-value', gcp_config: [{ 'key1' => 'val1' }], location: 'test-value' } }
+  let(:required_attrs) { { capacity_config: { 'key1' => 'val1' }, cluster_id: 'test-value', gcp_config: { 'key1' => 'val1' }, location: 'test-value' } }
 
   describe ':google_managed_kafka_cluster' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleManagedKafkaCluster do
 
         expect(ref.id).to eq("${google_managed_kafka_cluster.test.id}")
         expect(ref.create_time).to eq("${google_managed_kafka_cluster.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_managed_kafka_cluster.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_managed_kafka_cluster.test.effective_labels}")
         expect(ref.name).to eq("${google_managed_kafka_cluster.test.name}")
         expect(ref.project).to eq("${google_managed_kafka_cluster.test.project}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleManagedKafkaCluster do
 
         config = validate_resource_structure(result, 'google_managed_kafka_cluster', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleManagedKafkaCluster do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ labels: { 'key1' => 'val1' }, rebalance_config: [{ 'key1' => 'val1' }], tls_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ broker_capacity_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', rebalance_config: { 'key1' => 'val1' }, tls_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,13 +78,50 @@ RSpec.describe Pangea::Resources::GoogleManagedKafkaCluster do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_managed_kafka_cluster', 'full')
+        expect(config).to have_key('broker_capacity_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('rebalance_config')
         expect(config).to have_key('tls_config')
       end
     end
 
     context 'optional attributes' do
+      it 'includes broker_capacity_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_managed_kafka_cluster('opt', required_attrs.merge(broker_capacity_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_managed_kafka_cluster', 'opt')
+        expect(config).to have_key('broker_capacity_config')
+      end
+
+      it 'omits broker_capacity_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_managed_kafka_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_managed_kafka_cluster', 'minimal')
+        expect(config).not_to have_key('broker_capacity_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_managed_kafka_cluster('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_managed_kafka_cluster', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_managed_kafka_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_managed_kafka_cluster', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -100,10 +139,27 @@ RSpec.describe Pangea::Resources::GoogleManagedKafkaCluster do
         config = validate_resource_structure(result, 'google_managed_kafka_cluster', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_managed_kafka_cluster('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_managed_kafka_cluster', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_managed_kafka_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_managed_kafka_cluster', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes rebalance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_managed_kafka_cluster('opt', required_attrs.merge(rebalance_config: [{ 'key1' => 'val1' }]))
+        synth.google_managed_kafka_cluster('opt', required_attrs.merge(rebalance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_managed_kafka_cluster', 'opt')
         expect(config).to have_key('rebalance_config')
@@ -120,7 +176,7 @@ RSpec.describe Pangea::Resources::GoogleManagedKafkaCluster do
       it 'includes tls_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_managed_kafka_cluster('opt', required_attrs.merge(tls_config: [{ 'key1' => 'val1' }]))
+        synth.google_managed_kafka_cluster('opt', required_attrs.merge(tls_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_managed_kafka_cluster', 'opt')
         expect(config).to have_key('tls_config')
@@ -144,9 +200,9 @@ RSpec.describe Pangea::Resources::GoogleManagedKafkaCluster do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_managed_kafka_cluster', 'typed')
-        expect(config['capacity_config']).to be_a(Array)
+        expect(config['capacity_config']).to be_a(Hash)
         expect(config['cluster_id']).to be_a(String)
-        expect(config['gcp_config']).to be_a(Array)
+        expect(config['gcp_config']).to be_a(Hash)
         expect(config['location']).to be_a(String)
       end
     end
@@ -180,8 +236,8 @@ RSpec.describe Pangea::Resources::GoogleManagedKafkaCluster do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_managed_kafka_cluster,
     method: :google_managed_kafka_cluster,
-    required_attrs: { capacity_config: [{ 'key1' => 'val1' }], cluster_id: 'test-value', gcp_config: [{ 'key1' => 'val1' }], location: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :name, :project, :state, :terraform_labels, :update_time],
+    required_attrs: { capacity_config: { 'key1' => 'val1' }, cluster_id: 'test-value', gcp_config: { 'key1' => 'val1' }, location: 'test-value' },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :name, :project, :state, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

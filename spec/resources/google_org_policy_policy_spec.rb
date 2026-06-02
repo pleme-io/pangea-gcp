@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleOrgPolicyPolicy do
         ref = synth.google_org_policy_policy('test', required_attrs)
 
         expect(ref.id).to eq("${google_org_policy_policy.test.id}")
+        expect(ref.deletion_policy).to eq("${google_org_policy_policy.test.deletion_policy}")
         expect(ref.etag).to eq("${google_org_policy_policy.test.etag}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleOrgPolicyPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_org_policy_policy', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('etag')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ dry_run_spec: [{ 'key1' => 'val1' }], spec: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', dry_run_spec: { 'key1' => 'val1' }, spec: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,16 +66,34 @@ RSpec.describe Pangea::Resources::GoogleOrgPolicyPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_org_policy_policy', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('dry_run_spec')
         expect(config).to have_key('spec')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_org_policy_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_org_policy_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_org_policy_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_org_policy_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes dry_run_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_org_policy_policy('opt', required_attrs.merge(dry_run_spec: [{ 'key1' => 'val1' }]))
+        synth.google_org_policy_policy('opt', required_attrs.merge(dry_run_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_org_policy_policy', 'opt')
         expect(config).to have_key('dry_run_spec')
@@ -90,7 +110,7 @@ RSpec.describe Pangea::Resources::GoogleOrgPolicyPolicy do
       it 'includes spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_org_policy_policy('opt', required_attrs.merge(spec: [{ 'key1' => 'val1' }]))
+        synth.google_org_policy_policy('opt', required_attrs.merge(spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_org_policy_policy', 'opt')
         expect(config).to have_key('spec')
@@ -149,7 +169,7 @@ RSpec.describe Pangea::Resources::GoogleOrgPolicyPolicy do
     resource_type: :google_org_policy_policy,
     method: :google_org_policy_policy,
     required_attrs: { name: 'test-value', parent: 'test-value' },
-    expected_outputs: [:id, :etag],
+    expected_outputs: [:id, :deletion_policy, :etag],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

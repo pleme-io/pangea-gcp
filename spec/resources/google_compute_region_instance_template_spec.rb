@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
 
         expect(ref.id).to eq("${google_compute_region_instance_template.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_region_instance_template.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_region_instance_template.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_compute_region_instance_template.test.effective_labels}")
         expect(ref.metadata_fingerprint).to eq("${google_compute_region_instance_template.test.metadata_fingerprint}")
         expect(ref.name).to eq("${google_compute_region_instance_template.test.name}")
@@ -61,6 +62,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
 
         config = validate_resource_structure(result, 'google_compute_region_instance_template', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('metadata_fingerprint')
         expect(config).not_to have_key('name')
@@ -75,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ advanced_machine_features: [{ 'key1' => 'val1' }], can_ip_forward: true, confidential_instance_config: [{ 'key1' => 'val1' }], description: 'test-value', guest_accelerator: [{ 'key1' => 'val1' }], instance_description: 'test-value', key_revocation_action_type: 'test-value', labels: { 'key1' => 'val1' }, metadata: { 'key1' => 'val1' }, metadata_startup_script: 'test-value', min_cpu_platform: 'test-value', network_interface: [{ 'key1' => 'val1' }], network_performance_config: [{ 'key1' => 'val1' }], reservation_affinity: [{ 'key1' => 'val1' }], resource_manager_tags: { 'key1' => 'val1' }, resource_policies: ['test-value'], scheduling: [{ 'key1' => 'val1' }], service_account: [{ 'key1' => 'val1' }], shielded_instance_config: [{ 'key1' => 'val1' }], tags: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ advanced_machine_features: { 'key1' => 'val1' }, can_ip_forward: true, confidential_instance_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', guest_accelerator: [{ 'key1' => 'val1' }], instance_description: 'test-value', key_revocation_action_type: 'test-value', labels: { 'key1' => 'val1' }, metadata: { 'key1' => 'val1' }, metadata_startup_script: 'test-value', min_cpu_platform: 'test-value', name: 'test-value', name_prefix: 'test-value', network_interface: [{ 'key1' => 'val1' }], network_performance_config: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value', reservation_affinity: { 'key1' => 'val1' }, resource_manager_tags: { 'key1' => 'val1' }, resource_policies: ['test-value'], scheduling: { 'key1' => 'val1' }, service_account: { 'key1' => 'val1' }, shielded_instance_config: { 'key1' => 'val1' }, tags: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -87,6 +89,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
         expect(config).to have_key('advanced_machine_features')
         expect(config).to have_key('can_ip_forward')
         expect(config).to have_key('confidential_instance_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('guest_accelerator')
         expect(config).to have_key('instance_description')
@@ -95,8 +98,12 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
         expect(config).to have_key('metadata')
         expect(config).to have_key('metadata_startup_script')
         expect(config).to have_key('min_cpu_platform')
+        expect(config).to have_key('name')
+        expect(config).to have_key('name_prefix')
         expect(config).to have_key('network_interface')
         expect(config).to have_key('network_performance_config')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('reservation_affinity')
         expect(config).to have_key('resource_manager_tags')
         expect(config).to have_key('resource_policies')
@@ -111,7 +118,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
       it 'includes advanced_machine_features when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_instance_template('opt', required_attrs.merge(advanced_machine_features: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_instance_template('opt', required_attrs.merge(advanced_machine_features: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_template', 'opt')
         expect(config).to have_key('advanced_machine_features')
@@ -145,7 +152,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
       it 'includes confidential_instance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_instance_template('opt', required_attrs.merge(confidential_instance_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_instance_template('opt', required_attrs.merge(confidential_instance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_template', 'opt')
         expect(config).to have_key('confidential_instance_config')
@@ -158,6 +165,23 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_template', 'minimal')
         expect(config).not_to have_key('confidential_instance_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_template('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_template', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_template', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -295,6 +319,40 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
         config = validate_resource_structure(result, 'google_compute_region_instance_template', 'minimal')
         expect(config).not_to have_key('min_cpu_platform')
       end
+      it 'includes name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_template('opt', required_attrs.merge(name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_template', 'opt')
+        expect(config).to have_key('name')
+      end
+
+      it 'omits name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_template', 'minimal')
+        expect(config).not_to have_key('name')
+      end
+      it 'includes name_prefix when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_template('opt', required_attrs.merge(name_prefix: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_template', 'opt')
+        expect(config).to have_key('name_prefix')
+      end
+
+      it 'omits name_prefix when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_template', 'minimal')
+        expect(config).not_to have_key('name_prefix')
+      end
       it 'includes network_interface when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -315,7 +373,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
       it 'includes network_performance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_instance_template('opt', required_attrs.merge(network_performance_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_instance_template('opt', required_attrs.merge(network_performance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_template', 'opt')
         expect(config).to have_key('network_performance_config')
@@ -329,10 +387,44 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
         config = validate_resource_structure(result, 'google_compute_region_instance_template', 'minimal')
         expect(config).not_to have_key('network_performance_config')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_template('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_template', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_template', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_template('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_template', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_instance_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_instance_template', 'minimal')
+        expect(config).not_to have_key('region')
+      end
       it 'includes reservation_affinity when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_instance_template('opt', required_attrs.merge(reservation_affinity: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_instance_template('opt', required_attrs.merge(reservation_affinity: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_template', 'opt')
         expect(config).to have_key('reservation_affinity')
@@ -383,7 +475,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
       it 'includes scheduling when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_instance_template('opt', required_attrs.merge(scheduling: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_instance_template('opt', required_attrs.merge(scheduling: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_template', 'opt')
         expect(config).to have_key('scheduling')
@@ -400,7 +492,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
       it 'includes service_account when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_instance_template('opt', required_attrs.merge(service_account: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_instance_template('opt', required_attrs.merge(service_account: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_template', 'opt')
         expect(config).to have_key('service_account')
@@ -417,7 +509,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
       it 'includes shielded_instance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_region_instance_template('opt', required_attrs.merge(shielded_instance_config: [{ 'key1' => 'val1' }]))
+        synth.google_compute_region_instance_template('opt', required_attrs.merge(shielded_instance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_instance_template', 'opt')
         expect(config).to have_key('shielded_instance_config')
@@ -507,7 +599,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionInstanceTemplate do
     resource_type: :google_compute_region_instance_template,
     method: :google_compute_region_instance_template,
     required_attrs: { disk: [{ 'key1' => 'val1' }], machine_type: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :effective_labels, :metadata_fingerprint, :name, :name_prefix, :numeric_id, :project, :region, :self_link, :tags_fingerprint, :terraform_labels],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :effective_labels, :metadata_fingerprint, :name, :name_prefix, :numeric_id, :project, :region, :self_link, :tags_fingerprint, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:can_ip_forward]

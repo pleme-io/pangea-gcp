@@ -44,6 +44,7 @@ RSpec.describe Pangea::Resources::GoogleChronicleRule do
         expect(ref.compilation_state).to eq("${google_chronicle_rule.test.compilation_state}")
         expect(ref.create_time).to eq("${google_chronicle_rule.test.create_time}")
         expect(ref.data_tables).to eq("${google_chronicle_rule.test.data_tables}")
+        expect(ref.deletion_policy).to eq("${google_chronicle_rule.test.deletion_policy}")
         expect(ref.display_name).to eq("${google_chronicle_rule.test.display_name}")
         expect(ref.etag).to eq("${google_chronicle_rule.test.etag}")
         expect(ref.metadata).to eq("${google_chronicle_rule.test.metadata}")
@@ -73,6 +74,7 @@ RSpec.describe Pangea::Resources::GoogleChronicleRule do
         expect(config).not_to have_key('compilation_state')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('data_tables')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('display_name')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('metadata')
@@ -89,7 +91,7 @@ RSpec.describe Pangea::Resources::GoogleChronicleRule do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', scope: 'test-value', text: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', etag: 'test-value', project: 'test-value', rule_id: 'test-value', scope: 'test-value', text: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -99,6 +101,9 @@ RSpec.describe Pangea::Resources::GoogleChronicleRule do
 
         config = validate_resource_structure(result, 'google_chronicle_rule', 'full')
         expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('etag')
+        expect(config).to have_key('project')
+        expect(config).to have_key('rule_id')
         expect(config).to have_key('scope')
         expect(config).to have_key('text')
       end
@@ -121,6 +126,57 @@ RSpec.describe Pangea::Resources::GoogleChronicleRule do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_chronicle_rule', 'minimal')
         expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes etag when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_rule('opt', required_attrs.merge(etag: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_rule', 'opt')
+        expect(config).to have_key('etag')
+      end
+
+      it 'omits etag when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_rule', 'minimal')
+        expect(config).not_to have_key('etag')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_rule('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_rule', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_rule', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes rule_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_rule('opt', required_attrs.merge(rule_id: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_rule', 'opt')
+        expect(config).to have_key('rule_id')
+      end
+
+      it 'omits rule_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_chronicle_rule('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_chronicle_rule', 'minimal')
+        expect(config).not_to have_key('rule_id')
       end
       it 'includes scope when provided' do
         synth = create_synthesizer
@@ -201,7 +257,7 @@ RSpec.describe Pangea::Resources::GoogleChronicleRule do
     resource_type: :google_chronicle_rule,
     method: :google_chronicle_rule,
     required_attrs: { instance: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :allowed_run_frequencies, :author, :compilation_diagnostics, :compilation_state, :create_time, :data_tables, :display_name, :etag, :metadata, :name, :near_real_time_live_rule_eligible, :project, :reference_lists, :revision_create_time, :revision_id, :rule_id, :severity, :type],
+    expected_outputs: [:id, :allowed_run_frequencies, :author, :compilation_diagnostics, :compilation_state, :create_time, :data_tables, :deletion_policy, :display_name, :etag, :metadata, :name, :near_real_time_live_rule_eligible, :project, :reference_lists, :revision_create_time, :revision_id, :rule_id, :severity, :type],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

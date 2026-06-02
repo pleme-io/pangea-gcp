@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComputeHaVpnGateway do
         ref = synth.google_compute_ha_vpn_gateway('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_ha_vpn_gateway.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_ha_vpn_gateway.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_compute_ha_vpn_gateway.test.effective_labels}")
         expect(ref.label_fingerprint).to eq("${google_compute_ha_vpn_gateway.test.label_fingerprint}")
         expect(ref.project).to eq("${google_compute_ha_vpn_gateway.test.project}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleComputeHaVpnGateway do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_ha_vpn_gateway', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('label_fingerprint')
         expect(config).not_to have_key('project')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleComputeHaVpnGateway do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', gateway_ip_version: 'test-value', labels: { 'key1' => 'val1' }, stack_type: 'test-value', vpn_interfaces: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', gateway_ip_version: 'test-value', labels: { 'key1' => 'val1' }, params: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value', stack_type: 'test-value', vpn_interfaces: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,15 +76,36 @@ RSpec.describe Pangea::Resources::GoogleComputeHaVpnGateway do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_ha_vpn_gateway', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('gateway_ip_version')
         expect(config).to have_key('labels')
+        expect(config).to have_key('params')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('stack_type')
         expect(config).to have_key('vpn_interfaces')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_ha_vpn_gateway('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_ha_vpn_gateway', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_ha_vpn_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_ha_vpn_gateway', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -133,6 +156,57 @@ RSpec.describe Pangea::Resources::GoogleComputeHaVpnGateway do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_ha_vpn_gateway', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes params when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_ha_vpn_gateway('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_ha_vpn_gateway', 'opt')
+        expect(config).to have_key('params')
+      end
+
+      it 'omits params when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_ha_vpn_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_ha_vpn_gateway', 'minimal')
+        expect(config).not_to have_key('params')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_ha_vpn_gateway('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_ha_vpn_gateway', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_ha_vpn_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_ha_vpn_gateway', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_ha_vpn_gateway('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_ha_vpn_gateway', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_ha_vpn_gateway('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_ha_vpn_gateway', 'minimal')
+        expect(config).not_to have_key('region')
       end
       it 'includes stack_type when provided' do
         synth = create_synthesizer
@@ -213,7 +287,7 @@ RSpec.describe Pangea::Resources::GoogleComputeHaVpnGateway do
     resource_type: :google_compute_ha_vpn_gateway,
     method: :google_compute_ha_vpn_gateway,
     required_attrs: { name: 'test-value', network: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :label_fingerprint, :project, :region, :self_link, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :label_fingerprint, :project, :region, :self_link, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleLustreInstance do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { capacity_gib: 'test-value', filesystem: 'test-value', instance_id: 'test-value', location: 'test-value', network: 'test-value', per_unit_storage_throughput: 'test-value' } }
+  let(:required_attrs) { { capacity_gib: 'test-value', filesystem: 'test-value', instance_id: 'test-value', location: 'test-value', network: 'test-value' } }
 
   describe ':google_lustre_instance' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleLustreInstance do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_lustre_instance', 'test')
-        validate_required_attributes(config, [:capacity_gib, :filesystem, :instance_id, :location, :network, :per_unit_storage_throughput])
+        validate_required_attributes(config, [:capacity_gib, :filesystem, :instance_id, :location, :network])
       end
 
       it 'returns a ResourceReference' do
@@ -39,12 +39,16 @@ RSpec.describe Pangea::Resources::GoogleLustreInstance do
 
         expect(ref.id).to eq("${google_lustre_instance.test.id}")
         expect(ref.create_time).to eq("${google_lustre_instance.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_lustre_instance.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_lustre_instance.test.effective_labels}")
         expect(ref.mount_point).to eq("${google_lustre_instance.test.mount_point}")
         expect(ref.name).to eq("${google_lustre_instance.test.name}")
         expect(ref.project).to eq("${google_lustre_instance.test.project}")
         expect(ref.state).to eq("${google_lustre_instance.test.state}")
+        expect(ref.state_reason).to eq("${google_lustre_instance.test.state_reason}")
         expect(ref.terraform_labels).to eq("${google_lustre_instance.test.terraform_labels}")
+        expect(ref.uid).to eq("${google_lustre_instance.test.uid}")
+        expect(ref.upcoming_maintenance_schedule).to eq("${google_lustre_instance.test.upcoming_maintenance_schedule}")
         expect(ref.update_time).to eq("${google_lustre_instance.test.update_time}")
       end
     end
@@ -58,18 +62,22 @@ RSpec.describe Pangea::Resources::GoogleLustreInstance do
 
         config = validate_resource_structure(result, 'google_lustre_instance', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('mount_point')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
+        expect(config).not_to have_key('state_reason')
         expect(config).not_to have_key('terraform_labels')
+        expect(config).not_to have_key('uid')
+        expect(config).not_to have_key('upcoming_maintenance_schedule')
         expect(config).not_to have_key('update_time')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', gke_support_enabled: true, labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ access_rules_options: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', dynamic_tier_options: { 'key1' => 'val1' }, gke_support_enabled: true, kms_key: 'test-value', labels: { 'key1' => 'val1' }, maintenance_policy: { 'key1' => 'val1' }, per_unit_storage_throughput: 'test-value', placement_policy: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,13 +86,55 @@ RSpec.describe Pangea::Resources::GoogleLustreInstance do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_lustre_instance', 'full')
+        expect(config).to have_key('access_rules_options')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('dynamic_tier_options')
         expect(config).to have_key('gke_support_enabled')
+        expect(config).to have_key('kms_key')
         expect(config).to have_key('labels')
+        expect(config).to have_key('maintenance_policy')
+        expect(config).to have_key('per_unit_storage_throughput')
+        expect(config).to have_key('placement_policy')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes access_rules_options when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('opt', required_attrs.merge(access_rules_options: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'opt')
+        expect(config).to have_key('access_rules_options')
+      end
+
+      it 'omits access_rules_options when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'minimal')
+        expect(config).not_to have_key('access_rules_options')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -101,6 +151,23 @@ RSpec.describe Pangea::Resources::GoogleLustreInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_lustre_instance', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes dynamic_tier_options when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('opt', required_attrs.merge(dynamic_tier_options: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'opt')
+        expect(config).to have_key('dynamic_tier_options')
+      end
+
+      it 'omits dynamic_tier_options when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'minimal')
+        expect(config).not_to have_key('dynamic_tier_options')
       end
       it 'includes gke_support_enabled when provided' do
         synth = create_synthesizer
@@ -119,6 +186,23 @@ RSpec.describe Pangea::Resources::GoogleLustreInstance do
         config = validate_resource_structure(result, 'google_lustre_instance', 'minimal')
         expect(config).not_to have_key('gke_support_enabled')
       end
+      it 'includes kms_key when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('opt', required_attrs.merge(kms_key: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'opt')
+        expect(config).to have_key('kms_key')
+      end
+
+      it 'omits kms_key when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'minimal')
+        expect(config).not_to have_key('kms_key')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -135,6 +219,74 @@ RSpec.describe Pangea::Resources::GoogleLustreInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_lustre_instance', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes maintenance_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('opt', required_attrs.merge(maintenance_policy: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'opt')
+        expect(config).to have_key('maintenance_policy')
+      end
+
+      it 'omits maintenance_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'minimal')
+        expect(config).not_to have_key('maintenance_policy')
+      end
+      it 'includes per_unit_storage_throughput when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('opt', required_attrs.merge(per_unit_storage_throughput: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'opt')
+        expect(config).to have_key('per_unit_storage_throughput')
+      end
+
+      it 'omits per_unit_storage_throughput when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'minimal')
+        expect(config).not_to have_key('per_unit_storage_throughput')
+      end
+      it 'includes placement_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('opt', required_attrs.merge(placement_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'opt')
+        expect(config).to have_key('placement_policy')
+      end
+
+      it 'omits placement_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'minimal')
+        expect(config).not_to have_key('placement_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_lustre_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_lustre_instance', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -165,7 +317,6 @@ RSpec.describe Pangea::Resources::GoogleLustreInstance do
         expect(config['instance_id']).to be_a(String)
         expect(config['location']).to be_a(String)
         expect(config['network']).to be_a(String)
-        expect(config['per_unit_storage_throughput']).to be_a(String)
       end
     end
 
@@ -198,8 +349,8 @@ RSpec.describe Pangea::Resources::GoogleLustreInstance do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_lustre_instance,
     method: :google_lustre_instance,
-    required_attrs: { capacity_gib: 'test-value', filesystem: 'test-value', instance_id: 'test-value', location: 'test-value', network: 'test-value', per_unit_storage_throughput: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :mount_point, :name, :project, :state, :terraform_labels, :update_time],
+    required_attrs: { capacity_gib: 'test-value', filesystem: 'test-value', instance_id: 'test-value', location: 'test-value', network: 'test-value' },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :mount_point, :name, :project, :state, :state_reason, :terraform_labels, :uid, :upcoming_maintenance_schedule, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:gke_support_enabled]

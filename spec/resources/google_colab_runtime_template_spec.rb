@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleColabRuntimeTemplate do
         ref = synth.google_colab_runtime_template('test', required_attrs)
 
         expect(ref.id).to eq("${google_colab_runtime_template.test.id}")
+        expect(ref.deletion_policy).to eq("${google_colab_runtime_template.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_colab_runtime_template.test.effective_labels}")
         expect(ref.labels).to eq("${google_colab_runtime_template.test.labels}")
         expect(ref.name).to eq("${google_colab_runtime_template.test.name}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleColabRuntimeTemplate do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_colab_runtime_template', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('labels')
         expect(config).not_to have_key('name')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleColabRuntimeTemplate do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ data_persistent_disk_spec: [{ 'key1' => 'val1' }], description: 'test-value', encryption_spec: [{ 'key1' => 'val1' }], euc_config: [{ 'key1' => 'val1' }], idle_shutdown_config: [{ 'key1' => 'val1' }], machine_spec: [{ 'key1' => 'val1' }], network_spec: [{ 'key1' => 'val1' }], network_tags: ['test-value'], shielded_vm_config: [{ 'key1' => 'val1' }], software_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ data_persistent_disk_spec: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', encryption_spec: { 'key1' => 'val1' }, euc_config: { 'key1' => 'val1' }, idle_shutdown_config: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, machine_spec: { 'key1' => 'val1' }, name: 'test-value', network_spec: { 'key1' => 'val1' }, network_tags: ['test-value'], project: 'test-value', shielded_vm_config: { 'key1' => 'val1' }, software_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -73,13 +75,17 @@ RSpec.describe Pangea::Resources::GoogleColabRuntimeTemplate do
 
         config = validate_resource_structure(result, 'google_colab_runtime_template', 'full')
         expect(config).to have_key('data_persistent_disk_spec')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('encryption_spec')
         expect(config).to have_key('euc_config')
         expect(config).to have_key('idle_shutdown_config')
+        expect(config).to have_key('labels')
         expect(config).to have_key('machine_spec')
+        expect(config).to have_key('name')
         expect(config).to have_key('network_spec')
         expect(config).to have_key('network_tags')
+        expect(config).to have_key('project')
         expect(config).to have_key('shielded_vm_config')
         expect(config).to have_key('software_config')
       end
@@ -89,7 +95,7 @@ RSpec.describe Pangea::Resources::GoogleColabRuntimeTemplate do
       it 'includes data_persistent_disk_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_colab_runtime_template('opt', required_attrs.merge(data_persistent_disk_spec: [{ 'key1' => 'val1' }]))
+        synth.google_colab_runtime_template('opt', required_attrs.merge(data_persistent_disk_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_runtime_template', 'opt')
         expect(config).to have_key('data_persistent_disk_spec')
@@ -102,6 +108,23 @@ RSpec.describe Pangea::Resources::GoogleColabRuntimeTemplate do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_runtime_template', 'minimal')
         expect(config).not_to have_key('data_persistent_disk_spec')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_runtime_template('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_runtime_template', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_runtime_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_runtime_template', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -123,7 +146,7 @@ RSpec.describe Pangea::Resources::GoogleColabRuntimeTemplate do
       it 'includes encryption_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_colab_runtime_template('opt', required_attrs.merge(encryption_spec: [{ 'key1' => 'val1' }]))
+        synth.google_colab_runtime_template('opt', required_attrs.merge(encryption_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_runtime_template', 'opt')
         expect(config).to have_key('encryption_spec')
@@ -140,7 +163,7 @@ RSpec.describe Pangea::Resources::GoogleColabRuntimeTemplate do
       it 'includes euc_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_colab_runtime_template('opt', required_attrs.merge(euc_config: [{ 'key1' => 'val1' }]))
+        synth.google_colab_runtime_template('opt', required_attrs.merge(euc_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_runtime_template', 'opt')
         expect(config).to have_key('euc_config')
@@ -157,7 +180,7 @@ RSpec.describe Pangea::Resources::GoogleColabRuntimeTemplate do
       it 'includes idle_shutdown_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_colab_runtime_template('opt', required_attrs.merge(idle_shutdown_config: [{ 'key1' => 'val1' }]))
+        synth.google_colab_runtime_template('opt', required_attrs.merge(idle_shutdown_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_runtime_template', 'opt')
         expect(config).to have_key('idle_shutdown_config')
@@ -171,10 +194,27 @@ RSpec.describe Pangea::Resources::GoogleColabRuntimeTemplate do
         config = validate_resource_structure(result, 'google_colab_runtime_template', 'minimal')
         expect(config).not_to have_key('idle_shutdown_config')
       end
+      it 'includes labels when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_runtime_template('opt', required_attrs.merge(labels: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_runtime_template', 'opt')
+        expect(config).to have_key('labels')
+      end
+
+      it 'omits labels when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_runtime_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_runtime_template', 'minimal')
+        expect(config).not_to have_key('labels')
+      end
       it 'includes machine_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_colab_runtime_template('opt', required_attrs.merge(machine_spec: [{ 'key1' => 'val1' }]))
+        synth.google_colab_runtime_template('opt', required_attrs.merge(machine_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_runtime_template', 'opt')
         expect(config).to have_key('machine_spec')
@@ -188,10 +228,27 @@ RSpec.describe Pangea::Resources::GoogleColabRuntimeTemplate do
         config = validate_resource_structure(result, 'google_colab_runtime_template', 'minimal')
         expect(config).not_to have_key('machine_spec')
       end
+      it 'includes name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_runtime_template('opt', required_attrs.merge(name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_runtime_template', 'opt')
+        expect(config).to have_key('name')
+      end
+
+      it 'omits name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_runtime_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_runtime_template', 'minimal')
+        expect(config).not_to have_key('name')
+      end
       it 'includes network_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_colab_runtime_template('opt', required_attrs.merge(network_spec: [{ 'key1' => 'val1' }]))
+        synth.google_colab_runtime_template('opt', required_attrs.merge(network_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_runtime_template', 'opt')
         expect(config).to have_key('network_spec')
@@ -222,10 +279,27 @@ RSpec.describe Pangea::Resources::GoogleColabRuntimeTemplate do
         config = validate_resource_structure(result, 'google_colab_runtime_template', 'minimal')
         expect(config).not_to have_key('network_tags')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_runtime_template('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_runtime_template', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_colab_runtime_template('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_colab_runtime_template', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes shielded_vm_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_colab_runtime_template('opt', required_attrs.merge(shielded_vm_config: [{ 'key1' => 'val1' }]))
+        synth.google_colab_runtime_template('opt', required_attrs.merge(shielded_vm_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_runtime_template', 'opt')
         expect(config).to have_key('shielded_vm_config')
@@ -242,7 +316,7 @@ RSpec.describe Pangea::Resources::GoogleColabRuntimeTemplate do
       it 'includes software_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_colab_runtime_template('opt', required_attrs.merge(software_config: [{ 'key1' => 'val1' }]))
+        synth.google_colab_runtime_template('opt', required_attrs.merge(software_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_colab_runtime_template', 'opt')
         expect(config).to have_key('software_config')
@@ -301,7 +375,7 @@ RSpec.describe Pangea::Resources::GoogleColabRuntimeTemplate do
     resource_type: :google_colab_runtime_template,
     method: :google_colab_runtime_template,
     required_attrs: { display_name: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :labels, :name, :project, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :labels, :name, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -57,7 +57,7 @@ RSpec.describe Pangea::Resources::GoogleContainerRegistry do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ location: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ location: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,6 +67,7 @@ RSpec.describe Pangea::Resources::GoogleContainerRegistry do
 
         config = validate_resource_structure(result, 'google_container_registry', 'full')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
       end
     end
 
@@ -87,6 +88,23 @@ RSpec.describe Pangea::Resources::GoogleContainerRegistry do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_registry', 'minimal')
         expect(config).not_to have_key('location')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_registry('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_registry', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_registry('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_registry', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 

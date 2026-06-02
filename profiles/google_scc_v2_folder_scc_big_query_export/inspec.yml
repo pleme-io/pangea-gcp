@@ -1,0 +1,8 @@
+name: google_scc_v2_folder_scc_big_query_export
+title: Manages a google_scc_v2_folder_scc_big_query_export resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

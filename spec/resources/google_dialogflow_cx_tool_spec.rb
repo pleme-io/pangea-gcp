@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxTool do
         ref = synth.google_dialogflow_cx_tool('test', required_attrs)
 
         expect(ref.id).to eq("${google_dialogflow_cx_tool.test.id}")
+        expect(ref.deletion_policy).to eq("${google_dialogflow_cx_tool.test.deletion_policy}")
         expect(ref.name).to eq("${google_dialogflow_cx_tool.test.name}")
         expect(ref.tool_type).to eq("${google_dialogflow_cx_tool.test.tool_type}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxTool do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_tool', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('tool_type')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ data_store_spec: [{ 'key1' => 'val1' }], function_spec: [{ 'key1' => 'val1' }], open_api_spec: [{ 'key1' => 'val1' }], parent: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ data_store_spec: { 'key1' => 'val1' }, deletion_policy: 'test-value', function_spec: { 'key1' => 'val1' }, open_api_spec: { 'key1' => 'val1' }, parent: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,6 +69,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxTool do
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_tool', 'full')
         expect(config).to have_key('data_store_spec')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('function_spec')
         expect(config).to have_key('open_api_spec')
         expect(config).to have_key('parent')
@@ -77,7 +80,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxTool do
       it 'includes data_store_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_tool('opt', required_attrs.merge(data_store_spec: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_tool('opt', required_attrs.merge(data_store_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_tool', 'opt')
         expect(config).to have_key('data_store_spec')
@@ -91,10 +94,27 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxTool do
         config = validate_resource_structure(result, 'google_dialogflow_cx_tool', 'minimal')
         expect(config).not_to have_key('data_store_spec')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_tool('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_tool', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_tool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_tool', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes function_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_tool('opt', required_attrs.merge(function_spec: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_tool('opt', required_attrs.merge(function_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_tool', 'opt')
         expect(config).to have_key('function_spec')
@@ -111,7 +131,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxTool do
       it 'includes open_api_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_tool('opt', required_attrs.merge(open_api_spec: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_tool('opt', required_attrs.merge(open_api_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_tool', 'opt')
         expect(config).to have_key('open_api_spec')
@@ -187,7 +207,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxTool do
     resource_type: :google_dialogflow_cx_tool,
     method: :google_dialogflow_cx_tool,
     required_attrs: { description: 'test-value', display_name: 'test-value' },
-    expected_outputs: [:id, :name, :tool_type],
+    expected_outputs: [:id, :deletion_policy, :name, :tool_type],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

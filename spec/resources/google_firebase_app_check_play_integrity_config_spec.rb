@@ -58,6 +58,58 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppCheckPlayIntegrityConfig do
       end
     end
 
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ project: 'test-value', token_ttl: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_check_play_integrity_config('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_firebase_app_check_play_integrity_config', 'full')
+        expect(config).to have_key('project')
+        expect(config).to have_key('token_ttl')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_check_play_integrity_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_check_play_integrity_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_check_play_integrity_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_check_play_integrity_config', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes token_ttl when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_check_play_integrity_config('opt', required_attrs.merge(token_ttl: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_check_play_integrity_config', 'opt')
+        expect(config).to have_key('token_ttl')
+      end
+
+      it 'omits token_ttl when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_check_play_integrity_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_check_play_integrity_config', 'minimal')
+        expect(config).not_to have_key('token_ttl')
+      end
+    end
+
     context 'attribute types' do
       it 'validates expected attribute types' do
         synth = create_synthesizer

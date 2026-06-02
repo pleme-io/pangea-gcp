@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleBigtableTableIamPolicy do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { policy_data: 'test-value', table: 'test-value' } }
+  let(:required_attrs) { { instance_name: 'test-value', policy_data: 'test-value', table: 'test-value' } }
 
   describe ':google_bigtable_table_iam_policy' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableTableIamPolicy do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_bigtable_table_iam_policy', 'test')
-        validate_required_attributes(config, [:policy_data, :table])
+        validate_required_attributes(config, [:instance_name, :policy_data, :table])
       end
 
       it 'returns a ResourceReference' do
@@ -39,8 +39,6 @@ RSpec.describe Pangea::Resources::GoogleBigtableTableIamPolicy do
 
         expect(ref.id).to eq("${google_bigtable_table_iam_policy.test.id}")
         expect(ref.etag).to eq("${google_bigtable_table_iam_policy.test.etag}")
-        expect(ref.instance).to eq("${google_bigtable_table_iam_policy.test.instance}")
-        expect(ref.instance_name).to eq("${google_bigtable_table_iam_policy.test.instance_name}")
         expect(ref.project).to eq("${google_bigtable_table_iam_policy.test.project}")
       end
     end
@@ -54,8 +52,40 @@ RSpec.describe Pangea::Resources::GoogleBigtableTableIamPolicy do
 
         config = validate_resource_structure(result, 'google_bigtable_table_iam_policy', 'test')
         expect(config).not_to have_key('etag')
-        expect(config).not_to have_key('instance')
-        expect(config).not_to have_key('instance_name')
+        expect(config).not_to have_key('project')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ project: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_table_iam_policy('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_bigtable_table_iam_policy', 'full')
+        expect(config).to have_key('project')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_table_iam_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_table_iam_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigtable_table_iam_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigtable_table_iam_policy', 'minimal')
         expect(config).not_to have_key('project')
       end
     end
@@ -68,6 +98,7 @@ RSpec.describe Pangea::Resources::GoogleBigtableTableIamPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigtable_table_iam_policy', 'typed')
+        expect(config['instance_name']).to be_a(String)
         expect(config['policy_data']).to be_a(String)
         expect(config['table']).to be_a(String)
       end
@@ -102,8 +133,8 @@ RSpec.describe Pangea::Resources::GoogleBigtableTableIamPolicy do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_bigtable_table_iam_policy,
     method: :google_bigtable_table_iam_policy,
-    required_attrs: { policy_data: 'test-value', table: 'test-value' },
-    expected_outputs: [:id, :etag, :instance, :instance_name, :project],
+    required_attrs: { instance_name: 'test-value', policy_data: 'test-value', table: 'test-value' },
+    expected_outputs: [:id, :etag, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

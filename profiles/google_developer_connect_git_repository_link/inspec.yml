@@ -1,0 +1,8 @@
+name: google_developer_connect_git_repository_link
+title: Manages a google_developer_connect_git_repository_link resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

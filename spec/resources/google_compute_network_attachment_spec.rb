@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkAttachment do
         expect(ref.id).to eq("${google_compute_network_attachment.test.id}")
         expect(ref.connection_endpoints).to eq("${google_compute_network_attachment.test.connection_endpoints}")
         expect(ref.creation_timestamp).to eq("${google_compute_network_attachment.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_network_attachment.test.deletion_policy}")
         expect(ref.fingerprint).to eq("${google_compute_network_attachment.test.fingerprint}")
         expect(ref.kind).to eq("${google_compute_network_attachment.test.kind}")
         expect(ref.network).to eq("${google_compute_network_attachment.test.network}")
@@ -60,6 +61,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkAttachment do
         config = validate_resource_structure(result, 'google_compute_network_attachment', 'test')
         expect(config).not_to have_key('connection_endpoints')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('fingerprint')
         expect(config).not_to have_key('kind')
         expect(config).not_to have_key('network')
@@ -71,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkAttachment do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', producer_accept_lists: ['test-value'], producer_reject_lists: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', producer_accept_lists: ['test-value'], producer_reject_lists: ['test-value'], project: 'test-value', region: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -80,13 +82,33 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkAttachment do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_network_attachment', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('producer_accept_lists')
         expect(config).to have_key('producer_reject_lists')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_attachment('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_attachment', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_attachment', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -138,6 +160,40 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkAttachment do
         config = validate_resource_structure(result, 'google_compute_network_attachment', 'minimal')
         expect(config).not_to have_key('producer_reject_lists')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_attachment('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_attachment', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_attachment', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_attachment('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_attachment', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_attachment', 'minimal')
+        expect(config).not_to have_key('region')
+      end
     end
 
     context 'attribute types' do
@@ -184,7 +240,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkAttachment do
     resource_type: :google_compute_network_attachment,
     method: :google_compute_network_attachment,
     required_attrs: { connection_preference: 'test-value', name: 'test-value', subnetworks: ['test-value'] },
-    expected_outputs: [:id, :connection_endpoints, :creation_timestamp, :fingerprint, :kind, :network, :project, :region, :self_link, :self_link_with_id],
+    expected_outputs: [:id, :connection_endpoints, :creation_timestamp, :deletion_policy, :fingerprint, :kind, :network, :project, :region, :self_link, :self_link_with_id],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

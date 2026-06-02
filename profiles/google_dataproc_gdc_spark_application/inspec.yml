@@ -1,0 +1,8 @@
+name: google_dataproc_gdc_spark_application
+title: Manages a google_dataproc_gdc_spark_application resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

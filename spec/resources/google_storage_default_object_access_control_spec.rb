@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleStorageDefaultObjectAccessControl do
         ref = synth.google_storage_default_object_access_control('test', required_attrs)
 
         expect(ref.id).to eq("${google_storage_default_object_access_control.test.id}")
+        expect(ref.deletion_policy).to eq("${google_storage_default_object_access_control.test.deletion_policy}")
         expect(ref.domain).to eq("${google_storage_default_object_access_control.test.domain}")
         expect(ref.email).to eq("${google_storage_default_object_access_control.test.email}")
         expect(ref.entity_id).to eq("${google_storage_default_object_access_control.test.entity_id}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleStorageDefaultObjectAccessControl do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_storage_default_object_access_control', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('domain')
         expect(config).not_to have_key('email')
         expect(config).not_to have_key('entity_id')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleStorageDefaultObjectAccessControl do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ object: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', object: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,11 +74,29 @@ RSpec.describe Pangea::Resources::GoogleStorageDefaultObjectAccessControl do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_storage_default_object_access_control', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('object')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_default_object_access_control('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_default_object_access_control', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_default_object_access_control('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_default_object_access_control', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes object when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -140,7 +160,7 @@ RSpec.describe Pangea::Resources::GoogleStorageDefaultObjectAccessControl do
     resource_type: :google_storage_default_object_access_control,
     method: :google_storage_default_object_access_control,
     required_attrs: { bucket: 'test-value', entity: 'test-value', role: 'test-value' },
-    expected_outputs: [:id, :domain, :email, :entity_id, :generation, :project_team],
+    expected_outputs: [:id, :deletion_policy, :domain, :email, :entity_id, :generation, :project_team],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

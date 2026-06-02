@@ -39,7 +39,9 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkFirewallPolicy do
 
         expect(ref.id).to eq("${google_compute_region_network_firewall_policy.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_region_network_firewall_policy.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_region_network_firewall_policy.test.deletion_policy}")
         expect(ref.fingerprint).to eq("${google_compute_region_network_firewall_policy.test.fingerprint}")
+        expect(ref.policy_type).to eq("${google_compute_region_network_firewall_policy.test.policy_type}")
         expect(ref.project).to eq("${google_compute_region_network_firewall_policy.test.project}")
         expect(ref.region).to eq("${google_compute_region_network_firewall_policy.test.region}")
         expect(ref.region_network_firewall_policy_id).to eq("${google_compute_region_network_firewall_policy.test.region_network_firewall_policy_id}")
@@ -58,7 +60,9 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkFirewallPolicy do
 
         config = validate_resource_structure(result, 'google_compute_region_network_firewall_policy', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('fingerprint')
+        expect(config).not_to have_key('policy_type')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('region')
         expect(config).not_to have_key('region_network_firewall_policy_id')
@@ -69,7 +73,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkFirewallPolicy do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', policy_type: 'test-value', project: 'test-value', region: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,11 +82,32 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkFirewallPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_region_network_firewall_policy', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('policy_type')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_firewall_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_firewall_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_firewall_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_firewall_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -99,6 +124,57 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkFirewallPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_region_network_firewall_policy', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes policy_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_firewall_policy('opt', required_attrs.merge(policy_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_firewall_policy', 'opt')
+        expect(config).to have_key('policy_type')
+      end
+
+      it 'omits policy_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_firewall_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_firewall_policy', 'minimal')
+        expect(config).not_to have_key('policy_type')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_firewall_policy('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_firewall_policy', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_firewall_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_firewall_policy', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_firewall_policy('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_firewall_policy', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_region_network_firewall_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_region_network_firewall_policy', 'minimal')
+        expect(config).not_to have_key('region')
       end
     end
 
@@ -144,7 +220,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRegionNetworkFirewallPolicy do
     resource_type: :google_compute_region_network_firewall_policy,
     method: :google_compute_region_network_firewall_policy,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :fingerprint, :project, :region, :region_network_firewall_policy_id, :rule_tuple_count, :self_link, :self_link_with_id],
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :fingerprint, :policy_type, :project, :region, :region_network_firewall_policy_id, :rule_tuple_count, :self_link, :self_link_with_id],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

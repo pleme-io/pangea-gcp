@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleComputeRouter do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { name: 'test-value', network: 'test-value' } }
+  let(:required_attrs) { { name: 'test-value' } }
 
   describe ':google_compute_router' do
     context 'with required attributes only' do
@@ -20,7 +20,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouter do
 
         validate_terraform_structure(result, :resource)
         config = validate_resource_structure(result, 'google_compute_router', 'test')
-        validate_required_attributes(config, [:name, :network])
+        validate_required_attributes(config, [:name])
       end
 
       it 'returns a ResourceReference' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouter do
 
         expect(ref.id).to eq("${google_compute_router.test.id}")
         expect(ref.creation_timestamp).to eq("${google_compute_router.test.creation_timestamp}")
+        expect(ref.deletion_policy).to eq("${google_compute_router.test.deletion_policy}")
         expect(ref.project).to eq("${google_compute_router.test.project}")
         expect(ref.region).to eq("${google_compute_router.test.region}")
         expect(ref.self_link).to eq("${google_compute_router.test.self_link}")
@@ -54,6 +55,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouter do
 
         config = validate_resource_structure(result, 'google_compute_router', 'test')
         expect(config).not_to have_key('creation_timestamp')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('region')
         expect(config).not_to have_key('self_link')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouter do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ bgp: [{ 'key1' => 'val1' }], description: 'test-value', encrypted_interconnect_router: true, md5_authentication_keys: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ bgp: { 'key1' => 'val1' }, deletion_policy: 'test-value', description: 'test-value', encrypted_interconnect_router: true, md5_authentication_keys: { 'key1' => 'val1' }, network: 'test-value', params: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,9 +73,14 @@ RSpec.describe Pangea::Resources::GoogleComputeRouter do
 
         config = validate_resource_structure(result, 'google_compute_router', 'full')
         expect(config).to have_key('bgp')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('encrypted_interconnect_router')
         expect(config).to have_key('md5_authentication_keys')
+        expect(config).to have_key('network')
+        expect(config).to have_key('params')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
       end
     end
 
@@ -81,7 +88,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouter do
       it 'includes bgp when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_router('opt', required_attrs.merge(bgp: [{ 'key1' => 'val1' }]))
+        synth.google_compute_router('opt', required_attrs.merge(bgp: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_router', 'opt')
         expect(config).to have_key('bgp')
@@ -94,6 +101,23 @@ RSpec.describe Pangea::Resources::GoogleComputeRouter do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_router', 'minimal')
         expect(config).not_to have_key('bgp')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -132,7 +156,7 @@ RSpec.describe Pangea::Resources::GoogleComputeRouter do
       it 'includes md5_authentication_keys when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_router('opt', required_attrs.merge(md5_authentication_keys: [{ 'key1' => 'val1' }]))
+        synth.google_compute_router('opt', required_attrs.merge(md5_authentication_keys: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_router', 'opt')
         expect(config).to have_key('md5_authentication_keys')
@@ -145,6 +169,74 @@ RSpec.describe Pangea::Resources::GoogleComputeRouter do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_router', 'minimal')
         expect(config).not_to have_key('md5_authentication_keys')
+      end
+      it 'includes network when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router('opt', required_attrs.merge(network: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router', 'opt')
+        expect(config).to have_key('network')
+      end
+
+      it 'omits network when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router', 'minimal')
+        expect(config).not_to have_key('network')
+      end
+      it 'includes params when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router', 'opt')
+        expect(config).to have_key('params')
+      end
+
+      it 'omits params when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router', 'minimal')
+        expect(config).not_to have_key('params')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_router('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_router', 'minimal')
+        expect(config).not_to have_key('region')
       end
     end
 
@@ -171,7 +263,6 @@ RSpec.describe Pangea::Resources::GoogleComputeRouter do
 
         config = validate_resource_structure(result, 'google_compute_router', 'typed')
         expect(config['name']).to be_a(String)
-        expect(config['network']).to be_a(String)
       end
     end
 
@@ -204,8 +295,8 @@ RSpec.describe Pangea::Resources::GoogleComputeRouter do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_compute_router,
     method: :google_compute_router,
-    required_attrs: { name: 'test-value', network: 'test-value' },
-    expected_outputs: [:id, :creation_timestamp, :project, :region, :self_link],
+    required_attrs: { name: 'test-value' },
+    expected_outputs: [:id, :creation_timestamp, :deletion_policy, :project, :region, :self_link],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:encrypted_interconnect_router]

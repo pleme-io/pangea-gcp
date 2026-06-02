@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringSlo do
         ref = synth.google_monitoring_slo('test', required_attrs)
 
         expect(ref.id).to eq("${google_monitoring_slo.test.id}")
+        expect(ref.deletion_policy).to eq("${google_monitoring_slo.test.deletion_policy}")
         expect(ref.name).to eq("${google_monitoring_slo.test.name}")
         expect(ref.project).to eq("${google_monitoring_slo.test.project}")
         expect(ref.slo_id).to eq("${google_monitoring_slo.test.slo_id}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringSlo do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_monitoring_slo', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('slo_id')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringSlo do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ basic_sli: [{ 'key1' => 'val1' }], calendar_period: 'test-value', display_name: 'test-value', request_based_sli: [{ 'key1' => 'val1' }], rolling_period_days: 3.14, user_labels: { 'key1' => 'val1' }, windows_based_sli: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ basic_sli: { 'key1' => 'val1' }, calendar_period: 'test-value', deletion_policy: 'test-value', display_name: 'test-value', project: 'test-value', request_based_sli: { 'key1' => 'val1' }, rolling_period_days: 3.14, slo_id: 'test-value', user_labels: { 'key1' => 'val1' }, windows_based_sli: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,9 +72,12 @@ RSpec.describe Pangea::Resources::GoogleMonitoringSlo do
         config = validate_resource_structure(result, 'google_monitoring_slo', 'full')
         expect(config).to have_key('basic_sli')
         expect(config).to have_key('calendar_period')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('display_name')
+        expect(config).to have_key('project')
         expect(config).to have_key('request_based_sli')
         expect(config).to have_key('rolling_period_days')
+        expect(config).to have_key('slo_id')
         expect(config).to have_key('user_labels')
         expect(config).to have_key('windows_based_sli')
       end
@@ -82,7 +87,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringSlo do
       it 'includes basic_sli when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_monitoring_slo('opt', required_attrs.merge(basic_sli: [{ 'key1' => 'val1' }]))
+        synth.google_monitoring_slo('opt', required_attrs.merge(basic_sli: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_monitoring_slo', 'opt')
         expect(config).to have_key('basic_sli')
@@ -113,6 +118,23 @@ RSpec.describe Pangea::Resources::GoogleMonitoringSlo do
         config = validate_resource_structure(result, 'google_monitoring_slo', 'minimal')
         expect(config).not_to have_key('calendar_period')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_slo('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_slo', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_slo('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_slo', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes display_name when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -130,10 +152,27 @@ RSpec.describe Pangea::Resources::GoogleMonitoringSlo do
         config = validate_resource_structure(result, 'google_monitoring_slo', 'minimal')
         expect(config).not_to have_key('display_name')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_slo('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_slo', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_slo('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_slo', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes request_based_sli when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_monitoring_slo('opt', required_attrs.merge(request_based_sli: [{ 'key1' => 'val1' }]))
+        synth.google_monitoring_slo('opt', required_attrs.merge(request_based_sli: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_monitoring_slo', 'opt')
         expect(config).to have_key('request_based_sli')
@@ -164,6 +203,23 @@ RSpec.describe Pangea::Resources::GoogleMonitoringSlo do
         config = validate_resource_structure(result, 'google_monitoring_slo', 'minimal')
         expect(config).not_to have_key('rolling_period_days')
       end
+      it 'includes slo_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_slo('opt', required_attrs.merge(slo_id: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_slo', 'opt')
+        expect(config).to have_key('slo_id')
+      end
+
+      it 'omits slo_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_slo('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_slo', 'minimal')
+        expect(config).not_to have_key('slo_id')
+      end
       it 'includes user_labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -184,7 +240,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringSlo do
       it 'includes windows_based_sli when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_monitoring_slo('opt', required_attrs.merge(windows_based_sli: [{ 'key1' => 'val1' }]))
+        synth.google_monitoring_slo('opt', required_attrs.merge(windows_based_sli: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_monitoring_slo', 'opt')
         expect(config).to have_key('windows_based_sli')
@@ -243,7 +299,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringSlo do
     resource_type: :google_monitoring_slo,
     method: :google_monitoring_slo,
     required_attrs: { goal: 3.14, service: 'test-value' },
-    expected_outputs: [:id, :name, :project, :slo_id],
+    expected_outputs: [:id, :deletion_policy, :name, :project, :slo_id],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkEndpoint do
         ref = synth.google_compute_network_endpoint('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_network_endpoint.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_network_endpoint.test.deletion_policy}")
         expect(ref.project).to eq("${google_compute_network_endpoint.test.project}")
         expect(ref.zone).to eq("${google_compute_network_endpoint.test.zone}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkEndpoint do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_network_endpoint', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('zone')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ instance: 'test-value', port: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', instance: 'test-value', port: 3.14, project: 'test-value', zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,12 +68,32 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkEndpoint do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_network_endpoint', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('instance')
         expect(config).to have_key('port')
+        expect(config).to have_key('project')
+        expect(config).to have_key('zone')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_endpoint('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_endpoint', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_endpoint', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes instance when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -105,6 +127,40 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkEndpoint do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_network_endpoint', 'minimal')
         expect(config).not_to have_key('port')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_endpoint('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_endpoint', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_endpoint', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_endpoint('opt', required_attrs.merge(zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_endpoint', 'opt')
+        expect(config).to have_key('zone')
+      end
+
+      it 'omits zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network_endpoint', 'minimal')
+        expect(config).not_to have_key('zone')
       end
     end
 
@@ -151,7 +207,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNetworkEndpoint do
     resource_type: :google_compute_network_endpoint,
     method: :google_compute_network_endpoint,
     required_attrs: { ip_address: 'test-value', network_endpoint_group: 'test-value' },
-    expected_outputs: [:id, :project, :zone],
+    expected_outputs: [:id, :deletion_policy, :project, :zone],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

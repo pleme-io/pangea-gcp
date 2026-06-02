@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamConnectionProfile do
         ref = synth.google_datastream_connection_profile('test', required_attrs)
 
         expect(ref.id).to eq("${google_datastream_connection_profile.test.id}")
+        expect(ref.deletion_policy).to eq("${google_datastream_connection_profile.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_datastream_connection_profile.test.effective_labels}")
         expect(ref.name).to eq("${google_datastream_connection_profile.test.name}")
         expect(ref.project).to eq("${google_datastream_connection_profile.test.project}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamConnectionProfile do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_datastream_connection_profile', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamConnectionProfile do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ bigquery_profile: [{ 'key1' => 'val1' }], create_without_validation: true, forward_ssh_connectivity: [{ 'key1' => 'val1' }], gcs_profile: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, mysql_profile: [{ 'key1' => 'val1' }], oracle_profile: [{ 'key1' => 'val1' }], postgresql_profile: [{ 'key1' => 'val1' }], private_connectivity: [{ 'key1' => 'val1' }], sql_server_profile: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ bigquery_profile: { 'key1' => 'val1' }, create_without_validation: true, deletion_policy: 'test-value', forward_ssh_connectivity: { 'key1' => 'val1' }, gcs_profile: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, mongodb_profile: { 'key1' => 'val1' }, mysql_profile: { 'key1' => 'val1' }, oracle_profile: { 'key1' => 'val1' }, postgresql_profile: { 'key1' => 'val1' }, private_connectivity: { 'key1' => 'val1' }, project: 'test-value', sql_server_profile: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,13 +74,16 @@ RSpec.describe Pangea::Resources::GoogleDatastreamConnectionProfile do
         config = validate_resource_structure(result, 'google_datastream_connection_profile', 'full')
         expect(config).to have_key('bigquery_profile')
         expect(config).to have_key('create_without_validation')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('forward_ssh_connectivity')
         expect(config).to have_key('gcs_profile')
         expect(config).to have_key('labels')
+        expect(config).to have_key('mongodb_profile')
         expect(config).to have_key('mysql_profile')
         expect(config).to have_key('oracle_profile')
         expect(config).to have_key('postgresql_profile')
         expect(config).to have_key('private_connectivity')
+        expect(config).to have_key('project')
         expect(config).to have_key('sql_server_profile')
       end
     end
@@ -87,7 +92,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamConnectionProfile do
       it 'includes bigquery_profile when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_datastream_connection_profile('opt', required_attrs.merge(bigquery_profile: [{ 'key1' => 'val1' }]))
+        synth.google_datastream_connection_profile('opt', required_attrs.merge(bigquery_profile: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_datastream_connection_profile', 'opt')
         expect(config).to have_key('bigquery_profile')
@@ -118,10 +123,27 @@ RSpec.describe Pangea::Resources::GoogleDatastreamConnectionProfile do
         config = validate_resource_structure(result, 'google_datastream_connection_profile', 'minimal')
         expect(config).not_to have_key('create_without_validation')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_connection_profile('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_connection_profile', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_connection_profile('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_connection_profile', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes forward_ssh_connectivity when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_datastream_connection_profile('opt', required_attrs.merge(forward_ssh_connectivity: [{ 'key1' => 'val1' }]))
+        synth.google_datastream_connection_profile('opt', required_attrs.merge(forward_ssh_connectivity: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_datastream_connection_profile', 'opt')
         expect(config).to have_key('forward_ssh_connectivity')
@@ -138,7 +160,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamConnectionProfile do
       it 'includes gcs_profile when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_datastream_connection_profile('opt', required_attrs.merge(gcs_profile: [{ 'key1' => 'val1' }]))
+        synth.google_datastream_connection_profile('opt', required_attrs.merge(gcs_profile: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_datastream_connection_profile', 'opt')
         expect(config).to have_key('gcs_profile')
@@ -169,10 +191,27 @@ RSpec.describe Pangea::Resources::GoogleDatastreamConnectionProfile do
         config = validate_resource_structure(result, 'google_datastream_connection_profile', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes mongodb_profile when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_connection_profile('opt', required_attrs.merge(mongodb_profile: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_connection_profile', 'opt')
+        expect(config).to have_key('mongodb_profile')
+      end
+
+      it 'omits mongodb_profile when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_connection_profile('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_connection_profile', 'minimal')
+        expect(config).not_to have_key('mongodb_profile')
+      end
       it 'includes mysql_profile when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_datastream_connection_profile('opt', required_attrs.merge(mysql_profile: [{ 'key1' => 'val1' }]))
+        synth.google_datastream_connection_profile('opt', required_attrs.merge(mysql_profile: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_datastream_connection_profile', 'opt')
         expect(config).to have_key('mysql_profile')
@@ -189,7 +228,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamConnectionProfile do
       it 'includes oracle_profile when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_datastream_connection_profile('opt', required_attrs.merge(oracle_profile: [{ 'key1' => 'val1' }]))
+        synth.google_datastream_connection_profile('opt', required_attrs.merge(oracle_profile: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_datastream_connection_profile', 'opt')
         expect(config).to have_key('oracle_profile')
@@ -206,7 +245,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamConnectionProfile do
       it 'includes postgresql_profile when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_datastream_connection_profile('opt', required_attrs.merge(postgresql_profile: [{ 'key1' => 'val1' }]))
+        synth.google_datastream_connection_profile('opt', required_attrs.merge(postgresql_profile: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_datastream_connection_profile', 'opt')
         expect(config).to have_key('postgresql_profile')
@@ -223,7 +262,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamConnectionProfile do
       it 'includes private_connectivity when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_datastream_connection_profile('opt', required_attrs.merge(private_connectivity: [{ 'key1' => 'val1' }]))
+        synth.google_datastream_connection_profile('opt', required_attrs.merge(private_connectivity: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_datastream_connection_profile', 'opt')
         expect(config).to have_key('private_connectivity')
@@ -237,10 +276,27 @@ RSpec.describe Pangea::Resources::GoogleDatastreamConnectionProfile do
         config = validate_resource_structure(result, 'google_datastream_connection_profile', 'minimal')
         expect(config).not_to have_key('private_connectivity')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_connection_profile('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_connection_profile', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_connection_profile('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_connection_profile', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes sql_server_profile when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_datastream_connection_profile('opt', required_attrs.merge(sql_server_profile: [{ 'key1' => 'val1' }]))
+        synth.google_datastream_connection_profile('opt', required_attrs.merge(sql_server_profile: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_datastream_connection_profile', 'opt')
         expect(config).to have_key('sql_server_profile')
@@ -314,7 +370,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamConnectionProfile do
     resource_type: :google_datastream_connection_profile,
     method: :google_datastream_connection_profile,
     required_attrs: { connection_profile_id: 'test-value', display_name: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :name, :project, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :name, :project, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:create_without_validation]

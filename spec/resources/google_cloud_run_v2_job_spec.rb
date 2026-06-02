@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleCloudRunV2Job do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { location: 'test-value', name: 'test-value', template: [{ 'key1' => 'val1' }] } }
+  let(:required_attrs) { { location: 'test-value', name: 'test-value', template: { 'key1' => 'val1' } } }
 
   describe ':google_cloud_run_v2_job' do
     context 'with required attributes only' do
@@ -42,6 +42,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Job do
         expect(ref.create_time).to eq("${google_cloud_run_v2_job.test.create_time}")
         expect(ref.creator).to eq("${google_cloud_run_v2_job.test.creator}")
         expect(ref.delete_time).to eq("${google_cloud_run_v2_job.test.delete_time}")
+        expect(ref.deletion_policy).to eq("${google_cloud_run_v2_job.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_cloud_run_v2_job.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_cloud_run_v2_job.test.effective_labels}")
         expect(ref.etag).to eq("${google_cloud_run_v2_job.test.etag}")
@@ -73,6 +74,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Job do
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('creator')
         expect(config).not_to have_key('delete_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
@@ -93,7 +95,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Job do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, binary_authorization: [{ 'key1' => 'val1' }], client: 'test-value', client_version: 'test-value', deletion_protection: true, labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, binary_authorization: { 'key1' => 'val1' }, client: 'test-value', client_version: 'test-value', deletion_policy: 'test-value', deletion_protection: true, labels: { 'key1' => 'val1' }, launch_stage: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -106,8 +108,11 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Job do
         expect(config).to have_key('binary_authorization')
         expect(config).to have_key('client')
         expect(config).to have_key('client_version')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
         expect(config).to have_key('labels')
+        expect(config).to have_key('launch_stage')
+        expect(config).to have_key('project')
       end
     end
 
@@ -132,7 +137,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Job do
       it 'includes binary_authorization when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_cloud_run_v2_job('opt', required_attrs.merge(binary_authorization: [{ 'key1' => 'val1' }]))
+        synth.google_cloud_run_v2_job('opt', required_attrs.merge(binary_authorization: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_cloud_run_v2_job', 'opt')
         expect(config).to have_key('binary_authorization')
@@ -180,6 +185,23 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Job do
         config = validate_resource_structure(result, 'google_cloud_run_v2_job', 'minimal')
         expect(config).not_to have_key('client_version')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_job('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_job', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_job', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -214,6 +236,40 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Job do
         config = validate_resource_structure(result, 'google_cloud_run_v2_job', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes launch_stage when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_job('opt', required_attrs.merge(launch_stage: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_job', 'opt')
+        expect(config).to have_key('launch_stage')
+      end
+
+      it 'omits launch_stage when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_job', 'minimal')
+        expect(config).not_to have_key('launch_stage')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_job('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_job', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_cloud_run_v2_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_cloud_run_v2_job', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'boolean fields' do
@@ -240,7 +296,7 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Job do
         config = validate_resource_structure(result, 'google_cloud_run_v2_job', 'typed')
         expect(config['location']).to be_a(String)
         expect(config['name']).to be_a(String)
-        expect(config['template']).to be_a(Array)
+        expect(config['template']).to be_a(Hash)
       end
     end
 
@@ -273,8 +329,8 @@ RSpec.describe Pangea::Resources::GoogleCloudRunV2Job do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_cloud_run_v2_job,
     method: :google_cloud_run_v2_job,
-    required_attrs: { location: 'test-value', name: 'test-value', template: [{ 'key1' => 'val1' }] },
-    expected_outputs: [:id, :conditions, :create_time, :creator, :delete_time, :effective_annotations, :effective_labels, :etag, :execution_count, :expire_time, :generation, :last_modifier, :latest_created_execution, :launch_stage, :observed_generation, :project, :reconciling, :terminal_condition, :terraform_labels, :uid, :update_time],
+    required_attrs: { location: 'test-value', name: 'test-value', template: { 'key1' => 'val1' } },
+    expected_outputs: [:id, :conditions, :create_time, :creator, :delete_time, :deletion_policy, :effective_annotations, :effective_labels, :etag, :execution_count, :expire_time, :generation, :last_modifier, :latest_created_execution, :launch_stage, :observed_generation, :project, :reconciling, :terminal_condition, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:deletion_protection]

@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxSecuritySettings do
         ref = synth.google_dialogflow_cx_security_settings('test', required_attrs)
 
         expect(ref.id).to eq("${google_dialogflow_cx_security_settings.test.id}")
+        expect(ref.deletion_policy).to eq("${google_dialogflow_cx_security_settings.test.deletion_policy}")
         expect(ref.name).to eq("${google_dialogflow_cx_security_settings.test.name}")
         expect(ref.project).to eq("${google_dialogflow_cx_security_settings.test.project}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxSecuritySettings do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dialogflow_cx_security_settings', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ audio_export_settings: [{ 'key1' => 'val1' }], deidentify_template: 'test-value', insights_export_settings: [{ 'key1' => 'val1' }], inspect_template: 'test-value', purge_data_types: ['test-value'], redaction_scope: 'test-value', redaction_strategy: 'test-value', retention_strategy: 'test-value', retention_window_days: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ audio_export_settings: { 'key1' => 'val1' }, deidentify_template: 'test-value', deletion_policy: 'test-value', insights_export_settings: { 'key1' => 'val1' }, inspect_template: 'test-value', project: 'test-value', purge_data_types: ['test-value'], redaction_scope: 'test-value', redaction_strategy: 'test-value', retention_strategy: 'test-value', retention_window_days: 3.14 }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,8 +70,10 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxSecuritySettings do
         config = validate_resource_structure(result, 'google_dialogflow_cx_security_settings', 'full')
         expect(config).to have_key('audio_export_settings')
         expect(config).to have_key('deidentify_template')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('insights_export_settings')
         expect(config).to have_key('inspect_template')
+        expect(config).to have_key('project')
         expect(config).to have_key('purge_data_types')
         expect(config).to have_key('redaction_scope')
         expect(config).to have_key('redaction_strategy')
@@ -82,7 +86,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxSecuritySettings do
       it 'includes audio_export_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_security_settings('opt', required_attrs.merge(audio_export_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_security_settings('opt', required_attrs.merge(audio_export_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_security_settings', 'opt')
         expect(config).to have_key('audio_export_settings')
@@ -113,10 +117,27 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxSecuritySettings do
         config = validate_resource_structure(result, 'google_dialogflow_cx_security_settings', 'minimal')
         expect(config).not_to have_key('deidentify_template')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_security_settings('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_security_settings', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_security_settings('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_security_settings', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes insights_export_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_security_settings('opt', required_attrs.merge(insights_export_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_security_settings('opt', required_attrs.merge(insights_export_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_security_settings', 'opt')
         expect(config).to have_key('insights_export_settings')
@@ -146,6 +167,23 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxSecuritySettings do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_security_settings', 'minimal')
         expect(config).not_to have_key('inspect_template')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_security_settings('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_security_settings', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dialogflow_cx_security_settings('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dialogflow_cx_security_settings', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes purge_data_types when provided' do
         synth = create_synthesizer
@@ -277,7 +315,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxSecuritySettings do
     resource_type: :google_dialogflow_cx_security_settings,
     method: :google_dialogflow_cx_security_settings,
     required_attrs: { display_name: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleSccFolderCustomModule do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { custom_config: [{ 'key1' => 'val1' }], display_name: 'test-value', enablement_state: 'test-value', folder: 'test-value' } }
+  let(:required_attrs) { { custom_config: { 'key1' => 'val1' }, display_name: 'test-value', enablement_state: 'test-value', folder: 'test-value' } }
 
   describe ':google_scc_folder_custom_module' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleSccFolderCustomModule do
 
         expect(ref.id).to eq("${google_scc_folder_custom_module.test.id}")
         expect(ref.ancestor_module).to eq("${google_scc_folder_custom_module.test.ancestor_module}")
+        expect(ref.deletion_policy).to eq("${google_scc_folder_custom_module.test.deletion_policy}")
         expect(ref.last_editor).to eq("${google_scc_folder_custom_module.test.last_editor}")
         expect(ref.name).to eq("${google_scc_folder_custom_module.test.name}")
         expect(ref.update_time).to eq("${google_scc_folder_custom_module.test.update_time}")
@@ -54,9 +55,44 @@ RSpec.describe Pangea::Resources::GoogleSccFolderCustomModule do
 
         config = validate_resource_structure(result, 'google_scc_folder_custom_module', 'test')
         expect(config).not_to have_key('ancestor_module')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('last_editor')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('update_time')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_scc_folder_custom_module('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_scc_folder_custom_module', 'full')
+        expect(config).to have_key('deletion_policy')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_scc_folder_custom_module('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_scc_folder_custom_module', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_scc_folder_custom_module('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_scc_folder_custom_module', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -68,7 +104,7 @@ RSpec.describe Pangea::Resources::GoogleSccFolderCustomModule do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_scc_folder_custom_module', 'typed')
-        expect(config['custom_config']).to be_a(Array)
+        expect(config['custom_config']).to be_a(Hash)
         expect(config['display_name']).to be_a(String)
         expect(config['enablement_state']).to be_a(String)
         expect(config['folder']).to be_a(String)
@@ -104,8 +140,8 @@ RSpec.describe Pangea::Resources::GoogleSccFolderCustomModule do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_scc_folder_custom_module,
     method: :google_scc_folder_custom_module,
-    required_attrs: { custom_config: [{ 'key1' => 'val1' }], display_name: 'test-value', enablement_state: 'test-value', folder: 'test-value' },
-    expected_outputs: [:id, :ancestor_module, :last_editor, :name, :update_time],
+    required_attrs: { custom_config: { 'key1' => 'val1' }, display_name: 'test-value', enablement_state: 'test-value', folder: 'test-value' },
+    expected_outputs: [:id, :ancestor_module, :deletion_policy, :last_editor, :name, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

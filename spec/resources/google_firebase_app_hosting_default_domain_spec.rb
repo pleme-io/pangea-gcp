@@ -66,6 +66,72 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppHostingDefaultDomain do
       end
     end
 
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ disabled: true, project: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_hosting_default_domain('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_firebase_app_hosting_default_domain', 'full')
+        expect(config).to have_key('disabled')
+        expect(config).to have_key('project')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes disabled when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_hosting_default_domain('opt', required_attrs.merge(disabled: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_hosting_default_domain', 'opt')
+        expect(config).to have_key('disabled')
+      end
+
+      it 'omits disabled when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_hosting_default_domain('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_hosting_default_domain', 'minimal')
+        expect(config).not_to have_key('disabled')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_hosting_default_domain('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_hosting_default_domain', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_firebase_app_hosting_default_domain('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_firebase_app_hosting_default_domain', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts disabled=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(disabled: val)
+          synth.google_firebase_app_hosting_default_domain("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_firebase_app_hosting_default_domain', "bool_#{val}")
+          expect(config['disabled']).to eq(val)
+        end
+      end
+    end
+
     context 'attribute types' do
       it 'validates expected attribute types' do
         synth = create_synthesizer
@@ -113,5 +179,5 @@ RSpec.describe Pangea::Resources::GoogleFirebaseAppHostingDefaultDomain do
     expected_outputs: [:id, :create_time, :disabled, :etag, :name, :project, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:disabled]
 end

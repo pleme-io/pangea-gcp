@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificateIssuanceConfig do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { certificate_authority_config: [{ 'key1' => 'val1' }], key_algorithm: 'test-value', lifetime: 'test-value', name: 'test-value', rotation_window_percentage: 3.14 } }
+  let(:required_attrs) { { certificate_authority_config: { 'key1' => 'val1' }, key_algorithm: 'test-value', lifetime: 'test-value', name: 'test-value', rotation_window_percentage: 3.14 } }
 
   describe ':google_certificate_manager_certificate_issuance_config' do
     context 'with required attributes only' do
@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificateIssuanceCon
 
         expect(ref.id).to eq("${google_certificate_manager_certificate_issuance_config.test.id}")
         expect(ref.create_time).to eq("${google_certificate_manager_certificate_issuance_config.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_certificate_manager_certificate_issuance_config.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_certificate_manager_certificate_issuance_config.test.effective_labels}")
         expect(ref.project).to eq("${google_certificate_manager_certificate_issuance_config.test.project}")
         expect(ref.terraform_labels).to eq("${google_certificate_manager_certificate_issuance_config.test.terraform_labels}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificateIssuanceCon
 
         config = validate_resource_structure(result, 'google_certificate_manager_certificate_issuance_config', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('terraform_labels')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificateIssuanceCon
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,13 +74,32 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificateIssuanceCon
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_certificate_manager_certificate_issuance_config', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_certificate_manager_certificate_issuance_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_certificate_manager_certificate_issuance_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_certificate_manager_certificate_issuance_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_certificate_manager_certificate_issuance_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -130,6 +151,23 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificateIssuanceCon
         config = validate_resource_structure(result, 'google_certificate_manager_certificate_issuance_config', 'minimal')
         expect(config).not_to have_key('location')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_certificate_manager_certificate_issuance_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_certificate_manager_certificate_issuance_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_certificate_manager_certificate_issuance_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_certificate_manager_certificate_issuance_config', 'minimal')
+        expect(config).not_to have_key('project')
+      end
     end
 
     context 'attribute types' do
@@ -140,7 +178,7 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificateIssuanceCon
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_certificate_manager_certificate_issuance_config', 'typed')
-        expect(config['certificate_authority_config']).to be_a(Array)
+        expect(config['certificate_authority_config']).to be_a(Hash)
         expect(config['key_algorithm']).to be_a(String)
         expect(config['lifetime']).to be_a(String)
         expect(config['name']).to be_a(String)
@@ -177,8 +215,8 @@ RSpec.describe Pangea::Resources::GoogleCertificateManagerCertificateIssuanceCon
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_certificate_manager_certificate_issuance_config,
     method: :google_certificate_manager_certificate_issuance_config,
-    required_attrs: { certificate_authority_config: [{ 'key1' => 'val1' }], key_algorithm: 'test-value', lifetime: 'test-value', name: 'test-value', rotation_window_percentage: 3.14 },
-    expected_outputs: [:id, :create_time, :effective_labels, :project, :terraform_labels, :update_time],
+    required_attrs: { certificate_authority_config: { 'key1' => 'val1' }, key_algorithm: 'test-value', lifetime: 'test-value', name: 'test-value', rotation_window_percentage: 3.14 },
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :project, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

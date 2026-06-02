@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
         expect(ref.id).to eq("${google_developer_connect_connection.test.id}")
         expect(ref.create_time).to eq("${google_developer_connect_connection.test.create_time}")
         expect(ref.delete_time).to eq("${google_developer_connect_connection.test.delete_time}")
+        expect(ref.deletion_policy).to eq("${google_developer_connect_connection.test.deletion_policy}")
         expect(ref.effective_annotations).to eq("${google_developer_connect_connection.test.effective_annotations}")
         expect(ref.effective_labels).to eq("${google_developer_connect_connection.test.effective_labels}")
         expect(ref.installation_state).to eq("${google_developer_connect_connection.test.installation_state}")
@@ -62,6 +63,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
         config = validate_resource_structure(result, 'google_developer_connect_connection', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('delete_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_annotations')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('installation_state')
@@ -75,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, bitbucket_cloud_config: [{ 'key1' => 'val1' }], bitbucket_data_center_config: [{ 'key1' => 'val1' }], crypto_key_config: [{ 'key1' => 'val1' }], disabled: true, etag: 'test-value', github_config: [{ 'key1' => 'val1' }], github_enterprise_config: [{ 'key1' => 'val1' }], gitlab_config: [{ 'key1' => 'val1' }], gitlab_enterprise_config: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ annotations: { 'key1' => 'val1' }, bitbucket_cloud_config: { 'key1' => 'val1' }, bitbucket_data_center_config: { 'key1' => 'val1' }, crypto_key_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', disabled: true, etag: 'test-value', github_config: { 'key1' => 'val1' }, github_enterprise_config: { 'key1' => 'val1' }, gitlab_config: { 'key1' => 'val1' }, gitlab_enterprise_config: { 'key1' => 'val1' }, http_config: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -88,13 +90,16 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
         expect(config).to have_key('bitbucket_cloud_config')
         expect(config).to have_key('bitbucket_data_center_config')
         expect(config).to have_key('crypto_key_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('disabled')
         expect(config).to have_key('etag')
         expect(config).to have_key('github_config')
         expect(config).to have_key('github_enterprise_config')
         expect(config).to have_key('gitlab_config')
         expect(config).to have_key('gitlab_enterprise_config')
+        expect(config).to have_key('http_config')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
       end
     end
 
@@ -119,7 +124,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
       it 'includes bitbucket_cloud_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_developer_connect_connection('opt', required_attrs.merge(bitbucket_cloud_config: [{ 'key1' => 'val1' }]))
+        synth.google_developer_connect_connection('opt', required_attrs.merge(bitbucket_cloud_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_connection', 'opt')
         expect(config).to have_key('bitbucket_cloud_config')
@@ -136,7 +141,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
       it 'includes bitbucket_data_center_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_developer_connect_connection('opt', required_attrs.merge(bitbucket_data_center_config: [{ 'key1' => 'val1' }]))
+        synth.google_developer_connect_connection('opt', required_attrs.merge(bitbucket_data_center_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_connection', 'opt')
         expect(config).to have_key('bitbucket_data_center_config')
@@ -153,7 +158,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
       it 'includes crypto_key_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_developer_connect_connection('opt', required_attrs.merge(crypto_key_config: [{ 'key1' => 'val1' }]))
+        synth.google_developer_connect_connection('opt', required_attrs.merge(crypto_key_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_connection', 'opt')
         expect(config).to have_key('crypto_key_config')
@@ -166,6 +171,23 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_connection', 'minimal')
         expect(config).not_to have_key('crypto_key_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_connection('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_connection', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_connection', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes disabled when provided' do
         synth = create_synthesizer
@@ -204,7 +226,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
       it 'includes github_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_developer_connect_connection('opt', required_attrs.merge(github_config: [{ 'key1' => 'val1' }]))
+        synth.google_developer_connect_connection('opt', required_attrs.merge(github_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_connection', 'opt')
         expect(config).to have_key('github_config')
@@ -221,7 +243,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
       it 'includes github_enterprise_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_developer_connect_connection('opt', required_attrs.merge(github_enterprise_config: [{ 'key1' => 'val1' }]))
+        synth.google_developer_connect_connection('opt', required_attrs.merge(github_enterprise_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_connection', 'opt')
         expect(config).to have_key('github_enterprise_config')
@@ -238,7 +260,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
       it 'includes gitlab_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_developer_connect_connection('opt', required_attrs.merge(gitlab_config: [{ 'key1' => 'val1' }]))
+        synth.google_developer_connect_connection('opt', required_attrs.merge(gitlab_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_connection', 'opt')
         expect(config).to have_key('gitlab_config')
@@ -255,7 +277,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
       it 'includes gitlab_enterprise_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_developer_connect_connection('opt', required_attrs.merge(gitlab_enterprise_config: [{ 'key1' => 'val1' }]))
+        synth.google_developer_connect_connection('opt', required_attrs.merge(gitlab_enterprise_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_connection', 'opt')
         expect(config).to have_key('gitlab_enterprise_config')
@@ -268,6 +290,23 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_connection', 'minimal')
         expect(config).not_to have_key('gitlab_enterprise_config')
+      end
+      it 'includes http_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_connection('opt', required_attrs.merge(http_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_connection', 'opt')
+        expect(config).to have_key('http_config')
+      end
+
+      it 'omits http_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_connection', 'minimal')
+        expect(config).not_to have_key('http_config')
       end
       it 'includes labels when provided' do
         synth = create_synthesizer
@@ -285,6 +324,23 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_developer_connect_connection', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_connection('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_connection', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_developer_connect_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_developer_connect_connection', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -345,7 +401,7 @@ RSpec.describe Pangea::Resources::GoogleDeveloperConnectConnection do
     resource_type: :google_developer_connect_connection,
     method: :google_developer_connect_connection,
     required_attrs: { connection_id: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :create_time, :delete_time, :effective_annotations, :effective_labels, :installation_state, :name, :project, :reconciling, :terraform_labels, :uid, :update_time],
+    expected_outputs: [:id, :create_time, :delete_time, :deletion_policy, :effective_annotations, :effective_labels, :installation_state, :name, :project, :reconciling, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disabled]

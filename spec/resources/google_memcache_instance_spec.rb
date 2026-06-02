@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleMemcacheInstance do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { name: 'test-value', node_config: [{ 'key1' => 'val1' }], node_count: 3.14 } }
+  let(:required_attrs) { { name: 'test-value', node_config: { 'key1' => 'val1' }, node_count: 3.14 } }
 
   describe ':google_memcache_instance' do
     context 'with required attributes only' do
@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleMemcacheInstance do
         expect(ref.id).to eq("${google_memcache_instance.test.id}")
         expect(ref.authorized_network).to eq("${google_memcache_instance.test.authorized_network}")
         expect(ref.create_time).to eq("${google_memcache_instance.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_memcache_instance.test.deletion_policy}")
         expect(ref.discovery_endpoint).to eq("${google_memcache_instance.test.discovery_endpoint}")
         expect(ref.display_name).to eq("${google_memcache_instance.test.display_name}")
         expect(ref.effective_labels).to eq("${google_memcache_instance.test.effective_labels}")
@@ -63,6 +64,7 @@ RSpec.describe Pangea::Resources::GoogleMemcacheInstance do
         config = validate_resource_structure(result, 'google_memcache_instance', 'test')
         expect(config).not_to have_key('authorized_network')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('discovery_endpoint')
         expect(config).not_to have_key('display_name')
         expect(config).not_to have_key('effective_labels')
@@ -77,7 +79,7 @@ RSpec.describe Pangea::Resources::GoogleMemcacheInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ labels: { 'key1' => 'val1' }, maintenance_policy: [{ 'key1' => 'val1' }], memcache_parameters: [{ 'key1' => 'val1' }], memcache_version: 'test-value', reserved_ip_range_id: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ authorized_network: 'test-value', deletion_policy: 'test-value', deletion_protection: true, display_name: 'test-value', labels: { 'key1' => 'val1' }, maintenance_policy: { 'key1' => 'val1' }, memcache_parameters: { 'key1' => 'val1' }, memcache_version: 'test-value', project: 'test-value', region: 'test-value', reserved_ip_range_id: ['test-value'], zones: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -86,15 +88,90 @@ RSpec.describe Pangea::Resources::GoogleMemcacheInstance do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_memcache_instance', 'full')
+        expect(config).to have_key('authorized_network')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('deletion_protection')
+        expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
         expect(config).to have_key('maintenance_policy')
         expect(config).to have_key('memcache_parameters')
         expect(config).to have_key('memcache_version')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('reserved_ip_range_id')
+        expect(config).to have_key('zones')
       end
     end
 
     context 'optional attributes' do
+      it 'includes authorized_network when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memcache_instance('opt', required_attrs.merge(authorized_network: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memcache_instance', 'opt')
+        expect(config).to have_key('authorized_network')
+      end
+
+      it 'omits authorized_network when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memcache_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memcache_instance', 'minimal')
+        expect(config).not_to have_key('authorized_network')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memcache_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memcache_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memcache_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memcache_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes deletion_protection when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memcache_instance('opt', required_attrs.merge(deletion_protection: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memcache_instance', 'opt')
+        expect(config).to have_key('deletion_protection')
+      end
+
+      it 'omits deletion_protection when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memcache_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memcache_instance', 'minimal')
+        expect(config).not_to have_key('deletion_protection')
+      end
+      it 'includes display_name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memcache_instance('opt', required_attrs.merge(display_name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memcache_instance', 'opt')
+        expect(config).to have_key('display_name')
+      end
+
+      it 'omits display_name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memcache_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memcache_instance', 'minimal')
+        expect(config).not_to have_key('display_name')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -115,7 +192,7 @@ RSpec.describe Pangea::Resources::GoogleMemcacheInstance do
       it 'includes maintenance_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_memcache_instance('opt', required_attrs.merge(maintenance_policy: [{ 'key1' => 'val1' }]))
+        synth.google_memcache_instance('opt', required_attrs.merge(maintenance_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_memcache_instance', 'opt')
         expect(config).to have_key('maintenance_policy')
@@ -132,7 +209,7 @@ RSpec.describe Pangea::Resources::GoogleMemcacheInstance do
       it 'includes memcache_parameters when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_memcache_instance('opt', required_attrs.merge(memcache_parameters: [{ 'key1' => 'val1' }]))
+        synth.google_memcache_instance('opt', required_attrs.merge(memcache_parameters: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_memcache_instance', 'opt')
         expect(config).to have_key('memcache_parameters')
@@ -163,6 +240,40 @@ RSpec.describe Pangea::Resources::GoogleMemcacheInstance do
         config = validate_resource_structure(result, 'google_memcache_instance', 'minimal')
         expect(config).not_to have_key('memcache_version')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memcache_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memcache_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memcache_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memcache_instance', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memcache_instance('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memcache_instance', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memcache_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memcache_instance', 'minimal')
+        expect(config).not_to have_key('region')
+      end
       it 'includes reserved_ip_range_id when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -180,6 +291,37 @@ RSpec.describe Pangea::Resources::GoogleMemcacheInstance do
         config = validate_resource_structure(result, 'google_memcache_instance', 'minimal')
         expect(config).not_to have_key('reserved_ip_range_id')
       end
+      it 'includes zones when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memcache_instance('opt', required_attrs.merge(zones: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memcache_instance', 'opt')
+        expect(config).to have_key('zones')
+      end
+
+      it 'omits zones when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_memcache_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_memcache_instance', 'minimal')
+        expect(config).not_to have_key('zones')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts deletion_protection=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(deletion_protection: val)
+          synth.google_memcache_instance("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_memcache_instance', "bool_#{val}")
+          expect(config['deletion_protection']).to eq(val)
+        end
+      end
     end
 
     context 'attribute types' do
@@ -191,7 +333,7 @@ RSpec.describe Pangea::Resources::GoogleMemcacheInstance do
 
         config = validate_resource_structure(result, 'google_memcache_instance', 'typed')
         expect(config['name']).to be_a(String)
-        expect(config['node_config']).to be_a(Array)
+        expect(config['node_config']).to be_a(Hash)
         expect(config['node_count']).to be_a(Float)
       end
     end
@@ -225,9 +367,9 @@ RSpec.describe Pangea::Resources::GoogleMemcacheInstance do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_memcache_instance,
     method: :google_memcache_instance,
-    required_attrs: { name: 'test-value', node_config: [{ 'key1' => 'val1' }], node_count: 3.14 },
-    expected_outputs: [:id, :authorized_network, :create_time, :discovery_endpoint, :display_name, :effective_labels, :maintenance_schedule, :memcache_full_version, :memcache_nodes, :project, :region, :terraform_labels, :zones],
+    required_attrs: { name: 'test-value', node_config: { 'key1' => 'val1' }, node_count: 3.14 },
+    expected_outputs: [:id, :authorized_network, :create_time, :deletion_policy, :discovery_endpoint, :display_name, :effective_labels, :maintenance_schedule, :memcache_full_version, :memcache_nodes, :project, :region, :terraform_labels, :zones],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:deletion_protection]
 end

@@ -1,0 +1,8 @@
+name: google_blockchain_node_engine_blockchain_nodes
+title: Manages a google_blockchain_node_engine_blockchain_nodes resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

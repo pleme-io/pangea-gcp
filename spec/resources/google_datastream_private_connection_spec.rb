@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamPrivateConnection do
         ref = synth.google_datastream_private_connection('test', required_attrs)
 
         expect(ref.id).to eq("${google_datastream_private_connection.test.id}")
+        expect(ref.deletion_policy).to eq("${google_datastream_private_connection.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_datastream_private_connection.test.effective_labels}")
         expect(ref.error).to eq("${google_datastream_private_connection.test.error}")
         expect(ref.name).to eq("${google_datastream_private_connection.test.name}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamPrivateConnection do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_datastream_private_connection', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('error')
         expect(config).not_to have_key('name')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamPrivateConnection do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ create_without_validation: true, labels: { 'key1' => 'val1' }, psc_interface_config: [{ 'key1' => 'val1' }], vpc_peering_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ create_without_validation: true, deletion_policy: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', psc_interface_config: { 'key1' => 'val1' }, vpc_peering_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -75,7 +77,9 @@ RSpec.describe Pangea::Resources::GoogleDatastreamPrivateConnection do
 
         config = validate_resource_structure(result, 'google_datastream_private_connection', 'full')
         expect(config).to have_key('create_without_validation')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('psc_interface_config')
         expect(config).to have_key('vpc_peering_config')
       end
@@ -99,6 +103,23 @@ RSpec.describe Pangea::Resources::GoogleDatastreamPrivateConnection do
         config = validate_resource_structure(result, 'google_datastream_private_connection', 'minimal')
         expect(config).not_to have_key('create_without_validation')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_private_connection('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_private_connection', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_private_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_private_connection', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -116,10 +137,27 @@ RSpec.describe Pangea::Resources::GoogleDatastreamPrivateConnection do
         config = validate_resource_structure(result, 'google_datastream_private_connection', 'minimal')
         expect(config).not_to have_key('labels')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_private_connection('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_private_connection', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_datastream_private_connection('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_datastream_private_connection', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes psc_interface_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_datastream_private_connection('opt', required_attrs.merge(psc_interface_config: [{ 'key1' => 'val1' }]))
+        synth.google_datastream_private_connection('opt', required_attrs.merge(psc_interface_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_datastream_private_connection', 'opt')
         expect(config).to have_key('psc_interface_config')
@@ -136,7 +174,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamPrivateConnection do
       it 'includes vpc_peering_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_datastream_private_connection('opt', required_attrs.merge(vpc_peering_config: [{ 'key1' => 'val1' }]))
+        synth.google_datastream_private_connection('opt', required_attrs.merge(vpc_peering_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_datastream_private_connection', 'opt')
         expect(config).to have_key('vpc_peering_config')
@@ -210,7 +248,7 @@ RSpec.describe Pangea::Resources::GoogleDatastreamPrivateConnection do
     resource_type: :google_datastream_private_connection,
     method: :google_datastream_private_connection,
     required_attrs: { display_name: 'test-value', location: 'test-value', private_connection_id: 'test-value' },
-    expected_outputs: [:id, :effective_labels, :error, :name, :project, :state, :terraform_labels],
+    expected_outputs: [:id, :deletion_policy, :effective_labels, :error, :name, :project, :state, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:create_without_validation]

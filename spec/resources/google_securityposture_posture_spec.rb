@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleSecurityposturePosture do
 
         expect(ref.id).to eq("${google_securityposture_posture.test.id}")
         expect(ref.create_time).to eq("${google_securityposture_posture.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_securityposture_posture.test.deletion_policy}")
         expect(ref.etag).to eq("${google_securityposture_posture.test.etag}")
         expect(ref.name).to eq("${google_securityposture_posture.test.name}")
         expect(ref.reconciling).to eq("${google_securityposture_posture.test.reconciling}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleSecurityposturePosture do
 
         config = validate_resource_structure(result, 'google_securityposture_posture', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('reconciling')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleSecurityposturePosture do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,11 +76,29 @@ RSpec.describe Pangea::Resources::GoogleSecurityposturePosture do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_securityposture_posture', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_securityposture_posture('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_securityposture_posture', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_securityposture_posture('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_securityposture_posture', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -144,7 +164,7 @@ RSpec.describe Pangea::Resources::GoogleSecurityposturePosture do
     resource_type: :google_securityposture_posture,
     method: :google_securityposture_posture,
     required_attrs: { location: 'test-value', parent: 'test-value', policy_sets: [{ 'key1' => 'val1' }], posture_id: 'test-value', state: 'test-value' },
-    expected_outputs: [:id, :create_time, :etag, :name, :reconciling, :revision_id, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :etag, :name, :reconciling, :revision_id, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

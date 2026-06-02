@@ -55,7 +55,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxGenerativeSettings do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ fallback_settings: [{ 'key1' => 'val1' }], generative_safety_settings: [{ 'key1' => 'val1' }], knowledge_connector_settings: [{ 'key1' => 'val1' }], llm_model_settings: [{ 'key1' => 'val1' }], parent: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ fallback_settings: { 'key1' => 'val1' }, generative_safety_settings: { 'key1' => 'val1' }, knowledge_connector_settings: { 'key1' => 'val1' }, llm_model_settings: { 'key1' => 'val1' }, parent: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,7 +76,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxGenerativeSettings do
       it 'includes fallback_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_generative_settings('opt', required_attrs.merge(fallback_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_generative_settings('opt', required_attrs.merge(fallback_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_generative_settings', 'opt')
         expect(config).to have_key('fallback_settings')
@@ -93,7 +93,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxGenerativeSettings do
       it 'includes generative_safety_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_generative_settings('opt', required_attrs.merge(generative_safety_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_generative_settings('opt', required_attrs.merge(generative_safety_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_generative_settings', 'opt')
         expect(config).to have_key('generative_safety_settings')
@@ -110,7 +110,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxGenerativeSettings do
       it 'includes knowledge_connector_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_generative_settings('opt', required_attrs.merge(knowledge_connector_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_generative_settings('opt', required_attrs.merge(knowledge_connector_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_generative_settings', 'opt')
         expect(config).to have_key('knowledge_connector_settings')
@@ -127,7 +127,7 @@ RSpec.describe Pangea::Resources::GoogleDialogflowCxGenerativeSettings do
       it 'includes llm_model_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dialogflow_cx_generative_settings('opt', required_attrs.merge(llm_model_settings: [{ 'key1' => 'val1' }]))
+        synth.google_dialogflow_cx_generative_settings('opt', required_attrs.merge(llm_model_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dialogflow_cx_generative_settings', 'opt')
         expect(config).to have_key('llm_model_settings')

@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceGroupMembership do
         ref = synth.google_compute_instance_group_membership('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_instance_group_membership.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_instance_group_membership.test.deletion_policy}")
         expect(ref.project).to eq("${google_compute_instance_group_membership.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceGroupMembership do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_instance_group_membership', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ zone: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', project: 'test-value', zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,11 +66,47 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceGroupMembership do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_instance_group_membership', 'full')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('project')
         expect(config).to have_key('zone')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_group_membership('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_group_membership', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_group_membership('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_group_membership', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_group_membership('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_group_membership', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_instance_group_membership('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_instance_group_membership', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes zone when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -131,7 +169,7 @@ RSpec.describe Pangea::Resources::GoogleComputeInstanceGroupMembership do
     resource_type: :google_compute_instance_group_membership,
     method: :google_compute_instance_group_membership,
     required_attrs: { instance: 'test-value', instance_group: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

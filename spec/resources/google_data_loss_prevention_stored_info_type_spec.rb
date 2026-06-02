@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionStoredInfoType do
         ref = synth.google_data_loss_prevention_stored_info_type('test', required_attrs)
 
         expect(ref.id).to eq("${google_data_loss_prevention_stored_info_type.test.id}")
+        expect(ref.deletion_policy).to eq("${google_data_loss_prevention_stored_info_type.test.deletion_policy}")
         expect(ref.name).to eq("${google_data_loss_prevention_stored_info_type.test.name}")
         expect(ref.stored_info_type_id).to eq("${google_data_loss_prevention_stored_info_type.test.stored_info_type_id}")
       end
@@ -51,13 +52,14 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionStoredInfoType do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_data_loss_prevention_stored_info_type', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('stored_info_type_id')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', dictionary: [{ 'key1' => 'val1' }], display_name: 'test-value', large_custom_dictionary: [{ 'key1' => 'val1' }], regex: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', dictionary: { 'key1' => 'val1' }, display_name: 'test-value', large_custom_dictionary: { 'key1' => 'val1' }, regex: { 'key1' => 'val1' }, stored_info_type_id: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,15 +68,34 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionStoredInfoType do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_data_loss_prevention_stored_info_type', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('dictionary')
         expect(config).to have_key('display_name')
         expect(config).to have_key('large_custom_dictionary')
         expect(config).to have_key('regex')
+        expect(config).to have_key('stored_info_type_id')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_stored_info_type('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_stored_info_type', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_stored_info_type('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_stored_info_type', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -95,7 +116,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionStoredInfoType do
       it 'includes dictionary when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_data_loss_prevention_stored_info_type('opt', required_attrs.merge(dictionary: [{ 'key1' => 'val1' }]))
+        synth.google_data_loss_prevention_stored_info_type('opt', required_attrs.merge(dictionary: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_loss_prevention_stored_info_type', 'opt')
         expect(config).to have_key('dictionary')
@@ -129,7 +150,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionStoredInfoType do
       it 'includes large_custom_dictionary when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_data_loss_prevention_stored_info_type('opt', required_attrs.merge(large_custom_dictionary: [{ 'key1' => 'val1' }]))
+        synth.google_data_loss_prevention_stored_info_type('opt', required_attrs.merge(large_custom_dictionary: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_loss_prevention_stored_info_type', 'opt')
         expect(config).to have_key('large_custom_dictionary')
@@ -146,7 +167,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionStoredInfoType do
       it 'includes regex when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_data_loss_prevention_stored_info_type('opt', required_attrs.merge(regex: [{ 'key1' => 'val1' }]))
+        synth.google_data_loss_prevention_stored_info_type('opt', required_attrs.merge(regex: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_loss_prevention_stored_info_type', 'opt')
         expect(config).to have_key('regex')
@@ -159,6 +180,23 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionStoredInfoType do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_loss_prevention_stored_info_type', 'minimal')
         expect(config).not_to have_key('regex')
+      end
+      it 'includes stored_info_type_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_stored_info_type('opt', required_attrs.merge(stored_info_type_id: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_stored_info_type', 'opt')
+        expect(config).to have_key('stored_info_type_id')
+      end
+
+      it 'omits stored_info_type_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_loss_prevention_stored_info_type('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_loss_prevention_stored_info_type', 'minimal')
+        expect(config).not_to have_key('stored_info_type_id')
       end
     end
 
@@ -204,7 +242,7 @@ RSpec.describe Pangea::Resources::GoogleDataLossPreventionStoredInfoType do
     resource_type: :google_data_loss_prevention_stored_info_type,
     method: :google_data_loss_prevention_stored_info_type,
     required_attrs: { parent: 'test-value' },
-    expected_outputs: [:id, :name, :stored_info_type_id],
+    expected_outputs: [:id, :deletion_policy, :name, :stored_info_type_id],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

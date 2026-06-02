@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineNetworkPeering do
 
         expect(ref.id).to eq("${google_vmwareengine_network_peering.test.id}")
         expect(ref.create_time).to eq("${google_vmwareengine_network_peering.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_vmwareengine_network_peering.test.deletion_policy}")
         expect(ref.project).to eq("${google_vmwareengine_network_peering.test.project}")
         expect(ref.state).to eq("${google_vmwareengine_network_peering.test.state}")
         expect(ref.state_details).to eq("${google_vmwareengine_network_peering.test.state_details}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineNetworkPeering do
 
         config = validate_resource_structure(result, 'google_vmwareengine_network_peering', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('state')
         expect(config).not_to have_key('state_details')
@@ -67,7 +69,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineNetworkPeering do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', export_custom_routes: true, export_custom_routes_with_public_ip: true, import_custom_routes: true, import_custom_routes_with_public_ip: true }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', export_custom_routes: true, export_custom_routes_with_public_ip: true, import_custom_routes: true, import_custom_routes_with_public_ip: true, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,15 +78,34 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineNetworkPeering do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vmwareengine_network_peering', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('export_custom_routes')
         expect(config).to have_key('export_custom_routes_with_public_ip')
         expect(config).to have_key('import_custom_routes')
         expect(config).to have_key('import_custom_routes_with_public_ip')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_network_peering('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_network_peering', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_network_peering('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_network_peering', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -169,6 +190,23 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineNetworkPeering do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vmwareengine_network_peering', 'minimal')
         expect(config).not_to have_key('import_custom_routes_with_public_ip')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_network_peering('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_network_peering', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vmwareengine_network_peering('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vmwareengine_network_peering', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -264,7 +302,7 @@ RSpec.describe Pangea::Resources::GoogleVmwareengineNetworkPeering do
     resource_type: :google_vmwareengine_network_peering,
     method: :google_vmwareengine_network_peering,
     required_attrs: { name: 'test-value', peer_network: 'test-value', peer_network_type: 'test-value', vmware_engine_network: 'test-value' },
-    expected_outputs: [:id, :create_time, :project, :state, :state_details, :uid, :update_time, :vmware_engine_network_canonical],
+    expected_outputs: [:id, :create_time, :deletion_policy, :project, :state, :state_details, :uid, :update_time, :vmware_engine_network_canonical],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:export_custom_routes, :export_custom_routes_with_public_ip, :import_custom_routes, :import_custom_routes_with_public_ip]

@@ -8,7 +8,7 @@ require 'spec_helper'
 RSpec.describe Pangea::Resources::GoogleBiglakeDatabase do
   include Pangea::Testing::SynthesisTestHelpers
 
-  let(:required_attrs) { { catalog: 'test-value', hive_options: [{ 'key1' => 'val1' }], name: 'test-value', type: 'test-value' } }
+  let(:required_attrs) { { catalog: 'test-value', hive_options: { 'key1' => 'val1' }, name: 'test-value', type: 'test-value' } }
 
   describe ':google_biglake_database' do
     context 'with required attributes only' do
@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleBiglakeDatabase do
         expect(ref.id).to eq("${google_biglake_database.test.id}")
         expect(ref.create_time).to eq("${google_biglake_database.test.create_time}")
         expect(ref.delete_time).to eq("${google_biglake_database.test.delete_time}")
+        expect(ref.deletion_policy).to eq("${google_biglake_database.test.deletion_policy}")
         expect(ref.expire_time).to eq("${google_biglake_database.test.expire_time}")
         expect(ref.update_time).to eq("${google_biglake_database.test.update_time}")
       end
@@ -55,8 +56,43 @@ RSpec.describe Pangea::Resources::GoogleBiglakeDatabase do
         config = validate_resource_structure(result, 'google_biglake_database', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('delete_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('expire_time')
         expect(config).not_to have_key('update_time')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_biglake_database('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_biglake_database', 'full')
+        expect(config).to have_key('deletion_policy')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_biglake_database('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_biglake_database', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_biglake_database('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_biglake_database', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -69,7 +105,7 @@ RSpec.describe Pangea::Resources::GoogleBiglakeDatabase do
 
         config = validate_resource_structure(result, 'google_biglake_database', 'typed')
         expect(config['catalog']).to be_a(String)
-        expect(config['hive_options']).to be_a(Array)
+        expect(config['hive_options']).to be_a(Hash)
         expect(config['name']).to be_a(String)
         expect(config['type']).to be_a(String)
       end
@@ -104,8 +140,8 @@ RSpec.describe Pangea::Resources::GoogleBiglakeDatabase do
   it_behaves_like 'a generated pangea resource',
     resource_type: :google_biglake_database,
     method: :google_biglake_database,
-    required_attrs: { catalog: 'test-value', hive_options: [{ 'key1' => 'val1' }], name: 'test-value', type: 'test-value' },
-    expected_outputs: [:id, :create_time, :delete_time, :expire_time, :update_time],
+    required_attrs: { catalog: 'test-value', hive_options: { 'key1' => 'val1' }, name: 'test-value', type: 'test-value' },
+    expected_outputs: [:id, :create_time, :delete_time, :deletion_policy, :expire_time, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

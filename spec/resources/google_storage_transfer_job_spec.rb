@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferJob do
 
         expect(ref.id).to eq("${google_storage_transfer_job.test.id}")
         expect(ref.creation_time).to eq("${google_storage_transfer_job.test.creation_time}")
+        expect(ref.deletion_policy).to eq("${google_storage_transfer_job.test.deletion_policy}")
         expect(ref.deletion_time).to eq("${google_storage_transfer_job.test.deletion_time}")
         expect(ref.last_modification_time).to eq("${google_storage_transfer_job.test.last_modification_time}")
         expect(ref.name).to eq("${google_storage_transfer_job.test.name}")
@@ -55,6 +56,7 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferJob do
 
         config = validate_resource_structure(result, 'google_storage_transfer_job', 'test')
         expect(config).not_to have_key('creation_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('deletion_time')
         expect(config).not_to have_key('last_modification_time')
         expect(config).not_to have_key('name')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferJob do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ event_stream: [{ 'key1' => 'val1' }], logging_config: [{ 'key1' => 'val1' }], notification_config: [{ 'key1' => 'val1' }], replication_spec: [{ 'key1' => 'val1' }], schedule: [{ 'key1' => 'val1' }], status: 'test-value', transfer_spec: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', event_stream: { 'key1' => 'val1' }, logging_config: { 'key1' => 'val1' }, name: 'test-value', notification_config: { 'key1' => 'val1' }, project: 'test-value', replication_spec: { 'key1' => 'val1' }, schedule: { 'key1' => 'val1' }, service_account: 'test-value', status: 'test-value', transfer_spec: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,21 +74,42 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferJob do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_storage_transfer_job', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('event_stream')
         expect(config).to have_key('logging_config')
+        expect(config).to have_key('name')
         expect(config).to have_key('notification_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('replication_spec')
         expect(config).to have_key('schedule')
+        expect(config).to have_key('service_account')
         expect(config).to have_key('status')
         expect(config).to have_key('transfer_spec')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_transfer_job('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_transfer_job', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_transfer_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_transfer_job', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes event_stream when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_transfer_job('opt', required_attrs.merge(event_stream: [{ 'key1' => 'val1' }]))
+        synth.google_storage_transfer_job('opt', required_attrs.merge(event_stream: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_transfer_job', 'opt')
         expect(config).to have_key('event_stream')
@@ -103,7 +126,7 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferJob do
       it 'includes logging_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_transfer_job('opt', required_attrs.merge(logging_config: [{ 'key1' => 'val1' }]))
+        synth.google_storage_transfer_job('opt', required_attrs.merge(logging_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_transfer_job', 'opt')
         expect(config).to have_key('logging_config')
@@ -117,10 +140,27 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferJob do
         config = validate_resource_structure(result, 'google_storage_transfer_job', 'minimal')
         expect(config).not_to have_key('logging_config')
       end
+      it 'includes name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_transfer_job('opt', required_attrs.merge(name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_transfer_job', 'opt')
+        expect(config).to have_key('name')
+      end
+
+      it 'omits name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_transfer_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_transfer_job', 'minimal')
+        expect(config).not_to have_key('name')
+      end
       it 'includes notification_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_transfer_job('opt', required_attrs.merge(notification_config: [{ 'key1' => 'val1' }]))
+        synth.google_storage_transfer_job('opt', required_attrs.merge(notification_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_transfer_job', 'opt')
         expect(config).to have_key('notification_config')
@@ -134,10 +174,27 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferJob do
         config = validate_resource_structure(result, 'google_storage_transfer_job', 'minimal')
         expect(config).not_to have_key('notification_config')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_transfer_job('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_transfer_job', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_transfer_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_transfer_job', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes replication_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_transfer_job('opt', required_attrs.merge(replication_spec: [{ 'key1' => 'val1' }]))
+        synth.google_storage_transfer_job('opt', required_attrs.merge(replication_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_transfer_job', 'opt')
         expect(config).to have_key('replication_spec')
@@ -154,7 +211,7 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferJob do
       it 'includes schedule when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_transfer_job('opt', required_attrs.merge(schedule: [{ 'key1' => 'val1' }]))
+        synth.google_storage_transfer_job('opt', required_attrs.merge(schedule: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_transfer_job', 'opt')
         expect(config).to have_key('schedule')
@@ -167,6 +224,23 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferJob do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_transfer_job', 'minimal')
         expect(config).not_to have_key('schedule')
+      end
+      it 'includes service_account when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_transfer_job('opt', required_attrs.merge(service_account: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_transfer_job', 'opt')
+        expect(config).to have_key('service_account')
+      end
+
+      it 'omits service_account when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_transfer_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_transfer_job', 'minimal')
+        expect(config).not_to have_key('service_account')
       end
       it 'includes status when provided' do
         synth = create_synthesizer
@@ -188,7 +262,7 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferJob do
       it 'includes transfer_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_transfer_job('opt', required_attrs.merge(transfer_spec: [{ 'key1' => 'val1' }]))
+        synth.google_storage_transfer_job('opt', required_attrs.merge(transfer_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_transfer_job', 'opt')
         expect(config).to have_key('transfer_spec')
@@ -246,7 +320,7 @@ RSpec.describe Pangea::Resources::GoogleStorageTransferJob do
     resource_type: :google_storage_transfer_job,
     method: :google_storage_transfer_job,
     required_attrs: { description: 'test-value' },
-    expected_outputs: [:id, :creation_time, :deletion_time, :last_modification_time, :name, :project],
+    expected_outputs: [:id, :creation_time, :deletion_policy, :deletion_time, :last_modification_time, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

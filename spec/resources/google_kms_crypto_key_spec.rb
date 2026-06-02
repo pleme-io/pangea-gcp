@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleKmsCryptoKey do
 
         expect(ref.id).to eq("${google_kms_crypto_key.test.id}")
         expect(ref.crypto_key_backend).to eq("${google_kms_crypto_key.test.crypto_key_backend}")
+        expect(ref.deletion_policy).to eq("${google_kms_crypto_key.test.deletion_policy}")
         expect(ref.destroy_scheduled_duration).to eq("${google_kms_crypto_key.test.destroy_scheduled_duration}")
         expect(ref.effective_labels).to eq("${google_kms_crypto_key.test.effective_labels}")
         expect(ref.import_only).to eq("${google_kms_crypto_key.test.import_only}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleKmsCryptoKey do
 
         config = validate_resource_structure(result, 'google_kms_crypto_key', 'test')
         expect(config).not_to have_key('crypto_key_backend')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('destroy_scheduled_duration')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('import_only')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleKmsCryptoKey do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ labels: { 'key1' => 'val1' }, purpose: 'test-value', rotation_period: 'test-value', skip_initial_version_creation: true, version_template: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ crypto_key_backend: 'test-value', deletion_policy: 'test-value', destroy_scheduled_duration: 'test-value', import_only: true, labels: { 'key1' => 'val1' }, purpose: 'test-value', rotation_period: 'test-value', skip_initial_version_creation: true, version_template: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -74,6 +76,10 @@ RSpec.describe Pangea::Resources::GoogleKmsCryptoKey do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_kms_crypto_key', 'full')
+        expect(config).to have_key('crypto_key_backend')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('destroy_scheduled_duration')
+        expect(config).to have_key('import_only')
         expect(config).to have_key('labels')
         expect(config).to have_key('purpose')
         expect(config).to have_key('rotation_period')
@@ -83,6 +89,74 @@ RSpec.describe Pangea::Resources::GoogleKmsCryptoKey do
     end
 
     context 'optional attributes' do
+      it 'includes crypto_key_backend when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_crypto_key('opt', required_attrs.merge(crypto_key_backend: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_crypto_key', 'opt')
+        expect(config).to have_key('crypto_key_backend')
+      end
+
+      it 'omits crypto_key_backend when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_crypto_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_crypto_key', 'minimal')
+        expect(config).not_to have_key('crypto_key_backend')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_crypto_key('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_crypto_key', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_crypto_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_crypto_key', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes destroy_scheduled_duration when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_crypto_key('opt', required_attrs.merge(destroy_scheduled_duration: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_crypto_key', 'opt')
+        expect(config).to have_key('destroy_scheduled_duration')
+      end
+
+      it 'omits destroy_scheduled_duration when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_crypto_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_crypto_key', 'minimal')
+        expect(config).not_to have_key('destroy_scheduled_duration')
+      end
+      it 'includes import_only when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_crypto_key('opt', required_attrs.merge(import_only: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_crypto_key', 'opt')
+        expect(config).to have_key('import_only')
+      end
+
+      it 'omits import_only when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_kms_crypto_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_kms_crypto_key', 'minimal')
+        expect(config).not_to have_key('import_only')
+      end
       it 'includes labels when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -154,7 +228,7 @@ RSpec.describe Pangea::Resources::GoogleKmsCryptoKey do
       it 'includes version_template when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_kms_crypto_key('opt', required_attrs.merge(version_template: [{ 'key1' => 'val1' }]))
+        synth.google_kms_crypto_key('opt', required_attrs.merge(version_template: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_kms_crypto_key', 'opt')
         expect(config).to have_key('version_template')
@@ -171,6 +245,17 @@ RSpec.describe Pangea::Resources::GoogleKmsCryptoKey do
     end
 
     context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts import_only=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(import_only: val)
+          synth.google_kms_crypto_key("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_kms_crypto_key', "bool_#{val}")
+          expect(config['import_only']).to eq(val)
+        end
+      end
       [true, false].each do |val|
         it "accepts skip_initial_version_creation=#{val}" do
           synth = create_synthesizer
@@ -227,8 +312,8 @@ RSpec.describe Pangea::Resources::GoogleKmsCryptoKey do
     resource_type: :google_kms_crypto_key,
     method: :google_kms_crypto_key,
     required_attrs: { key_ring: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :crypto_key_backend, :destroy_scheduled_duration, :effective_labels, :import_only, :primary, :terraform_labels],
+    expected_outputs: [:id, :crypto_key_backend, :deletion_policy, :destroy_scheduled_duration, :effective_labels, :import_only, :primary, :terraform_labels],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:skip_initial_version_creation]
+    boolean_fields: [:import_only, :skip_initial_version_creation]
 end

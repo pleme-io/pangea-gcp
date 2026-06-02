@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpoint do
 
         expect(ref.id).to eq("${google_vertex_ai_index_endpoint.test.id}")
         expect(ref.create_time).to eq("${google_vertex_ai_index_endpoint.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_vertex_ai_index_endpoint.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_vertex_ai_index_endpoint.test.effective_labels}")
         expect(ref.etag).to eq("${google_vertex_ai_index_endpoint.test.etag}")
         expect(ref.name).to eq("${google_vertex_ai_index_endpoint.test.name}")
@@ -58,6 +59,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpoint do
 
         config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('name')
@@ -69,7 +71,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpoint do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', labels: { 'key1' => 'val1' }, network: 'test-value', private_service_connect_config: [{ 'key1' => 'val1' }], public_endpoint_enabled: true, region: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', encryption_spec: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, network: 'test-value', private_service_connect_config: { 'key1' => 'val1' }, project: 'test-value', public_endpoint_enabled: true, region: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,16 +80,36 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpoint do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('encryption_spec')
         expect(config).to have_key('labels')
         expect(config).to have_key('network')
         expect(config).to have_key('private_service_connect_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('public_endpoint_enabled')
         expect(config).to have_key('region')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_index_endpoint('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_index_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -104,6 +126,23 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpoint do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes encryption_spec when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_index_endpoint('opt', required_attrs.merge(encryption_spec: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint', 'opt')
+        expect(config).to have_key('encryption_spec')
+      end
+
+      it 'omits encryption_spec when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_index_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint', 'minimal')
+        expect(config).not_to have_key('encryption_spec')
       end
       it 'includes labels when provided' do
         synth = create_synthesizer
@@ -142,7 +181,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpoint do
       it 'includes private_service_connect_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_vertex_ai_index_endpoint('opt', required_attrs.merge(private_service_connect_config: [{ 'key1' => 'val1' }]))
+        synth.google_vertex_ai_index_endpoint('opt', required_attrs.merge(private_service_connect_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint', 'opt')
         expect(config).to have_key('private_service_connect_config')
@@ -155,6 +194,23 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpoint do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint', 'minimal')
         expect(config).not_to have_key('private_service_connect_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_index_endpoint('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_vertex_ai_index_endpoint('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_vertex_ai_index_endpoint', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes public_endpoint_enabled when provided' do
         synth = create_synthesizer
@@ -248,7 +304,7 @@ RSpec.describe Pangea::Resources::GoogleVertexAiIndexEndpoint do
     resource_type: :google_vertex_ai_index_endpoint,
     method: :google_vertex_ai_index_endpoint,
     required_attrs: { display_name: 'test-value' },
-    expected_outputs: [:id, :create_time, :effective_labels, :etag, :name, :project, :public_endpoint_domain_name, :terraform_labels, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :effective_labels, :etag, :name, :project, :public_endpoint_domain_name, :terraform_labels, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:public_endpoint_enabled]

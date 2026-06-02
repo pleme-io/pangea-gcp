@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringMonitoredProject do
 
         expect(ref.id).to eq("${google_monitoring_monitored_project.test.id}")
         expect(ref.create_time).to eq("${google_monitoring_monitored_project.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_monitoring_monitored_project.test.deletion_policy}")
       end
     end
 
@@ -51,6 +52,41 @@ RSpec.describe Pangea::Resources::GoogleMonitoringMonitoredProject do
 
         config = validate_resource_structure(result, 'google_monitoring_monitored_project', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
+      end
+    end
+
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_monitored_project('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_monitoring_monitored_project', 'full')
+        expect(config).to have_key('deletion_policy')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_monitored_project('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_monitored_project', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_monitoring_monitored_project('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_monitoring_monitored_project', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
@@ -97,7 +133,7 @@ RSpec.describe Pangea::Resources::GoogleMonitoringMonitoredProject do
     resource_type: :google_monitoring_monitored_project,
     method: :google_monitoring_monitored_project,
     required_attrs: { metrics_scope: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :create_time],
+    expected_outputs: [:id, :create_time, :deletion_policy],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

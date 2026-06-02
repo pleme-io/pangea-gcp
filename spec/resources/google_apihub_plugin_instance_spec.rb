@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleApihubPluginInstance do
 
         expect(ref.id).to eq("${google_apihub_plugin_instance.test.id}")
         expect(ref.create_time).to eq("${google_apihub_plugin_instance.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_apihub_plugin_instance.test.deletion_policy}")
         expect(ref.error_message).to eq("${google_apihub_plugin_instance.test.error_message}")
         expect(ref.name).to eq("${google_apihub_plugin_instance.test.name}")
         expect(ref.project).to eq("${google_apihub_plugin_instance.test.project}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleApihubPluginInstance do
 
         config = validate_resource_structure(result, 'google_apihub_plugin_instance', 'test')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('error_message')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleApihubPluginInstance do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ actions: [{ 'key1' => 'val1' }], auth_config: [{ 'key1' => 'val1' }], disable: true }) }
+      let(:all_attrs) { required_attrs.merge({ actions: [{ 'key1' => 'val1' }], auth_config: { 'key1' => 'val1' }, deletion_policy: 'test-value', disable: true, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,7 +78,9 @@ RSpec.describe Pangea::Resources::GoogleApihubPluginInstance do
         config = validate_resource_structure(result, 'google_apihub_plugin_instance', 'full')
         expect(config).to have_key('actions')
         expect(config).to have_key('auth_config')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('disable')
+        expect(config).to have_key('project')
       end
     end
 
@@ -101,7 +105,7 @@ RSpec.describe Pangea::Resources::GoogleApihubPluginInstance do
       it 'includes auth_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_apihub_plugin_instance('opt', required_attrs.merge(auth_config: [{ 'key1' => 'val1' }]))
+        synth.google_apihub_plugin_instance('opt', required_attrs.merge(auth_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apihub_plugin_instance', 'opt')
         expect(config).to have_key('auth_config')
@@ -114,6 +118,23 @@ RSpec.describe Pangea::Resources::GoogleApihubPluginInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apihub_plugin_instance', 'minimal')
         expect(config).not_to have_key('auth_config')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apihub_plugin_instance('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apihub_plugin_instance', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apihub_plugin_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apihub_plugin_instance', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes disable when provided' do
         synth = create_synthesizer
@@ -131,6 +152,23 @@ RSpec.describe Pangea::Resources::GoogleApihubPluginInstance do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_apihub_plugin_instance', 'minimal')
         expect(config).not_to have_key('disable')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apihub_plugin_instance('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apihub_plugin_instance', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apihub_plugin_instance('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apihub_plugin_instance', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -193,7 +231,7 @@ RSpec.describe Pangea::Resources::GoogleApihubPluginInstance do
     resource_type: :google_apihub_plugin_instance,
     method: :google_apihub_plugin_instance,
     required_attrs: { display_name: 'test-value', location: 'test-value', plugin: 'test-value', plugin_instance_id: 'test-value' },
-    expected_outputs: [:id, :create_time, :error_message, :name, :project, :state, :update_time],
+    expected_outputs: [:id, :create_time, :deletion_policy, :error_message, :name, :project, :state, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:disable]

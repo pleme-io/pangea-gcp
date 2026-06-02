@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexLake do
         expect(ref.id).to eq("${google_dataplex_lake.test.id}")
         expect(ref.asset_status).to eq("${google_dataplex_lake.test.asset_status}")
         expect(ref.create_time).to eq("${google_dataplex_lake.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_dataplex_lake.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_dataplex_lake.test.effective_labels}")
         expect(ref.metastore_status).to eq("${google_dataplex_lake.test.metastore_status}")
         expect(ref.project).to eq("${google_dataplex_lake.test.project}")
@@ -61,6 +62,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexLake do
         config = validate_resource_structure(result, 'google_dataplex_lake', 'test')
         expect(config).not_to have_key('asset_status')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('metastore_status')
         expect(config).not_to have_key('project')
@@ -73,7 +75,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexLake do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' }, metastore: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', labels: { 'key1' => 'val1' }, metastore: { 'key1' => 'val1' }, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -82,14 +84,33 @@ RSpec.describe Pangea::Resources::GoogleDataplexLake do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_dataplex_lake', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
         expect(config).to have_key('labels')
         expect(config).to have_key('metastore')
+        expect(config).to have_key('project')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_lake('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_lake', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_lake('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_lake', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -144,7 +165,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexLake do
       it 'includes metastore when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataplex_lake('opt', required_attrs.merge(metastore: [{ 'key1' => 'val1' }]))
+        synth.google_dataplex_lake('opt', required_attrs.merge(metastore: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataplex_lake', 'opt')
         expect(config).to have_key('metastore')
@@ -157,6 +178,23 @@ RSpec.describe Pangea::Resources::GoogleDataplexLake do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataplex_lake', 'minimal')
         expect(config).not_to have_key('metastore')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_lake('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_lake', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataplex_lake('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataplex_lake', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -203,7 +241,7 @@ RSpec.describe Pangea::Resources::GoogleDataplexLake do
     resource_type: :google_dataplex_lake,
     method: :google_dataplex_lake,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :asset_status, :create_time, :effective_labels, :metastore_status, :project, :service_account, :state, :terraform_labels, :uid, :update_time],
+    expected_outputs: [:id, :asset_status, :create_time, :deletion_policy, :effective_labels, :metastore_status, :project, :service_account, :state, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

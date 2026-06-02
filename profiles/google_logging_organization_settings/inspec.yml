@@ -1,0 +1,8 @@
+name: google_logging_organization_settings
+title: Manages a google_logging_organization_settings resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

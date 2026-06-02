@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformTenantOauthIdpConfig do
         ref = synth.google_identity_platform_tenant_oauth_idp_config('test', required_attrs)
 
         expect(ref.id).to eq("${google_identity_platform_tenant_oauth_idp_config.test.id}")
+        expect(ref.deletion_policy).to eq("${google_identity_platform_tenant_oauth_idp_config.test.deletion_policy}")
         expect(ref.project).to eq("${google_identity_platform_tenant_oauth_idp_config.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformTenantOauthIdpConfig do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_identity_platform_tenant_oauth_idp_config', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ client_secret: 'test-value', enabled: true }) }
+      let(:all_attrs) { required_attrs.merge({ client_secret: 'test-value', deletion_policy: 'test-value', enabled: true, project: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -65,7 +67,9 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformTenantOauthIdpConfig do
 
         config = validate_resource_structure(result, 'google_identity_platform_tenant_oauth_idp_config', 'full')
         expect(config).to have_key('client_secret')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('enabled')
+        expect(config).to have_key('project')
       end
     end
 
@@ -87,6 +91,23 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformTenantOauthIdpConfig do
         config = validate_resource_structure(result, 'google_identity_platform_tenant_oauth_idp_config', 'minimal')
         expect(config).not_to have_key('client_secret')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_identity_platform_tenant_oauth_idp_config('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_identity_platform_tenant_oauth_idp_config', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_identity_platform_tenant_oauth_idp_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_identity_platform_tenant_oauth_idp_config', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes enabled when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -103,6 +124,23 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformTenantOauthIdpConfig do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_identity_platform_tenant_oauth_idp_config', 'minimal')
         expect(config).not_to have_key('enabled')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_identity_platform_tenant_oauth_idp_config('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_identity_platform_tenant_oauth_idp_config', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_identity_platform_tenant_oauth_idp_config('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_identity_platform_tenant_oauth_idp_config', 'minimal')
+        expect(config).not_to have_key('project')
       end
     end
 
@@ -166,7 +204,7 @@ RSpec.describe Pangea::Resources::GoogleIdentityPlatformTenantOauthIdpConfig do
     resource_type: :google_identity_platform_tenant_oauth_idp_config,
     method: :google_identity_platform_tenant_oauth_idp_config,
     required_attrs: { client_id: 'test-value', display_name: 'test-value', issuer: 'test-value', name: 'test-value', tenant: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:enabled]

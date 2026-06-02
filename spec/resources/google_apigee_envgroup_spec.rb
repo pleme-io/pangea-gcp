@@ -38,11 +38,24 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvgroup do
         ref = synth.google_apigee_envgroup('test', required_attrs)
 
         expect(ref.id).to eq("${google_apigee_envgroup.test.id}")
+        expect(ref.deletion_policy).to eq("${google_apigee_envgroup.test.deletion_policy}")
+      end
+    end
+
+    context 'computed-only attributes' do
+      it 'excludes computed-only attributes from the resource block' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_envgroup('test', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'google_apigee_envgroup', 'test')
+        expect(config).not_to have_key('deletion_policy')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ hostnames: ['test-value'] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', hostnames: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -51,11 +64,29 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvgroup do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_apigee_envgroup', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('hostnames')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_envgroup('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_envgroup', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_apigee_envgroup('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_apigee_envgroup', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes hostnames when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -118,7 +149,7 @@ RSpec.describe Pangea::Resources::GoogleApigeeEnvgroup do
     resource_type: :google_apigee_envgroup,
     method: :google_apigee_envgroup,
     required_attrs: { name: 'test-value', org_id: 'test-value' },
-    expected_outputs: [:id],
+    expected_outputs: [:id, :deletion_policy],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

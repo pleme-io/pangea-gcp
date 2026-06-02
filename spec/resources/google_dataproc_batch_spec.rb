@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocBatch do
         expect(ref.id).to eq("${google_dataproc_batch.test.id}")
         expect(ref.create_time).to eq("${google_dataproc_batch.test.create_time}")
         expect(ref.creator).to eq("${google_dataproc_batch.test.creator}")
+        expect(ref.deletion_policy).to eq("${google_dataproc_batch.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_dataproc_batch.test.effective_labels}")
         expect(ref.name).to eq("${google_dataproc_batch.test.name}")
         expect(ref.operation).to eq("${google_dataproc_batch.test.operation}")
@@ -64,6 +65,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocBatch do
         config = validate_resource_structure(result, 'google_dataproc_batch', 'test')
         expect(config).not_to have_key('create_time')
         expect(config).not_to have_key('creator')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('operation')
@@ -79,7 +81,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocBatch do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ batch_id: 'test-value', environment_config: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, location: 'test-value', pyspark_batch: [{ 'key1' => 'val1' }], runtime_config: [{ 'key1' => 'val1' }], spark_batch: [{ 'key1' => 'val1' }], spark_r_batch: [{ 'key1' => 'val1' }], spark_sql_batch: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ batch_id: 'test-value', deletion_policy: 'test-value', environment_config: { 'key1' => 'val1' }, labels: { 'key1' => 'val1' }, location: 'test-value', project: 'test-value', pyspark_batch: { 'key1' => 'val1' }, runtime_config: { 'key1' => 'val1' }, spark_batch: { 'key1' => 'val1' }, spark_r_batch: { 'key1' => 'val1' }, spark_sql_batch: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -89,9 +91,11 @@ RSpec.describe Pangea::Resources::GoogleDataprocBatch do
 
         config = validate_resource_structure(result, 'google_dataproc_batch', 'full')
         expect(config).to have_key('batch_id')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('environment_config')
         expect(config).to have_key('labels')
         expect(config).to have_key('location')
+        expect(config).to have_key('project')
         expect(config).to have_key('pyspark_batch')
         expect(config).to have_key('runtime_config')
         expect(config).to have_key('spark_batch')
@@ -118,10 +122,27 @@ RSpec.describe Pangea::Resources::GoogleDataprocBatch do
         config = validate_resource_structure(result, 'google_dataproc_batch', 'minimal')
         expect(config).not_to have_key('batch_id')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_batch('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_batch', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_batch('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_batch', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes environment_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_batch('opt', required_attrs.merge(environment_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_batch('opt', required_attrs.merge(environment_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_batch', 'opt')
         expect(config).to have_key('environment_config')
@@ -169,10 +190,27 @@ RSpec.describe Pangea::Resources::GoogleDataprocBatch do
         config = validate_resource_structure(result, 'google_dataproc_batch', 'minimal')
         expect(config).not_to have_key('location')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_batch('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_batch', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_dataproc_batch('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_dataproc_batch', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes pyspark_batch when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_batch('opt', required_attrs.merge(pyspark_batch: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_batch('opt', required_attrs.merge(pyspark_batch: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_batch', 'opt')
         expect(config).to have_key('pyspark_batch')
@@ -189,7 +227,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocBatch do
       it 'includes runtime_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_batch('opt', required_attrs.merge(runtime_config: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_batch('opt', required_attrs.merge(runtime_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_batch', 'opt')
         expect(config).to have_key('runtime_config')
@@ -206,7 +244,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocBatch do
       it 'includes spark_batch when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_batch('opt', required_attrs.merge(spark_batch: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_batch('opt', required_attrs.merge(spark_batch: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_batch', 'opt')
         expect(config).to have_key('spark_batch')
@@ -223,7 +261,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocBatch do
       it 'includes spark_r_batch when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_batch('opt', required_attrs.merge(spark_r_batch: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_batch('opt', required_attrs.merge(spark_r_batch: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_batch', 'opt')
         expect(config).to have_key('spark_r_batch')
@@ -240,7 +278,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocBatch do
       it 'includes spark_sql_batch when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_dataproc_batch('opt', required_attrs.merge(spark_sql_batch: [{ 'key1' => 'val1' }]))
+        synth.google_dataproc_batch('opt', required_attrs.merge(spark_sql_batch: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_dataproc_batch', 'opt')
         expect(config).to have_key('spark_sql_batch')
@@ -297,7 +335,7 @@ RSpec.describe Pangea::Resources::GoogleDataprocBatch do
     resource_type: :google_dataproc_batch,
     method: :google_dataproc_batch,
     required_attrs: {},
-    expected_outputs: [:id, :create_time, :creator, :effective_labels, :name, :operation, :project, :runtime_info, :state, :state_history, :state_message, :state_time, :terraform_labels, :uuid],
+    expected_outputs: [:id, :create_time, :creator, :deletion_policy, :effective_labels, :name, :operation, :project, :runtime_info, :state, :state_history, :state_message, :state_time, :terraform_labels, :uuid],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

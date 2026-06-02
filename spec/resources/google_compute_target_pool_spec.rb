@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetPool do
         ref = synth.google_compute_target_pool('test', required_attrs)
 
         expect(ref.id).to eq("${google_compute_target_pool.test.id}")
+        expect(ref.deletion_policy).to eq("${google_compute_target_pool.test.deletion_policy}")
         expect(ref.instances).to eq("${google_compute_target_pool.test.instances}")
         expect(ref.project).to eq("${google_compute_target_pool.test.project}")
         expect(ref.region).to eq("${google_compute_target_pool.test.region}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetPool do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_compute_target_pool', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('instances')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('region')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetPool do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ backup_pool: 'test-value', description: 'test-value', failover_ratio: 3.14, health_checks: ['test-value'], session_affinity: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ backup_pool: 'test-value', deletion_policy: 'test-value', description: 'test-value', failover_ratio: 3.14, health_checks: ['test-value'], instances: ['test-value'], project: 'test-value', region: 'test-value', session_affinity: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -71,9 +73,13 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetPool do
 
         config = validate_resource_structure(result, 'google_compute_target_pool', 'full')
         expect(config).to have_key('backup_pool')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('failover_ratio')
         expect(config).to have_key('health_checks')
+        expect(config).to have_key('instances')
+        expect(config).to have_key('project')
+        expect(config).to have_key('region')
         expect(config).to have_key('session_affinity')
       end
     end
@@ -95,6 +101,23 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetPool do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_target_pool', 'minimal')
         expect(config).not_to have_key('backup_pool')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_pool('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_pool', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_pool', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -146,6 +169,57 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetPool do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_target_pool', 'minimal')
         expect(config).not_to have_key('health_checks')
+      end
+      it 'includes instances when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_pool('opt', required_attrs.merge(instances: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_pool', 'opt')
+        expect(config).to have_key('instances')
+      end
+
+      it 'omits instances when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_pool', 'minimal')
+        expect(config).not_to have_key('instances')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_pool('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_pool', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_pool', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes region when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_pool('opt', required_attrs.merge(region: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_pool', 'opt')
+        expect(config).to have_key('region')
+      end
+
+      it 'omits region when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_target_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_target_pool', 'minimal')
+        expect(config).not_to have_key('region')
       end
       it 'includes session_affinity when provided' do
         synth = create_synthesizer
@@ -208,7 +282,7 @@ RSpec.describe Pangea::Resources::GoogleComputeTargetPool do
     resource_type: :google_compute_target_pool,
     method: :google_compute_target_pool,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :instances, :project, :region, :self_link],
+    expected_outputs: [:id, :deletion_policy, :instances, :project, :region, :self_link],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

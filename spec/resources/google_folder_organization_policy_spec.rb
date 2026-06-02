@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleFolderOrganizationPolicy do
         ref = synth.google_folder_organization_policy('test', required_attrs)
 
         expect(ref.id).to eq("${google_folder_organization_policy.test.id}")
+        expect(ref.deletion_policy).to eq("${google_folder_organization_policy.test.deletion_policy}")
         expect(ref.etag).to eq("${google_folder_organization_policy.test.etag}")
         expect(ref.update_time).to eq("${google_folder_organization_policy.test.update_time}")
         expect(ref.version).to eq("${google_folder_organization_policy.test.version}")
@@ -52,6 +53,7 @@ RSpec.describe Pangea::Resources::GoogleFolderOrganizationPolicy do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_folder_organization_policy', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('etag')
         expect(config).not_to have_key('update_time')
         expect(config).not_to have_key('version')
@@ -59,7 +61,7 @@ RSpec.describe Pangea::Resources::GoogleFolderOrganizationPolicy do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ boolean_policy: [{ 'key1' => 'val1' }], list_policy: [{ 'key1' => 'val1' }], restore_policy: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ boolean_policy: { 'key1' => 'val1' }, deletion_policy: 'test-value', list_policy: { 'key1' => 'val1' }, restore_policy: { 'key1' => 'val1' }, version: 3.14 }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -69,8 +71,10 @@ RSpec.describe Pangea::Resources::GoogleFolderOrganizationPolicy do
 
         config = validate_resource_structure(result, 'google_folder_organization_policy', 'full')
         expect(config).to have_key('boolean_policy')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('list_policy')
         expect(config).to have_key('restore_policy')
+        expect(config).to have_key('version')
       end
     end
 
@@ -78,7 +82,7 @@ RSpec.describe Pangea::Resources::GoogleFolderOrganizationPolicy do
       it 'includes boolean_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_folder_organization_policy('opt', required_attrs.merge(boolean_policy: [{ 'key1' => 'val1' }]))
+        synth.google_folder_organization_policy('opt', required_attrs.merge(boolean_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_folder_organization_policy', 'opt')
         expect(config).to have_key('boolean_policy')
@@ -92,10 +96,27 @@ RSpec.describe Pangea::Resources::GoogleFolderOrganizationPolicy do
         config = validate_resource_structure(result, 'google_folder_organization_policy', 'minimal')
         expect(config).not_to have_key('boolean_policy')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_folder_organization_policy('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_folder_organization_policy', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_folder_organization_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_folder_organization_policy', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes list_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_folder_organization_policy('opt', required_attrs.merge(list_policy: [{ 'key1' => 'val1' }]))
+        synth.google_folder_organization_policy('opt', required_attrs.merge(list_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_folder_organization_policy', 'opt')
         expect(config).to have_key('list_policy')
@@ -112,7 +133,7 @@ RSpec.describe Pangea::Resources::GoogleFolderOrganizationPolicy do
       it 'includes restore_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_folder_organization_policy('opt', required_attrs.merge(restore_policy: [{ 'key1' => 'val1' }]))
+        synth.google_folder_organization_policy('opt', required_attrs.merge(restore_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_folder_organization_policy', 'opt')
         expect(config).to have_key('restore_policy')
@@ -125,6 +146,23 @@ RSpec.describe Pangea::Resources::GoogleFolderOrganizationPolicy do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_folder_organization_policy', 'minimal')
         expect(config).not_to have_key('restore_policy')
+      end
+      it 'includes version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_folder_organization_policy('opt', required_attrs.merge(version: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_folder_organization_policy', 'opt')
+        expect(config).to have_key('version')
+      end
+
+      it 'omits version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_folder_organization_policy('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_folder_organization_policy', 'minimal')
+        expect(config).not_to have_key('version')
       end
     end
 
@@ -171,7 +209,7 @@ RSpec.describe Pangea::Resources::GoogleFolderOrganizationPolicy do
     resource_type: :google_folder_organization_policy,
     method: :google_folder_organization_policy,
     required_attrs: { constraint: 'test-value', folder: 'test-value' },
-    expected_outputs: [:id, :etag, :update_time, :version],
+    expected_outputs: [:id, :deletion_policy, :etag, :update_time, :version],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

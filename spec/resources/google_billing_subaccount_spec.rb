@@ -39,6 +39,7 @@ RSpec.describe Pangea::Resources::GoogleBillingSubaccount do
 
         expect(ref.id).to eq("${google_billing_subaccount.test.id}")
         expect(ref.billing_account_id).to eq("${google_billing_subaccount.test.billing_account_id}")
+        expect(ref.deletion_policy).to eq("${google_billing_subaccount.test.deletion_policy}")
         expect(ref.name).to eq("${google_billing_subaccount.test.name}")
         expect(ref.open).to eq("${google_billing_subaccount.test.open}")
       end
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleBillingSubaccount do
 
         config = validate_resource_structure(result, 'google_billing_subaccount', 'test')
         expect(config).not_to have_key('billing_account_id')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('open')
       end
@@ -135,7 +137,7 @@ RSpec.describe Pangea::Resources::GoogleBillingSubaccount do
     resource_type: :google_billing_subaccount,
     method: :google_billing_subaccount,
     required_attrs: { display_name: 'test-value', master_billing_account: 'test-value' },
-    expected_outputs: [:id, :billing_account_id, :name, :open],
+    expected_outputs: [:id, :billing_account_id, :deletion_policy, :name, :open],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

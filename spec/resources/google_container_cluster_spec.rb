@@ -38,11 +38,14 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         ref = synth.google_container_cluster('test', required_attrs)
 
         expect(ref.id).to eq("${google_container_cluster.test.id}")
+        expect(ref.autopilot_privileged_admission).to eq("${google_container_cluster.test.autopilot_privileged_admission}")
         expect(ref.cluster_ipv4_cidr).to eq("${google_container_cluster.test.cluster_ipv4_cidr}")
         expect(ref.datapath_provider).to eq("${google_container_cluster.test.datapath_provider}")
         expect(ref.default_max_pods_per_node).to eq("${google_container_cluster.test.default_max_pods_per_node}")
+        expect(ref.deletion_policy).to eq("${google_container_cluster.test.deletion_policy}")
         expect(ref.effective_labels).to eq("${google_container_cluster.test.effective_labels}")
         expect(ref.enable_intranode_visibility).to eq("${google_container_cluster.test.enable_intranode_visibility}")
+        expect(ref.enable_l4_ilb_subsetting).to eq("${google_container_cluster.test.enable_l4_ilb_subsetting}")
         expect(ref.endpoint).to eq("${google_container_cluster.test.endpoint}")
         expect(ref.label_fingerprint).to eq("${google_container_cluster.test.label_fingerprint}")
         expect(ref.location).to eq("${google_container_cluster.test.location}")
@@ -71,11 +74,14 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_container_cluster', 'test')
+        expect(config).not_to have_key('autopilot_privileged_admission')
         expect(config).not_to have_key('cluster_ipv4_cidr')
         expect(config).not_to have_key('datapath_provider')
         expect(config).not_to have_key('default_max_pods_per_node')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('enable_intranode_visibility')
+        expect(config).not_to have_key('enable_l4_ilb_subsetting')
         expect(config).not_to have_key('endpoint')
         expect(config).not_to have_key('label_fingerprint')
         expect(config).not_to have_key('location')
@@ -97,7 +103,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ addons_config: [{ 'key1' => 'val1' }], allow_net_admin: true, anonymous_authentication_config: [{ 'key1' => 'val1' }], authenticator_groups_config: [{ 'key1' => 'val1' }], binary_authorization: [{ 'key1' => 'val1' }], cluster_autoscaling: [{ 'key1' => 'val1' }], confidential_nodes: [{ 'key1' => 'val1' }], control_plane_endpoints_config: [{ 'key1' => 'val1' }], cost_management_config: [{ 'key1' => 'val1' }], database_encryption: [{ 'key1' => 'val1' }], default_snat_status: [{ 'key1' => 'val1' }], deletion_protection: true, description: 'test-value', disable_l4_lb_firewall_reconciliation: true, dns_config: [{ 'key1' => 'val1' }], enable_autopilot: true, enable_cilium_clusterwide_network_policy: true, enable_fqdn_network_policy: true, enable_k8s_beta_apis: [{ 'key1' => 'val1' }], enable_kubernetes_alpha: true, enable_l4_ilb_subsetting: true, enable_legacy_abac: true, enable_multi_networking: true, enable_shielded_nodes: true, enable_tpu: true, enterprise_config: [{ 'key1' => 'val1' }], fleet: [{ 'key1' => 'val1' }], gateway_api_config: [{ 'key1' => 'val1' }], gke_auto_upgrade_config: [{ 'key1' => 'val1' }], identity_service_config: [{ 'key1' => 'val1' }], in_transit_encryption_config: 'test-value', initial_node_count: 3.14, ip_allocation_policy: [{ 'key1' => 'val1' }], logging_config: [{ 'key1' => 'val1' }], maintenance_policy: [{ 'key1' => 'val1' }], master_auth: [{ 'key1' => 'val1' }], master_authorized_networks_config: [{ 'key1' => 'val1' }], mesh_certificates: [{ 'key1' => 'val1' }], min_master_version: 'test-value', monitoring_config: [{ 'key1' => 'val1' }], network: 'test-value', network_performance_config: [{ 'key1' => 'val1' }], network_policy: [{ 'key1' => 'val1' }], node_config: [{ 'key1' => 'val1' }], node_pool: [{ 'key1' => 'val1' }], node_pool_auto_config: [{ 'key1' => 'val1' }], node_pool_defaults: [{ 'key1' => 'val1' }], notification_config: [{ 'key1' => 'val1' }], pod_autoscaling: [{ 'key1' => 'val1' }], private_cluster_config: [{ 'key1' => 'val1' }], rbac_binding_config: [{ 'key1' => 'val1' }], release_channel: [{ 'key1' => 'val1' }], remove_default_node_pool: true, resource_labels: { 'key1' => 'val1' }, resource_usage_export_config: [{ 'key1' => 'val1' }], secret_manager_config: [{ 'key1' => 'val1' }], security_posture_config: [{ 'key1' => 'val1' }], service_external_ips_config: [{ 'key1' => 'val1' }], user_managed_keys_config: [{ 'key1' => 'val1' }], vertical_pod_autoscaling: [{ 'key1' => 'val1' }], workload_identity_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ addons_config: { 'key1' => 'val1' }, allow_net_admin: true, anonymous_authentication_config: { 'key1' => 'val1' }, authenticator_groups_config: { 'key1' => 'val1' }, autopilot_cluster_policy_config: { 'key1' => 'val1' }, autopilot_privileged_admission: ['test-value'], binary_authorization: { 'key1' => 'val1' }, cluster_autoscaling: { 'key1' => 'val1' }, cluster_ipv4_cidr: 'test-value', confidential_nodes: { 'key1' => 'val1' }, control_plane_endpoints_config: { 'key1' => 'val1' }, cost_management_config: { 'key1' => 'val1' }, database_encryption: { 'key1' => 'val1' }, datapath_provider: 'test-value', default_max_pods_per_node: 3.14, default_snat_status: { 'key1' => 'val1' }, deletion_policy: 'test-value', deletion_protection: true, description: 'test-value', disable_l4_lb_firewall_reconciliation: true, dns_config: { 'key1' => 'val1' }, enable_autopilot: true, enable_cilium_clusterwide_network_policy: true, enable_fqdn_network_policy: true, enable_intranode_visibility: true, enable_k8s_beta_apis: { 'key1' => 'val1' }, enable_kubernetes_alpha: true, enable_l4_ilb_subsetting: true, enable_legacy_abac: true, enable_multi_networking: true, enable_shielded_nodes: true, enable_tpu: true, enterprise_config: { 'key1' => 'val1' }, fleet: { 'key1' => 'val1' }, gateway_api_config: { 'key1' => 'val1' }, gke_auto_upgrade_config: { 'key1' => 'val1' }, identity_service_config: { 'key1' => 'val1' }, in_transit_encryption_config: 'test-value', initial_node_count: 3.14, ip_allocation_policy: { 'key1' => 'val1' }, location: 'test-value', logging_config: { 'key1' => 'val1' }, logging_service: 'test-value', maintenance_policy: { 'key1' => 'val1' }, master_auth: { 'key1' => 'val1' }, master_authorized_networks_config: { 'key1' => 'val1' }, mesh_certificates: { 'key1' => 'val1' }, min_master_version: 'test-value', monitoring_config: { 'key1' => 'val1' }, monitoring_service: 'test-value', network: 'test-value', network_performance_config: { 'key1' => 'val1' }, network_policy: { 'key1' => 'val1' }, networking_mode: 'test-value', node_config: { 'key1' => 'val1' }, node_locations: ['test-value'], node_pool: [{ 'key1' => 'val1' }], node_pool_auto_config: { 'key1' => 'val1' }, node_pool_defaults: { 'key1' => 'val1' }, node_version: 'test-value', notification_config: { 'key1' => 'val1' }, pod_autoscaling: { 'key1' => 'val1' }, private_cluster_config: { 'key1' => 'val1' }, private_ipv6_google_access: 'test-value', project: 'test-value', rbac_binding_config: { 'key1' => 'val1' }, release_channel: { 'key1' => 'val1' }, remove_default_node_pool: true, resource_labels: { 'key1' => 'val1' }, resource_usage_export_config: { 'key1' => 'val1' }, secret_manager_config: { 'key1' => 'val1' }, secret_sync_config: { 'key1' => 'val1' }, security_posture_config: { 'key1' => 'val1' }, service_external_ips_config: { 'key1' => 'val1' }, subnetwork: 'test-value', user_managed_keys_config: { 'key1' => 'val1' }, vertical_pod_autoscaling: { 'key1' => 'val1' }, workload_identity_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -110,13 +116,19 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         expect(config).to have_key('allow_net_admin')
         expect(config).to have_key('anonymous_authentication_config')
         expect(config).to have_key('authenticator_groups_config')
+        expect(config).to have_key('autopilot_cluster_policy_config')
+        expect(config).to have_key('autopilot_privileged_admission')
         expect(config).to have_key('binary_authorization')
         expect(config).to have_key('cluster_autoscaling')
+        expect(config).to have_key('cluster_ipv4_cidr')
         expect(config).to have_key('confidential_nodes')
         expect(config).to have_key('control_plane_endpoints_config')
         expect(config).to have_key('cost_management_config')
         expect(config).to have_key('database_encryption')
+        expect(config).to have_key('datapath_provider')
+        expect(config).to have_key('default_max_pods_per_node')
         expect(config).to have_key('default_snat_status')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('deletion_protection')
         expect(config).to have_key('description')
         expect(config).to have_key('disable_l4_lb_firewall_reconciliation')
@@ -124,6 +136,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         expect(config).to have_key('enable_autopilot')
         expect(config).to have_key('enable_cilium_clusterwide_network_policy')
         expect(config).to have_key('enable_fqdn_network_policy')
+        expect(config).to have_key('enable_intranode_visibility')
         expect(config).to have_key('enable_k8s_beta_apis')
         expect(config).to have_key('enable_kubernetes_alpha')
         expect(config).to have_key('enable_l4_ilb_subsetting')
@@ -139,31 +152,41 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         expect(config).to have_key('in_transit_encryption_config')
         expect(config).to have_key('initial_node_count')
         expect(config).to have_key('ip_allocation_policy')
+        expect(config).to have_key('location')
         expect(config).to have_key('logging_config')
+        expect(config).to have_key('logging_service')
         expect(config).to have_key('maintenance_policy')
         expect(config).to have_key('master_auth')
         expect(config).to have_key('master_authorized_networks_config')
         expect(config).to have_key('mesh_certificates')
         expect(config).to have_key('min_master_version')
         expect(config).to have_key('monitoring_config')
+        expect(config).to have_key('monitoring_service')
         expect(config).to have_key('network')
         expect(config).to have_key('network_performance_config')
         expect(config).to have_key('network_policy')
+        expect(config).to have_key('networking_mode')
         expect(config).to have_key('node_config')
+        expect(config).to have_key('node_locations')
         expect(config).to have_key('node_pool')
         expect(config).to have_key('node_pool_auto_config')
         expect(config).to have_key('node_pool_defaults')
+        expect(config).to have_key('node_version')
         expect(config).to have_key('notification_config')
         expect(config).to have_key('pod_autoscaling')
         expect(config).to have_key('private_cluster_config')
+        expect(config).to have_key('private_ipv6_google_access')
+        expect(config).to have_key('project')
         expect(config).to have_key('rbac_binding_config')
         expect(config).to have_key('release_channel')
         expect(config).to have_key('remove_default_node_pool')
         expect(config).to have_key('resource_labels')
         expect(config).to have_key('resource_usage_export_config')
         expect(config).to have_key('secret_manager_config')
+        expect(config).to have_key('secret_sync_config')
         expect(config).to have_key('security_posture_config')
         expect(config).to have_key('service_external_ips_config')
+        expect(config).to have_key('subnetwork')
         expect(config).to have_key('user_managed_keys_config')
         expect(config).to have_key('vertical_pod_autoscaling')
         expect(config).to have_key('workload_identity_config')
@@ -174,7 +197,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes addons_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(addons_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(addons_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('addons_config')
@@ -208,7 +231,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes anonymous_authentication_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(anonymous_authentication_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(anonymous_authentication_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('anonymous_authentication_config')
@@ -225,7 +248,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes authenticator_groups_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(authenticator_groups_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(authenticator_groups_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('authenticator_groups_config')
@@ -239,10 +262,44 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
         expect(config).not_to have_key('authenticator_groups_config')
       end
+      it 'includes autopilot_cluster_policy_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(autopilot_cluster_policy_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('autopilot_cluster_policy_config')
+      end
+
+      it 'omits autopilot_cluster_policy_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('autopilot_cluster_policy_config')
+      end
+      it 'includes autopilot_privileged_admission when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(autopilot_privileged_admission: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('autopilot_privileged_admission')
+      end
+
+      it 'omits autopilot_privileged_admission when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('autopilot_privileged_admission')
+      end
       it 'includes binary_authorization when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(binary_authorization: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(binary_authorization: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('binary_authorization')
@@ -259,7 +316,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes cluster_autoscaling when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(cluster_autoscaling: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(cluster_autoscaling: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('cluster_autoscaling')
@@ -273,10 +330,27 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
         expect(config).not_to have_key('cluster_autoscaling')
       end
+      it 'includes cluster_ipv4_cidr when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(cluster_ipv4_cidr: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('cluster_ipv4_cidr')
+      end
+
+      it 'omits cluster_ipv4_cidr when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('cluster_ipv4_cidr')
+      end
       it 'includes confidential_nodes when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(confidential_nodes: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(confidential_nodes: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('confidential_nodes')
@@ -293,7 +367,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes control_plane_endpoints_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(control_plane_endpoints_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(control_plane_endpoints_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('control_plane_endpoints_config')
@@ -310,7 +384,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes cost_management_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(cost_management_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(cost_management_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('cost_management_config')
@@ -327,7 +401,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes database_encryption when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(database_encryption: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(database_encryption: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('database_encryption')
@@ -341,10 +415,44 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
         expect(config).not_to have_key('database_encryption')
       end
+      it 'includes datapath_provider when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(datapath_provider: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('datapath_provider')
+      end
+
+      it 'omits datapath_provider when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('datapath_provider')
+      end
+      it 'includes default_max_pods_per_node when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(default_max_pods_per_node: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('default_max_pods_per_node')
+      end
+
+      it 'omits default_max_pods_per_node when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('default_max_pods_per_node')
+      end
       it 'includes default_snat_status when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(default_snat_status: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(default_snat_status: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('default_snat_status')
@@ -357,6 +465,23 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
         expect(config).not_to have_key('default_snat_status')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes deletion_protection when provided' do
         synth = create_synthesizer
@@ -412,7 +537,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes dns_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(dns_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(dns_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('dns_config')
@@ -477,10 +602,27 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
         expect(config).not_to have_key('enable_fqdn_network_policy')
       end
+      it 'includes enable_intranode_visibility when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(enable_intranode_visibility: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('enable_intranode_visibility')
+      end
+
+      it 'omits enable_intranode_visibility when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('enable_intranode_visibility')
+      end
       it 'includes enable_k8s_beta_apis when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(enable_k8s_beta_apis: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(enable_k8s_beta_apis: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('enable_k8s_beta_apis')
@@ -599,7 +741,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes enterprise_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(enterprise_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(enterprise_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('enterprise_config')
@@ -616,7 +758,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes fleet when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(fleet: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(fleet: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('fleet')
@@ -633,7 +775,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes gateway_api_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(gateway_api_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(gateway_api_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('gateway_api_config')
@@ -650,7 +792,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes gke_auto_upgrade_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(gke_auto_upgrade_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(gke_auto_upgrade_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('gke_auto_upgrade_config')
@@ -667,7 +809,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes identity_service_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(identity_service_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(identity_service_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('identity_service_config')
@@ -718,7 +860,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes ip_allocation_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(ip_allocation_policy: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(ip_allocation_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('ip_allocation_policy')
@@ -732,10 +874,27 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
         expect(config).not_to have_key('ip_allocation_policy')
       end
+      it 'includes location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(location: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('location')
+      end
+
+      it 'omits location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('location')
+      end
       it 'includes logging_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(logging_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(logging_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('logging_config')
@@ -749,10 +908,27 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
         expect(config).not_to have_key('logging_config')
       end
+      it 'includes logging_service when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(logging_service: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('logging_service')
+      end
+
+      it 'omits logging_service when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('logging_service')
+      end
       it 'includes maintenance_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(maintenance_policy: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(maintenance_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('maintenance_policy')
@@ -769,7 +945,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes master_auth when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(master_auth: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(master_auth: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('master_auth')
@@ -786,7 +962,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes master_authorized_networks_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(master_authorized_networks_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(master_authorized_networks_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('master_authorized_networks_config')
@@ -803,7 +979,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes mesh_certificates when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(mesh_certificates: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(mesh_certificates: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('mesh_certificates')
@@ -837,7 +1013,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes monitoring_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(monitoring_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(monitoring_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('monitoring_config')
@@ -850,6 +1026,23 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
         expect(config).not_to have_key('monitoring_config')
+      end
+      it 'includes monitoring_service when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(monitoring_service: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('monitoring_service')
+      end
+
+      it 'omits monitoring_service when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('monitoring_service')
       end
       it 'includes network when provided' do
         synth = create_synthesizer
@@ -871,7 +1064,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes network_performance_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(network_performance_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(network_performance_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('network_performance_config')
@@ -888,7 +1081,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes network_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(network_policy: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(network_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('network_policy')
@@ -902,10 +1095,27 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
         expect(config).not_to have_key('network_policy')
       end
+      it 'includes networking_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(networking_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('networking_mode')
+      end
+
+      it 'omits networking_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('networking_mode')
+      end
       it 'includes node_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(node_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(node_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('node_config')
@@ -918,6 +1128,23 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
         expect(config).not_to have_key('node_config')
+      end
+      it 'includes node_locations when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(node_locations: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('node_locations')
+      end
+
+      it 'omits node_locations when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('node_locations')
       end
       it 'includes node_pool when provided' do
         synth = create_synthesizer
@@ -939,7 +1166,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes node_pool_auto_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(node_pool_auto_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(node_pool_auto_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('node_pool_auto_config')
@@ -956,7 +1183,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes node_pool_defaults when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(node_pool_defaults: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(node_pool_defaults: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('node_pool_defaults')
@@ -970,10 +1197,27 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
         expect(config).not_to have_key('node_pool_defaults')
       end
+      it 'includes node_version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(node_version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('node_version')
+      end
+
+      it 'omits node_version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('node_version')
+      end
       it 'includes notification_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(notification_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(notification_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('notification_config')
@@ -990,7 +1234,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes pod_autoscaling when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(pod_autoscaling: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(pod_autoscaling: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('pod_autoscaling')
@@ -1007,7 +1251,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes private_cluster_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(private_cluster_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(private_cluster_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('private_cluster_config')
@@ -1021,10 +1265,44 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
         expect(config).not_to have_key('private_cluster_config')
       end
+      it 'includes private_ipv6_google_access when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(private_ipv6_google_access: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('private_ipv6_google_access')
+      end
+
+      it 'omits private_ipv6_google_access when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('private_ipv6_google_access')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes rbac_binding_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(rbac_binding_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(rbac_binding_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('rbac_binding_config')
@@ -1041,7 +1319,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes release_channel when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(release_channel: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(release_channel: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('release_channel')
@@ -1092,7 +1370,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes resource_usage_export_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(resource_usage_export_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(resource_usage_export_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('resource_usage_export_config')
@@ -1109,7 +1387,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes secret_manager_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(secret_manager_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(secret_manager_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('secret_manager_config')
@@ -1123,10 +1401,27 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
         expect(config).not_to have_key('secret_manager_config')
       end
+      it 'includes secret_sync_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(secret_sync_config: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('secret_sync_config')
+      end
+
+      it 'omits secret_sync_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('secret_sync_config')
+      end
       it 'includes security_posture_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(security_posture_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(security_posture_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('security_posture_config')
@@ -1143,7 +1438,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes service_external_ips_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(service_external_ips_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(service_external_ips_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('service_external_ips_config')
@@ -1157,10 +1452,27 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
         config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
         expect(config).not_to have_key('service_external_ips_config')
       end
+      it 'includes subnetwork when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('opt', required_attrs.merge(subnetwork: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'opt')
+        expect(config).to have_key('subnetwork')
+      end
+
+      it 'omits subnetwork when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_cluster('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_cluster', 'minimal')
+        expect(config).not_to have_key('subnetwork')
+      end
       it 'includes user_managed_keys_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(user_managed_keys_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(user_managed_keys_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('user_managed_keys_config')
@@ -1177,7 +1489,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes vertical_pod_autoscaling when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(vertical_pod_autoscaling: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(vertical_pod_autoscaling: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('vertical_pod_autoscaling')
@@ -1194,7 +1506,7 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
       it 'includes workload_identity_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_cluster('opt', required_attrs.merge(workload_identity_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_cluster('opt', required_attrs.merge(workload_identity_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_cluster', 'opt')
         expect(config).to have_key('workload_identity_config')
@@ -1275,6 +1587,17 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
           result = normalize_synthesis(synth.synthesis)
           config = validate_resource_structure(result, 'google_container_cluster', "bool_#{val}")
           expect(config['enable_fqdn_network_policy']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts enable_intranode_visibility=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(enable_intranode_visibility: val)
+          synth.google_container_cluster("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_container_cluster', "bool_#{val}")
+          expect(config['enable_intranode_visibility']).to eq(val)
         end
       end
       [true, false].each do |val|
@@ -1398,8 +1721,8 @@ RSpec.describe Pangea::Resources::GoogleContainerCluster do
     resource_type: :google_container_cluster,
     method: :google_container_cluster,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :cluster_ipv4_cidr, :datapath_provider, :default_max_pods_per_node, :effective_labels, :enable_intranode_visibility, :endpoint, :label_fingerprint, :location, :logging_service, :master_version, :monitoring_service, :networking_mode, :node_locations, :node_version, :operation, :private_ipv6_google_access, :project, :self_link, :services_ipv4_cidr, :subnetwork, :terraform_labels, :tpu_ipv4_cidr_block],
+    expected_outputs: [:id, :autopilot_privileged_admission, :cluster_ipv4_cidr, :datapath_provider, :default_max_pods_per_node, :deletion_policy, :effective_labels, :enable_intranode_visibility, :enable_l4_ilb_subsetting, :endpoint, :label_fingerprint, :location, :logging_service, :master_version, :monitoring_service, :networking_mode, :node_locations, :node_version, :operation, :private_ipv6_google_access, :project, :self_link, :services_ipv4_cidr, :subnetwork, :terraform_labels, :tpu_ipv4_cidr_block],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:allow_net_admin, :deletion_protection, :disable_l4_lb_firewall_reconciliation, :enable_autopilot, :enable_cilium_clusterwide_network_policy, :enable_fqdn_network_policy, :enable_kubernetes_alpha, :enable_l4_ilb_subsetting, :enable_legacy_abac, :enable_multi_networking, :enable_shielded_nodes, :enable_tpu, :remove_default_node_pool]
+    boolean_fields: [:allow_net_admin, :deletion_protection, :disable_l4_lb_firewall_reconciliation, :enable_autopilot, :enable_cilium_clusterwide_network_policy, :enable_fqdn_network_policy, :enable_intranode_visibility, :enable_kubernetes_alpha, :enable_l4_ilb_subsetting, :enable_legacy_abac, :enable_multi_networking, :enable_shielded_nodes, :enable_tpu, :remove_default_node_pool]
 end

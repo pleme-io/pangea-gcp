@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GooglePubsubLiteSubscription do
         ref = synth.google_pubsub_lite_subscription('test', required_attrs)
 
         expect(ref.id).to eq("${google_pubsub_lite_subscription.test.id}")
+        expect(ref.deletion_policy).to eq("${google_pubsub_lite_subscription.test.deletion_policy}")
         expect(ref.project).to eq("${google_pubsub_lite_subscription.test.project}")
       end
     end
@@ -50,12 +51,13 @@ RSpec.describe Pangea::Resources::GooglePubsubLiteSubscription do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_pubsub_lite_subscription', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ delivery_config: [{ 'key1' => 'val1' }], region: 'test-value', zone: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', delivery_config: { 'key1' => 'val1' }, project: 'test-value', region: 'test-value', zone: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -64,17 +66,36 @@ RSpec.describe Pangea::Resources::GooglePubsubLiteSubscription do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_pubsub_lite_subscription', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('delivery_config')
+        expect(config).to have_key('project')
         expect(config).to have_key('region')
         expect(config).to have_key('zone')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_lite_subscription('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_lite_subscription', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_lite_subscription('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_lite_subscription', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes delivery_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_pubsub_lite_subscription('opt', required_attrs.merge(delivery_config: [{ 'key1' => 'val1' }]))
+        synth.google_pubsub_lite_subscription('opt', required_attrs.merge(delivery_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_lite_subscription', 'opt')
         expect(config).to have_key('delivery_config')
@@ -87,6 +108,23 @@ RSpec.describe Pangea::Resources::GooglePubsubLiteSubscription do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_pubsub_lite_subscription', 'minimal')
         expect(config).not_to have_key('delivery_config')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_lite_subscription('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_lite_subscription', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_pubsub_lite_subscription('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_pubsub_lite_subscription', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes region when provided' do
         synth = create_synthesizer
@@ -167,7 +205,7 @@ RSpec.describe Pangea::Resources::GooglePubsubLiteSubscription do
     resource_type: :google_pubsub_lite_subscription,
     method: :google_pubsub_lite_subscription,
     required_attrs: { name: 'test-value', topic: 'test-value' },
-    expected_outputs: [:id, :project],
+    expected_outputs: [:id, :deletion_policy, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

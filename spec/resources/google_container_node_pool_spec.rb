@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleContainerNodePool do
         ref = synth.google_container_node_pool('test', required_attrs)
 
         expect(ref.id).to eq("${google_container_node_pool.test.id}")
+        expect(ref.deletion_policy).to eq("${google_container_node_pool.test.deletion_policy}")
         expect(ref.initial_node_count).to eq("${google_container_node_pool.test.initial_node_count}")
         expect(ref.instance_group_urls).to eq("${google_container_node_pool.test.instance_group_urls}")
         expect(ref.location).to eq("${google_container_node_pool.test.location}")
@@ -61,6 +62,7 @@ RSpec.describe Pangea::Resources::GoogleContainerNodePool do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_container_node_pool', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('initial_node_count')
         expect(config).not_to have_key('instance_group_urls')
         expect(config).not_to have_key('location')
@@ -77,7 +79,7 @@ RSpec.describe Pangea::Resources::GoogleContainerNodePool do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ autoscaling: [{ 'key1' => 'val1' }], management: [{ 'key1' => 'val1' }], network_config: [{ 'key1' => 'val1' }], node_config: [{ 'key1' => 'val1' }], placement_policy: [{ 'key1' => 'val1' }], queued_provisioning: [{ 'key1' => 'val1' }], upgrade_settings: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ autoscaling: { 'key1' => 'val1' }, deletion_policy: 'test-value', initial_node_count: 3.14, location: 'test-value', management: { 'key1' => 'val1' }, max_pods_per_node: 3.14, name: 'test-value', name_prefix: 'test-value', network_config: { 'key1' => 'val1' }, node_config: { 'key1' => 'val1' }, node_count: 3.14, node_drain_config: [{ 'key1' => 'val1' }], node_locations: ['test-value'], placement_policy: { 'key1' => 'val1' }, project: 'test-value', queued_provisioning: { 'key1' => 'val1' }, upgrade_settings: { 'key1' => 'val1' }, version: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -87,12 +89,23 @@ RSpec.describe Pangea::Resources::GoogleContainerNodePool do
 
         config = validate_resource_structure(result, 'google_container_node_pool', 'full')
         expect(config).to have_key('autoscaling')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('initial_node_count')
+        expect(config).to have_key('location')
         expect(config).to have_key('management')
+        expect(config).to have_key('max_pods_per_node')
+        expect(config).to have_key('name')
+        expect(config).to have_key('name_prefix')
         expect(config).to have_key('network_config')
         expect(config).to have_key('node_config')
+        expect(config).to have_key('node_count')
+        expect(config).to have_key('node_drain_config')
+        expect(config).to have_key('node_locations')
         expect(config).to have_key('placement_policy')
+        expect(config).to have_key('project')
         expect(config).to have_key('queued_provisioning')
         expect(config).to have_key('upgrade_settings')
+        expect(config).to have_key('version')
       end
     end
 
@@ -100,7 +113,7 @@ RSpec.describe Pangea::Resources::GoogleContainerNodePool do
       it 'includes autoscaling when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_node_pool('opt', required_attrs.merge(autoscaling: [{ 'key1' => 'val1' }]))
+        synth.google_container_node_pool('opt', required_attrs.merge(autoscaling: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
         expect(config).to have_key('autoscaling')
@@ -114,10 +127,61 @@ RSpec.describe Pangea::Resources::GoogleContainerNodePool do
         config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
         expect(config).not_to have_key('autoscaling')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes initial_node_count when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('opt', required_attrs.merge(initial_node_count: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
+        expect(config).to have_key('initial_node_count')
+      end
+
+      it 'omits initial_node_count when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
+        expect(config).not_to have_key('initial_node_count')
+      end
+      it 'includes location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('opt', required_attrs.merge(location: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
+        expect(config).to have_key('location')
+      end
+
+      it 'omits location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
+        expect(config).not_to have_key('location')
+      end
       it 'includes management when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_node_pool('opt', required_attrs.merge(management: [{ 'key1' => 'val1' }]))
+        synth.google_container_node_pool('opt', required_attrs.merge(management: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
         expect(config).to have_key('management')
@@ -131,10 +195,61 @@ RSpec.describe Pangea::Resources::GoogleContainerNodePool do
         config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
         expect(config).not_to have_key('management')
       end
+      it 'includes max_pods_per_node when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('opt', required_attrs.merge(max_pods_per_node: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
+        expect(config).to have_key('max_pods_per_node')
+      end
+
+      it 'omits max_pods_per_node when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
+        expect(config).not_to have_key('max_pods_per_node')
+      end
+      it 'includes name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('opt', required_attrs.merge(name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
+        expect(config).to have_key('name')
+      end
+
+      it 'omits name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
+        expect(config).not_to have_key('name')
+      end
+      it 'includes name_prefix when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('opt', required_attrs.merge(name_prefix: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
+        expect(config).to have_key('name_prefix')
+      end
+
+      it 'omits name_prefix when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
+        expect(config).not_to have_key('name_prefix')
+      end
       it 'includes network_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_node_pool('opt', required_attrs.merge(network_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_node_pool('opt', required_attrs.merge(network_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
         expect(config).to have_key('network_config')
@@ -151,7 +266,7 @@ RSpec.describe Pangea::Resources::GoogleContainerNodePool do
       it 'includes node_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_node_pool('opt', required_attrs.merge(node_config: [{ 'key1' => 'val1' }]))
+        synth.google_container_node_pool('opt', required_attrs.merge(node_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
         expect(config).to have_key('node_config')
@@ -165,10 +280,61 @@ RSpec.describe Pangea::Resources::GoogleContainerNodePool do
         config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
         expect(config).not_to have_key('node_config')
       end
+      it 'includes node_count when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('opt', required_attrs.merge(node_count: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
+        expect(config).to have_key('node_count')
+      end
+
+      it 'omits node_count when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
+        expect(config).not_to have_key('node_count')
+      end
+      it 'includes node_drain_config when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('opt', required_attrs.merge(node_drain_config: [{ 'key1' => 'val1' }]))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
+        expect(config).to have_key('node_drain_config')
+      end
+
+      it 'omits node_drain_config when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
+        expect(config).not_to have_key('node_drain_config')
+      end
+      it 'includes node_locations when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('opt', required_attrs.merge(node_locations: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
+        expect(config).to have_key('node_locations')
+      end
+
+      it 'omits node_locations when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
+        expect(config).not_to have_key('node_locations')
+      end
       it 'includes placement_policy when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_node_pool('opt', required_attrs.merge(placement_policy: [{ 'key1' => 'val1' }]))
+        synth.google_container_node_pool('opt', required_attrs.merge(placement_policy: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
         expect(config).to have_key('placement_policy')
@@ -182,10 +348,27 @@ RSpec.describe Pangea::Resources::GoogleContainerNodePool do
         config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
         expect(config).not_to have_key('placement_policy')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes queued_provisioning when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_node_pool('opt', required_attrs.merge(queued_provisioning: [{ 'key1' => 'val1' }]))
+        synth.google_container_node_pool('opt', required_attrs.merge(queued_provisioning: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
         expect(config).to have_key('queued_provisioning')
@@ -202,7 +385,7 @@ RSpec.describe Pangea::Resources::GoogleContainerNodePool do
       it 'includes upgrade_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_container_node_pool('opt', required_attrs.merge(upgrade_settings: [{ 'key1' => 'val1' }]))
+        synth.google_container_node_pool('opt', required_attrs.merge(upgrade_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
         expect(config).to have_key('upgrade_settings')
@@ -215,6 +398,23 @@ RSpec.describe Pangea::Resources::GoogleContainerNodePool do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
         expect(config).not_to have_key('upgrade_settings')
+      end
+      it 'includes version when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('opt', required_attrs.merge(version: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'opt')
+        expect(config).to have_key('version')
+      end
+
+      it 'omits version when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_container_node_pool('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_container_node_pool', 'minimal')
+        expect(config).not_to have_key('version')
       end
     end
 
@@ -260,7 +460,7 @@ RSpec.describe Pangea::Resources::GoogleContainerNodePool do
     resource_type: :google_container_node_pool,
     method: :google_container_node_pool,
     required_attrs: { cluster: 'test-value' },
-    expected_outputs: [:id, :initial_node_count, :instance_group_urls, :location, :managed_instance_group_urls, :max_pods_per_node, :name, :name_prefix, :node_count, :node_locations, :operation, :project, :version],
+    expected_outputs: [:id, :deletion_policy, :initial_node_count, :instance_group_urls, :location, :managed_instance_group_urls, :max_pods_per_node, :name, :name_prefix, :node_count, :node_locations, :operation, :project, :version],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

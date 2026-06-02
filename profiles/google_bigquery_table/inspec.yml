@@ -1,0 +1,8 @@
+name: google_bigquery_table
+title: Manages a google_bigquery_table resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

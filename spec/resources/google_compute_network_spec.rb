@@ -41,6 +41,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNetwork do
         expect(ref.bgp_always_compare_med).to eq("${google_compute_network.test.bgp_always_compare_med}")
         expect(ref.bgp_best_path_selection_mode).to eq("${google_compute_network.test.bgp_best_path_selection_mode}")
         expect(ref.bgp_inter_region_cost).to eq("${google_compute_network.test.bgp_inter_region_cost}")
+        expect(ref.deletion_policy).to eq("${google_compute_network.test.deletion_policy}")
         expect(ref.gateway_ipv4).to eq("${google_compute_network.test.gateway_ipv4}")
         expect(ref.internal_ipv6_range).to eq("${google_compute_network.test.internal_ipv6_range}")
         expect(ref.mtu).to eq("${google_compute_network.test.mtu}")
@@ -63,6 +64,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNetwork do
         expect(config).not_to have_key('bgp_always_compare_med')
         expect(config).not_to have_key('bgp_best_path_selection_mode')
         expect(config).not_to have_key('bgp_inter_region_cost')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('gateway_ipv4')
         expect(config).not_to have_key('internal_ipv6_range')
         expect(config).not_to have_key('mtu')
@@ -75,7 +77,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNetwork do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ auto_create_subnetworks: true, delete_default_routes_on_create: true, description: 'test-value', enable_ula_internal_ipv6: true, network_firewall_policy_enforcement_order: 'test-value', network_profile: 'test-value', params: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ auto_create_subnetworks: true, bgp_always_compare_med: true, bgp_best_path_selection_mode: 'test-value', bgp_inter_region_cost: 'test-value', delete_bgp_always_compare_med: true, delete_default_routes_on_create: true, deletion_policy: 'test-value', description: 'test-value', enable_ula_internal_ipv6: true, internal_ipv6_range: 'test-value', mtu: 3.14, network_firewall_policy_enforcement_order: 'test-value', network_profile: 'test-value', params: { 'key1' => 'val1' }, project: 'test-value', routing_mode: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -85,12 +87,21 @@ RSpec.describe Pangea::Resources::GoogleComputeNetwork do
 
         config = validate_resource_structure(result, 'google_compute_network', 'full')
         expect(config).to have_key('auto_create_subnetworks')
+        expect(config).to have_key('bgp_always_compare_med')
+        expect(config).to have_key('bgp_best_path_selection_mode')
+        expect(config).to have_key('bgp_inter_region_cost')
+        expect(config).to have_key('delete_bgp_always_compare_med')
         expect(config).to have_key('delete_default_routes_on_create')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('enable_ula_internal_ipv6')
+        expect(config).to have_key('internal_ipv6_range')
+        expect(config).to have_key('mtu')
         expect(config).to have_key('network_firewall_policy_enforcement_order')
         expect(config).to have_key('network_profile')
         expect(config).to have_key('params')
+        expect(config).to have_key('project')
+        expect(config).to have_key('routing_mode')
       end
     end
 
@@ -112,6 +123,74 @@ RSpec.describe Pangea::Resources::GoogleComputeNetwork do
         config = validate_resource_structure(result, 'google_compute_network', 'minimal')
         expect(config).not_to have_key('auto_create_subnetworks')
       end
+      it 'includes bgp_always_compare_med when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('opt', required_attrs.merge(bgp_always_compare_med: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'opt')
+        expect(config).to have_key('bgp_always_compare_med')
+      end
+
+      it 'omits bgp_always_compare_med when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'minimal')
+        expect(config).not_to have_key('bgp_always_compare_med')
+      end
+      it 'includes bgp_best_path_selection_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('opt', required_attrs.merge(bgp_best_path_selection_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'opt')
+        expect(config).to have_key('bgp_best_path_selection_mode')
+      end
+
+      it 'omits bgp_best_path_selection_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'minimal')
+        expect(config).not_to have_key('bgp_best_path_selection_mode')
+      end
+      it 'includes bgp_inter_region_cost when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('opt', required_attrs.merge(bgp_inter_region_cost: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'opt')
+        expect(config).to have_key('bgp_inter_region_cost')
+      end
+
+      it 'omits bgp_inter_region_cost when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'minimal')
+        expect(config).not_to have_key('bgp_inter_region_cost')
+      end
+      it 'includes delete_bgp_always_compare_med when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('opt', required_attrs.merge(delete_bgp_always_compare_med: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'opt')
+        expect(config).to have_key('delete_bgp_always_compare_med')
+      end
+
+      it 'omits delete_bgp_always_compare_med when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'minimal')
+        expect(config).not_to have_key('delete_bgp_always_compare_med')
+      end
       it 'includes delete_default_routes_on_create when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -128,6 +207,23 @@ RSpec.describe Pangea::Resources::GoogleComputeNetwork do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_network', 'minimal')
         expect(config).not_to have_key('delete_default_routes_on_create')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
       end
       it 'includes description when provided' do
         synth = create_synthesizer
@@ -162,6 +258,40 @@ RSpec.describe Pangea::Resources::GoogleComputeNetwork do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_network', 'minimal')
         expect(config).not_to have_key('enable_ula_internal_ipv6')
+      end
+      it 'includes internal_ipv6_range when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('opt', required_attrs.merge(internal_ipv6_range: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'opt')
+        expect(config).to have_key('internal_ipv6_range')
+      end
+
+      it 'omits internal_ipv6_range when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'minimal')
+        expect(config).not_to have_key('internal_ipv6_range')
+      end
+      it 'includes mtu when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('opt', required_attrs.merge(mtu: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'opt')
+        expect(config).to have_key('mtu')
+      end
+
+      it 'omits mtu when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'minimal')
+        expect(config).not_to have_key('mtu')
       end
       it 'includes network_firewall_policy_enforcement_order when provided' do
         synth = create_synthesizer
@@ -200,7 +330,7 @@ RSpec.describe Pangea::Resources::GoogleComputeNetwork do
       it 'includes params when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_compute_network('opt', required_attrs.merge(params: [{ 'key1' => 'val1' }]))
+        synth.google_compute_network('opt', required_attrs.merge(params: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_compute_network', 'opt')
         expect(config).to have_key('params')
@@ -214,6 +344,40 @@ RSpec.describe Pangea::Resources::GoogleComputeNetwork do
         config = validate_resource_structure(result, 'google_compute_network', 'minimal')
         expect(config).not_to have_key('params')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes routing_mode when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('opt', required_attrs.merge(routing_mode: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'opt')
+        expect(config).to have_key('routing_mode')
+      end
+
+      it 'omits routing_mode when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_compute_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_compute_network', 'minimal')
+        expect(config).not_to have_key('routing_mode')
+      end
     end
 
     context 'boolean fields' do
@@ -226,6 +390,28 @@ RSpec.describe Pangea::Resources::GoogleComputeNetwork do
           result = normalize_synthesis(synth.synthesis)
           config = validate_resource_structure(result, 'google_compute_network', "bool_#{val}")
           expect(config['auto_create_subnetworks']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts bgp_always_compare_med=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(bgp_always_compare_med: val)
+          synth.google_compute_network("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_network', "bool_#{val}")
+          expect(config['bgp_always_compare_med']).to eq(val)
+        end
+      end
+      [true, false].each do |val|
+        it "accepts delete_bgp_always_compare_med=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(delete_bgp_always_compare_med: val)
+          synth.google_compute_network("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'google_compute_network', "bool_#{val}")
+          expect(config['delete_bgp_always_compare_med']).to eq(val)
         end
       end
       [true, false].each do |val|
@@ -294,8 +480,8 @@ RSpec.describe Pangea::Resources::GoogleComputeNetwork do
     resource_type: :google_compute_network,
     method: :google_compute_network,
     required_attrs: { name: 'test-value' },
-    expected_outputs: [:id, :bgp_always_compare_med, :bgp_best_path_selection_mode, :bgp_inter_region_cost, :gateway_ipv4, :internal_ipv6_range, :mtu, :network_id, :numeric_id, :project, :routing_mode, :self_link],
+    expected_outputs: [:id, :bgp_always_compare_med, :bgp_best_path_selection_mode, :bgp_inter_region_cost, :deletion_policy, :gateway_ipv4, :internal_ipv6_range, :mtu, :network_id, :numeric_id, :project, :routing_mode, :self_link],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: [:auto_create_subnetworks, :delete_default_routes_on_create, :enable_ula_internal_ipv6]
+    boolean_fields: [:auto_create_subnetworks, :bgp_always_compare_med, :delete_bgp_always_compare_med, :delete_default_routes_on_create, :enable_ula_internal_ipv6]
 end

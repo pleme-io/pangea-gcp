@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBatchOperationsJob do
         expect(ref.id).to eq("${google_storage_batch_operations_job.test.id}")
         expect(ref.complete_time).to eq("${google_storage_batch_operations_job.test.complete_time}")
         expect(ref.create_time).to eq("${google_storage_batch_operations_job.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_storage_batch_operations_job.test.deletion_policy}")
         expect(ref.project).to eq("${google_storage_batch_operations_job.test.project}")
         expect(ref.schedule_time).to eq("${google_storage_batch_operations_job.test.schedule_time}")
         expect(ref.state).to eq("${google_storage_batch_operations_job.test.state}")
@@ -57,6 +58,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBatchOperationsJob do
         config = validate_resource_structure(result, 'google_storage_batch_operations_job', 'test')
         expect(config).not_to have_key('complete_time')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('schedule_time')
         expect(config).not_to have_key('state')
@@ -65,7 +67,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBatchOperationsJob do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ bucket_list: [{ 'key1' => 'val1' }], delete_object: [{ 'key1' => 'val1' }], delete_protection: true, job_id: 'test-value', put_metadata: [{ 'key1' => 'val1' }], put_object_hold: [{ 'key1' => 'val1' }], rewrite_object: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ bucket_list: { 'key1' => 'val1' }, delete_object: { 'key1' => 'val1' }, delete_protection: true, deletion_policy: 'test-value', description: 'test-value', job_id: 'test-value', project: 'test-value', put_metadata: { 'key1' => 'val1' }, put_object_hold: { 'key1' => 'val1' }, rewrite_object: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -77,7 +79,10 @@ RSpec.describe Pangea::Resources::GoogleStorageBatchOperationsJob do
         expect(config).to have_key('bucket_list')
         expect(config).to have_key('delete_object')
         expect(config).to have_key('delete_protection')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('description')
         expect(config).to have_key('job_id')
+        expect(config).to have_key('project')
         expect(config).to have_key('put_metadata')
         expect(config).to have_key('put_object_hold')
         expect(config).to have_key('rewrite_object')
@@ -88,7 +93,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBatchOperationsJob do
       it 'includes bucket_list when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_batch_operations_job('opt', required_attrs.merge(bucket_list: [{ 'key1' => 'val1' }]))
+        synth.google_storage_batch_operations_job('opt', required_attrs.merge(bucket_list: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_batch_operations_job', 'opt')
         expect(config).to have_key('bucket_list')
@@ -105,7 +110,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBatchOperationsJob do
       it 'includes delete_object when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_batch_operations_job('opt', required_attrs.merge(delete_object: [{ 'key1' => 'val1' }]))
+        synth.google_storage_batch_operations_job('opt', required_attrs.merge(delete_object: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_batch_operations_job', 'opt')
         expect(config).to have_key('delete_object')
@@ -136,6 +141,40 @@ RSpec.describe Pangea::Resources::GoogleStorageBatchOperationsJob do
         config = validate_resource_structure(result, 'google_storage_batch_operations_job', 'minimal')
         expect(config).not_to have_key('delete_protection')
       end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_batch_operations_job('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_batch_operations_job', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_batch_operations_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_batch_operations_job', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes description when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_batch_operations_job('opt', required_attrs.merge(description: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_batch_operations_job', 'opt')
+        expect(config).to have_key('description')
+      end
+
+      it 'omits description when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_batch_operations_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_batch_operations_job', 'minimal')
+        expect(config).not_to have_key('description')
+      end
       it 'includes job_id when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -153,10 +192,27 @@ RSpec.describe Pangea::Resources::GoogleStorageBatchOperationsJob do
         config = validate_resource_structure(result, 'google_storage_batch_operations_job', 'minimal')
         expect(config).not_to have_key('job_id')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_batch_operations_job('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_batch_operations_job', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_storage_batch_operations_job('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_storage_batch_operations_job', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes put_metadata when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_batch_operations_job('opt', required_attrs.merge(put_metadata: [{ 'key1' => 'val1' }]))
+        synth.google_storage_batch_operations_job('opt', required_attrs.merge(put_metadata: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_batch_operations_job', 'opt')
         expect(config).to have_key('put_metadata')
@@ -173,7 +229,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBatchOperationsJob do
       it 'includes put_object_hold when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_batch_operations_job('opt', required_attrs.merge(put_object_hold: [{ 'key1' => 'val1' }]))
+        synth.google_storage_batch_operations_job('opt', required_attrs.merge(put_object_hold: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_batch_operations_job', 'opt')
         expect(config).to have_key('put_object_hold')
@@ -190,7 +246,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBatchOperationsJob do
       it 'includes rewrite_object when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_storage_batch_operations_job('opt', required_attrs.merge(rewrite_object: [{ 'key1' => 'val1' }]))
+        synth.google_storage_batch_operations_job('opt', required_attrs.merge(rewrite_object: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_storage_batch_operations_job', 'opt')
         expect(config).to have_key('rewrite_object')
@@ -261,7 +317,7 @@ RSpec.describe Pangea::Resources::GoogleStorageBatchOperationsJob do
     resource_type: :google_storage_batch_operations_job,
     method: :google_storage_batch_operations_job,
     required_attrs: {},
-    expected_outputs: [:id, :complete_time, :create_time, :project, :schedule_time, :state, :update_time],
+    expected_outputs: [:id, :complete_time, :create_time, :deletion_policy, :project, :schedule_time, :state, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:delete_protection]

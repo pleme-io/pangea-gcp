@@ -40,6 +40,7 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogEntry do
         expect(ref.id).to eq("${google_data_catalog_entry.test.id}")
         expect(ref.bigquery_date_sharded_spec).to eq("${google_data_catalog_entry.test.bigquery_date_sharded_spec}")
         expect(ref.bigquery_table_spec).to eq("${google_data_catalog_entry.test.bigquery_table_spec}")
+        expect(ref.deletion_policy).to eq("${google_data_catalog_entry.test.deletion_policy}")
         expect(ref.integrated_system).to eq("${google_data_catalog_entry.test.integrated_system}")
         expect(ref.linked_resource).to eq("${google_data_catalog_entry.test.linked_resource}")
         expect(ref.name).to eq("${google_data_catalog_entry.test.name}")
@@ -56,6 +57,7 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogEntry do
         config = validate_resource_structure(result, 'google_data_catalog_entry', 'test')
         expect(config).not_to have_key('bigquery_date_sharded_spec')
         expect(config).not_to have_key('bigquery_table_spec')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('integrated_system')
         expect(config).not_to have_key('linked_resource')
         expect(config).not_to have_key('name')
@@ -63,7 +65,7 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogEntry do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', display_name: 'test-value', gcs_fileset_spec: [{ 'key1' => 'val1' }], schema: 'test-value', type: 'test-value', user_specified_system: 'test-value', user_specified_type: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', display_name: 'test-value', gcs_fileset_spec: { 'key1' => 'val1' }, linked_resource: 'test-value', schema: 'test-value', type: 'test-value', user_specified_system: 'test-value', user_specified_type: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,9 +74,11 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogEntry do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_data_catalog_entry', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
         expect(config).to have_key('display_name')
         expect(config).to have_key('gcs_fileset_spec')
+        expect(config).to have_key('linked_resource')
         expect(config).to have_key('schema')
         expect(config).to have_key('type')
         expect(config).to have_key('user_specified_system')
@@ -83,6 +87,23 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogEntry do
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_catalog_entry('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_catalog_entry', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_catalog_entry('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_catalog_entry', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -120,7 +141,7 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogEntry do
       it 'includes gcs_fileset_spec when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_data_catalog_entry('opt', required_attrs.merge(gcs_fileset_spec: [{ 'key1' => 'val1' }]))
+        synth.google_data_catalog_entry('opt', required_attrs.merge(gcs_fileset_spec: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_catalog_entry', 'opt')
         expect(config).to have_key('gcs_fileset_spec')
@@ -133,6 +154,23 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogEntry do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_data_catalog_entry', 'minimal')
         expect(config).not_to have_key('gcs_fileset_spec')
+      end
+      it 'includes linked_resource when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_catalog_entry('opt', required_attrs.merge(linked_resource: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_catalog_entry', 'opt')
+        expect(config).to have_key('linked_resource')
+      end
+
+      it 'omits linked_resource when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_data_catalog_entry('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_data_catalog_entry', 'minimal')
+        expect(config).not_to have_key('linked_resource')
       end
       it 'includes schema when provided' do
         synth = create_synthesizer
@@ -247,7 +285,7 @@ RSpec.describe Pangea::Resources::GoogleDataCatalogEntry do
     resource_type: :google_data_catalog_entry,
     method: :google_data_catalog_entry,
     required_attrs: { entry_group: 'test-value', entry_id: 'test-value' },
-    expected_outputs: [:id, :bigquery_date_sharded_spec, :bigquery_table_spec, :integrated_system, :linked_resource, :name],
+    expected_outputs: [:id, :bigquery_date_sharded_spec, :bigquery_table_spec, :deletion_policy, :integrated_system, :linked_resource, :name],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

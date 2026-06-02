@@ -40,9 +40,12 @@ RSpec.describe Pangea::Resources::GoogleEventarcChannel do
         expect(ref.id).to eq("${google_eventarc_channel.test.id}")
         expect(ref.activation_token).to eq("${google_eventarc_channel.test.activation_token}")
         expect(ref.create_time).to eq("${google_eventarc_channel.test.create_time}")
+        expect(ref.deletion_policy).to eq("${google_eventarc_channel.test.deletion_policy}")
+        expect(ref.effective_labels).to eq("${google_eventarc_channel.test.effective_labels}")
         expect(ref.project).to eq("${google_eventarc_channel.test.project}")
         expect(ref.pubsub_topic).to eq("${google_eventarc_channel.test.pubsub_topic}")
         expect(ref.state).to eq("${google_eventarc_channel.test.state}")
+        expect(ref.terraform_labels).to eq("${google_eventarc_channel.test.terraform_labels}")
         expect(ref.uid).to eq("${google_eventarc_channel.test.uid}")
         expect(ref.update_time).to eq("${google_eventarc_channel.test.update_time}")
       end
@@ -58,16 +61,19 @@ RSpec.describe Pangea::Resources::GoogleEventarcChannel do
         config = validate_resource_structure(result, 'google_eventarc_channel', 'test')
         expect(config).not_to have_key('activation_token')
         expect(config).not_to have_key('create_time')
+        expect(config).not_to have_key('deletion_policy')
+        expect(config).not_to have_key('effective_labels')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('pubsub_topic')
         expect(config).not_to have_key('state')
+        expect(config).not_to have_key('terraform_labels')
         expect(config).not_to have_key('uid')
         expect(config).not_to have_key('update_time')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ crypto_key_name: 'test-value', third_party_provider: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ crypto_key_name: 'test-value', deletion_policy: 'test-value', labels: { 'key1' => 'val1' }, project: 'test-value', third_party_provider: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -77,6 +83,9 @@ RSpec.describe Pangea::Resources::GoogleEventarcChannel do
 
         config = validate_resource_structure(result, 'google_eventarc_channel', 'full')
         expect(config).to have_key('crypto_key_name')
+        expect(config).to have_key('deletion_policy')
+        expect(config).to have_key('labels')
+        expect(config).to have_key('project')
         expect(config).to have_key('third_party_provider')
       end
     end
@@ -98,6 +107,57 @@ RSpec.describe Pangea::Resources::GoogleEventarcChannel do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_eventarc_channel', 'minimal')
         expect(config).not_to have_key('crypto_key_name')
+      end
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_channel('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_channel', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_channel('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_channel', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
+      it 'includes labels when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_channel('opt', required_attrs.merge(labels: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_channel', 'opt')
+        expect(config).to have_key('labels')
+      end
+
+      it 'omits labels when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_channel('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_channel', 'minimal')
+        expect(config).not_to have_key('labels')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_channel('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_channel', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_eventarc_channel('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_eventarc_channel', 'minimal')
+        expect(config).not_to have_key('project')
       end
       it 'includes third_party_provider when provided' do
         synth = create_synthesizer
@@ -161,7 +221,7 @@ RSpec.describe Pangea::Resources::GoogleEventarcChannel do
     resource_type: :google_eventarc_channel,
     method: :google_eventarc_channel,
     required_attrs: { location: 'test-value', name: 'test-value' },
-    expected_outputs: [:id, :activation_token, :create_time, :project, :pubsub_topic, :state, :uid, :update_time],
+    expected_outputs: [:id, :activation_token, :create_time, :deletion_policy, :effective_labels, :project, :pubsub_topic, :state, :terraform_labels, :uid, :update_time],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

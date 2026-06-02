@@ -1,0 +1,8 @@
+name: google_colab_runtime_template
+title: Manages a google_colab_runtime_template resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

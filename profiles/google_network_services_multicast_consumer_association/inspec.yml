@@ -1,0 +1,8 @@
+name: google_network_services_multicast_consumer_association
+title: Manages a google_network_services_multicast_consumer_association resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

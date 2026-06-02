@@ -1,0 +1,8 @@
+name: google_project_iam_member_remove
+title: Manages a google_project_iam_member_remove resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

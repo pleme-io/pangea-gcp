@@ -38,6 +38,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubDataExchange do
         ref = synth.google_bigquery_analytics_hub_data_exchange('test', required_attrs)
 
         expect(ref.id).to eq("${google_bigquery_analytics_hub_data_exchange.test.id}")
+        expect(ref.deletion_policy).to eq("${google_bigquery_analytics_hub_data_exchange.test.deletion_policy}")
         expect(ref.discovery_type).to eq("${google_bigquery_analytics_hub_data_exchange.test.discovery_type}")
         expect(ref.listing_count).to eq("${google_bigquery_analytics_hub_data_exchange.test.listing_count}")
         expect(ref.name).to eq("${google_bigquery_analytics_hub_data_exchange.test.name}")
@@ -53,6 +54,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubDataExchange do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_data_exchange', 'test')
+        expect(config).not_to have_key('deletion_policy')
         expect(config).not_to have_key('discovery_type')
         expect(config).not_to have_key('listing_count')
         expect(config).not_to have_key('name')
@@ -61,7 +63,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubDataExchange do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ description: 'test-value', documentation: 'test-value', icon: 'test-value', log_linked_dataset_query_user_email: true, primary_contact: 'test-value', sharing_environment_config: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ deletion_policy: 'test-value', description: 'test-value', discovery_type: 'test-value', documentation: 'test-value', icon: 'test-value', log_linked_dataset_query_user_email: true, primary_contact: 'test-value', project: 'test-value', sharing_environment_config: { 'key1' => 'val1' } }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,16 +72,36 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubDataExchange do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_data_exchange', 'full')
+        expect(config).to have_key('deletion_policy')
         expect(config).to have_key('description')
+        expect(config).to have_key('discovery_type')
         expect(config).to have_key('documentation')
         expect(config).to have_key('icon')
         expect(config).to have_key('log_linked_dataset_query_user_email')
         expect(config).to have_key('primary_contact')
+        expect(config).to have_key('project')
         expect(config).to have_key('sharing_environment_config')
       end
     end
 
     context 'optional attributes' do
+      it 'includes deletion_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_data_exchange('opt', required_attrs.merge(deletion_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_data_exchange', 'opt')
+        expect(config).to have_key('deletion_policy')
+      end
+
+      it 'omits deletion_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_data_exchange('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_data_exchange', 'minimal')
+        expect(config).not_to have_key('deletion_policy')
+      end
       it 'includes description when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -96,6 +118,23 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubDataExchange do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_data_exchange', 'minimal')
         expect(config).not_to have_key('description')
+      end
+      it 'includes discovery_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_data_exchange('opt', required_attrs.merge(discovery_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_data_exchange', 'opt')
+        expect(config).to have_key('discovery_type')
+      end
+
+      it 'omits discovery_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_data_exchange('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_data_exchange', 'minimal')
+        expect(config).not_to have_key('discovery_type')
       end
       it 'includes documentation when provided' do
         synth = create_synthesizer
@@ -165,10 +204,27 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubDataExchange do
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_data_exchange', 'minimal')
         expect(config).not_to have_key('primary_contact')
       end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_data_exchange('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_data_exchange', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_bigquery_analytics_hub_data_exchange('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_bigquery_analytics_hub_data_exchange', 'minimal')
+        expect(config).not_to have_key('project')
+      end
       it 'includes sharing_environment_config when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_bigquery_analytics_hub_data_exchange('opt', required_attrs.merge(sharing_environment_config: [{ 'key1' => 'val1' }]))
+        synth.google_bigquery_analytics_hub_data_exchange('opt', required_attrs.merge(sharing_environment_config: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_bigquery_analytics_hub_data_exchange', 'opt')
         expect(config).to have_key('sharing_environment_config')
@@ -242,7 +298,7 @@ RSpec.describe Pangea::Resources::GoogleBigqueryAnalyticsHubDataExchange do
     resource_type: :google_bigquery_analytics_hub_data_exchange,
     method: :google_bigquery_analytics_hub_data_exchange,
     required_attrs: { data_exchange_id: 'test-value', display_name: 'test-value', location: 'test-value' },
-    expected_outputs: [:id, :discovery_type, :listing_count, :name, :project],
+    expected_outputs: [:id, :deletion_policy, :discovery_type, :listing_count, :name, :project],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: [:log_linked_dataset_query_user_email]

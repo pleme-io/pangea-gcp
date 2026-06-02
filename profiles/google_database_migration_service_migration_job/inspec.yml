@@ -1,0 +1,8 @@
+name: google_database_migration_service_migration_job
+title: Manages a google_database_migration_service_migration_job resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google

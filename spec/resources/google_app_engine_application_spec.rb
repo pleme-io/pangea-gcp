@@ -48,6 +48,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineApplication do
         expect(ref.name).to eq("${google_app_engine_application.test.name}")
         expect(ref.project).to eq("${google_app_engine_application.test.project}")
         expect(ref.serving_status).to eq("${google_app_engine_application.test.serving_status}")
+        expect(ref.ssl_policy).to eq("${google_app_engine_application.test.ssl_policy}")
         expect(ref.url_dispatch_rule).to eq("${google_app_engine_application.test.url_dispatch_rule}")
       end
     end
@@ -70,12 +71,13 @@ RSpec.describe Pangea::Resources::GoogleAppEngineApplication do
         expect(config).not_to have_key('name')
         expect(config).not_to have_key('project')
         expect(config).not_to have_key('serving_status')
+        expect(config).not_to have_key('ssl_policy')
         expect(config).not_to have_key('url_dispatch_rule')
       end
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ feature_settings: [{ 'key1' => 'val1' }], iap: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ auth_domain: 'test-value', database_type: 'test-value', feature_settings: { 'key1' => 'val1' }, iap: { 'key1' => 'val1' }, project: 'test-value', serving_status: 'test-value', ssl_policy: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -84,16 +86,55 @@ RSpec.describe Pangea::Resources::GoogleAppEngineApplication do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'google_app_engine_application', 'full')
+        expect(config).to have_key('auth_domain')
+        expect(config).to have_key('database_type')
         expect(config).to have_key('feature_settings')
         expect(config).to have_key('iap')
+        expect(config).to have_key('project')
+        expect(config).to have_key('serving_status')
+        expect(config).to have_key('ssl_policy')
       end
     end
 
     context 'optional attributes' do
+      it 'includes auth_domain when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application('opt', required_attrs.merge(auth_domain: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_application', 'opt')
+        expect(config).to have_key('auth_domain')
+      end
+
+      it 'omits auth_domain when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_application', 'minimal')
+        expect(config).not_to have_key('auth_domain')
+      end
+      it 'includes database_type when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application('opt', required_attrs.merge(database_type: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_application', 'opt')
+        expect(config).to have_key('database_type')
+      end
+
+      it 'omits database_type when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_application', 'minimal')
+        expect(config).not_to have_key('database_type')
+      end
       it 'includes feature_settings when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_app_engine_application('opt', required_attrs.merge(feature_settings: [{ 'key1' => 'val1' }]))
+        synth.google_app_engine_application('opt', required_attrs.merge(feature_settings: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_application', 'opt')
         expect(config).to have_key('feature_settings')
@@ -110,7 +151,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineApplication do
       it 'includes iap when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.google_app_engine_application('opt', required_attrs.merge(iap: [{ 'key1' => 'val1' }]))
+        synth.google_app_engine_application('opt', required_attrs.merge(iap: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_application', 'opt')
         expect(config).to have_key('iap')
@@ -123,6 +164,57 @@ RSpec.describe Pangea::Resources::GoogleAppEngineApplication do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'google_app_engine_application', 'minimal')
         expect(config).not_to have_key('iap')
+      end
+      it 'includes project when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application('opt', required_attrs.merge(project: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_application', 'opt')
+        expect(config).to have_key('project')
+      end
+
+      it 'omits project when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_application', 'minimal')
+        expect(config).not_to have_key('project')
+      end
+      it 'includes serving_status when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application('opt', required_attrs.merge(serving_status: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_application', 'opt')
+        expect(config).to have_key('serving_status')
+      end
+
+      it 'omits serving_status when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_application', 'minimal')
+        expect(config).not_to have_key('serving_status')
+      end
+      it 'includes ssl_policy when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application('opt', required_attrs.merge(ssl_policy: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_application', 'opt')
+        expect(config).to have_key('ssl_policy')
+      end
+
+      it 'omits ssl_policy when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.google_app_engine_application('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'google_app_engine_application', 'minimal')
+        expect(config).not_to have_key('ssl_policy')
       end
     end
 
@@ -168,7 +260,7 @@ RSpec.describe Pangea::Resources::GoogleAppEngineApplication do
     resource_type: :google_app_engine_application,
     method: :google_app_engine_application,
     required_attrs: { location_id: 'test-value' },
-    expected_outputs: [:id, :app_id, :auth_domain, :code_bucket, :database_type, :default_bucket, :default_hostname, :gcr_domain, :name, :project, :serving_status, :url_dispatch_rule],
+    expected_outputs: [:id, :app_id, :auth_domain, :code_bucket, :database_type, :default_bucket, :default_hostname, :gcr_domain, :name, :project, :serving_status, :ssl_policy, :url_dispatch_rule],
     sensitive_fields: [],
     immutable_fields: [],
     boolean_fields: []

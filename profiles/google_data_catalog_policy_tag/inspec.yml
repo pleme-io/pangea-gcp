@@ -1,0 +1,8 @@
+name: google_data_catalog_policy_tag
+title: Manages a google_data_catalog_policy_tag resource
+version: 0.1.0
+supports:
+  - platform: google
+depends:
+  - name: inspec-google
+    url: https://github.com/pleme-io/inspec-google
